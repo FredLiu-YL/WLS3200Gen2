@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33529.622
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WLS3200Gen2", "WLS3200Gen2\WLS3200Gen2.csproj", "{32F8F2FB-90AD-4919-9B70-36DFEC347663}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WLS3200Gen2.Model", "WLS3200Gen2.Model\WLS3200Gen2.Model.csproj", "{E1B6CCE7-75EE-4897-8B26-5B77622C583F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32F8F2FB-90AD-4919-9B70-36DFEC347663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32F8F2FB-90AD-4919-9B70-36DFEC347663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32F8F2FB-90AD-4919-9B70-36DFEC347663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32F8F2FB-90AD-4919-9B70-36DFEC347663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1B6CCE7-75EE-4897-8B26-5B77622C583F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1B6CCE7-75EE-4897-8B26-5B77622C583F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1B6CCE7-75EE-4897-8B26-5B77622C583F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1B6CCE7-75EE-4897-8B26-5B77622C583F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D57B1138-2405-4447-B390-0DFFED52D08F}
+	EndGlobalSection
+EndGlobal

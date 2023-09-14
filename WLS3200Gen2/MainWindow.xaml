@@ -1,0 +1,183 @@
+﻿<metro:MetroWindow   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+    x:Class="WLS3200Gen2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        
+        xmlns:local="clr-namespace:WLS3200Gen2"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        mc:Ignorable="d"
+        Title="MainWindow" Height="1080" Width="1920"
+        DataContext="{Binding Main, Source={StaticResource Locator}}"
+        Background="GhostWhite" 
+        WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"
+    ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"   >
+    <metro:MetroWindow.IconTemplate>
+        <DataTemplate>
+             <!--Setting a Margin and enable hight-quality image--> 
+            <Image Margin="4"
+                   RenderOptions.BitmapScalingMode="HighQuality"
+                   Source="{Binding Icon}" />
+        </DataTemplate>
+    </metro:MetroWindow.IconTemplate> 
+
+    <Grid  Background="AliceBlue">
+        <Grid.RowDefinitions>
+
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <materialDesign:Card>
+            <TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Width="auto"  Height="auto">
+                            <materialDesign:PackIcon   Width="34" Height="34" HorizontalAlignment="Center" Kind="HomeVariant" />
+                            <TextBlock HorizontalAlignment="Center" Text="Home" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.15*"/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="5*"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="1"
+                                  materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding IsRunning}"
+                                  materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
+                                  materialDesign:ButtonProgressAssist.Value="-1"
+                                
+                                  Command="{Binding RunCommand}"
+                                  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                  Style="{StaticResource MaterialDesignFloatingActionButton}">
+                                    <materialDesign:PackIcon  Width="40" Height="40" Kind="Play" />
+                                </Button>
+                            
+                            
+                  
+                                       
+                                <Button Grid.Column="2"
+                   
+                                  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                  Style="{StaticResource MaterialDesignFloatingActionButton}"
+                                 Command="{Binding PauseCommand}"
+                                  ToolTip="MaterialDesignFloatingActionButton">
+                                    <materialDesign:PackIcon  Width="40" Height="40" Kind="Pause" />     
+                                </Button>
+
+                                <Button Grid.Column="3"
+                                  Command="{Binding StopCommand}"
+                                  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                  Style="{StaticResource MaterialDesignFloatingActionButton}"
+                                  ToolTip="MaterialDesignFloatingActionButton">
+                                    <materialDesign:PackIcon  Width="40" Height="40" Kind="Stop" />
+                                </Button>
+
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                   
+
+                </TabItem>
+                
+                
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Width="auto"   Height="auto">
+                            <materialDesign:PackIcon Width="34" Height="34" HorizontalAlignment="Center"  Kind="FileDocumentEdit" />
+                            <TextBlock   HorizontalAlignment="Center" Text="Recipe" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <TextBlock>
+                    <Run  Text="tab 2 content. Default look and behaviors." />
+                        <LineBreak />
+                        <LineBreak />
+                    <Run   FontStyle="Italic">      
+                        Praesent sed dui arcu. Vivamus porta auctor sagittis
+                     </Run>
+                    </TextBlock>
+                </TabItem>
+                
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel   Width="auto"   Height="auto">
+                            <materialDesign:PackIcon  Width="34"   Height="34"  HorizontalAlignment="Center"   Kind="Tools" />
+                            <TextBlock  HorizontalAlignment="Center" Text="Tools" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <TextBlock>
+                    <Run   Text="tab 3 content. Default look and behaviors." />
+                    <LineBreak />
+                    <LineBreak />
+                    </TextBlock>
+                </TabItem>
+               
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel  Width="auto"  Height="auto">
+                            <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="CogOutline" />
+                            <TextBlock  HorizontalAlignment="Center"   Text="Setting" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <TextBlock>
+                <Run  Text="tab 4 content. Default look and behaviors." />
+                <LineBreak />
+                <LineBreak />
+                    </TextBlock>
+                </TabItem>
+
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel  Width="auto"  Height="auto">
+                            <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="Security" />
+                            <TextBlock  HorizontalAlignment="Center"   Text="Security" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <TextBlock>
+                <Run  Text="tab 4 content. Default look and behaviors." />
+                <LineBreak />
+                <LineBreak />
+                    </TextBlock>
+                </TabItem>
+               
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel  Width="auto"  Height="auto">
+                            <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
+                            <TextBlock  HorizontalAlignment="Center"   Text="Account" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <TextBlock>
+                <Run  Text="tab 4 content. Default look and behaviors." />
+                <LineBreak />
+                <LineBreak />
+                    </TextBlock>
+                </TabItem>
+            </TabControl>
+        </materialDesign:Card>
+
+    </Grid>
+</metro:MetroWindow>
