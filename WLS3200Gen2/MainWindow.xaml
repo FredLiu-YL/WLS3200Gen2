@@ -27,7 +27,6 @@
 
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-
         <Grid.Resources>
             <ResourceDictionary>
                 <Style TargetType="{x:Type Border}" x:Key="HorizontalDividerBorder">
@@ -46,14 +45,14 @@
             </ResourceDictionary>
         </Grid.Resources>
 
-        <materialDesign:Card>
+       
             <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
             <TabControl  VerticalContentAlignment="Top"
                      materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"   
-                         Style="{StaticResource MaterialDesignNavigationRailTabControl}">
-
-
-                <TabItem>
+                      Style="{StaticResource MaterialDesignNavigationRailTabControl}">
+                
+              <!--首頁-->
+             <TabItem>
                     <TabItem.Header>
                         <StackPanel Width="auto"  Height="auto">
                             <materialDesign:PackIcon   Width="34" Height="34" HorizontalAlignment="Center" Kind="HomeVariant" />
@@ -158,8 +157,8 @@
 
 
                 </TabItem>
-
-                <TabItem >
+            <!--料號設定頁-->
+            <TabItem >
                     <TabItem.Header>
                         <StackPanel Width="auto"   Height="auto">
                             <materialDesign:PackIcon Width="34" Height="34" HorizontalAlignment="Center"  Kind="FileDocumentEdit" />
@@ -634,7 +633,7 @@
 
 
             </TabControl>
-        </materialDesign:Card>
+    
         <Grid HorizontalAlignment="Left" Margin="0,403,0,10" Width="70">
             <StackPanel Grid.Row="1"   Width="auto"  Height="auto">
                 <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
