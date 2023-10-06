@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
+using YuanliCore.Account;
+using YuanliCore.CameraLib;
 
 namespace WLS3200Gen2
 {
@@ -39,13 +41,19 @@ namespace WLS3200Gen2
             isSimulate = true;
 
             //  machineSetting.Load();
-            icon = BitmapFrame.Create(new Uri("pack://application:,,,/WLS3200Gen2;component/YuanLi.ico"));
+            Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WLS3200Gen2;component/YuanLi.ico"));
             machine = new Machine(isSimulate, machineSetting);
-
+             
             // machine.Initial();
             // machine.Home();
 
             machine.ChangeRecipe += ChangeRecipe;
+
+            Account = UserAccount.Load();
+            Account.CurrentAccount.PropertyChanged += CurrentAccountChanged;
+
+            //預設為最高權限使用者
+            Account.CurrentAccount.Right = RightsModel.Visitor;
         }
 
         private MainRecipe ChangeRecipe()
@@ -53,7 +61,15 @@ namespace WLS3200Gen2
 
             return new MainRecipe();
         }
-
+        private void CurrentAccountChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Name")
+            {
+                var account = sender as Account;
+            //    if (account.Name != "")
+            //        MachineInformation.SetMachineInfo($"使用者登入：{account.Name}  權限：{account.Right}");
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

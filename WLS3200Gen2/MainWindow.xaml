@@ -7,22 +7,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore.Model"
-    xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model" 
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+    xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
+    xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
+    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model"
     mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
-        DataContext="{Binding Main, Source={StaticResource Locator}}"
-        Background="GhostWhite" 
+        DataContext="{Binding Main, Source={StaticResource Locator}}"   
+        Background="GhostWhite"     
+        Icon= "YuanLi.ico" 
         WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"
-    ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"   >
-    <metro:MetroWindow.IconTemplate>
-        <DataTemplate>
-            <!--Setting a Margin and enable hight-quality image-->
-            <Image Margin="4"
-                   RenderOptions.BitmapScalingMode="HighQuality"
-                   Source="{Binding Icon}" />
-        </DataTemplate>
-    </metro:MetroWindow.IconTemplate>
-
+        ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"   >
     <Grid  Background="AliceBlue">
         <Grid.RowDefinitions>
 
@@ -45,12 +41,10 @@
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
-                  
+
                 </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
         </Grid.Resources>
-
-
 
         <materialDesign:Card>
             <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
@@ -198,7 +192,7 @@
                                 </StackPanel>
                                 <views:VirtualCanvas Grid.Row="1" Height="610" Width="610" IsShowBar="True" />
                             </Grid>
-                           
+
                             <materialDesign:Card  Grid.Column="1">
                                 <StackPanel>
                                     <Expander   HorizontalAlignment="Stretch"  Header="Locate Pattern">
@@ -264,7 +258,7 @@
 
                                             </GroupBox>
 
-                                         
+
                                         </StackPanel>
                                     </Expander>
                                     <Border   Style="{StaticResource HorizontalDividerBorder}" />
@@ -281,7 +275,7 @@
                                                     <DataGridTextColumn Width="60"  Header="SN" Binding="{Binding SN}" />
                                                     <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding Col}" />
                                                     <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding Row}"  />
-                                                   
+
                                                 </DataGrid.Columns>
 
 
@@ -291,7 +285,7 @@
                                     <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                     <Expander   HorizontalAlignment="Stretch"  Header="Expander Example 2c">
                                         <StackPanel  Margin="24,8,24,16"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                            
+
 
                                         </StackPanel>
                                     </Expander>
@@ -299,140 +293,124 @@
                             </materialDesign:Card>
                         </Grid>
                         <Grid Grid.Row="1">
-                            
                             <GroupBox  FontSize="16"  Header="BXFM"  >
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-
-                                    <GroupBox Grid.Column="0 " Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Aperture" Style="{StaticResource MaterialDesignGroupBox}">
-                                        <StackPanel Orientation ="Horizontal" Margin="-5,-7,-5,-7">
-                                            <TextBlock Text="12345" Width="80" FontSize="26"  VerticalAlignment="Center" />
-                                            <Button  Margin="1"  Height="34" Width="34" ToolTip="1" Foreground="Black"  Style="{StaticResource MaterialDesignFloatingActionMiniButton}" BorderBrush="{x:Null}" Background="{x:Null}" >
-                                                <materialDesign:PackIcon Width="32"  Height="32"  Kind="CircleSlice7" />
-                                            </Button>
-                                            <Button  Margin="1" Height="34" Width="34" ToolTip="2"  Foreground="Black" Background="{x:Null}" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" BorderBrush="{x:Null}" >
-                                                <materialDesign:PackIcon  Width="32"  Height="32"  Kind="CircleSlice6" />
-                                            </Button>
-                                            <Button  Margin="1"  Height="34" Width="34" ToolTip="3" Foreground="Black"   Background="{x:Null}"   Style="{StaticResource MaterialDesignFloatingActionMiniButton}" BorderBrush="{x:Null}" >
-                                                <materialDesign:PackIcon Width="32"  Height="32"  Kind="CircleSlice5" />
-                                            </Button>
-                                            <Button  Margin="1" Height="34" Width="34" ToolTip="4"  Foreground="Black"  Background="{x:Null}"  Style="{StaticResource MaterialDesignFloatingActionMiniButton}" BorderBrush="{x:Null}" >
-                                                <materialDesign:PackIcon  Width="32"  Height="32"  Kind="CircleSlice3" />
-                                            </Button>
-                                            <Button  Margin="1" Height="34" Width="34" ToolTip="5"  Foreground="Black"  Background="{x:Null}"  Style="{StaticResource MaterialDesignFloatingActionMiniButton}" BorderBrush="{x:Null}" >
-                                                <materialDesign:PackIcon  Width="32"  Height="32"  Kind="CircleSlice2" />
-                                            </Button>
-                                            <Button  Margin="1" Height="34" Width="34" ToolTip="6"  Foreground="Black"  Background="{x:Null}"  Style="{StaticResource MaterialDesignFloatingActionMiniButton}" BorderBrush="{x:Null}" >
-                                                <materialDesign:PackIcon  Width="32"  Height="32"  Kind="CircleOutline" />
-                                            </Button>
-                                        </StackPanel>
-                                    </GroupBox>
-
-                                    <GroupBox Grid.Column="2 " Grid.Row="0" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Lens" Style="{StaticResource MaterialDesignGroupBox}">
-                                        <ListBox  Margin="-5" x:Name="RadioLensChoiceChip"  Style="{StaticResource MaterialDesignChoiceChipListBox}">
-                                            <ListBoxItem  Content="1.25X" />
-                                            <ListBoxItem  Content="5X" IsSelected="True" />
-                                            <ListBoxItem  Content="10X" />
-                                            <ListBoxItem  Content="50X" IsEnabled="False" />
-                                            <ListBoxItem  Content="100X" IsEnabled="False" />
-                                        </ListBox>
-                                    </GroupBox>
-
-                                    <GroupBox Grid.Column="4 " Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Shutter" Style="{StaticResource MaterialDesignGroupBox}">
-                                        <ListBox  Margin="-10" x:Name="RadioShutterChoiceChip"  Style="{StaticResource MaterialDesignChoiceChipListBox}">
-                                            <ListBoxItem Margin="0,0,-10,0"  Content="Auto"  Width="70" IsSelected="True" />
-                                            <ListBoxItem Margin="0,0,-10,0"  Content="1/5"  Width="70"/>
-                                            <ListBoxItem Margin="0,0,-10,0"  Content="1/15" Width="70"/>
-                                            <ListBoxItem Margin="0,0,-10,0"  Content="1/30" Width="70" IsEnabled="True" />
-                                            <ListBoxItem Margin="0,0,-10,0"  Content="1/60" Width="70" IsEnabled="True" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/100" Width="70" />
-                                            <ListBoxItem Margin="0,0,-10,0"  Content="1/200" Width="70"  />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/500" Width="70" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/1000" Width="70"  FontSize="10" IsSelected="False" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/2000"  Width="70" FontSize="10" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/4000" Width="70" FontSize="10" IsSelected="False" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/8000" Width="70" FontSize="10" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/10000" Width="70" FontSize="10"/>
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/12000" Width="70" FontSize="10" />
-                                            <ListBoxItem Margin="0,0,-10,0"   Content="1/15000" Width="70" FontSize="10"/>
-                                 
-                                        </ListBox>
-
-                                    </GroupBox>
-
-                                    <GroupBox Grid.Column="0 " Grid.Row="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Intensity" Style="{StaticResource MaterialDesignGroupBox}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="4234" FontSize="20" Width="50" />
-                                            <Slider Maximum="50" Minimum="0" Width="180" Value="35" />
-                                        </StackPanel>
-                                      
-                                    </GroupBox>
-
-                                    <GroupBox Grid.Column="2 " Grid.Row="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Observation" Style="{StaticResource MaterialDesignGroupBox}">
-                                        <StackPanel Margin="-5" Orientation="Horizontal">
-                                            <ListBox  Margin="-5" x:Name="RadioObservationChoiceChip"  Style="{StaticResource MaterialDesignChoiceChipListBox}">
-                                                <ListBoxItem Margin="0,0,-5,0" Content="DF" />
-                                                <ListBoxItem Margin="0,0,-5,0" Content="BF" IsSelected="True" />
-                                                <ListBoxItem Margin="0,0,-5,0" Content="DIC" IsEnabled="False" />
-                                            </ListBox>
-                                            <Slider Margin="10,0,0,0" Width="100" />
-                                        </StackPanel>
-                                   
-                                    </GroupBox>
-
-                                    <GroupBox Grid.Column="0 " Grid.Row="2" Grid.ColumnSpan="4" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Focus" Style="{StaticResource MaterialDesignGroupBox}">
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,-10">
-                                            <TextBlock Text="42347" FontSize="20" Width="60" />
-                                            <TextBox Margin="10,0,0,0" Text="0000" FontSize="20" />
-                                            <Button  Style="{StaticResource MaterialDesignPaperButton}" >
-                                                <materialDesign:PackIcon Width="26" Height="26"  Kind="ArrowLeftBox" />
-                                            </Button>
-                                            <Slider Maximum="50" Minimum="0" Width="180" Value="35" />
-                                            <Button  Style="{StaticResource MaterialDesignPaperButton}" >
-                                                <materialDesign:PackIcon Width="26" Height="26"  Kind="ArrowRightBox" />
-                                            </Button>
-                                            <CheckBox Content="AutoFocus" />
-                                        </StackPanel>
-
-                                    </GroupBox>
-
-                                </Grid>
-
+                                <microscope:BXFMUC/>
                             </GroupBox>
 
 
                         </Grid>
+                        <Grid Grid.Column="1"  Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1.3*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Button Grid.Column="0" Grid.Row="1"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowLeftBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
 
+
+
+                                <Button Grid.Column="1" Grid.Row="0"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowUpBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y-"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                                <Button Grid.Column="2" Grid.Row="1"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowRightBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="1" Grid.Row="2"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowDownBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                                <Button Grid.Column="0" Grid.Row="0"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowTopLeftBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="2" Grid.Row="0"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowTopRightBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="2" Grid.Row="2"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowBottomRightBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="0" Grid.Row="2"  Width="90"  Height="90"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowBottomLeftBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </TabItem>
 
@@ -451,11 +429,11 @@
                         </Grid.ColumnDefinitions>
                         <GroupBox Grid.Column="0" Header="EFEM" FontSize="24">
                             <Grid >
-                                
+
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="2*"/>
                                     <RowDefinition/>
-                                   
+
                                 </Grid.RowDefinitions>
                                 <GroupBox Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
@@ -485,15 +463,15 @@
                                             <Button Margin="5" Height="40" Content="Wafer Macro To Robot  "   />
                                             <Button Margin="0,5,0,5" Height="40" Content="Wafer Micro To Robot  " />
                                             <Label Margin="0,10,0,10"/>
-                                        
+
                                             <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort1" />
                                             <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort2" />
                                             <Button Margin="5" Height="40" Content="Wafer Robot To Macro" />
                                             <Button Margin="5" Height="40" Content="Wafer Robot To Micro" />
-                                        
+
                                         </StackPanel>
                                     </Grid>
-                                   
+
                                 </GroupBox>
                                 <GroupBox Grid.Row="1" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
@@ -580,11 +558,36 @@
                             <TextBlock  HorizontalAlignment="Center"   Text="Setting" />
                         </StackPanel>
                     </TabItem.Header>
-                    <TextBlock>
-                <Run  Text="tab 4 content. Default look and behaviors." />
-                <LineBreak />
-                <LineBreak />
-                    </TextBlock>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+
+                                <Grid Height="350">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <GroupBox Header="Output" Grid.Column="0">
+
+                                    </GroupBox>
+                                    <GroupBox Header="Input" Grid.Column="1" >
+
+                                    </GroupBox>
+                                </Grid>
+                            </StackPanel>
+
+                        </Grid>
+
+                    </Grid>
                 </TabItem>
 
                 <TabItem  >
@@ -594,29 +597,51 @@
                             <TextBlock  HorizontalAlignment="Center"   Text="Security" />
                         </StackPanel>
                     </TabItem.Header>
-                    <TextBlock>
-                <Run  Text="tab 4 content. Default look and behaviors." />
-                <LineBreak />
-                <LineBreak />
-                    </TextBlock>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <motion:AxisMotionUC />
+                                <motion:AxisMotionUC />
+                                <Grid Height="350">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <GroupBox Header="Output" Grid.Column="0">
+
+                                    </GroupBox>
+                                    <GroupBox Header="Input" Grid.Column="1" >
+
+                                    </GroupBox>
+                                </Grid>
+                            </StackPanel>
+
+                        </Grid>
+
+                    </Grid>
                 </TabItem>
 
-                <TabItem  >
-                    <TabItem.Header>
-                        <StackPanel  Width="auto"  Height="auto">
-                            <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
-                            <TextBlock  HorizontalAlignment="Center"   Text="Account" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <TextBlock>
-                <Run  Text="tab 4 content. Default look and behaviors." />
-                <LineBreak />
-                <LineBreak />
-                    </TextBlock>
-                </TabItem>
+
+
 
             </TabControl>
         </materialDesign:Card>
+        <Grid HorizontalAlignment="Left" Margin="0,403,0,10" Width="70">
+            <StackPanel Grid.Row="1"   Width="auto"  Height="auto">
+                <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
+                <TextBlock  HorizontalAlignment="Center"   Text="Account" />
+                <account:UserRightsControl  Grid.Row="1" Account="{Binding Account}"/>
+            </StackPanel>
+        </Grid>
 
     </Grid>
 </metro:MetroWindow>
