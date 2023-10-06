@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using YuanliCore.UserControls;
 
 namespace WLS3200Gen2
 {
     public partial class MainViewModel
     {
-        private bool isRunning =false;
+        private bool isRunning = false;
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         public BitmapSource Icon { get => icon; set => SetValue(ref icon, value); }
 
@@ -31,17 +32,17 @@ namespace WLS3200Gen2
             }
             finally
             {
-                
+
             }
         });
         public ICommand PauseCommand => new RelayCommand(async () =>
         {
             try
             {
-              
+
                 IsRunning = false;
 
-            
+
             }
             catch (Exception ex)
             {
@@ -72,5 +73,30 @@ namespace WLS3200Gen2
 
             }
         });
+
+        public ICommand ReadRecipeCommand => new RelayCommand(() =>
+        {
+            FileInfoWindow win = new FileInfoWindow(false, "WLS3200", "MainRecipe");
+            win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            bool isDialogResult = (bool)win.ShowDialog();
+            if (isDialogResult)
+            {
+               // machine.BonderRecipe = MicroBonderRecipes.Load(win.FilePathName);
+            }
+        });
+        public ICommand SaveRecipeCommand => new RelayCommand(() =>
+        {
+            FileInfoWindow win = new FileInfoWindow(false, "WLS3200", "MainRecipe");
+            win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            bool isDialogResult = (bool)win.ShowDialog();
+            if (isDialogResult)
+            {
+               // machine.BonderRecipe.RecipeID = win.FileName;
+               // machine.BonderRecipe.Save(win.FilePathName);
+            }
+        });
+
     }
 }
