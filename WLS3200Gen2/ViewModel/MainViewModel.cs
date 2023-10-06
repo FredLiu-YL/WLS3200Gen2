@@ -32,7 +32,7 @@ namespace WLS3200Gen2
         private Machine machine;
         private MachineSetting machineSetting;
         private bool isSimulate;
-        private BitmapSource icon;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -41,11 +41,11 @@ namespace WLS3200Gen2
             isSimulate = true;
 
             //  machineSetting.Load();
-            Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WLS3200Gen2;component/YuanLi.ico"));
+           
             machine = new Machine(isSimulate, machineSetting);
              
-            // machine.Initial();
-            // machine.Home();
+             machine.Initial();
+             machine.Home();
 
             machine.ChangeRecipe += ChangeRecipe;
 

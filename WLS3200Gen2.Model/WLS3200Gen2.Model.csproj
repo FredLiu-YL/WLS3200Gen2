@@ -46,8 +46,9 @@
   <ItemGroup>
     <Compile Include="Component\ArtificialCamera.cs" />
     <Compile Include="Component\ArtificialLoadPort.cs" />
-    <Compile Include="Component\DummyCamera.cs" />
+    <Compile Include="Component\DummyAligner.cs" />
     <Compile Include="Component\DummyLoadPort.cs" />
+    <Compile Include="Component\DummyRobot.cs" />
     <Compile Include="InterfaceTemporary.cs" />
     <Compile Include="Machine.Process.cs" />
     <Compile Include="Machine.Initial.cs" />
@@ -58,6 +59,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe\MainRecipe.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\YuanliCore\YuanliCore.Model\YuanliCore.Model.csproj">
+      <Project>{14946968-1DA0-4F66-ABD0-10D45D580E00}</Project>
+      <Name>YuanliCore.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

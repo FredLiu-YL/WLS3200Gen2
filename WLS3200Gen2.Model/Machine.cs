@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Module;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2.Model
 {

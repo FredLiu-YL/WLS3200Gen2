@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2.Model.Component
 {
@@ -24,6 +26,24 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsGrabbing => isGrabbing;
 
+        public int Width => throw new NotImplementedException();
+
+        public int Height => throw new NotImplementedException();
+
+        public IObservable<Frame<byte[]>> Frames => throw new NotImplementedException();
+
+        public PixelFormat PixelFormat { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public void Close()
+        {
+             
+        }
+
+        public IDisposable Grab()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task GrabAsync()
         {
             return Task.Run(() => bitmapSource);
@@ -31,19 +51,21 @@ namespace WLS3200Gen2.Model.Component
         }
 
 
-        public void Grabbing()
-        {
-          
-        }
+        
 
-        public void Initial()
+        public void Open()
         {
-            
+            throw new NotImplementedException();
         }
 
         public void Stop()
         {
             
+        }
+
+        BitmapSource ICamera.GrabAsync()
+        {
+            return   bitmapSource;
         }
     }
 }

@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Component;
 using WLS3200Gen2.Model.Module;
+using YuanliCore.CameraLib;
+using YuanliCore.Interface;
+using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
 {
@@ -61,9 +64,9 @@ namespace WLS3200Gen2.Model
         public void AssignComponent()
         {
 
-            Axis[] axes = motionController.Axes;
-            var dis = motionController.DigitalInputs;
-            var dos = motionController.DigitalOutputs;
+            Axis[] axes = motionController.Axes.ToArray();
+            var dis = motionController.IutputSignals.ToArray();
+            var dos = motionController.OutputSignals.ToArray();
 
             feeder = new Feeder(robot, macro, aligner, axes[2]);
             microDetection = new MicroDetection(camera, microscope, axes, dos, dis);
@@ -126,7 +129,7 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
 
-                camera = new  DummyCamera("");
+                camera = new SimulateCamera("");
             }
             else
             {

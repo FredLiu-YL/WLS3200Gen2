@@ -68,82 +68,8 @@ namespace WLS3200Gen2.Model
 
     }
 
-    public interface ICamera
-    {
-        double ExposureTime { get; set; }
-        double Gain { get; set; }
-        bool IsGrabbing { get; }
-
-        void Initial();
-
-        /// <summary>
-        /// 連續取像
-        /// </summary>
-        void Grabbing();
-
-        void Stop();
-        /// <summary>
-        /// 取一張圖
-        /// </summary>
-        /// <returns></returns>
-        Task GrabAsync();
-
-    }
-
-    public interface IMotionController
-    {
-        void Initial();
-        Axis[] Axes { get; }
-
-        DigitalOutput[] DigitalOutputs { get; }
-        DigitalInput[] DigitalInputs { get; }
-    }
-
-    public class Axis
-    {
-
-        public Axis(IMotionController motionController)
-        {
-
-        }
-        public string AxisName { get; set; }
-        public double AccVelocity { get; set; }
-        public double MaxVelocity { get; set; }
-
-        public async Task MoveTo(double position)
-        {
-
-        }
-        public async Task Move(double distance)
-        {
-
-        }
-    }
-    public class DigitalOutput
-    {
-
-        public DigitalOutput(IMotionController motionController)
-        {
-
-        }
-
-        public void On()
-        {
-        }
-        public void Off()
-        {
-
-        }
-    }
-    public class DigitalInput
-    {
-
-        public DigitalInput(IMotionController motionController)
-        {
-
-        }
-
-    }
+    
+    
     public class DieInfo
     {
         /// <summary>

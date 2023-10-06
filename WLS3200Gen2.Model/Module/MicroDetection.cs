@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YuanliCore.Interface;
+using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model.Module
 {
@@ -12,9 +14,9 @@ namespace WLS3200Gen2.Model.Module
         private IMicroscope microscope;
         private Axis axisX;
         private Axis axisY;
-        private DigitalOutput tableVacuum;
-        private DigitalOutput liftPin;
-        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes , DigitalOutput[] outputs, DigitalInput[] inputs )
+        private SignalDO tableVacuum;
+        private SignalDO liftPin;
+        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes , SignalDO[] outputs, SignalDI[] inputs )
         {
             this.camera = camera;
             this.microscope = microscope;

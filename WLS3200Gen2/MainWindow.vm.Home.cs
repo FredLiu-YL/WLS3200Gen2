@@ -15,7 +15,7 @@ namespace WLS3200Gen2
     {
         private bool isRunning = false;
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
-        public BitmapSource Icon { get => icon; set => SetValue(ref icon, value); }
+       
 
         public ICommand RunCommand => new RelayCommand(async () =>
         {
@@ -76,7 +76,7 @@ namespace WLS3200Gen2
 
         public ICommand ReadRecipeCommand => new RelayCommand(() =>
         {
-            FileInfoWindow win = new FileInfoWindow(false, "WLS3200", "MainRecipe");
+            FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", "MainRecipe");
             win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             bool isDialogResult = (bool)win.ShowDialog();
@@ -87,7 +87,7 @@ namespace WLS3200Gen2
         });
         public ICommand SaveRecipeCommand => new RelayCommand(() =>
         {
-            FileInfoWindow win = new FileInfoWindow(false, "WLS3200", "MainRecipe");
+            FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", "MainRecipe");
             win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             bool isDialogResult = (bool)win.ShowDialog();
