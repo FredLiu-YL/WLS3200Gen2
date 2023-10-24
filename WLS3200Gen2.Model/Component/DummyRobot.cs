@@ -10,12 +10,12 @@ namespace WLS3200Gen2.Model.Component
     {
         public void Home()
         {
-            throw new NotImplementedException();
+             
         }
 
         public void Initial()
         {
-            throw new NotImplementedException();
+           
         }
 
         public void Load()

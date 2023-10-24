@@ -7,6 +7,7 @@ using WLS3200Gen2.Model.Component;
 using WLS3200Gen2.Model.Module;
 using YuanliCore.CameraLib;
 using YuanliCore.Interface;
+using YuanliCore.Interface.Motion;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
@@ -28,8 +29,7 @@ namespace WLS3200Gen2.Model
                 camera = CameraEntity(machineSetting.CamerasType);
                 macro = MacrotEntity(isSimulate);
 
-                //Log?.Invoke("loadPort Initial");
-                //loadPort.Initial();
+
 
                 //Log?.Invoke("Controller Initial");
                 //motionController.Initial();
@@ -46,7 +46,7 @@ namespace WLS3200Gen2.Model
                 //Log?.Invoke("Macro Initial");
                 //macro.Initial();
 
-                //AssignComponent();
+                AssignComponent();
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace WLS3200Gen2.Model
 
 
 
-        
+
         }
 
         public void AssignComponent()
@@ -85,11 +85,12 @@ namespace WLS3200Gen2.Model
 
                 throw ex;
             }
-           
+
         }
 
         private ILoadPort LoadPortEntity(bool isSimulate)
         {
+            Log?.Invoke("loadPort Initial");
             ILoadPort loadPort = null;
             if (isSimulate)
             {
@@ -101,7 +102,7 @@ namespace WLS3200Gen2.Model
                 loadPort = new ArtificialLoadPort();
 
             }
-           
+
 
             return loadPort;
         }
@@ -111,15 +112,25 @@ namespace WLS3200Gen2.Model
             IMotionController motionController = null;
             if (isSimulate)
             {
+                List<AxisInfo> axesInfos = new List<AxisInfo>();
+                for (int i = 0; i < 3; i++)
+                {
+                    AxisInfo axisInfo = new AxisInfo();
+                    axisInfo.AxisName = "AxisX";
+                    axesInfos.Add(axisInfo);
+                }
 
+                var doNames = new string[] { "do1", "do2", "do3" };
+                var diNames = new string[] { "di1", "di2", "di3" };
 
+                motionController = new SimulateMotionControllor(axesInfos, doNames, diNames);
             }
             else
             {
 
 
             }
-           
+
             return motionController;
 
         }
@@ -129,14 +140,14 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
 
-                camera = new SimulateCamera("");
+                camera = new SimulateCamera("d:\\fff123.bmp");
             }
             else
             {
 
                 camera = new ArtificialCamera();
             }
-          
+
             return camera;
         }
         private IAligner AlignerEntity(bool isSimulate)
@@ -145,14 +156,14 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
 
-
+                aligner = new DummyAligner();
             }
             else
             {
 
 
             }
-           
+
             return aligner;
         }
 
@@ -162,14 +173,14 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
 
-
+                macro = new DummyMacro();
             }
             else
             {
 
 
             }
-           
+
             return macro;
 
         }
@@ -178,7 +189,7 @@ namespace WLS3200Gen2.Model
             IRobot robot = null;
             if (isSimulate)
             {
-
+                robot = new DummyRobot();
 
             }
             else
@@ -186,7 +197,7 @@ namespace WLS3200Gen2.Model
 
 
             }
-         
+
             return robot;
         }
 

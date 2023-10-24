@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WLS3200Gen2.Model.Component
 {
-    public class DummyAligner : IAligner
+    public class DummyMacro : IMacro
     {
         public void Home()
         {
@@ -15,12 +15,7 @@ namespace WLS3200Gen2.Model.Component
 
         public void Initial()
         {
-            throw new NotImplementedException();
-        }
-
-        public void Run()
-        {
-            throw new NotImplementedException();
+       
         }
     }
 }

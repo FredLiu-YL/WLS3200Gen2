@@ -54,13 +54,14 @@
             <i:EventTrigger EventName="Loaded">
                 <i:InvokeCommandAction  Command="{Binding WindowLoadedCommand}" CommandParameter="MoveX-"/>
             </i:EventTrigger>
-        
-           
+
+
         </i:Interaction.Triggers>
         <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
         <TabControl  VerticalContentAlignment="Top"
-                     materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"   
-                      Style="{StaticResource MaterialDesignNavigationRailTabControl}" Grid.ColumnSpan="2">
+                     materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"  
+                     Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+                     Grid.ColumnSpan="2">
 
             <!--首頁-->
             <TabItem>
@@ -85,15 +86,14 @@
                                     materialDesign:ColorZoneAssist.Foreground="{DynamicResource PrimaryHueMidBrush}"  
                                     materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="0"
                                     Style="{StaticResource MaterialDesignFilledTabControl}">
-                            <TabItem Header="Micro">
-                                <views:VirtualCanvas Grid.Row="1" />
-                            </TabItem>
+                            <TabItem Header="Micro"/>
                             <TabItem Header="Macro">
                                 <views:VirtualCanvas Grid.Row="1" />
                             </TabItem>
                             <TabItem Header="TAB 3" Visibility="Hidden">
 
                             </TabItem>
+                            <views:VirtualCanvas Height="760" />
                         </TabControl>
 
                         <logger:LoggerUC  Grid.Row="1" />
@@ -159,7 +159,10 @@
                             </Button>
 
                         </Grid>
-                        <GroupBox Margin="2" Grid.Row="1" Header="Information">
+                        <GroupBox Margin="2" Grid.Row="1" Header="Production options">
+                            <TextBlock Text="My Content" />
+                        </GroupBox>
+                        <GroupBox Margin="2" Grid.Row="2" Header="Information">
                             <TextBlock Text="My Content" />
                         </GroupBox>
                     </Grid>
@@ -589,7 +592,8 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <GroupBox Header="Output" Grid.Column="0">
+                                <GroupBox Header="Output" Grid.Column="0"  >
+                                  
 
                                 </GroupBox>
                                 <GroupBox Header="Input" Grid.Column="1" >

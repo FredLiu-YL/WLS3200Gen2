@@ -40,12 +40,11 @@ namespace WLS3200Gen2
         {
             isSimulate = true;
 
-            //  machineSetting.Load();
-           
-            machine = new Machine(isSimulate, machineSetting);
+           //   machineSetting.Load();
+            machineSetting = new MachineSetting();
+             machine = new Machine(isSimulate, machineSetting);
              
-             machine.Initial();
-             machine.Home();
+            
 
             machine.ChangeRecipe += ChangeRecipe;
 

@@ -28,7 +28,8 @@ namespace WLS3200Gen2
         {
             try
             {
-                
+                machine.Initial();
+                machine.Home();
 
             }
             catch (Exception ex)
