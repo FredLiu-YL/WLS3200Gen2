@@ -110,6 +110,9 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ProductionUC.xaml.cs">
+      <DependentUpon>ProductionUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="App.xaml.cs">
@@ -119,6 +122,10 @@
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ProductionUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +162,10 @@
     <ProjectReference Include="..\WLS3200Gen2.Model\WLS3200Gen2.Model.csproj">
       <Project>{E1B6CCE7-75EE-4897-8B26-5B77622C583F}</Project>
       <Name>WLS3200Gen2.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\YuanliCore\YuanliApplication\YuanliApplication.csproj">
+      <Project>{ec6ccf0a-3f6e-472e-85e7-69cdfe79b062}</Project>
+      <Name>YuanliApplication</Name>
     </ProjectReference>
     <ProjectReference Include="..\YuanliCore\YuanliCore.Model\YuanliCore.Model.csproj">
       <Project>{14946968-1da0-4f66-abd0-10d45d580e00}</Project>
