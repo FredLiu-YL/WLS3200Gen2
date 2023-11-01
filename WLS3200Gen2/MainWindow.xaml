@@ -7,7 +7,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore.Model"
-    xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model" 
+    xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model"
+    xmlns:UserControlUI="clr-namespace:WLS3200Gen2.UserControls"        
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
@@ -160,7 +161,7 @@
 
                         </Grid>
                         <GroupBox Margin="2" Grid.Row="1" Header="Production options">
-                            <TextBlock Text="My Content" />
+                            <UserControlUI:ProductionUC AutoSaveIsChecked="{Binding AutoSaveIsChecked}" CircleIsChecked="{Binding CircleIsChecked}" DieInsideAllChecked="{Binding DieInsideAllChecked}" AddButtonAction="{Binding AddButtonAction}" CassetteUC ="{Binding CassetteUC}" />
                         </GroupBox>
                         <GroupBox Margin="2" Grid.Row="2" Header="Information">
                             <TextBlock Text="My Content" />
@@ -483,7 +484,7 @@
                                         <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort1" />
                                         <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort2" />
                                         <Button Margin="5" Height="40" Content="Wafer Robot To Macro" />
-                                        <Button Margin="5" Height="40" Content="Wafer Robot To Micro" Click="Button_Click" />
+                                        <Button Margin="5" Height="40" Content="Wafer Robot To Micro" />
 
                                     </StackPanel>
                                 </Grid>
