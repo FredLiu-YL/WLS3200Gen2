@@ -68,7 +68,7 @@ namespace WLS3200Gen2.Model
             var dis = motionController.IutputSignals.ToArray();
             var dos = motionController.OutputSignals.ToArray();
 
-            feeder = new Feeder(robot, macro, aligner, axes[2]);
+           // feeder = new Feeder(robot, macro, aligner, axes[2]);
             microDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }

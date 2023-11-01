@@ -13,9 +13,12 @@ namespace WLS3200Gen2
 {
     public partial class MainViewModel
     {
+        private string logMessage;
         private bool isRunning = false;
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
-       
+
+        public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
+
 
         public ICommand RunCommand => new RelayCommand(async () =>
         {
@@ -24,6 +27,8 @@ namespace WLS3200Gen2
                 IsRunning = true;
                 await machine.ProcessRun();
 
+
+                LogMessage = "123454";
             }
             catch (Exception ex)
             {
@@ -35,6 +40,8 @@ namespace WLS3200Gen2
 
             }
         });
+
+
         public ICommand PauseCommand => new RelayCommand(async () =>
         {
             try

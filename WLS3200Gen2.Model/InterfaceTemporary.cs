@@ -63,12 +63,7 @@ namespace WLS3200Gen2.Model
 
 
     }
-    public interface IMicroscope
-    {
-
-    }
-
-    
+ 
     
     public class DieInfo
     {

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore.Model", "YuanliC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliApplication", "YuanliCore\YuanliApplication\YuanliApplication.csproj", "{EC6CCF0A-3F6E-472E-85E7-69CDFE79B062}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore", "YuanliCore\YuanliCore\YuanliCore.csproj", "{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{EC6CCF0A-3F6E-472E-85E7-69CDFE79B062}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC6CCF0A-3F6E-472E-85E7-69CDFE79B062}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC6CCF0A-3F6E-472E-85E7-69CDFE79B062}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

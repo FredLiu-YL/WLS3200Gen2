@@ -96,7 +96,7 @@
                             <views:VirtualCanvas Height="760" />
                         </TabControl>
 
-                        <logger:LoggerUC  Grid.Row="1" />
+                        <logger:LoggerUC  Grid.Row="1"  Message="{Binding LogMessage}" />
                     </Grid>
                     <Grid  Grid.Column="1">
                         <Grid.RowDefinitions>
@@ -307,7 +307,7 @@
                     </Grid>
                     <Grid Grid.Row="1">
                         <GroupBox  FontSize="16"  Header="BXFM"  >
-                            <microscope:BXFMUC/>
+                            <microscope:BXFMUC />
                         </GroupBox>
 
 
@@ -483,7 +483,7 @@
                                         <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort1" />
                                         <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort2" />
                                         <Button Margin="5" Height="40" Content="Wafer Robot To Macro" />
-                                        <Button Margin="5" Height="40" Content="Wafer Robot To Micro" />
+                                        <Button Margin="5" Height="40" Content="Wafer Robot To Micro" Click="Button_Click" />
 
                                     </StackPanel>
                                 </Grid>

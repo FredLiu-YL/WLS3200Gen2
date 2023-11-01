@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YuanliCore.Interface;
+using YuanliCore.Model.Interface;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model.Module
