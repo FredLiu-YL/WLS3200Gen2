@@ -20,8 +20,7 @@ namespace WLS3200Gen2.Model
         private IMacro macro;
         private MachineSetting machineSetting;
         private Feeder feeder;
-        private MicroDetection microDetection;
-        private bool isSimulate ;
+        private bool isSimulate;
         public Machine(bool isSimulate, MachineSetting machineSetting)
         {
 
@@ -29,7 +28,7 @@ namespace WLS3200Gen2.Model
             this.isSimulate = isSimulate;
         }
 
-
+        public MicroDetection MicroDetection;
 
 
     }

@@ -61,6 +61,8 @@ namespace WLS3200Gen2.Model
 
         }
 
+
+
         public void AssignComponent()
         {
 
@@ -68,8 +70,8 @@ namespace WLS3200Gen2.Model
             var dis = motionController.IutputSignals.ToArray();
             var dos = motionController.OutputSignals.ToArray();
 
-           // feeder = new Feeder(robot, macro, aligner, axes[2]);
-            microDetection = new MicroDetection(camera, microscope, axes, dos, dis);
+            // feeder = new Feeder(robot, macro, aligner, axes[2]);
+            MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
         public async void Home()
@@ -77,7 +79,7 @@ namespace WLS3200Gen2.Model
             try
             {
                 await feeder.Home();
-                await microDetection.Home();
+                await MicroDetection.Home();
 
             }
             catch (Exception ex)

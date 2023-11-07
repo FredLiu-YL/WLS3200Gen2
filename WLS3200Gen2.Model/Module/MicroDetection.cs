@@ -13,16 +13,16 @@ namespace WLS3200Gen2.Model.Module
     {
         private ICamera camera;
         private IMicroscope microscope;
-        private Axis axisX;
-        private Axis axisY;
+        public Axis AxisX;
+        public Axis AxisY;
         private SignalDO tableVacuum;
         private SignalDO liftPin;
         public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes , SignalDO[] outputs, SignalDI[] inputs )
         {
             this.camera = camera;
             this.microscope = microscope;
-            axisX = axes[0];
-            axisY = axes[1];
+            AxisX = axes[0];
+            AxisY = axes[1];
             tableVacuum = outputs[1];
             liftPin = outputs[2];
 

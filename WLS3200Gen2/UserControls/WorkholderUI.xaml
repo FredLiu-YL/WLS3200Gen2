@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.WorkholderUI"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:local="clr-namespace:WLS3200Gen2"
+        mc:Ignorable="d"
+        x:Name="Workholder"
+        Height="450" Width="800" Loaded="MainGrid_Loaded">
+    <UserControl.Resources>
+        <ResourceDictionary >
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.bluegrey.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <GroupBox Grid.Column="0 " Grid.Row="0" Grid.ColumnSpan="1" materialDesign:ColorZoneAssist.Background="DeepSkyBlue"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
+                                     Header="WorkHolder" Style="{StaticResource MaterialDesignGroupBox}">
+
+
+            <Grid Grid.Column="0" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="1.3*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Column="3" Grid.RowSpan="3">
+                    <Button Margin="2" Content="High"  Height="50" Command="{Binding HighSpeed_Command}" />
+                    <Button Margin="2" Content="Low"  Height="50" Command="{Binding LowSpeed_Command}"  />
+                    <Button Margin="2" Content="Relative"  Height="50" Command="{Binding Relative_Command}" />
+
+                </StackPanel>
+                <TextBox Grid.Row="1"  Grid.Column="1" Text="{Binding TablePos}" FontSize="20" VerticalAlignment="Center" />
+                <Button Grid.Column="0" Grid.Row="1"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowLeftBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+
+                <Button Grid.Column="1" Grid.Row="0"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowUpBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="1"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowRightBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button Grid.Column="1" Grid.Row="2"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowDownBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button Grid.Column="0" Grid.Row="0"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowTopLeftBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-Y-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-Y-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="0"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowTopRightBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+Y-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X+Y-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button Grid.Column="2" Grid.Row="2"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowBottomRightBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+Y+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X+Y+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button Grid.Column="0" Grid.Row="2"  Width="90"  Height="90"   >
+                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowBottomLeftBold" />
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-Y+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-Y+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+            </Grid>
+
+
+
+        </GroupBox> 
+    </Grid>
+</UserControl>
