@@ -58,7 +58,10 @@
     <Compile Include="Module\Feeder.cs" />
     <Compile Include="Module\MicroDetection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recipe\Cassette.cs" />
+    <Compile Include="Recipe\Die.cs" />
     <Compile Include="Recipe\MainRecipe.cs" />
+    <Compile Include="Recipe\Wafer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YuanliCore\YuanliCore.Model\YuanliCore.Model.csproj">

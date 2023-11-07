@@ -19,16 +19,18 @@ namespace WLS3200Gen2.Model
         private IMicroscope microscope;
         private IMacro macro;
         private MachineSetting machineSetting;
-        private Feeder feeder;
+     
         private bool isSimulate;
+
+
         public Machine(bool isSimulate, MachineSetting machineSetting)
         {
 
             this.machineSetting = machineSetting;
             this.isSimulate = isSimulate;
         }
-
-        public MicroDetection MicroDetection;
+        public Feeder Feeder { get; private set; }
+        public MicroDetection MicroDetection { get; private set; }
 
 
     }

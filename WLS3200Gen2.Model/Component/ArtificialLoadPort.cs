@@ -9,17 +9,17 @@ namespace WLS3200Gen2.Model.Component
     public class ArtificialLoadPort : ILoadPort
     {
         private bool isMapping = true;
-        private bool[] slot;
+        private bool?[] slot;
 
         public ArtificialLoadPort()
         {
-            slot = new bool[] { true };
+            slot = new bool?[] { true };
 
         }
 
         public bool IsMapping => isMapping;
 
-        public bool[] Slot => slot;
+        public bool?[] Slot => slot;
 
 
 

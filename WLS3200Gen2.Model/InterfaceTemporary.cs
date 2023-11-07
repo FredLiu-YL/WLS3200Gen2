@@ -12,7 +12,7 @@ namespace WLS3200Gen2.Model
     {
         bool IsMapping { get; }
 
-        bool[] Slot { get; }
+        bool?[] Slot { get; }
 
         // 初始化
         void Initial();

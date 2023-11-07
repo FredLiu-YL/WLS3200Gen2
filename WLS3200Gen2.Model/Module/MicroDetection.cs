@@ -12,27 +12,31 @@ namespace WLS3200Gen2.Model.Module
     public class MicroDetection
     {
         private ICamera camera;
-        private IMicroscope microscope;
-        public Axis AxisX;
-        public Axis AxisY;
-        private SignalDO tableVacuum;
-        private SignalDO liftPin;
-        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes , SignalDO[] outputs, SignalDI[] inputs )
+      
+      
+      
+        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes , DigitalOutput[] outputs, DigitalInput[] inputs )
         {
             this.camera = camera;
-            this.microscope = microscope;
+            this.Microscope = microscope;
             AxisX = axes[0];
             AxisY = axes[1];
-            tableVacuum = outputs[1];
-            liftPin = outputs[2];
+            TableVacuum = outputs[1];
+            LiftPin = outputs[2];
 
         }
+
+        public Axis AxisX { get; }
+        public Axis AxisY { get; }
+        public DigitalOutput TableVacuum { get; }
+        public DigitalOutput LiftPin { get; }
+        public IMicroscope Microscope { get; }
 
 
         public async Task Home()
         {
 
-
+            await Task.Run(() => { });
 
         }
     }

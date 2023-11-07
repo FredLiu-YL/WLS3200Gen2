@@ -9,11 +9,11 @@ namespace WLS3200Gen2.Model.Component
     public class DummyLoadPort : ILoadPort
     {
         private bool isMapping;
-        private bool[] slot;
+        private bool?[] slot;
 
         public bool IsMapping => isMapping;
 
-        public bool[] Slot => slot;
+        public bool?[] Slot => slot;
 
         public void Home()
         {
@@ -31,7 +31,7 @@ namespace WLS3200Gen2.Model.Component
             {
 
 
-                List<bool> slotList = new List<bool>();
+                List<bool?> slotList = new List<bool?>();
 
                 for (int i = 0; i < 20; i++)
                     slotList.Add(true);
