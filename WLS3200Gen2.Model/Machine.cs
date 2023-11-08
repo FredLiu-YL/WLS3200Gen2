@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Module;
 using YuanliCore.Interface;
@@ -19,15 +21,17 @@ namespace WLS3200Gen2.Model
         private IMicroscope microscope;
         private IMacro macro;
         private MachineSetting machineSetting;
-     
+        private  PauseTokenSource pts = new PauseTokenSource();
+        private  CancellationTokenSource cts = new CancellationTokenSource();
         private bool isSimulate;
 
 
         public Machine(bool isSimulate, MachineSetting machineSetting)
         {
-
+            
             this.machineSetting = machineSetting;
             this.isSimulate = isSimulate;
+
         }
         public Feeder Feeder { get; private set; }
         public MicroDetection MicroDetection { get; private set; }

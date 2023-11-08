@@ -37,5 +37,15 @@ namespace WLS3200Gen2.Model.Component
         {
             throw new NotImplementedException();
         }
+
+        public void VacuumOff()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void VacuumOn()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

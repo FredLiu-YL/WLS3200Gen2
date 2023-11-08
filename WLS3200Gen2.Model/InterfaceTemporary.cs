@@ -10,6 +10,7 @@ namespace WLS3200Gen2.Model
 
     public interface ILoadPort
     {
+
         bool IsMapping { get; }
 
         bool?[] Slot { get; }
@@ -41,7 +42,8 @@ namespace WLS3200Gen2.Model
         void MoveToAliner();
 
         void MoveToMacro();
-
+        void VacuumOn();
+        void VacuumOff();
 
     }
 
@@ -56,15 +58,23 @@ namespace WLS3200Gen2.Model
     }
     public interface IMacro
     {
-
         void Initial();
+        void FixWafer();
+        void ReleaseWafer();
+
+
+        void Vertical(double pos);
+        void Flip(double pos);
+
+        void Rotate(double pos);
+
         void Home();
 
 
 
     }
- 
-    
+
+
     public class DieInfo
     {
         /// <summary>

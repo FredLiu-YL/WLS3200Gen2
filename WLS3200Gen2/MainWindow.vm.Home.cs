@@ -25,7 +25,7 @@ namespace WLS3200Gen2
             try
             {
                 IsRunning = true;
-                await machine.ProcessRun();
+                await machine.ProcessRunAsync();
 
 
                 LogMessage = "123454";

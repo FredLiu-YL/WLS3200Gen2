@@ -13,13 +13,31 @@ namespace WLS3200Gen2.Model
         public event Func<MainRecipe> ChangeRecipe;
 
 
-        public async Task ProcessRun()
+        public async Task ProcessRunAsync()
         {
+            try
+            {
+                // do something......
+                MainRecipe recipe = ChangeRecipe?.Invoke();
+
+
+                cts.Cancel();
+                cts.Token.ThrowIfCancellationRequested();
+
+                await pts.Token.WaitWhilePausedAsync(cts.Token);
+            }
+            catch (OperationCanceledException canceleEx)
+            {
+
+                throw;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+    
             
-            // do something......
-            MainRecipe recipe =  ChangeRecipe?.Invoke();
-
-
         }
 
 
