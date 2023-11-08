@@ -29,7 +29,12 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
                                      Header="Wafer" Style="{StaticResource MaterialDesignGroupBox}">
             <StackPanel Margin="-5" Orientation="Horizontal">
-                <ListBox Name="myListBox"  ItemsSource="{Binding CassetteUC}">
+                <ListBox   Name="myListBox"  ItemsSource="{Binding CassetteUC}" >
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Margin" Value="0.5"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                 </ListBox>
             </StackPanel>
         </GroupBox>
@@ -37,30 +42,82 @@
 
         <Grid   Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="158*"/>
-                <RowDefinition Height="143*"/>
+                <RowDefinition Height="40*"/>
+                <RowDefinition Height="60*"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Column="0 " Grid.Row="0" Grid.ColumnSpan="1" materialDesign:ColorZoneAssist.Background="DeepSkyBlue"
+            <GroupBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="1" materialDesign:ColorZoneAssist.Background="DeepSkyBlue"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
                                      Header="Work Items" Style="{StaticResource MaterialDesignGroupBox}">
-                <StackPanel Orientation="Vertical" >
-                    <CheckBox
-                        Content="AutoSave"
-                        IsChecked="{Binding AutoSaveIsChecked}"
-                        Style="{StaticResource MaterialDesignDarkCheckBox}" />
-                    <CheckBox
-                        Content="Circle"
-                        IsChecked="{Binding CircleIsChecked}"
-                        Style="{StaticResource MaterialDesignDarkCheckBox}" />
-                    <CheckBox
-                        Content="DieInsideAll"
-                        IsChecked="{Binding DieInsideAllChecked}"
-                        Style="{StaticResource MaterialDesignDarkCheckBox}" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25*"/>
+                        <RowDefinition Height="25*"/>
+                        <RowDefinition Height="25*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.15*" />
+                        <ColumnDefinition Width="0.85*" />
+                    </Grid.ColumnDefinitions>
+                    <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="0"
+                         IsChecked="{Binding AutoSaveIsChecked}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+                        <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                            <SolidColorBrush
+                             Color="Green" />
+                        </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                            <SolidColorBrush
+                             Color="Red" />
+                        </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                    </ToggleButton>
 
-                </StackPanel>
+                    <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="1"
+                         IsChecked="{Binding CircleIsChecked}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+                        <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                            <SolidColorBrush
+                             Color="Green" />
+                        </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                            <SolidColorBrush
+                             Color="Red" />
+                        </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                    </ToggleButton>
+
+                    <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="2"
+                         IsChecked="{Binding DieInsideAllChecked}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+                        <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                            <SolidColorBrush
+                             Color="Green" />
+                        </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                            <SolidColorBrush
+                             Color="Red" />
+                        </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                    </ToggleButton>
+
+                    <TextBlock Grid.Column="1" Grid.Row ="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AutoSave" FontSize="20"/>
+                    <TextBlock Grid.Column="1" Grid.Row ="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Circle" FontSize="20"/>
+                    <TextBlock Grid.Column="1" Grid.Row ="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="DieInsideAll" FontSize="20"/>
+
+                </Grid>
+                   
             </GroupBox>
         </Grid>
-        
+
     </Grid>
 </UserControl>

@@ -23,13 +23,10 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class WorkholderUI : UserControl, INotifyPropertyChanged
     {
-        private Axis[] axes;
-
         public static readonly DependencyProperty TableXProperty = DependencyProperty.Register(nameof(TableX), typeof(Axis), typeof(WorkholderUI),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty TableYProperty = DependencyProperty.Register(nameof(TableY), typeof(Axis), typeof(WorkholderUI),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty AxesProperty = DependencyProperty.Register(nameof(Axes), typeof(IEnumerable<Axis>), typeof(WorkholderUI),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                                                                                            new PropertyChangedCallback((d, e) =>
@@ -37,16 +34,37 @@ namespace WLS3200Gen2.UserControls
                                                                                                    var dp = d as WorkholderUI;
                                                                                                    dp.InitialMotionController();
                                                                                                })));
-
-
+        public static readonly DependencyProperty HighIsCheckedProperty = DependencyProperty.Register(nameof(HighIsChecked), typeof(bool), typeof(WorkholderUI),
+                                                                                       new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty LowIsCheckedProperty = DependencyProperty.Register(nameof(LowIsChecked), typeof(bool), typeof(WorkholderUI),
+                                                                                       new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty RelativeIsCheckedProperty = DependencyProperty.Register(nameof(RelativeIsChecked), typeof(bool), typeof(WorkholderUI),
+                                                                                       new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public string TableDistance { get => tableDistance; set => SetValue(ref tableDistance, value); }
+        public bool HighIsChecked
+        {
+            get => (bool)GetValue(HighIsCheckedProperty);
+            set => SetValue(HighIsCheckedProperty, value);
+        }
+        public bool LowIsChecked
+        {
+            get => (bool)GetValue(LowIsCheckedProperty);
+            set => SetValue(LowIsCheckedProperty, value);
+        }
+        public bool RelativeIsChecked
+        {
+            get => (bool)GetValue(RelativeIsCheckedProperty);
+            set => SetValue(RelativeIsCheckedProperty, value);
+        }
         public WorkholderUI()
         {
             InitializeComponent();
         }
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
-
+            HighIsChecked = true;
         }
+        private Axis[] axes;
         private void InitialMotionController()
         {
             try
@@ -69,6 +87,8 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(TableYProperty, value);
         }
 
+        public string tableDistance;
+
 
         public IEnumerable<Axis> Axes
         {
@@ -79,9 +99,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-
-
-                var dis = 0;// Convert.ToDouble();
+                var dis = Convert.ToDouble(TableDistance);
                 if (dis == 0)
                 {
                     switch (key)
@@ -98,21 +116,49 @@ namespace WLS3200Gen2.UserControls
                         case "Y-":
                             await TableY.MoveToAsync(TableY.PositionNEL);
                             break;
-
                     }
-
                 }
-
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
 
         });
-
-
+        public ICommand TableMoveCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                var dis = Convert.ToDouble(TableDistance);
+                if (dis == 0)
+                {
+                    TableX.Stop();
+                    TableY.Stop();
+                }
+                else
+                {
+                    switch (key)
+                    {
+                        case "X+":
+                            await TableX.MoveAsync(dis);
+                            break;
+                        case "X-":
+                            await TableX.MoveAsync(-dis);
+                            break;
+                        case "Y+":
+                            await TableY.MoveAsync(dis);
+                            break;
+                        case "Y-":
+                            await TableY.MoveAsync(-dis);
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        });
 
 
 
