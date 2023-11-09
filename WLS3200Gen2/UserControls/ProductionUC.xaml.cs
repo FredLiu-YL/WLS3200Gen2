@@ -37,6 +37,8 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty AddButtonActionProperty = DependencyProperty.Register(nameof(AddButtonAction), typeof(ICommand), typeof(ProductionUC),
                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+
         public static readonly DependencyProperty CassetteUCProperty = DependencyProperty.Register(nameof(CassetteUC), typeof(ObservableCollection<CassetteUC>), typeof(ProductionUC),
                                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public ProductionUC()
@@ -47,9 +49,22 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                AddButtonAction = new RelayCommand<int>(key => { AddButton(key); });
                 CassetteUC = new ObservableCollection<CassetteUC>();
-                AddButton(25);
+
+                //AddButtonAction = new RelayCommand<int>(key => { AddButton(key); });
+                AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+                {
+                    int variable1 = key.Item1;
+                    List<int> variable2 = key.Item2;
+                    AddButton(variable1, variable2);
+                });
+
+                List<int> RowsDisable = new List<int>();
+                for (int i = 0; i < 25; i++)
+                {
+                    RowsDisable.Add(i);
+                }
+                AddButton(25, RowsDisable);
             }
             catch (Exception ex)
             {
@@ -78,23 +93,39 @@ namespace WLS3200Gen2.UserControls
         }
         public ObservableCollection<CassetteUC> CassetteUC
         {
-            get => (ObservableCollection<CassetteUC>)GetValue(CassetteUCProperty);
-            set { SetValue(CassetteUCProperty, value); }
+            get
+            {
+                return (ObservableCollection<CassetteUC>)GetValue(CassetteUCProperty);
+            }
+            set
+            {
+                SetValue(CassetteUCProperty, value);
+            }
         }
-        public void AddButton(int Rows)
+        public void AddButton(int Rows, List<int> RowsDisable)
         {
             try
             {
                 CassetteUC.Clear();
-                for (int i = 1; i <= Rows; i++)
+                for (int i = Rows - 1; i >= 0; i--)
                 {
-                    if (i % 2 == 0)
+                    bool IsDisable = false;
+                    for (int j = RowsDisable.Count - 1; j >= 0; j--)
                     {
-                        CassetteUC.Add(new CassetteUC(true));
+                        if (i == RowsDisable[j])
+                        {
+                            IsDisable = true;
+                            RowsDisable.RemoveAt(j);
+                            break;
+                        }
+                    }
+                    if (IsDisable == true)
+                    {
+                        CassetteUC.Add(new CassetteUC(false, (i + 1).ToString()));
                     }
                     else
                     {
-                        CassetteUC.Add(new CassetteUC(false));
+                        CassetteUC.Add(new CassetteUC(true, (i + 1).ToString()));
                     }
                 }
             }
@@ -103,8 +134,8 @@ namespace WLS3200Gen2.UserControls
                 throw ex;
             }
         }
-        public event PropertyChangedEventHandler PropertyChanged;
 
+        public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return;
@@ -112,7 +143,6 @@ namespace WLS3200Gen2.UserControls
             field = value;
             OnPropertyChanged(propertyName, oldValue, value);
         }
-
         protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。

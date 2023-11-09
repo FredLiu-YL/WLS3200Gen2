@@ -50,7 +50,7 @@ namespace WLS3200Gen2
 
                 IsRunning = false;
 
-                CassetteUC[1].Btn1_Background = Brushes.Black;
+                CassetteUC[1].Top_Background = Brushes.Black;
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;

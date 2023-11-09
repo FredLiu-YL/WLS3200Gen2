@@ -21,15 +21,15 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=Production}" >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.50*" />
-            <ColumnDefinition Width="0.50*" />
+            <ColumnDefinition Width="0.30*" />
+            <ColumnDefinition Width="0.70*" />
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0 " Grid.Row="0" Grid.ColumnSpan="1" materialDesign:ColorZoneAssist.Background="DeepSkyBlue"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
                                      Header="Wafer" Style="{StaticResource MaterialDesignGroupBox}">
             <StackPanel Margin="-5" Orientation="Horizontal">
-                <ListBox   Name="myListBox"  ItemsSource="{Binding CassetteUC}" >
+                <ListBox Name="myListBox"  ItemsSource="{Binding CassetteUC}" >
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Margin" Value="0.5"/>
@@ -40,7 +40,7 @@
         </GroupBox>
 
 
-        <Grid   Grid.Column="1">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40*"/>
                 <RowDefinition Height="60*"/>
@@ -113,9 +113,8 @@
                     <TextBlock Grid.Column="1" Grid.Row ="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AutoSave" FontSize="20"/>
                     <TextBlock Grid.Column="1" Grid.Row ="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Circle" FontSize="20"/>
                     <TextBlock Grid.Column="1" Grid.Row ="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="DieInsideAll" FontSize="20"/>
-
+                    
                 </Grid>
-                   
             </GroupBox>
         </Grid>
 

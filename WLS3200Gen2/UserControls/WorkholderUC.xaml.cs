@@ -66,11 +66,12 @@ namespace WLS3200Gen2.UserControls
         public WorkholderUC()
         {
             InitializeComponent();
+            HighIsChecked = true;
+            TableDistance = "100";
         }
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
-            HighIsChecked = true;
-            TableDistance = "100";
+           
         }
         public Axis TableX
         {

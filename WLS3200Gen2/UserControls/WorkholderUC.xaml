@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:WLS3200Gen2"
         mc:Ignorable="d"
         x:Name="Workholder"
-        Height="450" Width="800" Loaded="MainGrid_Loaded">
+        Height="330" Width="800" Loaded="MainGrid_Loaded">
     <UserControl.Resources>
         <ResourceDictionary >
             <ResourceDictionary.MergedDictionaries>
@@ -30,7 +30,6 @@
                 <ColumnDefinition Width="0.55*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.25*"/>
                 <RowDefinition Height="0.25*"/>
                 <RowDefinition Height="0.25*"/>
                 <RowDefinition Height="0.25*"/>
