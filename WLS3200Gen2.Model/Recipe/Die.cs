@@ -8,13 +8,13 @@ using System.Windows;
 
 namespace YuanliCore.Data
 {
-    public  class Die
+    public class Die
     {
         public int IndexX { get; set; }
         public int IndexY { get; set; }
 
-        public Point PosX { get; set; }
-        public Point PosY { get; set; }
+        public int PosX { get; set; }
+        public int PosY { get; set; }
 
         public Size DieSize { get; set; }
     }

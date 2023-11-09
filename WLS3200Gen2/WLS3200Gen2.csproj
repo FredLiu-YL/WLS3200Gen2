@@ -110,6 +110,7 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Recipe\Wafer.cs" />
     <Compile Include="UserControls\ProductionUC.xaml.cs">
       <DependentUpon>ProductionUC.xaml</DependentUpon>
     </Compile>
@@ -119,8 +120,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UserControls\WorkholderUI.xaml.cs">
-      <DependentUpon>WorkholderUI.xaml</DependentUpon>
+    <Compile Include="UserControls\WorkholderUC.xaml.cs">
+      <DependentUpon>WorkholderUC.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
@@ -130,7 +131,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UserControls\WorkholderUI.xaml">
+    <Page Include="UserControls\WorkholderUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

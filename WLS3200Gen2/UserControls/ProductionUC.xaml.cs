@@ -17,7 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GalaSoft.MvvmLight.CommandWpf;
 using MaterialDesignThemes.Wpf;
-using YuanliCore.Model.Information;
+using YuanliCore.Model.LoadPort;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -81,7 +81,6 @@ namespace WLS3200Gen2.UserControls
             get => (ObservableCollection<CassetteUC>)GetValue(CassetteUCProperty);
             set { SetValue(CassetteUCProperty, value); }
         }
-
         public void AddButton(int Rows)
         {
             try
@@ -89,13 +88,18 @@ namespace WLS3200Gen2.UserControls
                 CassetteUC.Clear();
                 for (int i = 1; i <= Rows; i++)
                 {
-                    //CassetteUC.Add(new CassetteUC { Btn1_IsClik = false, Btn2_IsClik = false, Btn3_IsClik = false });
-                    CassetteUC.Add(new CassetteUC());
+                    if (i % 2 == 0)
+                    {
+                        CassetteUC.Add(new CassetteUC(true));
+                    }
+                    else
+                    {
+                        CassetteUC.Add(new CassetteUC(false));
+                    }
                 }
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }

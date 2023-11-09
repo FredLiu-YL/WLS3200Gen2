@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:logger="clr-namespace:YuanliCore.Logger;assembly=YuanliCore.Model"
     xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model"
-    xmlns:UserControlUI="clr-namespace:WLS3200Gen2.UserControls"        
+    xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls"        
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
@@ -139,11 +139,7 @@
                                 <materialDesign:PackIcon  Width="40" Height="40" Kind="Play" />
                             </Button>
 
-
-
-
                             <Button Grid.Column="2"
-                   
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}"
                                  Command="{Binding PauseCommand}"
@@ -161,11 +157,21 @@
 
                         </Grid>
                         <GroupBox Margin="2" Grid.Row="1" Header="Production options">
-                            <UserControlUI:ProductionUC AutoSaveIsChecked="{Binding AutoSaveIsChecked}" CircleIsChecked="{Binding CircleIsChecked}" DieInsideAllChecked="{Binding DieInsideAllChecked}" AddButtonAction="{Binding AddButtonAction}" CassetteUC ="{Binding CassetteUC}" />
+                            <UserControlUC:ProductionUC AutoSaveIsChecked="{Binding AutoSaveIsChecked}" CircleIsChecked="{Binding CircleIsChecked}" DieInsideAllChecked="{Binding DieInsideAllChecked}" AddButtonAction="{Binding AddButtonAction}" CassetteUC ="{Binding CassetteUC}" />
                         </GroupBox>
-                        <GroupBox Margin="2" Grid.Row="2" Header="Information">
-                            <UserControlUI:WorkholderUI TableX="{Binding TableX }" TableY="{Binding TableY }" HorizontalAlignment="Left"  />
-                        </GroupBox>
+                        <TabControl    materialDesign:ColorZoneAssist.Background="{DynamicResource MaterialDesignCardBackground}"
+                                    materialDesign:ColorZoneAssist.Foreground="{DynamicResource PrimaryHueMidBrush}"  
+                                    materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="2"
+                                    Style="{StaticResource MaterialDesignFilledTabControl}"
+                                    SelectedIndex="{Binding TabControlSelectedIndex}"
+                                    >
+                            <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}">
+
+                            </TabItem>
+                            <TabItem Header="WorkholderUI"  Visibility="{Binding WorkholderUCVisibility}">
+                                <UserControlUC:WorkholderUC TableX="{Binding TableX }" TableY="{Binding TableY }" HorizontalAlignment="Left"  />
+                            </TabItem>
+                        </TabControl>
                     </Grid>
                 </Grid>
 

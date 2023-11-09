@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliCore.UserControls;
 
@@ -49,7 +50,11 @@ namespace WLS3200Gen2
 
                 IsRunning = false;
 
+                CassetteUC[1].Btn1_Background = Brushes.Black;
 
+                InformationUCVisibility = Visibility.Visible;
+                WorkholderUCVisibility = Visibility.Collapsed;
+                TabControlSelectedIndex = 0;
             }
             catch (Exception ex)
             {

@@ -21,22 +21,22 @@ namespace WLS3200Gen2.UserControls
     /// <summary>
     /// WorkholderUI.xaml 的互動邏輯
     /// </summary>
-    public partial class WorkholderUI : UserControl, INotifyPropertyChanged
+    public partial class WorkholderUC : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty TableXProperty = DependencyProperty.Register(nameof(TableX), typeof(Axis), typeof(WorkholderUI),
+        public static readonly DependencyProperty TableXProperty = DependencyProperty.Register(nameof(TableX), typeof(Axis), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty TableYProperty = DependencyProperty.Register(nameof(TableY), typeof(Axis), typeof(WorkholderUI),
+        public static readonly DependencyProperty TableYProperty = DependencyProperty.Register(nameof(TableY), typeof(Axis), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty HighIsCheckedProperty = DependencyProperty.Register(nameof(HighIsChecked), typeof(bool), typeof(WorkholderUI),
+        public static readonly DependencyProperty HighIsCheckedProperty = DependencyProperty.Register(nameof(HighIsChecked), typeof(bool), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty LowIsCheckedProperty = DependencyProperty.Register(nameof(LowIsChecked), typeof(bool), typeof(WorkholderUI),
+        public static readonly DependencyProperty LowIsCheckedProperty = DependencyProperty.Register(nameof(LowIsChecked), typeof(bool), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty RelativeIsCheckedProperty = DependencyProperty.Register(nameof(RelativeIsChecked), typeof(bool), typeof(WorkholderUI),
+        public static readonly DependencyProperty RelativeIsCheckedProperty = DependencyProperty.Register(nameof(RelativeIsChecked), typeof(bool), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty TablePosXProperty = DependencyProperty.Register(nameof(TablePosX), typeof(double), typeof(WorkholderUI),
-                                                                                       new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty TablePosYProperty = DependencyProperty.Register(nameof(TablePosY), typeof(double), typeof(WorkholderUI),
-                                                                                       new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty TablePosXProperty = DependencyProperty.Register(nameof(TablePosX), typeof(double), typeof(WorkholderUC),
+                                                                                       new FrameworkPropertyMetadata(0.00, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty TablePosYProperty = DependencyProperty.Register(nameof(TablePosY), typeof(double), typeof(WorkholderUC),
+                                                                                       new FrameworkPropertyMetadata(0.00, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public double TablePosX 
         {
             get => (double)GetValue(TablePosXProperty);
@@ -63,7 +63,7 @@ namespace WLS3200Gen2.UserControls
             get => (bool)GetValue(RelativeIsCheckedProperty);
             set => SetValue(RelativeIsCheckedProperty, value);
         }
-        public WorkholderUI()
+        public WorkholderUC()
         {
             InitializeComponent();
         }
