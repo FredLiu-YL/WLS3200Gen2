@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliCore.UserControls;
 
@@ -62,6 +63,7 @@ namespace WLS3200Gen2
             finally
             {
 
+                CassetteUC[1].Top_Background = Brushes.Black;
             }
         });
         public ICommand ResumeCommand => new RelayCommand(async () =>
@@ -69,6 +71,9 @@ namespace WLS3200Gen2
             try
             {
 
+                InformationUCVisibility = Visibility.Visible;
+                WorkholderUCVisibility = Visibility.Collapsed;
+                TabControlSelectedIndex = 0;
                 IsRunning = false;
                 await machine.ProcessResume();
                 ProcessVisibility = Visibility.Visible;
