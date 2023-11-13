@@ -14,15 +14,14 @@ namespace WLS3200Gen2.Model
     public partial class Machine
     {
         private ILoadPort loadPort;
-        private IRobot robot;
+        private IEFEMRobot robot;
         private IAligner aligner;
         private IMotionController motionController;
         private ICamera camera;
         private IMicroscope microscope;
         private IMacro macro;
         private MachineSetting machineSetting;
-        private  PauseTokenSource pts = new PauseTokenSource();
-        private  CancellationTokenSource cts = new CancellationTokenSource();
+
         private bool isSimulate;
 
 

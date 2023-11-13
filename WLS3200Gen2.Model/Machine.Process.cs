@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Recipe;
 
@@ -11,20 +13,26 @@ namespace WLS3200Gen2.Model
     {
 
         public event Func<MainRecipe> ChangeRecipe;
-
+        private PauseTokenSource pts  ;
+        private CancellationTokenSource cts  ;
 
         public async Task ProcessRunAsync()
         {
             try
             {
-                // do something......
-                MainRecipe recipe = ChangeRecipe?.Invoke();
+                pts = new PauseTokenSource();
+                cts = new CancellationTokenSource();
+
+             
+                   // do something......
+                   MainRecipe recipe = ChangeRecipe?.Invoke();
 
 
-                cts.Cancel();
+                 await   Task.Delay(6000);
                 cts.Token.ThrowIfCancellationRequested();
-
+                await Task.Delay(3000);
                 await pts.Token.WaitWhilePausedAsync(cts.Token);
+                await Task.Delay(3000);
             }
             catch (OperationCanceledException canceleEx)
             {
@@ -40,12 +48,18 @@ namespace WLS3200Gen2.Model
             
         }
 
-
-
+        public async Task ProcessPause()
+        {
+            pts.IsPaused = true;
+        }
+        public async Task ProcessResume()
+        {
+            pts.IsPaused = false;
+        }
 
         public async Task ProcessStop()
         {
-
+            cts.Cancel();
 
         }
     }

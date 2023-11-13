@@ -18,7 +18,7 @@ namespace WLS3200Gen2.Model.Module
         private IAligner tempAligner;
 
 
-        public Feeder(IRobot robot, ILoadPort loadPort, IMacro macro, IAligner aligner, Axis axis)
+        public Feeder(IEFEMRobot robot, ILoadPort loadPort, IMacro macro, IAligner aligner, Axis axis)
         {
             this.Robot = robot;
             this.Macro = macro;
@@ -28,7 +28,7 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
-        public IRobot Robot { get; }
+        public IEFEMRobot Robot { get; }
         public IMacro Macro { get; }
         public Axis RobotAxis { get; }
         public IAligner Aligner8 { get; }
@@ -36,7 +36,7 @@ namespace WLS3200Gen2.Model.Module
         public ILoadPort LoadPort8 { get; }
         public ILoadPort LoadPort12 { get; }
         public Cassette Cassette { get => cassette; }
-
+        public FeederSetting Setting;
 
         public async Task Home()
         {
@@ -107,28 +107,40 @@ namespace WLS3200Gen2.Model.Module
 
         public async Task LoadWafer(int waferIndex)
         {
+            await RobotAxis.MoveToAsync(Setting.LoadPortPos);
 
-            Robot.Load();
+            Robot.TakeWaferCassette(waferIndex);
+            Robot.ArmLiftup();
+            Robot.VacuumOn();
+            Robot.ArmToRetract(ArmStation.Cassette);
+            Robot.ArmToStandby();
+
+
 
         }
-        public async Task LoadWaferToMacro()
+        public async Task WaferStandByToMacro()
         {
             try
             {
-                await Task.Run(() =>
-                {
-                    Robot.MoveToMacro();
 
-                    Macro.FixWafer();
-                
-                });
+
+                await RobotAxis.MoveToAsync(Setting.MacroPos);
+                Robot.PutBackWafer(ArmStation.Macro);
+                Robot.Armcatch(ArmStation.Macro);
+                Robot.VacuumOff();
+                Robot.ArmPutdown();
+                Robot.ArmToRetract(ArmStation.Macro);
+                Macro.FixWafer();
+                Robot.ArmToStandby();
+
+
             }
             catch (Exception)
             {
 
                 throw;
             }
-           
+
 
         }
         public async Task UnLoadAsync()
@@ -167,6 +179,23 @@ namespace WLS3200Gen2.Model.Module
             return cst;
 
         }
+
+
+
+        /// <summary>
+        /// 從Loadport 到 手臂上
+        /// </summary>
+        private void Load() { }
+        /// <summary>
+        ///  手臂上到Loadport 
+        /// </summary>
+        private void UnLoad() { }
+        /// <summary>
+        /// 移動到Ali
+        /// </summary>
+        private void MoveToAliner() { }
+
+        private void MoveToMacro() { }
     }
 
 
@@ -174,5 +203,14 @@ namespace WLS3200Gen2.Model.Module
     {
         Inch8,
         Inch12
+    }
+
+    public class FeederSetting
+    {
+        public double LoadPortPos { get; set; }
+        public double AlignPos { get; set; }
+        public double MacroPos { get; set; }
+        public double MicroPos { get; set; }
+
     }
 }

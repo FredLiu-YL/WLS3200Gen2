@@ -6,8 +6,33 @@ using System.Threading.Tasks;
 
 namespace WLS3200Gen2.Model.Component
 {
-    public class DummyRobot : IRobot
+    public class DummyRobot : IEFEMRobot
     {
+        public void Armcatch(ArmStation armPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ArmLiftup()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ArmPutdown()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ArmToRetract(ArmStation armPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ArmToStandby()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Home()
         {
              
@@ -29,6 +54,26 @@ namespace WLS3200Gen2.Model.Component
         }
 
         public void MoveToMacro()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PutBackWafer(ArmStation armPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PutBackWaferCassette(int layer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TakeWafer(ArmStation armPosition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TakeWaferCassette(int layer)
         {
             throw new NotImplementedException();
         }

@@ -15,11 +15,13 @@ namespace WLS3200Gen2
     {
         private string logMessage;
         private bool isRunning = false;
+        public Visibility processVisibility =  Visibility.Visible;
+
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
 
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
-
-
+        public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
+    
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -48,8 +50,28 @@ namespace WLS3200Gen2
             {
 
                 IsRunning = false;
+                ProcessVisibility = Visibility.Hidden;
+                await machine.ProcessPause();
 
+            }
+            catch (Exception ex)
+            {
 
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
+            }
+        });
+        public ICommand ResumeCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+
+                IsRunning = false;
+                await machine.ProcessResume();
+                ProcessVisibility = Visibility.Visible;
             }
             catch (Exception ex)
             {

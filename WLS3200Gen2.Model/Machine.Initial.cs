@@ -186,9 +186,9 @@ namespace WLS3200Gen2.Model
             return macro;
 
         }
-        private IRobot RobotEntity(RobotType robotType)
+        private IEFEMRobot RobotEntity(RobotType robotType)
         {
-            IRobot robot = null;
+            IEFEMRobot robot = null;
             if (isSimulate)
             {
                 robot = new DummyRobot();

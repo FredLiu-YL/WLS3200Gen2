@@ -31,21 +31,73 @@ namespace WLS3200Gen2.Model
 
         void Home();
         /// <summary>
-        /// 從Loadport 到 手臂上
+        /// 手臂真空開
         /// </summary>
-        void Load();
-        /// <summary>
-        ///  手臂上到Loadport 
-        /// </summary>
-        void UnLoad();
-
-        void MoveToAliner();
-
-        void MoveToMacro();
         void VacuumOn();
+
+        /// <summary>
+        /// 手臂真空關
+        /// </summary>
         void VacuumOff();
+    }
+    public interface IEFEMRobot : IRobot
+    {
+      
+
+        /// <summary>
+        /// 取片 伸出手臂進卡匣 (尚未抬起或下降)
+        /// </summary>
+        /// <param name="Layer"></param>
+        void TakeWaferCassette(int layer);
+        /// <summary>
+        /// 放片 伸出手臂進卡匣 (尚未抬起或下降)
+        /// </summary>
+        /// <param name="Layer"></param>
+        void PutBackWaferCassette(int layer);
+
+
+        /// <summary>
+        /// 取片 伸出手臂 (尚未抬起或下降)
+        /// </summary>
+        /// <param name="Layer"></param>
+        void TakeWafer(ArmStation armPosition);
+
+        /// <summary>
+        /// 放片 伸出手臂 (尚未抬起或下降)
+        /// </summary>
+        /// <param name="Layer"></param>
+        void PutBackWafer(ArmStation armPosition);
+
+
+        /// <summary>
+        /// 手臂抬起
+        /// </summary>
+        void ArmLiftup();
+        /// <summary>
+        /// 手臂放下
+        /// </summary>
+        void ArmPutdown();
+        /// <summary>
+        /// 手臂轉成待機姿態
+        /// </summary>
+        void ArmToStandby();
+        /// <summary>
+        /// 手臂收回
+        /// </summary>
+        void ArmToRetract(ArmStation armPosition);
+
+        void Armcatch(ArmStation armPosition);
+
 
     }
+    public enum ArmStation
+    {
+        Cassette,
+        Align,
+        Macro,
+        Micro
+    }
+
 
     public interface IAligner
     {
