@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    
     <Grid DataContext="{Binding ElementName=Production}" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.30*" />
