@@ -175,16 +175,16 @@ namespace WLS3200Gen2.UserControls
 
 
                         case "X+Y+":
-                            await Task.WhenAll(TableX.MoveToAsync(dis), TableY.MoveToAsync(dis));
+                            await Task.WhenAll(TableX.MoveAsync(dis), TableY.MoveAsync(dis));
                             break;
                         case "X+Y-":
-                            await Task.WhenAll(TableX.MoveToAsync(dis), TableY.MoveToAsync(-dis));
+                            await Task.WhenAll(TableX.MoveAsync(dis), TableY.MoveAsync(-dis));
                             break;
                         case "X-Y+":
-                            await Task.WhenAll(TableX.MoveToAsync(-dis), TableY.MoveToAsync(dis));
+                            await Task.WhenAll(TableX.MoveAsync(-dis), TableY.MoveAsync(dis));
                             break;
                         case "X-Y-":
-                            await Task.WhenAll(TableX.MoveToAsync(-dis), TableY.MoveToAsync(-dis));
+                            await Task.WhenAll(TableX.MoveAsync(-dis), TableY.MoveAsync(-dis));
                             break;
                     }
                 }

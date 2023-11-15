@@ -117,9 +117,19 @@ namespace WLS3200Gen2.Model
                 List<AxisInfo> axesInfos = new List<AxisInfo>();
                 for (int i = 0; i < 3; i++)
                 {
-                    AxisInfo axisInfo = new AxisInfo();
-                    axisInfo.AxisName = "AxisX";
-                    axesInfos.Add(axisInfo);
+                    if (i == 1)
+                    {
+                        AxisInfo axisInfo = new AxisInfo();
+                        axisInfo.AxisName = "AxisY";
+                        axisInfo.AxisID = 1;
+                        axesInfos.Add(axisInfo);
+                    }
+                    else
+                    {
+                        AxisInfo axisInfo = new AxisInfo();
+                        axisInfo.AxisName = "AxisX";
+                        axesInfos.Add(axisInfo);
+                    }
                 }
 
                 var doNames = new string[] { "do1", "do2", "do3" };
