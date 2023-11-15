@@ -34,47 +34,55 @@ namespace WLS3200Gen2.UserControls
                                                                                      new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty AddButtonActionProperty = DependencyProperty.Register(nameof(AddButtonAction), typeof(ICommand), typeof(ProductionUC),
                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-        //public static readonly DependencyProperty CassetteUCProperty = DependencyProperty.Register(nameof(CassetteUC), typeof(ObservableCollection<CassetteUC>), typeof(ProductionUC),
-        //                                                                                             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-        public static readonly DependencyProperty WorkItemsProperty = DependencyProperty.Register(nameof(WorkItems), typeof(IEnumerable<WorkItem>), typeof(ProductionUC),
-                                                                                   new FrameworkPropertyMetadata(new WorkItem[] { }, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-
+        public static readonly DependencyProperty WorkItemsProperty = DependencyProperty.Register(nameof(WorkItems), typeof(ObservableCollection<WorkItem>), typeof(ProductionUC),
+                                                                                   new FrameworkPropertyMetadata(new ObservableCollection<WorkItem>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public ProductionUC()
         {
             InitializeComponent();
 
-            try
-            {
-                //CassetteUC = new ObservableCollection<CassetteUC>();
-                AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
-                {
-                    int variable1 = key.Item1;
-                    List<int> variable2 = key.Item2;
-                    AddButton(variable1, variable2);
-                });
+            //try
+            //{
+            //    //CassetteUC = new ObservableCollection<CassetteUC>();
+            //    AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+            //    {
+            //        int variable1 = key.Item1;
+            //        List<int> variable2 = key.Item2;
+            //        AddButton(variable1, variable2);
+            //    });
 
-                List<int> RowsDisable = new List<int>();
-                for (int i = 5; i < 20; i++)
-                {
-                    RowsDisable.Add(i);
-                }
-                AddButton(25, RowsDisable);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
+            //    List<int> RowsDisable = new List<int>();
+            //    for (int i = 5; i < 20; i++)
+            //    {
+            //        RowsDisable.Add(i);
+            //    }
+            //    AddButton(25, RowsDisable);
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
+        private bool isLoaded = false;
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                //var list = WorkItems.ToList();
-                
+                if (isLoaded == false)
+                {
+                    AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+                    {
+                        int variable1 = key.Item1;
+                        List<int> variable2 = key.Item2;
+                        AddButton(variable1, variable2);
+                    });
+                    List<int> RowsDisable = new List<int>();
+                    for (int i = 5; i < 20; i++)
+                    {
+                        RowsDisable.Add(i);
+                    }
+                    AddButton(25, RowsDisable);
+                    isLoaded = true;
+                }
             }
             catch (Exception)
             {
@@ -102,24 +110,11 @@ namespace WLS3200Gen2.UserControls
             get => (ICommand)GetValue(AddButtonActionProperty);
             set => SetValue(AddButtonActionProperty, value);
         }
-        public IEnumerable<WorkItem> WorkItems
+        public ObservableCollection<WorkItem> WorkItems
         {
-            get => (IEnumerable<WorkItem>)GetValue(WorkItemsProperty);
-            set
-            {
-                var list = WorkItems.ToList();
-                for (int i = 0; i < WorkItems.Count(); i++)
-                {
-                    CassetteUC[i].WorkStatus = list[i];
-                }
-                SetValue(WorkItemsProperty, value);
-            }
+            get => (ObservableCollection<WorkItem>)GetValue(WorkItemsProperty);
+            set => SetValue(WorkItemsProperty, value);
         }
-        //public ObservableCollection<CassetteUC> CassetteUC
-        //{
-        //    get => (ObservableCollection<CassetteUC>)GetValue(CassetteUCProperty);
-        //    set => SetValue(CassetteUCProperty, value);
-        //}
 
         public ObservableCollection<CassetteUC> CassetteUC
         { get => cassetteUC; set => SetValue(ref cassetteUC, value); }
@@ -154,15 +149,23 @@ namespace WLS3200Gen2.UserControls
                     {
                         add_CassetteUC = new CassetteUC(true, (i + 1).ToString());
                     }
-                    //add_CassetteUC.WorkItemChange += (workItem) =>
-                    //{
-
-                    //};
                     add_CassetteUC.WorkItemChange += (workItem) =>
                     {
                         WorkItemChange(workItem);
                     };
                     CassetteUC.Add(add_CassetteUC);
+
+
+
+                }
+                if (WorkItems == null)
+                {
+                    WorkItems = new ObservableCollection<WorkItem>();
+                }
+                WorkItems.Clear(); // 清空原有的集合
+                foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
+                {
+                    WorkItems.Add(workStatus);
                 }
             }
             catch (Exception ex)
@@ -175,13 +178,12 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                //List<WorkItem> aaaaaa = new List<WorkItem>();
-                //foreach (var item in CassetteUC)
-                //{
-                //    aaaaaa.Add(item.WorkStatus);
-                //}
-                //WorkItems = aaaaaa;
-                WorkItems = CassetteUC.Select(c => c.WorkStatus).ToArray();
+                WorkItems.Clear(); // 清空原有的集合
+                foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
+                {
+                    WorkItems.Add(workStatus);
+                }
+
             }
             catch (Exception)
             {

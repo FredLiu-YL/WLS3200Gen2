@@ -37,12 +37,16 @@ namespace WLS3200Gen2.UserControls
                                                                                        new FrameworkPropertyMetadata(0.00, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty TablePosYProperty = DependencyProperty.Register(nameof(TablePosY), typeof(double), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(0.00, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public double TablePosX 
+        private string tableDistance;
+
+        private TableMoveType tableMoveType;
+
+        public double TablePosX
         {
             get => (double)GetValue(TablePosXProperty);
             set => SetValue(TablePosXProperty, value);
         }
-        public double TablePosY 
+        public double TablePosY
         {
             get => (double)GetValue(TablePosYProperty);
             set => SetValue(TablePosYProperty, value);
@@ -67,11 +71,12 @@ namespace WLS3200Gen2.UserControls
         {
             InitializeComponent();
             HighIsChecked = true;
+            tableMoveType = TableMoveType.High;
             TableDistance = "100";
         }
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
-           
+
         }
         public Axis TableX
         {
@@ -84,15 +89,27 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(TableYProperty, value);
         }
 
-        public string tableDistance;
+
 
         public ICommand TableContinueMoveCommand => new RelayCommand<string>(async key =>
         {
             try
             {
+                if (HighIsChecked == true)
+                {
+                    tableMoveType = TableMoveType.High;
+                }
+                else if (LowIsChecked == true)
+                {
+                    tableMoveType = TableMoveType.Low;
+                }
+                else if (RelativeIsChecked == true)
+                {
+                    tableMoveType = TableMoveType.RelaTive;
+                }
 
-                var dis = Math.Round(Convert.ToDouble(TableDistance));
-                if (dis == 0)
+                //var dis = Math.Round(Convert.ToDouble(TableDistance));
+                if (tableMoveType == TableMoveType.High || tableMoveType == TableMoveType.Low)
                 {
                     switch (key)
                     {
@@ -134,7 +151,7 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 var dis = Math.Round(Convert.ToDouble(TableDistance));
-                if (dis == 0)
+                if (tableMoveType == TableMoveType.High || tableMoveType == TableMoveType.Low)
                 {
                     TableX.Stop();
                     TableY.Stop();
@@ -188,7 +205,12 @@ namespace WLS3200Gen2.UserControls
 
 
 
-
+        public enum TableMoveType
+        {
+            High = 0,
+            Low = 1,
+            RelaTive
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -206,4 +228,6 @@ namespace WLS3200Gen2.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
+
+
 }
