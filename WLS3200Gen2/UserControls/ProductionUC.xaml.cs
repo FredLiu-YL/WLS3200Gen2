@@ -28,47 +28,66 @@ namespace WLS3200Gen2.UserControls
     {
         public static readonly DependencyProperty AutoSaveIsCheckedProperty = DependencyProperty.Register(nameof(AutoSaveIsChecked), typeof(bool), typeof(ProductionUC),
                                                                                     new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty CircleIsCheckedProperty = DependencyProperty.Register(nameof(CircleIsChecked), typeof(bool), typeof(ProductionUC),
                                                                                      new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty DieInsideAllCheckedProperty = DependencyProperty.Register(nameof(DieInsideAllChecked), typeof(bool), typeof(ProductionUC),
                                                                                      new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty AddButtonActionProperty = DependencyProperty.Register(nameof(AddButtonAction), typeof(ICommand), typeof(ProductionUC),
                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-
-        public static readonly DependencyProperty CassetteUCProperty = DependencyProperty.Register(nameof(CassetteUC), typeof(ObservableCollection<CassetteUC>), typeof(ProductionUC),
-                                                                                                     new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty WorkItemsProperty = DependencyProperty.Register(nameof(WorkItems), typeof(ObservableCollection<WorkItem>), typeof(ProductionUC),
+                                                                                   new FrameworkPropertyMetadata(new ObservableCollection<WorkItem>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public ProductionUC()
         {
             InitializeComponent();
+
+            //try
+            //{
+            //    //CassetteUC = new ObservableCollection<CassetteUC>();
+            //    AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+            //    {
+            //        int variable1 = key.Item1;
+            //        List<int> variable2 = key.Item2;
+            //        AddButton(variable1, variable2);
+            //    });
+
+            //    List<int> RowsDisable = new List<int>();
+            //    for (int i = 5; i < 20; i++)
+            //    {
+            //        RowsDisable.Add(i);
+            //    }
+            //    AddButton(25, RowsDisable);
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
+        private bool isLoaded = false;
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                CassetteUC = new ObservableCollection<CassetteUC>();
-
-                //AddButtonAction = new RelayCommand<int>(key => { AddButton(key); });
-                AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+                if (isLoaded == false)
                 {
-                    int variable1 = key.Item1;
-                    List<int> variable2 = key.Item2;
-                    AddButton(variable1, variable2);
-                });
-
-                List<int> RowsDisable = new List<int>();
-                for (int i = 0; i < 25; i++)
-                {
-                    RowsDisable.Add(i);
+                    AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+                    {
+                        int variable1 = key.Item1;
+                        List<int> variable2 = key.Item2;
+                        AddButton(variable1, variable2);
+                    });
+                    List<int> RowsDisable = new List<int>();
+                    for (int i = 5; i < 20; i++)
+                    {
+                        RowsDisable.Add(i);
+                    }
+                    AddButton(25, RowsDisable);
+                    isLoaded = true;
                 }
-                AddButton(25, RowsDisable);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+
+                throw;
             }
         }
         public bool AutoSaveIsChecked
@@ -91,17 +110,17 @@ namespace WLS3200Gen2.UserControls
             get => (ICommand)GetValue(AddButtonActionProperty);
             set => SetValue(AddButtonActionProperty, value);
         }
-        public ObservableCollection<CassetteUC> CassetteUC
+        public ObservableCollection<WorkItem> WorkItems
         {
-            get
-            {
-                return (ObservableCollection<CassetteUC>)GetValue(CassetteUCProperty);
-            }
-            set
-            {
-                SetValue(CassetteUCProperty, value);
-            }
+            get => (ObservableCollection<WorkItem>)GetValue(WorkItemsProperty);
+            set => SetValue(WorkItemsProperty, value);
         }
+
+        public ObservableCollection<CassetteUC> CassetteUC
+        { get => cassetteUC; set => SetValue(ref cassetteUC, value); }
+
+        public ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
+
         public void AddButton(int Rows, List<int> RowsDisable)
         {
             try
@@ -119,19 +138,57 @@ namespace WLS3200Gen2.UserControls
                             break;
                         }
                     }
+
+                    CassetteUC add_CassetteUC;
+
                     if (IsDisable == true)
                     {
-                        CassetteUC.Add(new CassetteUC(false, (i + 1).ToString()));
+                        add_CassetteUC = new CassetteUC(false, (i + 1).ToString());
                     }
                     else
                     {
-                        CassetteUC.Add(new CassetteUC(true, (i + 1).ToString()));
+                        add_CassetteUC = new CassetteUC(true, (i + 1).ToString());
                     }
+                    add_CassetteUC.WorkItemChange += (workItem) =>
+                    {
+                        WorkItemChange(workItem);
+                    };
+                    CassetteUC.Add(add_CassetteUC);
+
+
+
+                }
+                if (WorkItems == null)
+                {
+                    WorkItems = new ObservableCollection<WorkItem>();
+                }
+                WorkItems.Clear(); // 清空原有的集合
+                foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
+                {
+                    WorkItems.Add(workStatus);
                 }
             }
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        private void WorkItemChange(WorkItem workItem)
+        {
+            try
+            {
+                WorkItems.Clear(); // 清空原有的集合
+                foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
+                {
+                    WorkItems.Add(workStatus);
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 

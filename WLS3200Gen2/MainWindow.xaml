@@ -170,7 +170,7 @@
 
                         </Grid>
                         <GroupBox Margin="2" Grid.Row="1" Header="Production options">
-                            <UserControlUC:ProductionUC AutoSaveIsChecked="{Binding AutoSaveIsChecked}" CircleIsChecked="{Binding CircleIsChecked}" DieInsideAllChecked="{Binding DieInsideAllChecked}" AddButtonAction="{Binding AddButtonAction}" CassetteUC ="{Binding CassetteUC}" />
+                            <UserControlUC:ProductionUC AutoSaveIsChecked="{Binding AutoSaveIsChecked}" CircleIsChecked="{Binding CircleIsChecked}" DieInsideAllChecked="{Binding DieInsideAllChecked}" AddButtonAction="{Binding AddButtonAction}" WorkItems="{Binding WorkItems}" />
                         </GroupBox>
                         <TabControl materialDesign:ColorZoneAssist.Background="{DynamicResource MaterialDesignCardBackground}"
                                     materialDesign:ColorZoneAssist.Foreground="{DynamicResource PrimaryHueMidBrush}"  
@@ -183,7 +183,7 @@
 
                             </TabItem>
                             <TabItem Header="WorkholderUI"  Visibility="Visible"   >
-                                <UserControlUC:WorkholderUC TableX="{Binding TableX }" TableY="{Binding TableY }" HorizontalAlignment="Left"/>
+                                <UserControlUC:WorkholderUC TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left"/>
                             </TabItem>
                         </TabControl>
                     </Grid>

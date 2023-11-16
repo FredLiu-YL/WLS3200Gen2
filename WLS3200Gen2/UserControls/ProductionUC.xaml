@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model"
              mc:Ignorable="d" 
              x:Name="Production"
              d:DesignHeight="300" d:DesignWidth="800" Loaded="MainGrid_Loaded">
@@ -19,6 +20,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    
     <Grid DataContext="{Binding ElementName=Production}" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.30*" />
@@ -29,7 +31,7 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
                                      Header="Wafer" Style="{StaticResource MaterialDesignGroupBox}">
             <StackPanel Margin="-5" Orientation="Horizontal">
-                <ListBox Name="myListBox"  ItemsSource="{Binding CassetteUC}" >
+                <ListBox   ItemsSource="{Binding CassetteUC}" >
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Margin" Value="0.5"/>

@@ -16,31 +16,45 @@ namespace WLS3200Gen2
     {
         private string logMessage;
         private bool isRunning = false;
-        public Visibility processVisibility =  Visibility.Visible;
+        private bool isRunCommand = false;
+        public Visibility processVisibility = Visibility.Visible;
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
 
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
-    
+
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
             {
-                IsRunning = true;
-                await machine.ProcessRunAsync();
+                if (isRunCommand == false)
+                {
+                    isRunCommand = true;
 
+                    IsRunning = true;
 
-                LogMessage = "123454";
+                    await machine.ProcessRunAsync();
+
+                    LogMessage = "123454";
+
+                    isRunCommand = false;
+                }
+                else
+                {
+                    await machine.ProcessResume();
+                }
+
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.Message);
+                isRunCommand = false;
             }
             finally
             {
-
+               
             }
         });
 
@@ -51,9 +65,10 @@ namespace WLS3200Gen2
             {
 
                 IsRunning = false;
-                ProcessVisibility = Visibility.Hidden;
+                // ProcessVisibility = Visibility.Hidden;
                 await machine.ProcessPause();
 
+                workItems[0].BackGroundBack = Brushes.Red;
             }
             catch (Exception ex)
             {
@@ -62,8 +77,6 @@ namespace WLS3200Gen2
             }
             finally
             {
-
-                CassetteUC[1].Top_Background = Brushes.Black;
             }
         });
         public ICommand ResumeCommand => new RelayCommand(async () =>
@@ -116,7 +129,7 @@ namespace WLS3200Gen2
             bool isDialogResult = (bool)win.ShowDialog();
             if (isDialogResult)
             {
-               // machine.BonderRecipe = MicroBonderRecipes.Load(win.FilePathName);
+                // machine.BonderRecipe = MicroBonderRecipes.Load(win.FilePathName);
             }
         });
         public ICommand SaveRecipeCommand => new RelayCommand(() =>
@@ -127,8 +140,8 @@ namespace WLS3200Gen2
             bool isDialogResult = (bool)win.ShowDialog();
             if (isDialogResult)
             {
-               // machine.BonderRecipe.RecipeID = win.FileName;
-               // machine.BonderRecipe.Save(win.FilePathName);
+                // machine.BonderRecipe.RecipeID = win.FileName;
+                // machine.BonderRecipe.Save(win.FilePathName);
             }
         });
 

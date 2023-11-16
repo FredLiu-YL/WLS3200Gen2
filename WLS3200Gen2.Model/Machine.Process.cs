@@ -13,8 +13,8 @@ namespace WLS3200Gen2.Model
     {
 
         public event Func<MainRecipe> ChangeRecipe;
-        private PauseTokenSource pts  ;
-        private CancellationTokenSource cts  ;
+        private PauseTokenSource pts = new PauseTokenSource();
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         public async Task ProcessRunAsync()
         {
@@ -23,12 +23,12 @@ namespace WLS3200Gen2.Model
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
 
-             
-                   // do something......
+
+                // do something......
                 MainRecipe recipe = ChangeRecipe?.Invoke();
 
 
-                 await   Task.Delay(6000);
+                await Task.Delay(6000);
                 cts.Token.ThrowIfCancellationRequested();
                 await Task.Delay(3000);
                 await pts.Token.WaitWhilePausedAsync(cts.Token);
@@ -44,8 +44,8 @@ namespace WLS3200Gen2.Model
 
                 throw;
             }
-    
-            
+
+
         }
 
         public async Task ProcessPause()
