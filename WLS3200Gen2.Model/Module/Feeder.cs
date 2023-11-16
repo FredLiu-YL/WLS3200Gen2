@@ -41,15 +41,21 @@ namespace WLS3200Gen2.Model.Module
         public async Task Home()
         {
 
+
             await Task.Run(() =>
             {
 
 
             });
 
-        }
 
-        public async Task LoadAsync(InchType inchType)
+        }
+        /// <summary>
+        /// 預載Wafer 到  Macro
+        /// </summary>
+        /// <param name="inchType"></param>
+        /// <returns></returns>
+        public async Task LoadToReadyAsync(InchType inchType)
         {
             try
             {
@@ -89,7 +95,9 @@ namespace WLS3200Gen2.Model.Module
                          int index = waferList.IndexOf(wafer);
                          await LoadWafer(index);
 
-                         await LoadWafer(index);
+                         await WaferStandByToMacro();
+
+
                      }
 
 
@@ -102,6 +110,19 @@ namespace WLS3200Gen2.Model.Module
 
                 throw ex;
             }
+
+        }
+
+        /// <summary>
+        /// 從Macro->Aligner->主設備
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoadAsync()
+        {
+            await WaferMacroToStandBy();
+            await WaferStandByToAligner();
+            tempAligner.Run();
+            await WaferAlignerToStandBy();
 
         }
 
@@ -126,7 +147,7 @@ namespace WLS3200Gen2.Model.Module
 
                 await RobotAxis.MoveToAsync(Setting.MacroPos);
                 Robot.PutBackWafer(ArmStation.Macro);
-                Robot.Armcatch(ArmStation.Macro);
+                Robot.ArmcatchPos(ArmStation.Macro);
                 Robot.VacuumOff();
                 Robot.ArmPutdown();
                 Robot.ArmToRetract(ArmStation.Macro);
@@ -143,6 +164,84 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
+        public async Task WaferMacroToStandBy()
+        {
+            try
+            {
+
+
+                await RobotAxis.MoveToAsync(Setting.MacroPos);
+                Macro.ReleaseWafer();
+                Robot.TakeWafer(ArmStation.Macro);
+                Robot.ArmcatchPos(ArmStation.Macro);
+                Robot.VacuumOn();
+                Robot.ArmLiftup();
+                Robot.ArmToRetract(ArmStation.Macro);
+                Robot.ArmToStandby();
+
+
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
+
+        public async Task WaferStandByToAligner()
+        {
+            try
+            {
+
+
+                await RobotAxis.MoveToAsync(Setting.AlignPos);
+                Robot.PutBackWafer(ArmStation.Align);
+                Robot.ArmcatchPos(ArmStation.Align);
+                Robot.VacuumOff();
+                Robot.ArmPutdown();
+                Robot.ArmToRetract(ArmStation.Align);
+                Robot.ArmToStandby();
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
+        public async Task WaferAlignerToStandBy()
+        {
+            try
+            {
+
+                await RobotAxis.MoveToAsync(Setting.AlignPos);
+
+                Robot.TakeWafer(ArmStation.Align);
+                Robot.ArmcatchPos(ArmStation.Align);
+                Robot.VacuumOn();
+                Robot.ArmLiftup();
+                Robot.ArmToRetract(ArmStation.Align);
+                Robot.ArmToStandby();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
+       
+
+
         public async Task UnLoadAsync()
         {
 

@@ -86,7 +86,7 @@ namespace WLS3200Gen2.Model
         /// </summary>
         void ArmToRetract(ArmStation armPosition);
 
-        void Armcatch(ArmStation armPosition);
+        void ArmcatchPos(ArmStation armPosition);
 
 
     }

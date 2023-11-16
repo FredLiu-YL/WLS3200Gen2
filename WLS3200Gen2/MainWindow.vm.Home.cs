@@ -94,7 +94,7 @@ namespace WLS3200Gen2
             {
                 await machine.ProcessStop();
                 IsRunning = false;
-
+                ProcessVisibility = Visibility.Visible;
 
             }
             catch (Exception ex)

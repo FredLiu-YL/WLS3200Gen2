@@ -8,7 +8,7 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyRobot : IEFEMRobot
     {
-        public void Armcatch(ArmStation armPosition)
+        public void ArmcatchPos(ArmStation armPosition)
         {
             throw new NotImplementedException();
         }
