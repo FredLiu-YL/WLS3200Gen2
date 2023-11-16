@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Interface;
 using YuanliCore.Model.Interface;
 using YuanliCore.Motion;
@@ -12,10 +15,12 @@ namespace WLS3200Gen2.Model.Module
     public class MicroDetection
     {
         private ICamera camera;
-      
-      
-      
-        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes , DigitalOutput[] outputs, DigitalInput[] inputs )
+        private PauseTokenSource pauseToken;
+        private CancellationTokenSource cancelToken;
+
+
+
+        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs)
         {
             this.camera = camera;
             this.Microscope = microscope;
@@ -37,6 +42,17 @@ namespace WLS3200Gen2.Model.Module
         {
 
             await Task.Run(() => { });
+
+        }
+
+
+
+
+        public async Task Run(DetectionRecipe recipe, PauseTokenSource pauseToken, CancellationTokenSource cancellationToken)
+        {
+            this.pauseToken = pauseToken;
+            this.cancelToken = cancellationToken;
+
 
         }
     }

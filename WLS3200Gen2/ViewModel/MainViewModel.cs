@@ -40,12 +40,11 @@ namespace WLS3200Gen2
         {
             isSimulate = true;
 
-           //   machineSetting.Load();
-            machineSetting = new MachineSetting();
-             machine = new Machine(isSimulate, machineSetting);
-             
-            
+            //   machineSetting.Load();
 
+            machineSetting = new MachineSetting();
+
+            machine = new Machine(isSimulate, machineSetting);      
             machine.ChangeRecipe += ChangeRecipe;
 
             Account = UserAccount.Load();
@@ -65,8 +64,8 @@ namespace WLS3200Gen2
             if (e.PropertyName == "Name")
             {
                 var account = sender as Account;
-            //    if (account.Name != "")
-            //        MachineInformation.SetMachineInfo($"使用者登入：{account.Name}  權限：{account.Right}");
+                //    if (account.Name != "")
+                //        MachineInformation.SetMachineInfo($"使用者登入：{account.Name}  權限：{account.Right}");
             }
         }
 

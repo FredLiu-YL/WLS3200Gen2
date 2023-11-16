@@ -60,7 +60,12 @@ namespace WLS3200Gen2
         {
             try
             {
+                //
+                //大部分都會在這裡初始化  有些因為寫法問題必須移動到MainViewModel.cs
+                //
+                LogMessage = "Initial ．．．";
                 machine.Initial();
+                LogMessage = "Home ．．．";
                 machine.Home();
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
@@ -68,7 +73,9 @@ namespace WLS3200Gen2
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
-
+               
+                
+                LogMessage = "Equipment Ready．．．";
                 isRefresh = true;
                 taskRefresh1 = Task.Run(RefreshPos);
             }

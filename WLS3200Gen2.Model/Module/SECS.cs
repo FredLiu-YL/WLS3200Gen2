@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WLS3200Gen2.Model.Recipe
+namespace WLS3200Gen2.Model.Module
 {
-    public  class MainRecipe
+    public  class SECS
     {
-        public  DetectionRecipe DetectRecipe { get; set; }
-
     }
 }

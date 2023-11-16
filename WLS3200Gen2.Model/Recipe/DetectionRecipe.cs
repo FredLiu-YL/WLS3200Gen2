@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace WLS3200Gen2.Model.Recipe
 {
-    public  class MainRecipe
+   public class DetectionRecipe
     {
-        public  DetectionRecipe DetectRecipe { get; set; }
-
     }
 }

@@ -11,8 +11,9 @@ namespace WLS3200Gen2.Model.Recipe
     {
 
         public InchType Inch { get; set; }
+        public bool AutoSave { get; set; }
 
-
+        public bool RemoteDefectPoint { get; set; }
 
     }
 }

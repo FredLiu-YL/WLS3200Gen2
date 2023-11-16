@@ -17,6 +17,10 @@ namespace WLS3200Gen2.Model.Module
         private ILoadPort tempLoadPort;
         private IAligner tempAligner;
 
+        private PauseTokenSource pauseToken = new PauseTokenSource();
+        private CancellationTokenSource cancelToken = new CancellationTokenSource();
+
+
 
         public Feeder(IEFEMRobot robot, ILoadPort loadPort, IMacro macro, IAligner aligner, Axis axis)
         {
@@ -55,10 +59,13 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         /// <param name="inchType"></param>
         /// <returns></returns>
-        public async Task LoadToReadyAsync(InchType inchType)
+        public async Task LoadToReadyAsync(InchType inchType, PauseTokenSource pauseToken, CancellationTokenSource cancellationToken)
         {
             try
             {
+                this.pauseToken = pauseToken;
+                this.cancelToken = cancellationToken;
+
                 //判斷 8吋 或 12吋 啟用不同的硬體裝置
                 switch (inchType)
                 {
@@ -239,7 +246,7 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
-       
+
 
 
         public async Task UnLoadAsync()
