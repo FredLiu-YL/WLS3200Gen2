@@ -10,7 +10,7 @@
     xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model"
     xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls"        
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-        xmlns:command="http://www.galasoft.ch/mvvmlight" 
+     xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
     xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model"
@@ -59,6 +59,8 @@
 
         </i:Interaction.Triggers>
         <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
+     
+        
         <TabControl  VerticalContentAlignment="Top"
                      materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"  
                      Style="{StaticResource MaterialDesignNavigationRailTabControl}"
@@ -100,6 +102,35 @@
                         <logger:LoggerUC  Grid.Row="1"  Message="{Binding LogMessage}" />
                     </Grid>
                     <Grid  Grid.Column="1">
+                        <Grid.Resources>
+                            <Style TargetType="TabItem">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TabItem">
+                                            <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Black" Background="{TemplateBinding Background}">
+                                                <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True">
+                                                    <ContentPresenter.Resources>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="FontSize" Value="6"/>
+                                                            <!-- Set other TextBlock properties as needed -->
+                                                        </Style>
+                                                    </ContentPresenter.Resources>
+                                                </ContentPresenter>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Border" Property="BorderBrush" Value="Transparent"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Border" Property="Background" Value="#F0F0F0"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Grid.Resources>
+
                         <Grid.RowDefinitions>
                             <RowDefinition Height="0.07*"/>
                             <RowDefinition Height="0.55*"/>
@@ -172,10 +203,9 @@
                         <GroupBox Margin="2" Grid.Row="1" Header="Production options">
                             <UserControlUC:ProductionUC AutoSaveIsChecked="{Binding AutoSaveIsChecked}" CircleIsChecked="{Binding CircleIsChecked}" DieInsideAllChecked="{Binding DieInsideAllChecked}" AddButtonAction="{Binding AddButtonAction}" WorkItems="{Binding WorkItems}" />
                         </GroupBox>
-                        <TabControl materialDesign:ColorZoneAssist.Background="{DynamicResource MaterialDesignCardBackground}"
-                                    materialDesign:ColorZoneAssist.Foreground="{DynamicResource PrimaryHueMidBrush}"  
-                                    materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="2"
-                                    Style="{StaticResource MaterialDesignFilledTabControl}"
+                        
+                        <TabControl  Grid.Row="2"
+                            
                                     SelectedIndex="{Binding TabControlSelectedIndex}"
                                     Visibility="Visible"    
                                     >

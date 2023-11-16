@@ -12,11 +12,18 @@ namespace WLS3200Gen2.Model
     public partial class Machine
     {
 
-        public event Func<MainRecipe> ChangeRecipe;
         private PauseTokenSource pts = new PauseTokenSource();
         private CancellationTokenSource cts = new CancellationTokenSource();
 
-        public async Task ProcessRunAsync()
+
+
+
+        /// <summary>
+        /// 需要切換Recipe的委派  ，不需要不用實作
+        /// </summary>
+        public event Func<MainRecipe> ChangeRecipe;
+
+        public async Task ProcessRunAsync(ProcessSetting processSetting)
         {
             try
             {
@@ -24,8 +31,15 @@ namespace WLS3200Gen2.Model
                 cts = new CancellationTokenSource();
 
 
-                // do something......
+                await Feeder.LoadToReadyAsync(processSetting.Inch);
+
+
                 MainRecipe recipe = ChangeRecipe?.Invoke();
+
+
+
+
+
 
 
                 await Task.Delay(6000);

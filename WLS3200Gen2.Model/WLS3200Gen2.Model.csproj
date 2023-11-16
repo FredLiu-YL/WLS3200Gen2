@@ -101,6 +101,7 @@
     <Compile Include="Recipe\Cassette.cs" />
     <Compile Include="Recipe\Die.cs" />
     <Compile Include="Recipe\MainRecipe.cs" />
+    <Compile Include="Recipe\ProcessSetting.cs" />
     <Compile Include="Recipe\Wafer.cs" />
   </ItemGroup>
   <ItemGroup>

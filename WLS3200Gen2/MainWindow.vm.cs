@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
+using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Account;
 using YuanliCore.Model.LoadPort;
 using YuanliCore.Motion;
@@ -33,32 +34,26 @@ namespace WLS3200Gen2
 
         private ObservableCollection<CassetteUC> cassetteUC;
 
-        private ObservableCollection<WorkItem> workItems;
-
-        private Visibility informationUIVisibility, workholderUCVisibility;
-
-        private int tabControlSelectedIndex;
+   
 
         private bool isRefresh;
 
+   
         public ObservableCollection<CassetteUC> CassetteUC
         {
             get => cassetteUC;
             set { SetValue(ref cassetteUC, value); }
         }
         public ICommand AddButtonAction { get; set; }
-        public ObservableCollection<WorkItem> WorkItems
-        { get => workItems; set => SetValue(ref workItems, value); }
+     
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
         public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
         public double TablePosY { get => tablePosY; set => SetValue(ref tablePosY, value); }
         public string Version { get => version; set => SetValue(ref version, value); }
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
-        public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
-        public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
-        public int TabControlSelectedIndex { get => tabControlSelectedIndex; set => SetValue(ref tabControlSelectedIndex, value); }
-
+      
+     
 
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>

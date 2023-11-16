@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,21 +9,38 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WLS3200Gen2.Model.Recipe;
+using YuanliCore.Model.LoadPort;
 using YuanliCore.UserControls;
 
 namespace WLS3200Gen2
 {
     public partial class MainViewModel
     {
+        private ObservableCollection<WorkItem> workItems = new ObservableCollection<WorkItem>();
+    
         private string logMessage;
         private bool isRunning = false;
-        private bool isRunCommand = false;
-        public Visibility processVisibility = Visibility.Visible;
+        private bool isRunCommand = false; 
+        private ProcessSetting processSetting = new ProcessSetting();
+
+        private Visibility informationUIVisibility, workholderUCVisibility;
+
+        private int tabControlSelectedIndex;
+   
+
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
-
+        public ObservableCollection<WorkItem> WorkItems { get => workItems; set => SetValue(ref workItems, value); }
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
+        public ProcessSetting ProcessSetting { get => processSetting; set => SetValue(ref processSetting, value); }
+        public Visibility processVisibility = Visibility.Visible;
+        public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
+        public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
+        public int TabControlSelectedIndex { get => tabControlSelectedIndex; set => SetValue(ref tabControlSelectedIndex, value); }
+
+
 
         public ICommand RunCommand => new RelayCommand(async () =>
         {
@@ -34,7 +52,7 @@ namespace WLS3200Gen2
 
                     IsRunning = true;
 
-                    await machine.ProcessRunAsync();
+                    await machine.ProcessRunAsync(ProcessSetting);
 
                     LogMessage = "123454";
 
