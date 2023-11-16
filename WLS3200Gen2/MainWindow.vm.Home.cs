@@ -16,6 +16,7 @@ namespace WLS3200Gen2
     {
         private string logMessage;
         private bool isRunning = false;
+        private bool isRunCommand = false;
         public Visibility processVisibility = Visibility.Visible;
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
@@ -27,22 +28,33 @@ namespace WLS3200Gen2
         {
             try
             {
-                IsRunning = true;
+                if (isRunCommand == false)
+                {
+                    isRunCommand = true;
 
+                    IsRunning = true;
 
-                await machine.ProcessRunAsync();
+                    await machine.ProcessRunAsync();
 
+                    LogMessage = "123454";
 
-                LogMessage = "123454";
+                    isRunCommand = false;
+                }
+                else
+                {
+                    await machine.ProcessResume();
+                }
+
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.Message);
+                isRunCommand = false;
             }
             finally
             {
-
+               
             }
         });
 
@@ -53,7 +65,7 @@ namespace WLS3200Gen2
             {
 
                 IsRunning = false;
-                ProcessVisibility = Visibility.Hidden;
+                // ProcessVisibility = Visibility.Hidden;
                 await machine.ProcessPause();
 
                 workItems[0].BackGroundBack = Brushes.Red;
