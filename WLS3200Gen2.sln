@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore.Model", "YuanliC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliApplication", "YuanliCore\YuanliApplication\YuanliApplication.csproj", "{EC6CCF0A-3F6E-472E-85E7-69CDFE79B062}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore", "YuanliCore\YuanliCore\YuanliCore.csproj", "{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore.CogVision", "YuanliCore\YuanliCore.CogVision\YuanliCore.CogVision.csproj", "{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

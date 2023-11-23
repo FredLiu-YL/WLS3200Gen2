@@ -138,7 +138,7 @@ namespace WLS3200Gen2
 
             }
         });
-
+   
         public ICommand ReadRecipeCommand => new RelayCommand(() =>
         {
             FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", "MainRecipe");

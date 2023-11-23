@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Module;
 using YuanliCore.Interface;
+using YuanliCore.Model.Communication;
 using YuanliCore.Model.Interface;
 
 namespace WLS3200Gen2.Model
@@ -21,7 +22,7 @@ namespace WLS3200Gen2.Model
         private IMicroscope microscope;
         private IMacro macro;
         private MachineSetting machineSetting;
-
+        private ICIM cim;
         private bool isSimulate;
 
 

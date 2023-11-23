@@ -57,10 +57,10 @@ namespace WLS3200Gen2.Model
                         Task taskLoad = Feeder.LoadToReadyAsync(processSetting.Inch, pts, cts);
 
                         //執行主設備動作
-                        await MicroDetection.Run(recipe.DetectRecipe, pts, cts);
+                        await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
 
 
-                        await Task.Delay(6000);
+                        await Task.Delay(3000);
                         cts.Token.ThrowIfCancellationRequested();
                         await pts.Token.WaitWhilePausedAsync(cts.Token);
 

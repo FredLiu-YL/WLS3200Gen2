@@ -175,6 +175,10 @@
       <Project>{ec6ccf0a-3f6e-472e-85e7-69cdfe79b062}</Project>
       <Name>YuanliApplication</Name>
     </ProjectReference>
+    <ProjectReference Include="..\YuanliCore\YuanliCore.CogVision\YuanliCore.CogVision.csproj">
+      <Project>{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}</Project>
+      <Name>YuanliCore.CogVision</Name>
+    </ProjectReference>
     <ProjectReference Include="..\YuanliCore\YuanliCore.Model\YuanliCore.Model.csproj">
       <Project>{14946968-1da0-4f66-abd0-10d45d580e00}</Project>
       <Name>YuanliCore.Model</Name>
