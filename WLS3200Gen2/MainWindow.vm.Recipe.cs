@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using YuanliCore.ImageProcess.Match;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2
 {
@@ -15,21 +17,29 @@ namespace WLS3200Gen2
         private CogMatcher matcher = new CogMatcher(); //使用Vision pro 實體
         private PatmaxParams matchParam = new PatmaxParams(0);
 
-     
-       
 
+        private BitmapSource locateSampleImage1;
+        private BitmapSource locateSampleImage2;
+        private BitmapSource locateSampleImage3;
+
+      
+
+        public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
+        public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
+        public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
+        
 
         public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
         {
             try
             {
 
-              /*  matcher.RunParams = matchParam;
-                matcher.EditParameter(Image);
+                matcher.RunParams = matchParam;
+                matcher.EditParameter(MainImage);
 
                 matchParam = (PatmaxParams)matcher.RunParams;
                 if (matchParam.PatternImage != null)
-                    SampleImage = matchParam.PatternImage.ToBitmapSource();*/
+                    LocateSampleImage1 = matchParam.PatternImage.ToBitmapSource();
 
                 //  UpdateRecipe();
 

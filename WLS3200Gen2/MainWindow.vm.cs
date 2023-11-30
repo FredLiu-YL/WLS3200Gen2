@@ -21,20 +21,13 @@ namespace WLS3200Gen2
     public partial class MainViewModel
     {
         private Task taskRefresh1 = Task.CompletedTask;
-
         private UserAccount account;
-
         private string version;
-
         private Axis tableX;
-
         private Axis tableY;
-
         private double tablePosX, tablePosY;
-
-        private ObservableCollection<CassetteUC> cassetteUC;
-
-   
+        private ObservableCollection<CassetteUC> cassetteUC =new ObservableCollection<CassetteUC>();
+        private WriteableBitmap mainImage;
 
         private bool isRefresh;
 
@@ -52,8 +45,8 @@ namespace WLS3200Gen2
         public double TablePosY { get => tablePosY; set => SetValue(ref tablePosY, value); }
         public string Version { get => version; set => SetValue(ref version, value); }
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
-      
-     
+
+        public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
 
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
