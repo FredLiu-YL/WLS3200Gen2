@@ -13,7 +13,7 @@
      xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
-    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model"
+    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model" xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model" xmlns:model="clr-namespace:YuanliCore.Model"
     mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -241,35 +241,199 @@
                         <RowDefinition  Height="0.4*"/>
                     </Grid.RowDefinitions>
                     <views:VirtualCanvas Grid.Row="0" />
-                    <Grid Grid.Column="1" >
-                       
+                    <Grid Grid.Column="1" Grid.RowSpan="2" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="4.5*"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
                         <Grid  Grid.Row="0">
                             <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1" >
 
                                 <TabControl>
 
-                                    <TabItem Header="Load Wafer">
+                                    <TabItem  >
+                                        <!-- 在 TabItem 的 Header 中添加一個 StackPanel，包含 TextBlock 和 Image -->
+                                        <TabItem.Header   >
+                                            <Grid Margin="-5" Width="300"  >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="3*" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <model:SignalUC Width="30" Height="30" IsSignal="False" />
+                                                <TextBlock Text="Load Wafer" Grid.Column="1" FontSize="26" />
+                                                <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
+                                            </Grid>
+                                        </TabItem.Header>
+                                        <!-- TabItem 的內容 -->
 
-                                    </TabItem>
-
-                                    <TabItem  Header="Locate">
-                                        <Grid   Grid.Column="1">
+                                        <Grid>
                                             <Grid.RowDefinitions>
-                                              
-                                                <RowDefinition/>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <Border  Background="{DynamicResource MaterialDesignBackground}"/>
+                                            <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" >
+                                                <GroupBox.Header>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Label  Content="Load Port"  />
+                                                    </StackPanel>
+                                                   
+                                                </GroupBox.Header>
+                                                <Grid >
+                                                    <Grid Margin="-5">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding YourDataCollection}">
+                                                            <ListBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <!-- 這裡放置你的 UserControl -->
+                                                                    <loadport:CassetteUC />
+                                                                </DataTemplate>
+                                                            </ListBox.ItemTemplate>
+                                                        </ListBox>
+                                                        <ListBox Grid.Column="1" Margin="0" ItemsSource="{Binding YourDataCollection}">
+                                                            <ListBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <!-- 這裡放置你的 UserControl -->
+                                                                    <loadport:CassetteUC />
+                                                                </DataTemplate>
+                                                            </ListBox.ItemTemplate>
+                                                        </ListBox>
+                                                    </Grid>
+                                                </Grid>
+                                               
+                                            </GroupBox>
+                                            <GroupBox Header="Robot" Grid.Row="0" Grid.Column="1">
+                                                <Grid >
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <StackPanel  Grid.Column="0" Orientation="Horizontal">
+                                                        <TextBlock Margin="2" Text="LoadPort:" FontSize="20" />
+                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="0"   FontSize="20"  />
+                                                    </StackPanel>
+                                                    <StackPanel  Grid.Column="1" Orientation="Horizontal">
+                                                        <TextBlock Margin="2" Text="Wafer:" FontSize="20" />
+                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="21"   FontSize="20"  />
+                                                    </StackPanel>
+                                                    <Button Grid.Column="2" Content="Load" />
 
+                                                    <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal">
+                                                        <TextBlock Margin="2" Text="LoadPort:" FontSize="20" />
+                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="0"   FontSize="20"  />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="1"   Grid.Column="1" Orientation="Horizontal">
+                                                        <TextBlock Margin="2" Text="Wafer:" FontSize="20" />
+                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="21"   FontSize="20"  />
+                                                    </StackPanel>
+                                                    <Button Grid.Row="1"  Grid.Column="2" Content="UnLoad" />
+
+                                                    <StackPanel Grid.Row="2"   Grid.Column="0" Orientation="Horizontal">
+                                                        <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <model:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                        <model:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="2"   Grid.Column="1" Orientation="Horizontal">
+                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
+                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="2"   Grid.Column="2" Orientation="Horizontal">
+                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
+                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
+                                                    </StackPanel>
+                                                </Grid>
+                                                
+                                            </GroupBox>
+                                            
+                                            <GroupBox Header="Aligner"  Grid.Row="1" Grid.Column="1">
+                                                <Grid Margin="-5" >
+                                                    <Grid >
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="0"  Grid.Column="1"  />
+                                                        <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="1"  Grid.Column="1"  />
+                                                    </Grid>
+                                                </Grid>
+                                            </GroupBox>
+                                        </Grid>
+                                    </TabItem>
+
+                                    <TabItem >
+                                        <TabItem.Header>
+                                            <Grid Margin="-5" Width="300"  >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="3*" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <model:SignalUC Width="30" Height="30" IsSignal="False" />
+                                                <TextBlock Text="Locate" Grid.Column="1" FontSize="26" />
+                                                <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
+                                            </Grid>
+                                        </TabItem.Header>
+                                        <Grid   Grid.Column="1">
+                                      
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border  Background="{DynamicResource MaterialDesignBackground}"/>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" />
+                                            </Grid>
 
                                             <StackPanel Grid.Column="1">
 
                                                 <Expander   HorizontalAlignment="Stretch"  Header="Locate Pattern">
                                                     <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                        <UserControlUC:LocateUC />
+                                                        <Grid>
+                                                            <Grid.RowDefinitions >
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                            </Grid.RowDefinitions>
+                                                                   <UserControlUC:LocateUC />
+                                                            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
+                                                                <StackPanel Orientation="Horizontal" >
+                                                                    <Button Margin="2"  Content="Locate Run" />
+                                                                    <Button Margin="2" Content="Locate Run" />
+                                                                    <Button Margin="2" Content="Locate Run" />
+                                                                </StackPanel>
+                                                            
+                                                            </Border>
+                                                        </Grid>
+                                                 
 
                                                     </StackPanel>
                                                 </Expander>
@@ -332,130 +496,131 @@
                           
                         </Grid>
 
-                      
+                        <Grid  Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="1.3*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <StackPanel Grid.Column="3" Grid.RowSpan="3">
+                                    <Button Margin="2" Content="High"  Height="50" />
+                                    <Button Margin="2" Content="Low"  Height="50"  />
+                                    <Button Margin="2" Content="Relative"  Height="50" />
+
+                                </StackPanel>
+                                <TextBox Grid.Row="1"  Grid.Column="1" Text="13475.6" FontSize="18" VerticalAlignment="Center" />
+                                <Button Grid.Column="0" Grid.Row="1"   Width="60"  Height="60"  >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowLeftBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                                <Button Grid.Column="1" Grid.Row="0"   Width="60"  Height="60"  >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y-"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="2" Grid.Row="1"   Width="60"  Height="60"  >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0"  Width="50"  Height="50"  Kind="ArrowRightBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="1" Grid.Row="2"   Width="60"  Height="60"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0"  Width="50"  Height="50" Kind="ArrowDownBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="0" Grid.Row="0"   Width="60"  Height="60" >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0"   Width="50"  Height="50"  Kind="ArrowTopLeftBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="2" Grid.Row="0"  Width="60"  Height="60"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0"  Width="50"  Height="50"  Kind="ArrowTopRightBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="2" Grid.Row="2"  Width="60"  Height="60"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowBottomRightBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Grid.Column="0" Grid.Row="2"  Width="60"  Height="60"   >
+                                    <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowBottomLeftBold" />
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewMouseDown">
+                                            <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="PreviewMouseUp">
+                                            <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                    <Grid Grid.Row="1">
+                    <Grid Grid.Row="1" Grid.Column="0">
                         <GroupBox  FontSize="16"  Header="BXFM"  >
                             <microscope:BXFMUC  Margin="-5"/>
                         </GroupBox>
 
 
                     </Grid>
-                    <Grid Grid.Column="1"  Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="1.3*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <StackPanel Grid.Column="3" Grid.RowSpan="3">
-                                <Button Margin="2" Content="High"  Height="50" />
-                                <Button Margin="2" Content="Low"  Height="50"  />
-                                <Button Margin="2" Content="Relative"  Height="50" />
-
-                            </StackPanel>
-                            <TextBox Grid.Row="1"  Grid.Column="1" Text="123475.12" FontSize="20" VerticalAlignment="Center" />
-                            <Button Grid.Column="0" Grid.Row="1"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowLeftBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X-"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="X-"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-
-                            <Button Grid.Column="1" Grid.Row="0"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowUpBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y-"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y-"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Button Grid.Column="2" Grid.Row="1"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowRightBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction  Command="{Binding TableMoveCommand}"  CommandParameter="X+"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Button Grid.Column="1" Grid.Row="2"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowDownBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Button Grid.Column="0" Grid.Row="0"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowTopLeftBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Button Grid.Column="2" Grid.Row="0"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowTopRightBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Button Grid.Column="2" Grid.Row="2"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowBottomRightBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                            <Button Grid.Column="0" Grid.Row="2"  Width="90"  Height="90"   >
-                                <materialDesign:PackIcon Margin="-10,0,0,0" Width="80"  Height="80"  Kind="ArrowBottomLeftBold" />
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="PreviewMouseDown">
-                                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="PreviewMouseUp">
-                                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Y+"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                        </Grid>
-                    </Grid>
+            
                 </Grid>
             </TabItem>
 
