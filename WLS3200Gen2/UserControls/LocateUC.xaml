@@ -54,7 +54,7 @@
                 <Grid Margin="-3,0,-3,-3">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.1*" />
-                        <RowDefinition  Height="0.5*" />
+                        <RowDefinition  Height="0.3*" />
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <ListBox x:Name="RadioButtonGroupChoiceChipPrimaryOutline" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
@@ -67,6 +67,9 @@
                             <ColumnDefinition  Width="0.7*"/>
                             <ColumnDefinition  Width="0.7*"/>
                             <ColumnDefinition  Width="0.5*"/>
+                            <ColumnDefinition  Width="0.5*"/>
+                            <ColumnDefinition  Width="0.5*"/>
+                            <ColumnDefinition  Width="0.5*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -74,26 +77,41 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Grab " Grid.Row="0" Grid.Column="0" FontSize="24"/>
-                        <TextBlock Text="PosX" Grid.Row="0" Grid.Column="1" FontSize="24"/>
-                        <TextBlock Text="PosY" Grid.Row="0" Grid.Column="2" FontSize="24"/>
+                        <TextBlock Text="Grab " Grid.Row="0" Grid.Column="0" FontSize="20"/>
+                        <TextBlock Text="PosX" Grid.Row="0" Grid.Column="1" FontSize="20"/>
+                        <TextBlock Text="PosY" Grid.Row="0" Grid.Column="2" FontSize="20"/>
 
-                        <TextBlock Text="1" Grid.Row="1" Grid.Column="0" FontSize="24"/>
-                        <TextBlock Text="2" Grid.Row="2" Grid.Column="0" FontSize="24"/>
-                        <TextBlock Text="3" Grid.Row="3" Grid.Column="0" FontSize="24"/>
+                        <TextBlock Text="1" Grid.Row="1" Grid.Column="0" FontSize="20"/>
+                        <TextBlock Text="2" Grid.Row="2" Grid.Column="0" FontSize="20"/>
+                        <TextBlock Text="3" Grid.Row="3" Grid.Column="0" FontSize="20"/>
 
 
-                        <TextBox Text="103223.5" Grid.Row="1" Grid.Column="1" FontSize="20"/>
-                        <TextBox Text="17078.5" Grid.Row="2" Grid.Column="1" FontSize="20"/>
-                        <TextBox Text="7881" Grid.Row="3" Grid.Column="1" FontSize="20"/>
+                        <TextBox Text="103223.5" Grid.Row="1" Grid.Column="1" FontSize="16"/>
+                        <TextBox Text="17078.5" Grid.Row="2" Grid.Column="1" FontSize="16"/>
+                        <TextBox Text="7881" Grid.Row="3" Grid.Column="1" FontSize="16"/>
 
-                        <TextBox Text="1123457" Grid.Row="1" Grid.Column="2" FontSize="20"/>
-                        <TextBox Text="903423.5" Grid.Row="2" Grid.Column="2" FontSize="20"/>
-                        <TextBox Text="7881" Grid.Row="3" Grid.Column="2" FontSize="20"/>
+                        <TextBox Text="1123457" Grid.Row="1" Grid.Column="2" FontSize="16"/>
+                        <TextBox Text="903423.5" Grid.Row="2" Grid.Column="2" FontSize="16"/>
+                        <TextBox Text="7881" Grid.Row="3" Grid.Column="2" FontSize="16"/>
 
-                        <Button Content="SET"  FontSize="20" Grid.Row="1" Grid.Column="3"/>
-                        <Button Content="SET"  FontSize="20" Grid.Row="2" Grid.Column="3"/>
-                        <Button Content="SET"  FontSize="20" Grid.Row="3" Grid.Column="3"/>
+                        <Button Content="SET"  FontSize="12" Grid.Row="1" Grid.Column="3"/>
+                        <Button Content="SET"  FontSize="12" Grid.Row="2" Grid.Column="3"/>
+                        <Button Content="SET"  FontSize="12" Grid.Row="3" Grid.Column="3"/>
+
+                        <TextBlock Text="IndexX" Grid.Row="0" Grid.Column="4" FontSize="16"/>
+                        <TextBlock Text="IndexY" Grid.Row="0" Grid.Column="5" FontSize="16"/>
+
+                        <TextBox Text="12" Grid.Row="1" Grid.Column="4" FontSize="16"/>
+                        <TextBox Text="75" Grid.Row="2" Grid.Column="4" FontSize="16"/>
+                        <TextBox Text="81" Grid.Row="3" Grid.Column="4" FontSize="16"/>
+
+                        <TextBox Text="117" Grid.Row="1" Grid.Column="5" FontSize="16"/>
+                        <TextBox Text="905" Grid.Row="2" Grid.Column="5" FontSize="16"/>
+                        <TextBox Text="71" Grid.Row="3" Grid.Column="5" FontSize="16"/>
+
+                        <Button Content="SET"  FontSize="12" Grid.Row="1" Grid.Column="6"/>
+                        <Button Content="SET"  FontSize="12" Grid.Row="2" Grid.Column="6"/>
+                        <Button Content="SET"  FontSize="12" Grid.Row="3" Grid.Column="6"/>
                     </Grid>
                     <TabControl Grid.Row="2" SelectedIndex="{Binding LocateModeIndex }" >
                         <TabItem Header="Edge" Height="10"   >
