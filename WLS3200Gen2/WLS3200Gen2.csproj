@@ -119,6 +119,9 @@
     <Compile Include="UserControls\ProductionUC.xaml.cs">
       <DependentUpon>ProductionUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\ExistNotifyUC.xaml.cs">
+      <DependentUpon>ExistNotifyUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\SignalUC.xaml.cs">
       <DependentUpon>SignalUC.xaml</DependentUpon>
     </Compile>
@@ -144,6 +147,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\WorkholderUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControl\ExistNotifyUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

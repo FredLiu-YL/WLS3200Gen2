@@ -26,19 +26,19 @@ namespace WLS3200Gen2
         private Axis tableX;
         private Axis tableY;
         private double tablePosX, tablePosY;
-        private ObservableCollection<CassetteUC> cassetteUC =new ObservableCollection<CassetteUC>();
+        private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
         private WriteableBitmap mainImage;
 
         private bool isRefresh;
 
-   
+
         public ObservableCollection<CassetteUC> CassetteUC
         {
             get => cassetteUC;
             set { SetValue(ref cassetteUC, value); }
         }
         public ICommand AddButtonAction { get; set; }
-     
+
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
         public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
@@ -66,8 +66,9 @@ namespace WLS3200Gen2
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
-               
-                
+                for (int i = 0; i < 20; i++)
+                    LoadPort1Wafers.Add(true);
+
                 LogMessage = "Equipment Ready．．．";
                 isRefresh = true;
                 taskRefresh1 = Task.Run(RefreshPos);

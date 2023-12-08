@@ -10,10 +10,12 @@
     xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model"
     xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls"        
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-     xmlns:command="http://www.galasoft.ch/mvvmlight" 
+    xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
-    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model" xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model" xmlns:model="clr-namespace:YuanliCore.Model"
+    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model" 
+    xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model" 
+    xmlns:model="clr-namespace:YuanliCore.Model" xmlns:mode="clr-namespace:YuanliCore.Mode"
     mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -21,7 +23,7 @@
         Icon= "YuanLi.ico" 
         WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"
         ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"   >
-    <Grid  Background="AliceBlue">
+    <Grid  Background="White">
         <Grid.RowDefinitions>
 
         </Grid.RowDefinitions>
@@ -59,11 +61,14 @@
 
         </i:Interaction.Triggers>
         <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
-
-        <TabControl  VerticalContentAlignment="Top"
+       
+  
+            <TabControl  VerticalContentAlignment="Top"
                      materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"  
-                     Style="{StaticResource MaterialDesignNavigationRailTabControl}"
-                     Grid.ColumnSpan="2">
+                     TabStripPlacement="Left"   
+                     Grid.ColumnSpan="2" >
+                     <!--Style="{StaticResource MaterialDesignNavigationRailTabControl}"-->
+    
             <TabControl.Resources>
                 
                     <Style x:Key="YourTabItemStyle" TargetType="TabItem">
@@ -94,8 +99,9 @@
                 
             </TabControl.Resources>
             <!--首頁-->
-            <TabItem>
-                <TabItem.Header>
+            <TabItem Height="75" >
+                <TabItem.Header >
+                    
                     <StackPanel Width="auto"  Height="auto">
                         <materialDesign:PackIcon   Width="34" Height="34" HorizontalAlignment="Center" Kind="HomeVariant" />
                         <TextBlock HorizontalAlignment="Center" Text="Home" />
@@ -224,7 +230,7 @@
 
             </TabItem>
             <!--料號設定頁-->
-            <TabItem >
+            <TabItem  Height="75"   >
                 <TabItem.Header>
                     <StackPanel Width="auto"   Height="auto">
                         <materialDesign:PackIcon Width="34" Height="34" HorizontalAlignment="Center"  Kind="FileDocumentEdit" />
@@ -290,19 +296,24 @@
                                                             <ColumnDefinition />
                                                             <ColumnDefinition />
                                                         </Grid.ColumnDefinitions>
-                                                        <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding YourDataCollection}">
+                                                        <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
+                                                            <ListBox.ItemContainerStyle>
+                                                                <Style TargetType="ListBoxItem">
+                                                                    <Setter Property="Margin" Value="0.5"/>
+                                                                </Style>
+                                                            </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <!-- 這裡放置你的 UserControl -->
-                                                                    <loadport:CassetteUC />
+                                                                    <mode:ExistNotifyUC/>
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
-                                                        <ListBox Grid.Column="1" Margin="0" ItemsSource="{Binding YourDataCollection}">
+                                                        <ListBox Grid.Column="1" Margin="0" ItemsSource="{Binding LoadPort2Wafers}">
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <!-- 這裡放置你的 UserControl -->
-                                                                    <loadport:CassetteUC />
+                                                                    <mode:ExistNotifyUC/>
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
@@ -624,7 +635,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem   >
+            <TabItem   Height="75" Background="White" >
                 <TabItem.Header>
                     <StackPanel   Width="auto"   Height="auto">
                         <materialDesign:PackIcon  Width="34"   Height="34"  HorizontalAlignment="Center"   Kind="Tools" />
@@ -761,7 +772,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem >
+            <TabItem  Height="75" Background="White" >
                 <TabItem.Header>
                     <StackPanel  Width="auto"  Height="auto">
                         <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="CogOutline" />
@@ -801,7 +812,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem  >
+            <TabItem  Height="75" Background="White" >
                 <TabItem.Header>
                     <StackPanel  Width="auto"  Height="auto">
                         <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="Security" />
@@ -843,7 +854,7 @@
 
 
         </TabControl>
-     
+         
         <Grid HorizontalAlignment="Left" Margin="0,403,0,10" Width="70">
             <StackPanel Grid.Row="1"   Width="auto"  Height="auto">
                 <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
