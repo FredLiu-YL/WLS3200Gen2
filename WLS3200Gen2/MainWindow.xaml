@@ -61,47 +61,47 @@
 
         </i:Interaction.Triggers>
         <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
-       
-  
-            <TabControl  VerticalContentAlignment="Top"
+
+
+        <TabControl  VerticalContentAlignment="Top"
                      materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"  
                      TabStripPlacement="Left"   
                      Grid.ColumnSpan="2" >
-                     <!--Style="{StaticResource MaterialDesignNavigationRailTabControl}"-->
-    
+            <!--Style="{StaticResource MaterialDesignNavigationRailTabControl}"-->
+
             <TabControl.Resources>
-                
-                    <Style x:Key="YourTabItemStyle" TargetType="TabItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="TabItem">
-                                    <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Black" Background="{TemplateBinding Background}">
-                                        <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True">
-                                            <!--<ContentPresenter.Resources>
+
+                <Style x:Key="YourTabItemStyle" TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Black" Background="{TemplateBinding Background}">
+                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" RecognizesAccessKey="True">
+                                        <!--<ContentPresenter.Resources>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="FontSize" Value="6"/>
                                                         </Style>
                                                     </ContentPresenter.Resources>-->
-                                        </ContentPresenter>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="BorderBrush" Value="Transparent"/>
-                                        </Trigger>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="#F0F0F0"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                
+                                    </ContentPresenter>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="Transparent"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="#F0F0F0"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+
             </TabControl.Resources>
             <!--首頁-->
             <TabItem Height="75" >
                 <TabItem.Header >
-                    
+
                     <StackPanel Width="auto"  Height="auto">
                         <materialDesign:PackIcon   Width="34" Height="34" HorizontalAlignment="Center" Kind="HomeVariant" />
                         <TextBlock HorizontalAlignment="Center" Text="Home" />
@@ -135,7 +135,7 @@
                         <logger:LoggerUC  Grid.Row="1"  Message="{Binding LogMessage}" />
                     </Grid>
                     <Grid  Grid.Column="1">
-                    
+
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="0.07*"/>
@@ -175,7 +175,7 @@
                                   Style="{StaticResource MaterialDesignFloatingActionButton}">
                                 <materialDesign:PackIcon  Width="40" Height="40" Kind="Play" />
                             </Button>
-                            
+
                             <!--<Button Grid.Column="1"
                                   materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding IsRunning}"
                                   materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
@@ -213,7 +213,7 @@
                         <TabControl Margin="1" Grid.Row="2"    SelectedIndex="{Binding TabControlSelectedIndex}"  >
                             <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
-                                    
+
                                 </Border>
                             </TabItem>
                             <TabItem Header="WorkholderUI"  Visibility="Visible" Height="10"   >
@@ -221,7 +221,7 @@
                                     <UserControlUC:WorkholderUC TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left"/>
 
                                 </Border>
-                              </TabItem>
+                            </TabItem>
                         </TabControl>
                     </Grid>
                 </Grid>
@@ -239,12 +239,12 @@
                 </TabItem.Header>
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="0.9*"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
-                        <RowDefinition  Height="0.4*"/>
+                        <RowDefinition  Height="0.40*"/>
                     </Grid.RowDefinitions>
                     <views:VirtualCanvas Grid.Row="0" />
                     <Grid Grid.Column="1" Grid.RowSpan="2" >
@@ -257,10 +257,10 @@
 
                                 <TabControl>
 
-                                    <TabItem  >
+                                    <TabItem  Width="250"   >
                                         <!-- 在 TabItem 的 Header 中添加一個 StackPanel，包含 TextBlock 和 Image -->
-                                        <TabItem.Header   >
-                                            <Grid Margin="-5" Width="300"  >
+                                        <TabItem.Header >
+                                            <Grid Margin="-5" Width="240"  >
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
                                                     <ColumnDefinition Width="3*" />
@@ -288,7 +288,7 @@
                                                     <StackPanel Orientation="Horizontal">
                                                         <Label  Content="Load Port"  />
                                                     </StackPanel>
-                                                   
+
                                                 </GroupBox.Header>
                                                 <Grid >
                                                     <Grid Margin="-5">
@@ -319,7 +319,7 @@
                                                         </ListBox>
                                                     </Grid>
                                                 </Grid>
-                                               
+
                                             </GroupBox>
                                             <GroupBox Header="Robot" Grid.Row="0" Grid.Column="1">
                                                 <Grid >
@@ -369,9 +369,9 @@
                                                         <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
                                                     </StackPanel>
                                                 </Grid>
-                                                
+
                                             </GroupBox>
-                                            
+
                                             <GroupBox Header="Aligner"  Grid.Row="1" Grid.Column="1">
                                                 <Grid Margin="-5" >
                                                     <Grid >
@@ -397,92 +397,73 @@
                                         </Grid>
                                     </TabItem>
 
-                                    <TabItem >
+                                    <TabItem Width="250" >
                                         <TabItem.Header>
-                                            <Grid Margin="-5" Width="300"  >
+                                            <Grid Margin="-5" Width="240"  >
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
                                                     <ColumnDefinition Width="3*" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <model:SignalUC Width="30" Height="30" IsSignal="False" />
+                                                <model:SignalUC Width="30" Height="30" IsSignal="True" />
                                                 <TextBlock Text="Locate" Grid.Column="1" FontSize="26" />
                                                 <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
                                             </Grid>
                                         </TabItem.Header>
                                         <Grid   Grid.Column="1">
-                                      
+
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition  Width="1.6*"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <Border  Background="{DynamicResource MaterialDesignBackground}"/>
                                             <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="379*"/>
+                                                    <ColumnDefinition Width="211*"/>
+                                                </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition />
+                                                    <RowDefinition Height="2*" />
                                                     <RowDefinition />
                                                 </Grid.RowDefinitions>
-                                                <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" />
+                                                <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" Grid.ColumnSpan="2" />
                                             </Grid>
 
-                                            <StackPanel Grid.Column="1">
+                                            <Grid Grid.Column="1">
+                                                <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                    <Grid  Height="60" >
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button Margin="5" Content="Load Map" FontSize="24" Height="50" Width="140"/>
+                                                            <Button Content="MapLayout Editor" FontSize="24" Height="50" Width="200"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions >
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <UserControlUC:LocateUC  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" />
+                                                        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
+                                                            <StackPanel Orientation="Horizontal" >
+                                                                <Button Margin="2" Content="Locate Run" />
+                                                                <Button Margin="2" Content="Locate Run" />
+                                                                <Button Margin="2" Content="Locate Run" />
+                                                            </StackPanel>
 
-                                                <Expander   HorizontalAlignment="Stretch"  Header="Locate Pattern">
-                                                    <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                        <Grid>
-                                                            <Grid.RowDefinitions >
-                                                                <RowDefinition />
-                                                                <RowDefinition />
-                                                            </Grid.RowDefinitions>
-                                                                   <UserControlUC:LocateUC />
-                                                            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
-                                                                <StackPanel Orientation="Horizontal" >
-                                                                    <Button Margin="2"  Content="Locate Run" />
-                                                                    <Button Margin="2" Content="Locate Run" />
-                                                                    <Button Margin="2" Content="Locate Run" />
-                                                                </StackPanel>
-                                                            
-                                                            </Border>
-                                                        </Grid>
-                                                 
-
-                                                    </StackPanel>
-                                                </Expander>
-                                                <Border   Style="{StaticResource HorizontalDividerBorder}" />
-                                                <Expander   HorizontalAlignment="Stretch"   Header="Detection Position">
-                                                    <StackPanel   Margin="24,8,24,16"   Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                        <DataGrid  Grid.Row="1" ItemsSource="{Binding CombineCollection}"  CanUserSortColumns="False" IsReadOnly="True" Height="300"
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding CombineCollectionIndex}"   >
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                                                                    <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                            <DataGrid.Columns>
-                                                                <DataGridTextColumn Width="60"  Header="SN" Binding="{Binding SN}" />
-                                                                <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding Col}" />
-                                                                <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding Row}"  />
-
-                                                            </DataGrid.Columns>
+                                                        </Border>
+                                                    </Grid>
 
 
-                                                        </DataGrid>
-                                                    </StackPanel>
-                                                </Expander>
-                                                <Border   Style="{StaticResource HorizontalDividerBorder}" />
-                                                <Expander   HorizontalAlignment="Stretch"  Header="Expander Example 2c">
-                                                    <StackPanel  Margin="24,8,24,16"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                </StackPanel>
 
 
-                                                    </StackPanel>
-                                                </Expander>
-                                            </StackPanel>
+                                            </Grid>
                                         </Grid >
 
 
                                     </TabItem>
 
-                                    <TabItem  Header="Detection">
+                                    <TabItem Width="250" Header="Detection">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="2*"/>
@@ -492,19 +473,71 @@
                                                 <ColumnDefinition Width="1.5*"/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="1"  Orientation="Horizontal"   >
+                                            <StackPanel Grid.Column="1"  Orientation="Vertical"   >
                                                 <Button Margin="5" Content="Load Map" FontSize="24" Height="50" Width="180"/>
                                                 <Button Content="MapLayout Editor" FontSize="24" Height="50" Width="240"/>
+                                                <StackPanel Grid.Column="1">
+
+                                                    <Expander   HorizontalAlignment="Stretch"  Header="Locate Pattern">
+                                                        <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions >
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                </Grid.RowDefinitions>
+                                                                <UserControlUC:LocateUC   MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" />
+                                                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
+                                                                    <StackPanel Orientation="Horizontal" >
+                                                                        <Button Margin="2" Content="Locate Run" />
+                                                                        <Button Margin="2" Content="Locate Run" />
+                                                                        <Button Margin="2" Content="Locate Run" />
+                                                                    </StackPanel>
+
+                                                                </Border>
+                                                            </Grid>
+
+
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Border   Style="{StaticResource HorizontalDividerBorder}" />
+                                                    <Expander   HorizontalAlignment="Stretch"   Header="Detection Position">
+                                                        <StackPanel   Margin="24,8,24,16"   Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                            <DataGrid  Grid.Row="1" ItemsSource="{Binding CombineCollection}"  CanUserSortColumns="False" IsReadOnly="True" Height="300"
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding CombineCollectionIndex}"   >
+                                                                <i:Interaction.Triggers>
+                                                                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                                                        <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                                                                    </i:EventTrigger>
+                                                                </i:Interaction.Triggers>
+                                                                <DataGrid.Columns>
+                                                                    <DataGridTextColumn Width="60"  Header="SN" Binding="{Binding SN}" />
+                                                                    <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding Col}" />
+                                                                    <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding Row}"  />
+
+                                                                </DataGrid.Columns>
+
+
+                                                            </DataGrid>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Border   Style="{StaticResource HorizontalDividerBorder}" />
+                                                    <Expander   HorizontalAlignment="Stretch"  Header="Expander Example 2c">
+                                                        <StackPanel  Margin="24,8,24,16"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+
+
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
                                             </StackPanel>
-                                            <views:VirtualCanvas Grid.Row="0" Width="580" IsShowBar="True" />
+                                            <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" />
                                         </Grid>
 
                                     </TabItem>
                                 </TabControl>
 
                             </Border>
-                      
-                          
+
+
                         </Grid>
 
                         <Grid  Grid.Row="1">
@@ -631,7 +664,7 @@
 
 
                     </Grid>
-            
+
                 </Grid>
             </TabItem>
 
@@ -798,7 +831,7 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <GroupBox Header="Output" Grid.Column="0"  >
-                                  
+
 
                                 </GroupBox>
                                 <GroupBox Header="Input" Grid.Column="1" >
@@ -854,7 +887,7 @@
 
 
         </TabControl>
-         
+
         <Grid HorizontalAlignment="Left" Margin="0,403,0,10" Width="70">
             <StackPanel Grid.Row="1"   Width="auto"  Height="auto">
                 <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />

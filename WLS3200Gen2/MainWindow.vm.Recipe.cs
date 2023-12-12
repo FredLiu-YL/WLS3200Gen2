@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using WLS3200Gen2.UserControls;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 
@@ -23,13 +24,23 @@ namespace WLS3200Gen2
         private BitmapSource locateSampleImage1;
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
-      
+
+        private LocateParam locateParam1;
+        private LocateParam locateParam2;
+        private LocateParam locateParam3;
+
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
         public ObservableCollection<bool> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
         public ObservableCollection<bool> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
+
+        public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
+        public LocateParam LocateParam2 { get => locateParam2; set => SetValue(ref locateParam2, value); }
+        public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
+
+
 
         public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
         {
