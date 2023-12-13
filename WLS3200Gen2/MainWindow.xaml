@@ -306,15 +306,20 @@
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <!-- 這裡放置你的 UserControl -->
-                                                                    <mode:ExistNotifyUC/>
+                                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
                                                         <ListBox Grid.Column="1" Margin="0" ItemsSource="{Binding LoadPort2Wafers}">
+                                                            <ListBox.ItemContainerStyle>
+                                                                <Style TargetType="ListBoxItem">
+                                                                    <Setter Property="Margin" Value="0.5"/>
+                                                                </Style>
+                                                            </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <!-- 這裡放置你的 UserControl -->
-                                                                    <mode:ExistNotifyUC/>
+                                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
@@ -344,7 +349,7 @@
                                                         <TextBlock Margin="2" Text="Wafer:" FontSize="20" />
                                                         <TextBox  Margin="5,0,0,0" Width="40"  Text="21"   FontSize="20"  />
                                                     </StackPanel>
-                                                    <Button Grid.Column="2" Content="Load" />
+                                                    <Button Grid.Column="2" Content="Load" Command="{Binding LoadWafereCommand}"  />
 
                                                     <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal">
                                                         <TextBlock Margin="2" Text="LoadPort:" FontSize="20" />
@@ -369,6 +374,7 @@
                                                         <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
                                                         <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
                                                     </StackPanel>
+                                                
                                                 </Grid>
 
                                             </GroupBox>
@@ -447,12 +453,7 @@
 
                                             <Grid Grid.Column="1">
                                                 <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                    <Grid  Height="60" >
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Button Margin="5" Content="Load Map" FontSize="24" Height="50" Width="140"/>
-                                                            <Button Content="MapLayout Editor" FontSize="24" Height="50" Width="200"/>
-                                                        </StackPanel>
-                                                    </Grid>
+                                                   
                                                     <Grid>
                                                         <Grid.RowDefinitions >
                                                             <RowDefinition />

@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +13,7 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.UserControls;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
+using YuanliCore.Mode;
 
 namespace WLS3200Gen2
 {
@@ -19,8 +22,8 @@ namespace WLS3200Gen2
         private CogMatcher matcher = new CogMatcher(); //使用Vision pro 實體
         private PatmaxParams matchParam = new PatmaxParams(0);
 
-        private ObservableCollection<bool> loadPort1Wafers = new ObservableCollection<bool>();
-        private ObservableCollection<bool> loadPort2Wafers = new ObservableCollection<bool>();
+        private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
+        private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
         private BitmapSource locateSampleImage1;
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
@@ -33,12 +36,27 @@ namespace WLS3200Gen2
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
-        public ObservableCollection<bool> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
-        public ObservableCollection<bool> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
+        public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
+        public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
 
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
         public LocateParam LocateParam2 { get => locateParam2; set => SetValue(ref locateParam2, value); }
         public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
+
+        private ExistStates testStates;
+        public ExistStates TestStates { get => testStates; set => SetValue(ref testStates, value); }
+
+        public ICommand LoadWafereCommand => new RelayCommand<string>(async key =>
+        {
+
+            LoadPort2Wafers.Add(
+                new WaferUIData
+            {
+                WaferStates = ExistStates.Select
+            });
+
+            TestStates = ExistStates.Exist;
+        });
 
 
 
@@ -85,5 +103,26 @@ namespace WLS3200Gen2
             }*/
 
         });
+    }
+
+    public class WaferUIData: INotifyPropertyChanged
+    {
+        public ExistStates WaferStates { get; set; }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return;
+            T oldValue = field;
+            field = value;
+            OnPropertyChanged(propertyName, oldValue, value);
+        }
+
+        protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
+        {
+            // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

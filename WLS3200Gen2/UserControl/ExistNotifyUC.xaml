@@ -3,11 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:YuanliCore.Mode" xmlns:materialDesign="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:local="clr-namespace:YuanliCore.Mode" xmlns:materialDesign="http://metro.mahapps.com/winfx/xaml/controls" xmlns:model="clr-namespace:YuanliCore.Model"
              mc:Ignorable="d" 
+              x:Name="ExistNotify"
              d:DesignHeight="20" d:DesignWidth="40">
- 
-    <Grid>
+
+    <Grid   DataContext="{Binding ElementName=ExistNotify}" >
         <Grid.Resources>
             <ResourceDictionary >
                 <ResourceDictionary.MergedDictionaries>
@@ -18,10 +19,12 @@
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Grey.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
                 </ResourceDictionary.MergedDictionaries>
+                <local:BackColorConver  x:Key="CvrColor" />
             </ResourceDictionary>
+           
         </Grid.Resources>
         <materialDesign:Badged  Badge="3">
-            <Button  Width="Auto" Height="Auto"  Content="VA12345678"  FontSize="8" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+            <Button  Width="Auto" Height="Auto"  Content="VA12345678"  FontSize="8" Background ="{Binding ExistState, Converter={StaticResource CvrColor}}"  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
         </materialDesign:Badged>
     </Grid>
 </UserControl>
