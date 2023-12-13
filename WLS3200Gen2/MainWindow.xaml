@@ -269,6 +269,7 @@
                                                 <model:SignalUC Width="30" Height="30" IsSignal="False" />
                                                 <TextBlock Text="Load Wafer" Grid.Column="1" FontSize="26" />
                                                 <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
+                                                
                                             </Grid>
                                         </TabItem.Header>
                                         <!-- TabItem 的內容 -->
@@ -372,7 +373,7 @@
 
                                             </GroupBox>
 
-                                            <GroupBox Header="Aligner"  Grid.Row="1" Grid.Column="1">
+                                            <GroupBox Header="Aligner"  Grid.Row="2" Grid.Column="0">
                                                 <Grid Margin="-5" >
                                                     <Grid >
                                                         <Grid.RowDefinitions>
@@ -394,6 +395,21 @@
                                                     </Grid>
                                                 </Grid>
                                             </GroupBox>
+                                            <GroupBox Header="MAP" Grid.Row="1" Grid.Column="1"     Grid.RowSpan="2" >
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="0.2*"/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140"/>
+                                                        <Button Content="MapLayout Edit" FontSize="20" Height="50" Width="200"/>
+                                                    </StackPanel>
+                                                    <views:VirtualCanvas Grid.Row="1"  IsShowBar="True"  />
+                                                </Grid>
+                                               
+                                            </GroupBox>
+                                       
                                         </Grid>
                                     </TabItem>
 

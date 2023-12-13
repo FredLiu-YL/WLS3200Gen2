@@ -228,6 +228,12 @@ namespace WLS3200Gen2.UserControls
 
     public class LocateParam
     {
+        public LocateParam(int number)
+        {
+
+            MatchParam = new PatmaxParams(number);
+        }
+
         public Point DesignPosition { get; set; }
         public Point Index { get; set; }
 

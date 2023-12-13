@@ -25,9 +25,9 @@ namespace WLS3200Gen2
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
 
-        private LocateParam locateParam1;
-        private LocateParam locateParam2;
-        private LocateParam locateParam3;
+        private LocateParam locateParam1 = new LocateParam(1);
+        private LocateParam locateParam2 = new LocateParam(2);
+        private LocateParam locateParam3 = new LocateParam(3);
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
