@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:YuanliCore.Model.UserControls" 
-             xmlns:model="clr-namespace:YuanliCore.Model"
+          
+             xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model"
              mc:Ignorable="d" 
               x:Name="RobotUnit"
              d:DesignHeight="450" d:DesignWidth="500">
@@ -118,8 +119,8 @@
                             <Button Margin="2" Grid.Row="0"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" />
                             <Button Margin="2" Grid.Row="1" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" />
                             <Button Margin="2" Grid.Row="1"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" />
-                            <model:SignalUC Grid.Row="0" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="False" />
-                            <model:SignalUC Grid.Row="1" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="False" />
+                            <usercontrols:SignalUC Grid.Row="0" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="False" />
+                            <usercontrols:SignalUC Grid.Row="1" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="False" />
                         </Grid>
                     </Border>
 

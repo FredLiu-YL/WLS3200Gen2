@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.UserControls;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
-using YuanliCore.Mode;
+using YuanliCore.Model.UserControls;
 
 namespace WLS3200Gen2
 {
@@ -108,7 +108,7 @@ namespace WLS3200Gen2
     public class WaferUIData: INotifyPropertyChanged
     {
         public ExistStates WaferStates { get; set; }
-
+        public string SN { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

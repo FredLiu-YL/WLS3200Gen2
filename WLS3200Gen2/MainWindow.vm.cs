@@ -13,8 +13,8 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Account;
-using YuanliCore.Mode;
 using YuanliCore.Model.LoadPort;
+using YuanliCore.Model.UserControls;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2
@@ -68,11 +68,11 @@ namespace WLS3200Gen2
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
                 for (int i = 0; i < 5; i++)
-                    LoadPort1Wafers.Add(new WaferUIData {WaferStates= ExistStates.Exist });
+                    LoadPort1Wafers.Add(new WaferUIData {WaferStates=  ExistStates.Exist,SN=(i+1).ToString() });
                 for (int i = 5; i < 10; i++)
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select });
+                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString() });
                 for (int i = 10; i < 25; i++)
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.None });
+                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString() });
 
                 LogMessage = "Equipment Ready．．．";
                 isRefresh = true;

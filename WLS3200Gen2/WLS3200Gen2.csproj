@@ -113,6 +113,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Recipe\Wafer.cs" />
+    <Compile Include="UserControls\LoadPortUnitUC.xaml.cs">
+      <DependentUpon>LoadPortUnitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LocateUC.xaml.cs">
       <DependentUpon>LocateUC.xaml</DependentUpon>
     </Compile>
@@ -125,9 +128,6 @@
     <Compile Include="UserControls\RobotUnitUC.xaml.cs">
       <DependentUpon>RobotUnitUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\SignalUC.xaml.cs">
-      <DependentUpon>SignalUC.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="App.xaml.cs">
@@ -138,6 +138,10 @@
       <DependentUpon>WorkholderUC.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\LoadPortUnitUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -158,10 +162,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\ExistNotifyUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\SignalUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

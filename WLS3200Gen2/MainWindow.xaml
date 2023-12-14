@@ -15,7 +15,8 @@
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
     xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model" 
     xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model" 
-    xmlns:model="clr-namespace:YuanliCore.Model" xmlns:mode="clr-namespace:YuanliCore.Mode" xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls"
+    xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model" 
+    xmlns:wls3200controls="clr-namespace:YuanliCore.Model.UserControls"
     mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -266,7 +267,7 @@
                                                     <ColumnDefinition Width="3*" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <model:SignalUC Width="30" Height="30" IsSignal="False" />
+                                                <usercontrols:SignalUC Width="30" Height="30" IsSignal="False" />
                                                 <TextBlock Text="Load Wafer" Grid.Column="1" FontSize="26" />
                                                 <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
 
@@ -306,7 +307,7 @@
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <!-- 這裡放置你的 UserControl -->
-                                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                                    <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
@@ -319,7 +320,7 @@
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <!-- 這裡放置你的 UserControl -->
-                                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                                    <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
@@ -363,8 +364,8 @@
 
                                                     <StackPanel Grid.Row="2"   Grid.Column="0" Orientation="Horizontal">
                                                         <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <model:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
-                                                        <model:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                        <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                        <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
                                                     </StackPanel>
                                                     <StackPanel Grid.Row="2"   Grid.Column="1" Orientation="Horizontal">
                                                         <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
@@ -427,7 +428,7 @@
                                                     <ColumnDefinition Width="3*" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <model:SignalUC Width="30" Height="30" IsSignal="True" />
+                                                <usercontrols:SignalUC Width="30" Height="30" IsSignal="True" />
                                                 <TextBlock Text="Locate" Grid.Column="1" FontSize="26" />
                                                 <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
                                             </Grid>
@@ -802,7 +803,7 @@
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <!-- 這裡放置你的 UserControl -->
-                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                    <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>
@@ -834,11 +835,13 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Row="0">
-                        <GroupBox Grid.Column="0" Header="EFEM" FontSize="24" Grid.ColumnSpan="2" >
+                    <Grid Grid.Row="0"  Grid.ColumnSpan="2">
+                        <GroupBox Grid.Column="0" Header="EFEM" FontSize="24"  >
                             <Grid >
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.1*" />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
@@ -848,10 +851,10 @@
                                     <RowDefinition Height="200*"/>
 
                                 </Grid.RowDefinitions>
-                                <usercontrols:RobotUnitUC Grid.RowSpan="2" />
+                                <wls3200controls:RobotUnitUC Grid.RowSpan="2" />
 
 
-                                <GroupBox Grid.Row="2" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                <GroupBox Grid.Row="2" Grid.Column="1" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                      Header="Aligner" Style="{StaticResource MaterialDesignGroupBox}">
@@ -867,143 +870,27 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Button Grid.Row="0"  Content="Aligner1 Run" Height="50"/>
-                                        <Button Grid.Row="1"  Content="Aligner2 Run" Height="50"/>
+                                  
                                         <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
-                                        <Button Grid.Row="3" Content="OCR2 Read" Height="50"/>
+                                         
                                         <TextBox  Grid.Row="2"  Grid.Column="1"/>
                                         <TextBox  Grid.Row="3"  Grid.Column="1"/>
                                     </Grid>
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Header="Load Port" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                <GroupBox Grid.Column="1" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                    <Grid Margin="-5">
-                                        <Grid.ColumnDefinitions >
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition  Width="1.3*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid Grid.Column="1">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-
-                                            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                                                <Label FontSize="18"  Content="Mapping" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" />
-                                            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                                <Label FontSize="18" Content="Pitch:" />
-                                                <TextBox FontSize="18" Width="60" Text="1234" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Row="2" Orientation="Horizontal">
-                                                <Label FontSize="18" Content="speed:" />
-                                                <TextBox FontSize="18" Width="60" Text="1234" />
-                                            </StackPanel>
-                                            <Button Margin="3" Grid.Row="3"  Content="Run" />
-
-                                            <Button Grid.Row="4" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" />
-                                            <Button Grid.Row="5" Margin="2"  Background="Tan" BorderBrush="Tan" Content="UnLoad" />
-                                            <StackPanel Grid.Row="6"  Grid.Column="0" Grid.RowSpan="4" >
-                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Dock" />
-                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door" />
-                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Close Door" />
-                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
-                                            </StackPanel>
-
-                                        </Grid>
-
-                                        <ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
-                                            <ListBox.ItemContainerStyle>
-                                                <Style TargetType="ListBoxItem">
-                                                    <Setter Property="Margin" Value="0"/>
-                                                </Style>
-                                            </ListBox.ItemContainerStyle>
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <!-- 這裡放置你的 UserControl -->
-                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-
-
-                                        <Grid  Grid.Column="2 " >
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-                                            <Border Grid.Row="1" Grid.RowSpan="13" BorderBrush="Black" BorderThickness="1"/>
-                                            <TextBlock FontSize="26"  Text="Status"    Background="Azure" />
-                                            <TextBlock Grid.Row="1" Text="Error Status" />
-                                            <TextBox Grid.Row="2"  />
-
-                                            <TextBlock Grid.Row="3" Text="Device Status" />
-                                            <TextBox Grid.Row="4"  />
-
-                                            <TextBlock Grid.Row="5" Text="Error Code" />
-                                            <TextBox Grid.Row="6"  />
-                                            <StackPanel Grid.Row="7" Orientation="Horizontal">
-                                                <TextBlock   Text="容器狀態" VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Row="8" Orientation="Horizontal">
-                                                <TextBlock   Text="夾爪狀態" VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Row="9" Orientation="Horizontal">
-                                                <TextBlock   Text="門閂狀態" VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Row="10" Orientation="Horizontal">
-                                                <TextBlock   Text="吸附狀態" VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Row="11" Orientation="Horizontal">
-                                                <TextBlock   Text="開門狀態" VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-
-                                            <StackPanel Grid.Row="12" Orientation="Horizontal">
-                                                <TextBlock   Text="晶圓突出" VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            <StackPanel Grid.Row="13" Orientation="Horizontal">
-                                                <TextBlock   Text="Dock       " VerticalAlignment="Center" />
-                                                <model:SignalUC Margin="7,0,0,0" Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                            
-                                        </Grid>
-
-
-                                    </Grid>
+                                    <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1Wafers}" LoadPortWafers="{Binding LoadPort1Wafers}"/>
+                                   
                                 </GroupBox>
-
+                                <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
+                                    <UserControlUC:LoadPortUnitUC Margin="-5" />
+                                
+                                </GroupBox>
                             </Grid>
                         </GroupBox>
 

@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace YuanliCore.Mode
+namespace YuanliCore.Model.UserControls
 {
     /// <summary>
     /// ExistNotifyUC.xaml 的互動邏輯
@@ -34,6 +34,8 @@ namespace YuanliCore.Mode
         public static readonly DependencyProperty ExistStateProperty = DependencyProperty.Register(nameof(ExistState), typeof(ExistStates), typeof(ExistNotifyUC),
                                                                                 new FrameworkPropertyMetadata(ExistStates.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        public static readonly DependencyProperty SNProperty = DependencyProperty.Register(nameof(SN), typeof(string), typeof(ExistNotifyUC),
+                                                                              new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
         public ExistStates ExistState
@@ -42,7 +44,11 @@ namespace YuanliCore.Mode
             set => SetValue(ExistStateProperty, value);
         }
 
-
+        public string SN
+        {
+            get => (string)GetValue(SNProperty);
+            set => SetValue(SNProperty, value);
+        }
 
         public ICommand SelectCommand => new RelayCommand(async () =>
         {

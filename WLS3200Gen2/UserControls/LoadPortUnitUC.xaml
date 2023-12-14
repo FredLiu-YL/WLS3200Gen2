@@ -1,0 +1,151 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.LoadPortUnitUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WLS3200Gen2.UserControls" 
+             xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model" 
+             xmlns:wls3200controls="clr-namespace:YuanliCore.Model.UserControls"
+             mc:Ignorable="d" 
+             x:Name="LoadPortUnit"
+             d:DesignHeight="400" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ResourceDictionary >
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.bluegrey.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+    <Grid   DataContext="{Binding ElementName=LoadPortUnit}" >
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition />
+            <ColumnDefinition Width="1.1*"/>
+            <ColumnDefinition  Width="1.2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Label FontSize="18"  Content="Mapping" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" />
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Label FontSize="18" Content="Pitch:" />
+                <TextBox FontSize="18" Width="60" Text="1234" />
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <Label FontSize="18" Content="speed:" />
+                <TextBox FontSize="18" Width="60" Text="1234" />
+            </StackPanel>
+            <Button Margin="3" Grid.Row="3"  Content="Run" />
+
+            <Button Grid.Row="4" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" />
+            <Button Grid.Row="5" Margin="2"  Background="Tan" BorderBrush="Tan" Content="UnLoad" />
+            <StackPanel Grid.Row="6"  Grid.Column="0" Grid.RowSpan="4" >
+                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Dock" />
+                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door" />
+                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Close Door" />
+                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
+            </StackPanel>
+
+        </Grid>
+
+        <ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPortWafers}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <!-- 這裡放置你的 UserControl -->
+                    <wls3200controls:ExistNotifyUC SN="{Binding SN}" ExistState="{Binding WaferStates}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+
+        <Grid  Grid.Column="2 " >
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="1" Grid.RowSpan="13" BorderBrush="Black" BorderThickness="1"/>
+            <TextBlock FontSize="26"  Text="Status"    Background="Azure" />
+            <TextBlock Grid.Row="1" Text="Error Status" />
+            <TextBox Grid.Row="2"  />
+
+            <TextBlock Grid.Row="3" Text="Device Status" />
+            <TextBox Grid.Row="4"  />
+
+            <TextBlock Grid.Row="5" Text="Error Code" />
+            <TextBox Grid.Row="6"  />
+            <StackPanel Grid.Row="7" Orientation="Horizontal">
+                <TextBlock   Text="容器狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+            <StackPanel Grid.Row="8" Orientation="Horizontal">
+                <TextBlock   Text="夾爪狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+            <StackPanel Grid.Row="9" Orientation="Horizontal">
+                <TextBlock   Text="門閂狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+            <StackPanel Grid.Row="10" Orientation="Horizontal">
+                <TextBlock   Text="吸附狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+            <StackPanel Grid.Row="11" Orientation="Horizontal">
+                <TextBlock   Text="開門狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="12" Orientation="Horizontal">
+                <TextBlock   Text="晶圓突出" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+            <StackPanel Grid.Row="13" Orientation="Horizontal">
+                <TextBlock   Text="Dock       " VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="7,0,0,0" Width="20" Height="20" IsSignal="False" />
+            </StackPanel>
+
+        </Grid>
+
+
+    </Grid>
+</UserControl>
