@@ -70,7 +70,7 @@ namespace WLS3200Gen2.Model
             var dis = motionController.IutputSignals.ToArray();
             var dos = motionController.OutputSignals.ToArray();
 
-            Feeder = new Feeder(robot, loadPort , macro, aligner, axes[2]);
+            Feeder = new Feeder(robot, loadPort, macro, aligner, axes[2]);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
@@ -78,9 +78,11 @@ namespace WLS3200Gen2.Model
         {
             try
             {
-                await Feeder.Home();
-                await MicroDetection.Home();
-
+                Task feedHome = Feeder.Home();
+                await Task.Delay(500); //先暫停500ms 避免判定還沒出現就過了 WaitEFEMonSafe
+                await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
+                Task microHome = MicroDetection.Home();
+                await Task.WhenAll(feedHome, microHome);
             }
             catch (Exception ex)
             {

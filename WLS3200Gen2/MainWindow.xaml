@@ -893,7 +893,7 @@
                                 </GroupBox>
                             </Grid>
                         </GroupBox>
-
+                     
                     </Grid>
                     <Grid Grid.Row="1">
 
@@ -919,7 +919,29 @@
                         </StackPanel>
 
                     </Grid>
+                    <GroupBox Grid.Row="0" Grid.Column="4" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                     Header="Macro" Style="{StaticResource MaterialDesignGroupBox}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            
 
+                            <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
+
+                            <TextBox  Grid.Row="2"  Grid.Column="1"/>
+                            <TextBox  Grid.Row="3"  Grid.Column="1"/>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
 
@@ -950,7 +972,17 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <GroupBox Header="Output" Grid.Column="0">
-
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                    </Grid>
                                 </GroupBox>
                                 <GroupBox Header="Input" Grid.Column="1" >
 

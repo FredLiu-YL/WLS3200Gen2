@@ -10,6 +10,9 @@ using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model.Module
 {
+    /// <summary>
+    /// EFEM 負責整個傳送wafer的任務
+    /// </summary>
     public class Feeder
     {
         private bool isSotMapping;
@@ -42,18 +45,55 @@ namespace WLS3200Gen2.Model.Module
         public Cassette Cassette { get => cassette; }
         public FeederSetting Setting;
 
+        public Task WaitEFEMonSafe = Task.CompletedTask;
         public async Task Home()
         {
+            try
+            {
+                WaitEFEMonSafe = Task.Run(() =>
+              {
+                  Robot.Home();
+
+              });
+
+                await WaitEFEMonSafe;
+
+                Task aligner8Home = Task.Run(() =>
+                {
+                    Aligner8.Home();
+
+                });
+                Task robotAxisHome = RobotAxis.HomeAsync();
 
 
-            await Task.Run(() =>
+                Task aligner12Home = Task.Run(() =>
+                {
+                    Aligner12.Home();
+
+                });
+                Task loadPort8Home = Task.Run(() =>
+                {
+                    LoadPort8.Home();
+
+                });
+                Task loadPort12Home = Task.Run(() =>
+                {
+                    LoadPort12.Home();
+
+                });
+                await Task.WhenAll(aligner8Home, aligner12Home);
+                await Task.WhenAll(loadPort8Home, loadPort12Home, robotAxisHome);
+
+            }
+            catch (Exception ex)
             {
 
-
-            });
-
-
+                throw ex;
+            }
         }
+
+
+
         /// <summary>
         /// 預載Wafer 到  Macro
         /// </summary>
