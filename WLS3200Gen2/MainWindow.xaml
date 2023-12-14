@@ -15,7 +15,7 @@
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
     xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model" 
     xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model" 
-    xmlns:model="clr-namespace:YuanliCore.Model" xmlns:mode="clr-namespace:YuanliCore.Mode"
+    xmlns:model="clr-namespace:YuanliCore.Model" xmlns:mode="clr-namespace:YuanliCore.Mode" xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls"
     mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -269,7 +269,7 @@
                                                 <model:SignalUC Width="30" Height="30" IsSignal="False" />
                                                 <TextBlock Text="Load Wafer" Grid.Column="1" FontSize="26" />
                                                 <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
-                                                
+
                                             </Grid>
                                         </TabItem.Header>
                                         <!-- TabItem 的內容 -->
@@ -300,7 +300,7 @@
                                                         <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
                                                             <ListBox.ItemContainerStyle>
                                                                 <Style TargetType="ListBoxItem">
-                                                                    <Setter Property="Margin" Value="0.5"/>
+                                                                    <Setter Property="Margin" Value="0"/>
                                                                 </Style>
                                                             </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
@@ -313,7 +313,7 @@
                                                         <ListBox Grid.Column="1" Margin="0" ItemsSource="{Binding LoadPort2Wafers}">
                                                             <ListBox.ItemContainerStyle>
                                                                 <Style TargetType="ListBoxItem">
-                                                                    <Setter Property="Margin" Value="0.5"/>
+                                                                    <Setter Property="Margin" Value="0"/>
                                                                 </Style>
                                                             </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
@@ -374,7 +374,7 @@
                                                         <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
                                                         <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
                                                     </StackPanel>
-                                                
+
                                                 </Grid>
 
                                             </GroupBox>
@@ -411,11 +411,11 @@
                                                         <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140"/>
                                                         <Button Content="MapLayout Edit" FontSize="20" Height="50" Width="200"/>
                                                     </StackPanel>
-                                                    <views:VirtualCanvas Grid.Row="1"  IsShowBar="True"  />
+                                                    <views:VirtualCanvas Margin="-5" Grid.Row="1"  IsShowBar="True"  />
                                                 </Grid>
-                                               
+
                                             </GroupBox>
-                                       
+
                                         </Grid>
                                     </TabItem>
 
@@ -453,7 +453,7 @@
 
                                             <Grid Grid.Column="1">
                                                 <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                   
+
                                                     <Grid>
                                                         <Grid.RowDefinitions >
                                                             <RowDefinition />
@@ -697,10 +697,14 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="EFEM" FontSize="24">
+                    <GroupBox Grid.Column="0" Header="EFEM" FontSize="24" Grid.ColumnSpan="2" >
                         <Grid >
-
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition/>
@@ -767,55 +771,48 @@
                                     <TextBox  Grid.Row="3"  Grid.Column="1"/>
                                 </Grid>
                             </GroupBox>
+                            <GroupBox Grid.Column="1" Header="Load Port" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                      Style="{StaticResource MaterialDesignGroupBox}" >
+                                <Grid Margin="-5">
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Load1" />
+                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Load2" />
+                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="UnLoad1" />
+                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="UnLoad2" />
+                                        <StackPanel Grid.Column="0">
+                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 1" />
+                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 2" />
+                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 1" />
+                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem">
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- 這裡放置你的 UserControl -->
+                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="1" Header="Load Port" FontSize="24" >
-                        <Grid Margin="-5">
-                            <Grid.ColumnDefinitions >
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Load1" />
-                                <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Load2" />
-                                <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="UnLoad1" />
-                                <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="UnLoad2" />
-                                <StackPanel Grid.Column="0">
-                                    <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 1" />
-                                    <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 2" />
-                                    <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 1" />
-                                    <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <Button Margin="2" Height="30" Content="Wafer 1" />
-                                <Button Margin="2" Height="30" Content="Wafer 2" />
-                                <Button Margin="2" Height="30" Content="Wafer  3" />
-                                <Button Margin="2" Height="30" Content="Wafer  4" />
-                                <Button Margin="2" Height="30" Content="Wafer " />
-                                <Button Margin="2" Height="30" Content="Wafer " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer " />
-                                <Button Margin="2" Height="30" Content="Wafer 10" />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer " />
-                                <Button Margin="2" Height="30" Content="Wafer 15" />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  20" />
-                                <Button Margin="2" Height="30" Content="Wafer  21" />
-                                <Button Margin="2" Height="30" Content="Wafer  " />
-                                <Button Margin="2" Height="30" Content="Wafer  23" />
-                                <Button Margin="2" Height="30" Content="Wafer  24" />
-                                <Button Margin="2" Height="30" Content="Wafer  25" />
-                            </StackPanel>
-                        </Grid>
-                    </GroupBox>
+
                     <GroupBox Grid.Column="2" Header="Micro" FontSize="24" >
 
                     </GroupBox>
@@ -832,9 +829,186 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition />
-                        <RowDefinition />
+                        <RowDefinition Height="0.25*"/>
                     </Grid.RowDefinitions>
-                    <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="0">
+                        <GroupBox Grid.Column="0" Header="EFEM" FontSize="24" Grid.ColumnSpan="2" >
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="150*"/>
+                                    <RowDefinition Height="300*"/>
+                                    <RowDefinition Height="200*"/>
+
+                                </Grid.RowDefinitions>
+                                <usercontrols:RobotUnitUC Grid.RowSpan="2" />
+
+
+                                <GroupBox Grid.Row="2" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                     Header="Aligner" Style="{StaticResource MaterialDesignGroupBox}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Button Grid.Row="0"  Content="Aligner1 Run" Height="50"/>
+                                        <Button Grid.Row="1"  Content="Aligner2 Run" Height="50"/>
+                                        <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
+                                        <Button Grid.Row="3" Content="OCR2 Read" Height="50"/>
+                                        <TextBox  Grid.Row="2"  Grid.Column="1"/>
+                                        <TextBox  Grid.Row="3"  Grid.Column="1"/>
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="Load Port" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
+                                    <Grid Margin="-5">
+                                        <Grid.ColumnDefinitions >
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition  Width="1.3*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                                <Label FontSize="18"  Content="Mapping" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" />
+                                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                                <Label FontSize="18" Content="Pitch:" />
+                                                <TextBox FontSize="18" Width="60" Text="1234" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                                <Label FontSize="18" Content="speed:" />
+                                                <TextBox FontSize="18" Width="60" Text="1234" />
+                                            </StackPanel>
+                                            <Button Margin="3" Grid.Row="3"  Content="Run" />
+
+                                            <Button Grid.Row="4" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" />
+                                            <Button Grid.Row="5" Margin="2"  Background="Tan" BorderBrush="Tan" Content="UnLoad" />
+                                            <StackPanel Grid.Row="6"  Grid.Column="0" Grid.RowSpan="4" >
+                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Dock" />
+                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door" />
+                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Close Door" />
+                                                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
+                                            </StackPanel>
+
+                                        </Grid>
+
+                                        <ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem">
+                                                    <Setter Property="Margin" Value="0"/>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- 這裡放置你的 UserControl -->
+                                                    <mode:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+
+
+                                        <Grid  Grid.Column="2 " >
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.Row="1" Grid.RowSpan="13" BorderBrush="Black" BorderThickness="1"/>
+                                            <TextBlock FontSize="26"  Text="Status"    Background="Azure" />
+                                            <TextBlock Grid.Row="1" Text="Error Status" />
+                                            <TextBox Grid.Row="2"  />
+
+                                            <TextBlock Grid.Row="3" Text="Device Status" />
+                                            <TextBox Grid.Row="4"  />
+
+                                            <TextBlock Grid.Row="5" Text="Error Code" />
+                                            <TextBox Grid.Row="6"  />
+                                            <StackPanel Grid.Row="7" Orientation="Horizontal">
+                                                <TextBlock   Text="容器狀態" VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="8" Orientation="Horizontal">
+                                                <TextBlock   Text="夾爪狀態" VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="9" Orientation="Horizontal">
+                                                <TextBlock   Text="門閂狀態" VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="10" Orientation="Horizontal">
+                                                <TextBlock   Text="吸附狀態" VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="11" Orientation="Horizontal">
+                                                <TextBlock   Text="開門狀態" VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Row="12" Orientation="Horizontal">
+                                                <TextBlock   Text="晶圓突出" VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Row="13" Orientation="Horizontal">
+                                                <TextBlock   Text="Dock       " VerticalAlignment="Center" />
+                                                <model:SignalUC Margin="7,0,0,0" Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                            
+                                        </Grid>
+
+
+                                    </Grid>
+                                </GroupBox>
+
+                            </Grid>
+                        </GroupBox>
+
+                    </Grid>
+                    <Grid Grid.Row="1">
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>

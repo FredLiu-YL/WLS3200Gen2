@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace  YuanliCore.Model
+namespace YuanliCore.Model
 {
     /// <summary>
     /// SignalUC.xaml 的互動邏輯

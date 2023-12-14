@@ -119,10 +119,13 @@
     <Compile Include="UserControls\ProductionUC.xaml.cs">
       <DependentUpon>ProductionUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\ExistNotifyUC.xaml.cs">
+    <Compile Include="UserControls\ExistNotifyUC.xaml.cs">
       <DependentUpon>ExistNotifyUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControl\SignalUC.xaml.cs">
+    <Compile Include="UserControls\RobotUnitUC.xaml.cs">
+      <DependentUpon>RobotUnitUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\SignalUC.xaml.cs">
       <DependentUpon>SignalUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -146,15 +149,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UserControls\RobotUnitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\WorkholderUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControl\ExistNotifyUC.xaml">
+    <Page Include="UserControls\ExistNotifyUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControl\SignalUC.xaml">
+    <Page Include="UserControls\SignalUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -207,7 +214,9 @@
       <Name>YuanliCore.Model</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="UserControl\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.9.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.9.0\build\MaterialDesignThemes.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

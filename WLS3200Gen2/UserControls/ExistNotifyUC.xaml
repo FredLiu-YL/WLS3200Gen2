@@ -24,7 +24,9 @@
            
         </Grid.Resources>
         <materialDesign:Badged  Badge="3">
-            <Button  Width="Auto" Height="Auto"  Content="VA12345678"  FontSize="8" Background ="{Binding ExistState, Converter={StaticResource CvrColor}}"  IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+            <Button  Margin="-2" Width="Auto" Height="Auto" Command="{Binding SelectCommand}"  Content="VA12345678"  FontSize="8" 
+                     Background ="{Binding ExistState, Converter={StaticResource CvrColor}}" 
+                     IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
         </materialDesign:Badged>
     </Grid>
 </UserControl>

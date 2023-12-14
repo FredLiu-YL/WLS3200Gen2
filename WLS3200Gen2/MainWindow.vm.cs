@@ -71,7 +71,7 @@ namespace WLS3200Gen2
                     LoadPort1Wafers.Add(new WaferUIData {WaferStates= ExistStates.Exist });
                 for (int i = 5; i < 10; i++)
                     LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select });
-                for (int i = 10; i < 20; i++)
+                for (int i = 10; i < 25; i++)
                     LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.None });
 
                 LogMessage = "Equipment Ready．．．";

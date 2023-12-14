@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -41,7 +42,28 @@ namespace YuanliCore.Mode
             set => SetValue(ExistStateProperty, value);
         }
 
-        
+
+
+        public ICommand SelectCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                if (ExistState == ExistStates.Exist)
+                    ExistState = ExistStates.Select;
+               else if(ExistState == ExistStates.Select)
+                    ExistState = ExistStates.Exist;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -79,16 +101,16 @@ namespace YuanliCore.Mode
             {
                 case ExistStates.None:
                     return Brushes.DimGray;
-                  
+
                 case ExistStates.Exist:
                     return Brushes.Lime;
-                   
+
                 case ExistStates.Select:
                     return Brushes.Gold;
-                 
+
                 default:
                     return Brushes.DarkRed;
-                   
+
             }
 
 
