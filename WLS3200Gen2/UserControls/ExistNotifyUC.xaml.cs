@@ -38,6 +38,7 @@ namespace YuanliCore.Model.UserControls
                                                                               new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
+
         public ExistStates ExistState
         {
             get => (ExistStates)GetValue(ExistStateProperty);
@@ -56,8 +57,10 @@ namespace YuanliCore.Model.UserControls
             {
                 if (ExistState == ExistStates.Exist)
                     ExistState = ExistStates.Select;
-               else if(ExistState == ExistStates.Select)
+                else if(ExistState == ExistStates.Select)
                     ExistState = ExistStates.Exist;
+
+
             }
             catch (Exception ex)
             {
@@ -93,6 +96,9 @@ namespace YuanliCore.Model.UserControls
         None,
         Exist,
         Select,
+        Running,
+        Complete,
+        Error
 
 
     }
@@ -109,10 +115,19 @@ namespace YuanliCore.Model.UserControls
                     return Brushes.DimGray;
 
                 case ExistStates.Exist:
-                    return Brushes.Lime;
+                    return Brushes.RoyalBlue;
 
                 case ExistStates.Select:
-                    return Brushes.Gold;
+                    return Brushes.LawnGreen;
+
+                case ExistStates.Complete:
+                    return Brushes.ForestGreen;
+
+                case ExistStates.Running:
+                    return Brushes.MediumTurquoise;
+
+                case ExistStates.Error:
+                    return Brushes.Red;
 
                 default:
                     return Brushes.DarkRed;

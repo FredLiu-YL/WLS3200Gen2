@@ -298,7 +298,9 @@
                                                             <ColumnDefinition />
                                                             <ColumnDefinition />
                                                         </Grid.ColumnDefinitions>
-                                                        <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
+                                                        <wls3200controls:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"/>
+                                                        <wls3200controls:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
+                                                        <!--<ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
                                                             <ListBox.ItemContainerStyle>
                                                                 <Style TargetType="ListBoxItem">
                                                                     <Setter Property="Margin" Value="0"/>
@@ -306,24 +308,12 @@
                                                             </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    <!-- 這裡放置你的 UserControl -->
+                                                                    --><!-- 這裡放置你的 UserControl --><!--
                                                                     <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
-                                                        </ListBox>
-                                                        <ListBox Grid.Column="1" Margin="0" ItemsSource="{Binding LoadPort2Wafers}">
-                                                            <ListBox.ItemContainerStyle>
-                                                                <Style TargetType="ListBoxItem">
-                                                                    <Setter Property="Margin" Value="0"/>
-                                                                </Style>
-                                                            </ListBox.ItemContainerStyle>
-                                                            <ListBox.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <!-- 這裡放置你的 UserControl -->
-                                                                    <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
-                                                                </DataTemplate>
-                                                            </ListBox.ItemTemplate>
-                                                        </ListBox>
+                                                        </ListBox>-->
+                                                         
                                                     </Grid>
                                                 </Grid>
 

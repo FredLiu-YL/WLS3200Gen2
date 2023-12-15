@@ -67,8 +67,9 @@ namespace WLS3200Gen2
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
+
                 for (int i = 0; i < 5; i++)
-                    LoadPort1Wafers.Add(new WaferUIData {WaferStates=  ExistStates.Exist,SN=(i+1).ToString() });
+                    LoadPort1Wafers.Add(new WaferUIData {WaferStates=  ExistStates.Exist, SN=(i+1).ToString() });
                 for (int i = 5; i < 10; i++)
                     LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString() });
                 for (int i = 10; i < 25; i++)

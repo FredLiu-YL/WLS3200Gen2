@@ -52,8 +52,16 @@ namespace WLS3200Gen2
             LoadPort2Wafers.Add(
                 new WaferUIData
             {
-                WaferStates = ExistStates.Select
+                WaferStates = ExistStates.Exist
             });
+            LoadPort2Wafers.Add(
+          new WaferUIData
+          {
+              WaferStates = ExistStates.Exist
+          });
+
+
+            LoadPort2Wafers[4].WaferStates = ExistStates.Error;
 
             TestStates = ExistStates.Exist;
         });
