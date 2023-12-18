@@ -13,14 +13,7 @@
     <Grid   DataContext="{Binding ElementName=ExistNotify}" >
         <Grid.Resources>
             <ResourceDictionary >
-                <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Grey.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
-                </ResourceDictionary.MergedDictionaries>
+        
                 <local:BackColorConver  x:Key="CvrColor" />
             </ResourceDictionary>
            
@@ -32,7 +25,7 @@
             </Grid.ColumnDefinitions>
             <Label  Content="{Binding SN}"  FontSize="8" Width="20" />
             <Button   Width="Auto" Height="18" Command="{Binding SelectCommand}"  Content="VA1234567" Grid.Column="1" FontSize="8" 
-                     Background ="{Binding ExistState, Converter={StaticResource CvrColor}}" 
+                     Background ="{Binding ExistState, Converter={StaticResource CvrColor}}"  BorderBrush="Transparent"
                      IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
         </Grid>
     </Grid>
