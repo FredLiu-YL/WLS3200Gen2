@@ -8,6 +8,9 @@ namespace YuanliCore.Data
 {
     public class Wafer
     {
+       
+        public int CassetteIndex { get; set; }
+
         /// <summary>
         /// Wafer 名稱
         /// </summary>

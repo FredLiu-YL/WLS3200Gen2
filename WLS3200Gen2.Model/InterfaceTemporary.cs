@@ -85,7 +85,10 @@ namespace WLS3200Gen2.Model
         /// 手臂收回
         /// </summary>
         void ArmToRetract(ArmStation armPosition);
-
+        /// <summary>
+        /// 接料位置
+        /// </summary>
+        /// <param name="armPosition"></param>
         void ArmcatchPos(ArmStation armPosition);
 
 
