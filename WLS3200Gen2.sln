@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliApplication", "Yuanli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore.CogVision", "YuanliCore\YuanliCore.CogVision\YuanliCore.CogVision.csproj", "{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuanliCore.UserControls", "YuanliCore.UserControls\YuanliCore.UserControls.csproj", "{F125E8B7-C8EC-4739-A96E-5B8ADD6EA118}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F125E8B7-C8EC-4739-A96E-5B8ADD6EA118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F125E8B7-C8EC-4739-A96E-5B8ADD6EA118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F125E8B7-C8EC-4739-A96E-5B8ADD6EA118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F125E8B7-C8EC-4739-A96E-5B8ADD6EA118}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

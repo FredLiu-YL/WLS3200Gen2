@@ -308,12 +308,14 @@
                                                             </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    --><!-- 這裡放置你的 UserControl --><!--
+                                                                    -->
+                                                        <!-- 這裡放置你的 UserControl -->
+                                                        <!--
                                                                     <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>-->
-                                                         
+
                                                     </Grid>
                                                 </Grid>
 
@@ -860,9 +862,9 @@
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
                                         <Button Grid.Row="0"  Content="Aligner1 Run" Height="50"/>
-                                  
+
                                         <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
-                                         
+
                                         <TextBox  Grid.Row="2"  Grid.Column="1"/>
                                         <TextBox  Grid.Row="3"  Grid.Column="1"/>
                                     </Grid>
@@ -872,18 +874,18 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
                                     <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1Wafers}" LoadPortWafers="{Binding LoadPort1Wafers}"/>
-                                   
+
                                 </GroupBox>
                                 <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
                                     <UserControlUC:LoadPortUnitUC Margin="-5" />
-                                
+
                                 </GroupBox>
                             </Grid>
                         </GroupBox>
-                     
+
                     </Grid>
                     <Grid Grid.Row="1">
 
@@ -924,7 +926,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            
+
 
                             <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
 
@@ -963,6 +965,12 @@
                                 </Grid.ColumnDefinitions>
                                 <GroupBox Header="Output" Grid.Column="0">
                                     <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
                                             <RowDefinition/>
                                             <RowDefinition/>
@@ -971,7 +979,18 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                             <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
                                         </Grid.RowDefinitions>
+
+                                        <Border BorderBrush="Black"  BorderThickness="1">
+                                        <StackPanel  >
+                                            </StackPanel>
+                                        </Border>
+                                       
+
+
                                     </Grid>
                                 </GroupBox>
                                 <GroupBox Header="Input" Grid.Column="1" >
