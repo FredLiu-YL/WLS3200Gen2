@@ -51,9 +51,9 @@ namespace WLS3200Gen2
 
             LoadPort2Wafers.Add(
                 new WaferUIData
-            {
-                WaferStates = ExistStates.Exist
-            });
+                {
+                    WaferStates = ExistStates.Exist
+                });
             LoadPort2Wafers.Add(
           new WaferUIData
           {
@@ -92,30 +92,34 @@ namespace WLS3200Gen2
         });
         public ICommand LocateSampleCommand => new RelayCommand<string>(async key =>
         {
-          /*  ClearShapeAction.Execute(Drawings);
-            resultPoint = matcher.Find(Image.ToByteFrame());
+            /*  ClearShapeAction.Execute(Drawings);
+              resultPoint = matcher.Find(Image.ToByteFrame());
 
-            foreach (var item in resultPoint)
-            {
-                var center = new ROICross
-                {
-                    X = item.Center.X,
-                    Y = item.Center.Y,
-                    Size = 5,
-                    StrokeThickness = 2,
-                    Stroke = Brushes.Red,
-                    IsInteractived = false
-                };
-                AddShapeAction.Execute(center);
+              foreach (var item in resultPoint)
+              {
+                  var center = new ROICross
+                  {
+                      X = item.Center.X,
+                      Y = item.Center.Y,
+                      Size = 5,
+                      StrokeThickness = 2,
+                      Stroke = Brushes.Red,
+                      IsInteractived = false
+                  };
+                  AddShapeAction.Execute(center);
 
-            }*/
+              }*/
 
         });
     }
 
-    public class WaferUIData: INotifyPropertyChanged
+    public class WaferUIData : INotifyPropertyChanged
     {
-        public ExistStates WaferStates { get; set; }
+        private ExistStates waferStates;
+        public ExistStates WaferStates { get => waferStates; set => SetValue(ref waferStates, value); }//{ get; set; }
+
+        private int sNWidth;
+        public int SNWidth { get => sNWidth; set => SetValue(ref sNWidth, value); }//{ get; set; }
         public string SN { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;

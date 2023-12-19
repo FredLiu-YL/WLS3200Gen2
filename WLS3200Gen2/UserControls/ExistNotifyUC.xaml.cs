@@ -37,7 +37,8 @@ namespace YuanliCore.Model.UserControls
         public static readonly DependencyProperty SNProperty = DependencyProperty.Register(nameof(SN), typeof(string), typeof(ExistNotifyUC),
                                                                               new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-
+        public static readonly DependencyProperty SNWidthProperty = DependencyProperty.Register(nameof(SNWidth), typeof(int), typeof(ExistNotifyUC),
+                                                                             new FrameworkPropertyMetadata(20, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public ExistStates ExistState
         {
@@ -51,6 +52,11 @@ namespace YuanliCore.Model.UserControls
             set => SetValue(SNProperty, value);
         }
 
+        public int SNWidth
+        {
+            get => (int)GetValue(SNWidthProperty);
+            set => SetValue(SNWidthProperty, value);
+        }
         public ICommand SelectCommand => new RelayCommand(async () =>
         {
             try
