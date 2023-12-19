@@ -16,6 +16,7 @@ namespace WLS3200Gen2.Model.Module
     public class Feeder
     {
         private bool isSotMapping;
+        private bool isCassetteDone;
         private Cassette cassette;
         private ILoadPort tempLoadPort;
         private IAligner tempAligner;
@@ -24,7 +25,7 @@ namespace WLS3200Gen2.Model.Module
         private CancellationTokenSource cancelToken = new CancellationTokenSource();
 
         private Queue<Wafer> processWafers;
-
+        //預載暫存WAFER紀錄
         private Wafer processTempPre_Wafer;
 
 
@@ -47,6 +48,8 @@ namespace WLS3200Gen2.Model.Module
         public ILoadPort LoadPort8 { get; }
         public ILoadPort LoadPort12 { get; }
         public Cassette Cassette { get => cassette; }
+        public bool IsCassetteDone { get => isCassetteDone; }
+
         public FeederSetting Setting;
 
         public Task WaitEFEMonSafe = Task.CompletedTask;
@@ -104,6 +107,8 @@ namespace WLS3200Gen2.Model.Module
             this.pauseToken = pauseToken;
             this.cancelToken = cancellationToken;
 
+            Robot.cancelToken = cancellationToken;
+
             //判斷 8吋 或 12吋 啟用不同的硬體裝置
             switch (inchType)
             {
@@ -129,10 +134,10 @@ namespace WLS3200Gen2.Model.Module
 
             }
 
+            var waferuse=  cassette.Wafers.Where(w => w != null);
+            processWafers = new Queue<Wafer>(waferuse);
 
-            processWafers = new Queue<Wafer>(cassette.Wafers);
-
-
+ 
         }
         public void ProcessEnd()
         {
@@ -153,14 +158,22 @@ namespace WLS3200Gen2.Model.Module
 
                 return Task.Run(async () =>
                  {
-
-                     processTempPre_Wafer = processWafers.Dequeue();
-
-
-                     await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
-                     await WaferStandByToMacro();
+                     
+                     if (processWafers.Count() > 0)
+                     {
+                         processTempPre_Wafer = processWafers.Dequeue();
 
 
+                         await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
+                         await WaferStandByToMacro();
+
+                     }
+
+
+                  
+
+                     if (processWafers.Count == 0)
+                         isCassetteDone = true;
 
                  });
             }
@@ -198,6 +211,8 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task LoadWaferFromCassette(int cassetteIndex)
         {
+          
+
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
 
             Robot.TakeWaferCassette(cassetteIndex);
@@ -238,6 +253,7 @@ namespace WLS3200Gen2.Model.Module
                 Robot.ArmcatchPos(ArmStation.Macro);
                 Robot.VacuumOff();
                 Robot.ArmPutdown();
+
                 Robot.ArmToRetract(ArmStation.Macro);
                 Macro.FixWafer();
                 Robot.ArmToStandby();
@@ -353,7 +369,7 @@ namespace WLS3200Gen2.Model.Module
 
                 if (slot.HasValue)
                 {
-                    var wafer = new Wafer();
+                    var wafer = new Wafer(0);
 
                     wafers.Add(wafer);
                 }

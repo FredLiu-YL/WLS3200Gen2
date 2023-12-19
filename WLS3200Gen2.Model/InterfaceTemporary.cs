@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -42,7 +44,11 @@ namespace WLS3200Gen2.Model
     }
     public interface IEFEMRobot : IRobot
     {
-      
+
+        PauseTokenSource pauseToken { get; set; }
+        CancellationTokenSource cancelToken { get; set; }
+
+
 
         /// <summary>
         /// 取片 伸出手臂進卡匣 (尚未抬起或下降)

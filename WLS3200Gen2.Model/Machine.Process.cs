@@ -49,7 +49,7 @@ namespace WLS3200Gen2.Model
                         MainRecipe recipe = ChangeRecipe?.Invoke();
 
                         //委派到上層 去執行macro動作
-                        MacroReady.Invoke();
+                        MacroReady?.Invoke();
 
                         // ProcessPause();
                         cts.Token.ThrowIfCancellationRequested();
@@ -64,6 +64,7 @@ namespace WLS3200Gen2.Model
                         //執行主設備動作
                         await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
 
+
                         //退片
                         await Feeder.UnLoadAsync(waferInside.CassetteIndex);
 
@@ -75,6 +76,12 @@ namespace WLS3200Gen2.Model
                         //等待預載完成
                         await taskLoad;
 
+                        //判斷卡匣空了
+                        if (Feeder.IsCassetteDone == true)
+                        {
+                            break;
+                        }
+
                     }
 
                   
@@ -85,12 +92,12 @@ namespace WLS3200Gen2.Model
             catch (OperationCanceledException canceleEx)
             {
 
-                throw;
+               
             }
             catch (Exception ex)
             {
 
-                throw;
+                 
             }
             finally
             {

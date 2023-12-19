@@ -9,6 +9,11 @@ namespace WLS3200Gen2.Data
 {
     public class WaferForUC : Wafer
     {
+        public WaferForUC(int index) : base(index)
+        {
+
+
+        }
 
     }
 }

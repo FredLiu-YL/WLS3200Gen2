@@ -1,13 +1,18 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WLS3200Gen2.Model.Component
 {
     public class DummyRobot : IEFEMRobot
     {
+        public PauseTokenSource pauseToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public CancellationTokenSource cancelToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public void ArmcatchPos(ArmStation armPosition)
         {
             throw new NotImplementedException();
