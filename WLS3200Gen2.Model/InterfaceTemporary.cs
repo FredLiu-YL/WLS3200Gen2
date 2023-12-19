@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -42,7 +44,11 @@ namespace WLS3200Gen2.Model
     }
     public interface IEFEMRobot : IRobot
     {
-      
+
+        PauseTokenSource pauseToken { get; set; }
+        CancellationTokenSource cancelToken { get; set; }
+
+
 
         /// <summary>
         /// 取片 伸出手臂進卡匣 (尚未抬起或下降)
@@ -85,7 +91,10 @@ namespace WLS3200Gen2.Model
         /// 手臂收回
         /// </summary>
         void ArmToRetract(ArmStation armPosition);
-
+        /// <summary>
+        /// 接料位置
+        /// </summary>
+        /// <param name="armPosition"></param>
         void ArmcatchPos(ArmStation armPosition);
 
 

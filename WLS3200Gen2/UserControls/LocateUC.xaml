@@ -9,16 +9,7 @@
              d:DesignHeight="750" d:DesignWidth="350">
     <Grid  DataContext="{Binding ElementName=LocateUserControls}" >
         <Grid.Resources>
-            <ResourceDictionary>
-
-                <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
-                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
-
-                </ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary>
+         
         </Grid.Resources>
         <Border  Background="{DynamicResource MaterialDesignBackground}">
             <GroupBox  Header="Locate" Style="{StaticResource MaterialDesignGroupBox}"  UseLayoutRounding="True">

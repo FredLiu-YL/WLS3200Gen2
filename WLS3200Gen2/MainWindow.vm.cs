@@ -54,6 +54,8 @@ namespace WLS3200Gen2
         {
             try
             {
+
+
                 //
                 //大部分都會在這裡初始化  有些因為寫法問題必須移動到MainViewModel.cs
                 //

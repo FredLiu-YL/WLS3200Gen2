@@ -32,7 +32,7 @@
             </Grid.ColumnDefinitions>
             <Label  Content="{Binding SN}"  FontSize="8"  Width="{Binding SNWidth}"		 />
             <Button   Width="Auto" Height="18" Command="{Binding SelectCommand}"  Content="VA1234567" Grid.Column="1" FontSize="8" 
-                     Background ="{Binding ExistState, Converter={StaticResource CvrColor}}" 
+                     Background ="{Binding ExistState, Converter={StaticResource CvrColor}}"  BorderBrush="Transparent"
                      IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
         </Grid>
     </Grid>

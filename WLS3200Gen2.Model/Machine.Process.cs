@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Recipe;
+using YuanliCore.Data;
 
 namespace WLS3200Gen2.Model
 {
@@ -32,10 +33,13 @@ namespace WLS3200Gen2.Model
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
 
+                Feeder.ProcessInitial(processSetting.Inch, pts, cts);
+
+
                 await Task.Run(async () =>
                 {
                     //先放一片在macro上
-                    await Feeder.LoadToReadyAsync(processSetting.Inch, pts, cts);
+                    await Feeder.LoadToReadyAsync();
 
                     while (true)
                     {
@@ -45,29 +49,42 @@ namespace WLS3200Gen2.Model
                         MainRecipe recipe = ChangeRecipe?.Invoke();
 
                         //委派到上層 去執行macro動作
-                        MacroReady.Invoke();
+                        MacroReady?.Invoke();
+
                         // ProcessPause();
                         cts.Token.ThrowIfCancellationRequested();
                         await pts.Token.WaitWhilePausedAsync(cts.Token); //暫停在Macro上
 
                         //macro動作完成後 ，載到主設備內 
-                        await Feeder.LoadAsync();
-
+                        Wafer waferInside = await Feeder.LoadAsync();
+      
                         //預載一片在Macro上
-                        Task taskLoad = Feeder.LoadToReadyAsync(processSetting.Inch, pts, cts);
+                        Task taskLoad = Feeder.LoadToReadyAsync();
 
                         //執行主設備動作
                         await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
 
 
-                        await Task.Delay(3000);
+                        //退片
+                        await Feeder.UnLoadAsync(waferInside.CassetteIndex);
+
+
+                        await Task.Delay(300);
                         cts.Token.ThrowIfCancellationRequested();
                         await pts.Token.WaitWhilePausedAsync(cts.Token);
 
                         //等待預載完成
                         await taskLoad;
 
+                        //判斷卡匣空了
+                        if (Feeder.IsCassetteDone == true)
+                        {
+                            break;
+                        }
+
                     }
+
+                  
                 });
 
 
@@ -75,14 +92,19 @@ namespace WLS3200Gen2.Model
             catch (OperationCanceledException canceleEx)
             {
 
-                throw;
+               
             }
             catch (Exception ex)
             {
 
-                throw;
+                 
             }
+            finally
+            {
+                Feeder.ProcessEnd();
 
+
+            }
 
         }
 

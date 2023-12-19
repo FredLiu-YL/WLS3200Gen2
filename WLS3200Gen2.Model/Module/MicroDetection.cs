@@ -69,17 +69,23 @@ namespace WLS3200Gen2.Model.Module
             //每一個座標需要檢查的座標
             foreach (var point in recipe.DetectionPoints)
             {
+                //對位
+
+
+
 
                 await TableMoveToAsync(point.Position);
                 await Task.Delay(200);
                 BitmapSource bmp = camera.GrabAsync();
 
                 subject.OnNext(bmp);//AOI另外丟到其他執行續處理
+              
                 if (isAutoSave)
                 {
 
                 }
 
+                pauseToken.IsPaused = true;
 
                 cancelToken.Token.ThrowIfCancellationRequested();
                 await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
