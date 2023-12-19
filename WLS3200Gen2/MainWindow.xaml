@@ -297,9 +297,14 @@
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition />
                                                             <ColumnDefinition />
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition />
                                                         </Grid.ColumnDefinitions>
                                                         <wls3200controls:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"/>
                                                         <wls3200controls:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
+                                                        <wls3200controls:CassetteStateUC Grid.Column="2" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
+
                                                         <!--<ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
                                                             <ListBox.ItemContainerStyle>
                                                                 <Style TargetType="ListBoxItem">
@@ -308,8 +313,9 @@
                                                             </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
-                                                                    --><!-- 這裡放置你的 UserControl --><!--
+                                                                     --><!--這裡放置你的 UserControl--><!-- 
                                                                     <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                                    --><!--<Button/>--><!--
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>-->

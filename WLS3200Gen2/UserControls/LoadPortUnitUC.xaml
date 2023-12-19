@@ -46,30 +46,40 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Label FontSize="18"  Content="Mapping" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
-            </StackPanel>
-            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" />
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Label FontSize="18" Content="Pitch:" />
-                <TextBox FontSize="18" Width="60" Text="1234" />
-            </StackPanel>
-            <StackPanel Grid.Row="2" Orientation="Horizontal">
-                <Label FontSize="18" Content="speed:" />
-                <TextBox FontSize="18" Width="60" Text="1234" />
-            </StackPanel>
-            <Button Margin="3" Grid.Row="3"  Content="Run" />
 
-            <Button Grid.Row="4" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" />
-            <Button Grid.Row="5" Margin="2"  Background="Tan" BorderBrush="Tan" Content="UnLoad" />
-            <StackPanel Grid.Row="6"  Grid.Column="0" Grid.RowSpan="4" >
-                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Dock" />
-                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door" />
-                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Close Door" />
-                <Button Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
-            </StackPanel>
+            <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="4" />
+            <Button Grid.Row="0" Margin="2" Background="Tan" BorderBrush="Tan" FontSize="10" Content="Open Cassette Load" />
+            <Button Grid.Row="1" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" />
+            <Button Grid.Row="2" Margin="3" Content="UnLoad" />
+            <Button Grid.Row="3" Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue" Content="Alarm Reset" />
 
+            <Border Grid.Row="4" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="8" />
+            <TextBlock Grid.Row="4" FontSize="16"  Text="Param:" Background="Azure" />
+            <StackPanel Grid.Row="5" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" Content="WaferThickness:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+            <StackPanel Grid.Row="6" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" Content="CassettePitch:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+            <StackPanel Grid.Row="7" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="18" Content="Pitch:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+            <StackPanel Grid.Row="8" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" Content="StarOffset:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+            <StackPanel Grid.Row="9" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="8" Content="WaferPitchTolerance:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+            <StackPanel Grid.Row="10" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="8" Content="WaferPosTolerance:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+            <Button Grid.Row="11" Margin="2" Background="Tan" BorderBrush="Tan" Content="Param Set" />
         </Grid>
         <wls3200controls:CassetteStateUC    Grid.Column="0" Margin="0" LoadPortWafers="{Binding LoadPortWafers}"/>
         <!--<ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPortWafers}">
@@ -105,15 +115,18 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Border Grid.Row="1" Grid.RowSpan="13" BorderBrush="Black" BorderThickness="1"/>
-            <TextBlock FontSize="26"  Text="Status"    Background="Azure" />
+            <TextBlock FontSize="18"  Text="Status"    Background="Azure" />
             <TextBlock Grid.Row="1" Text="Error Status" />
             <TextBox Grid.Row="2"  />
 
             <TextBlock Grid.Row="3" Text="Device Status" />
             <TextBox Grid.Row="4"  />
 
-            <TextBlock Grid.Row="5" Text="Error Code" />
-            <TextBox Grid.Row="6"  />
+            <StackPanel Grid.Row="5" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="10" Content="Error Code:" />
+                <TextBox FontSize="18" Width="45" Text="1234" />
+            </StackPanel>
+
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <TextBlock   Text="容器狀態" VerticalAlignment="Center" />
                 <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="False" />
