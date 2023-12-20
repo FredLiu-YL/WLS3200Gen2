@@ -175,6 +175,8 @@ namespace WLS3200Gen2.Model.Module
                      if (processWafers.Count == 0)
                          isCassetteDone = true;
 
+                   
+
                  });
             }
             catch (Exception ex)

@@ -988,11 +988,18 @@
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
 
-                                        <Border BorderBrush="Black"  BorderThickness="1">
-                                        <StackPanel  >
+                                        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal" >
+                                                <Label Content="1 Vaccum" Width="120"/>
+                                                <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
                                             </StackPanel>
                                         </Border>
-                                       
+                                        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                                            <StackPanel Orientation="Horizontal" >
+                                                <Label Content="1 Vaccum" Width="120"/>
+                                                <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                                            </StackPanel>
+                                        </Border>
 
 
                                     </Grid>

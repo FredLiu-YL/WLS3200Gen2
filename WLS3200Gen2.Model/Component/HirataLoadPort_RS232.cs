@@ -20,6 +20,8 @@ namespace Hirata_Test
         private bool start_flag = false;
         private List<char> RxData;
 
+        private string dataReceiveString;
+        private bool IsdataReceivecOK;
         public HirataLoadPort_RS232(string comPort)
         {
             try
@@ -34,6 +36,7 @@ namespace Hirata_Test
                 //serialPort.RtsEnable = false;
                 //serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler_Notch_Finder);
                 serialPort.Open();
+                serialPort.DataReceived += TriggerDataReceive;
             }
             catch (Exception ex)
             {
@@ -1015,6 +1018,50 @@ namespace Hirata_Test
                 throw ex;
             }
         }
+
+        private string SendGetMessage2(string message)
+        {
+            try
+            {
+
+                lock (lockObj)
+                {
+
+
+                    dataReceiveString = "";
+                    IsdataReceivecOK = false;
+                    int delayTime = 200;
+                    int timeOut1 = 10 * 1000;
+                    int timeOut2 = 600 * 1000;
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    serialPort.DiscardInBuffer();
+                    serialPort.DiscardOutBuffer();
+                    string writestr = CODE + ADR + message;
+                    CheckSumAdd checkSum = CheckSumAdd_Analysis(writestr);
+                    writestr = SOH + writestr + checkSum.CSh + checkSum.CSl + CR;
+                    serialPort.Write(writestr);
+
+                    Task.Run(() =>
+                   {
+                       while (!IsdataReceivecOK)
+                       {
+                           Thread.Sleep(100);
+
+                       }
+                   }).Wait();
+
+                    return dataReceiveString;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
         public List<string> GetMessage()
         {
             try
@@ -1022,6 +1069,10 @@ namespace Hirata_Test
                 string indata;
                 List<string> str_return = new List<string>();
                 indata = serialPort.ReadExisting();
+
+
+
+
                 char[] charArr = indata.ToCharArray();
                 foreach (char rch in charArr)
                 {
@@ -1104,6 +1155,22 @@ namespace Hirata_Test
                 CSl = ' ';
             }
         }
+
+        private void TriggerDataReceive(object sender, SerialDataReceivedEventArgs e)
+        {
+
+            var data = serialPort.ReadExisting();
+
+            dataReceiveString += data;
+
+            if (dataReceiveString.Contains(SOH.ToString()) && dataReceiveString.Contains(CR.ToString()))
+                IsdataReceivecOK = true;
+
+
+
+
+        }
+
         /// <summary>
         /// 轉換Get_Status讀取的狀態
         /// </summary>
