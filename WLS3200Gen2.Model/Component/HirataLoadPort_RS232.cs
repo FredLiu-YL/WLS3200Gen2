@@ -7,10 +7,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hirata_Test
+namespace WLS3200Gen2.Model.Component
 {
-    public class HirataLoadPort_RS232
+    public class HirataLoadPort_RS232 : ILoadPort
     {
+        private bool isMapping;
+
+        private bool?[] slot;
+
         private SerialPort serialPort = new SerialPort();
         private readonly object lockObj = new object();
         private const char SOH = (char)0x01;
@@ -22,6 +26,12 @@ namespace Hirata_Test
 
         private string dataReceiveString;
         private bool IsdataReceivecOK;
+
+
+
+        public bool IsMapping => isMapping;
+        public bool?[] Slot => slot;
+
         public HirataLoadPort_RS232(string comPort)
         {
             try
@@ -36,7 +46,7 @@ namespace Hirata_Test
                 //serialPort.RtsEnable = false;
                 //serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler_Notch_Finder);
                 serialPort.Open();
-                serialPort.DataReceived += TriggerDataReceive;
+                //serialPort.DataReceived += TriggerDataReceive;
             }
             catch (Exception ex)
             {
@@ -76,74 +86,73 @@ namespace Hirata_Test
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_Load(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_Load()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:FPML;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:FPML;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 取得LoadPort的Mapping資訊
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Get_Mapping(LoadPortItems loadPortItems)
+        public LoadPortItems Get_Mapping()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsGetOK = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("GET:MAPR;", false);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMappingOK = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("GET:MAPR;", false);
-                    foreach (var item in str3)
+                    if (item.Contains("GET"))
                     {
-                        if (item.Contains("GET"))
-                        {
-                            loadPortItems.IsMappingOK = true;
-                            TransMapping(loadPortItems, item);
-                        }
+                        loadPortItems.IsGetOK = true;
+                        TransMapping(loadPortItems, item);
                     }
-                    //await SendMessage(loadPortItems, "GET:MAPR;", LoadPortSendMessageType.GetMapr);
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                //await SendMessage(loadPortItems, "GET:MAPR;", LoadPortSendMessageType.GetMapr);
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort錯誤重置
@@ -219,14 +228,14 @@ namespace Hirata_Test
             {
                 try
                 {
-                    loadPortItems.IsStas = false;
+                    loadPortItems.IsGetOK = false;
                     List<string> str3 = new List<string>();
                     str3 = SendGetMessage("GET:STAS;", false);
                     foreach (var item in str3)
                     {
                         if (item.Contains("GET"))
                         {
-                            loadPortItems.IsStas = true;
+                            loadPortItems.IsGetOK = true;
                             TransStatus(loadPortItems, item);
                         }
                     }
@@ -253,14 +262,14 @@ namespace Hirata_Test
                     if (LoadPortFOUPType.TYPE_1 != LoadPortFOUPType.None)
                     {
                         string A = ((int)fOUPType).ToString("D2");
-                        loadPortItems.IsFOUP_Param = false;
+                        loadPortItems.IsGetOK = false;
                         List<string> str3 = new List<string>();
                         str3 = SendGetMessage("GET:MAPP" + A + ";", false);
                         foreach (var item in str3)
                         {
                             if (item.Contains("GET"))
                             {
-                                loadPortItems.IsFOUP_Param = true;
+                                loadPortItems.IsGetOK = true;
                                 TransFOUP_Parameter(loadPortItems, item);
                             }
                         }
@@ -983,6 +992,14 @@ namespace Hirata_Test
                         {
                             foreach (var item in readMessage1)
                             {
+                                //每次用Add是因為有時候會有兩個字串判斷，isSendOK_1、isSendOK_2
+                                //send:MOV...
+                                //get:MOV...
+                                //get:INF... or ABS...
+
+                                //send:GET:STAS
+                                //get:GET:STAS........
+
                                 returnMessage1.Add(item);
                                 if (isInfAbs == false)
                                 {
@@ -1026,8 +1043,6 @@ namespace Hirata_Test
 
                 lock (lockObj)
                 {
-
-
                     dataReceiveString = "";
                     IsdataReceivecOK = false;
                     int delayTime = 200;
@@ -1069,10 +1084,6 @@ namespace Hirata_Test
                 string indata;
                 List<string> str_return = new List<string>();
                 indata = serialPort.ReadExisting();
-
-
-
-
                 char[] charArr = indata.ToCharArray();
                 foreach (char rch in charArr)
                 {
@@ -1367,7 +1378,71 @@ namespace Hirata_Test
             }
         }
 
+        public void Initial()
+        {
+            throw new NotImplementedException();
+        }
 
+        public async void Load()
+        {
+            try
+            {
+                LoadPortItems loadPortItems = new LoadPortItems();
+                await Task.Run(() =>
+             {
+                 loadPortItems = Mov_Load();
+                 loadPortItems = Get_Mapping();
+
+                 slot = new bool?[loadPortItems.MappingWaferStatus.Count];
+                 int idx = 0;
+                 foreach (var item in loadPortItems.MappingWaferStatus)
+                 {
+                     if (item == LoadPortMapping_Result.WaferExists)
+                     {
+                         slot[idx] = true;
+                     }
+                     else if (item == LoadPortMapping_Result.WaferNo)
+                     {
+                         slot[idx] = null;
+                     }
+                     else
+                     {
+                         slot[idx] = false;
+                     }
+                     idx++;
+                 }
+             });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void Home()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetParam()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetParam()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
     }
     public class LoadPortItems
     {
@@ -1380,25 +1455,17 @@ namespace Hirata_Test
         /// </summary>
         public bool IsSetOK;
         /// <summary>
-        /// Get_Mapping指令OK
+        /// Get指令OK
         /// </summary>
-        public bool IsMappingOK;
+        public bool IsGetOK;
         /// <summary>
         /// 現在是否Error
         /// </summary>
         public bool IsError;
         /// <summary>
-        /// Get_Status指令OK
-        /// </summary>
-        public bool IsStas;
-        /// <summary>
         /// Mov指令或者是Set指令執行做完了
         /// </summary>
         public bool IsDone;
-        /// <summary>
-        /// Get_FOUPParam指令OK
-        /// </summary>
-        public bool IsFOUP_Param;
         /// <summary>
         /// LoadPortError狀態(正常、可復原的錯誤、不可復原的錯誤)
         /// </summary>
@@ -1476,10 +1543,8 @@ namespace Hirata_Test
         {
             IsMovOK = false;
             IsSetOK = false;
-            IsMappingOK = false;
+            IsGetOK = false;
             IsError = false;
-            IsStas = false;
-            IsFOUP_Param = false;
             ErrorStatus = LoadPortErrorType.ErrorCanRecover;
         }
     }
