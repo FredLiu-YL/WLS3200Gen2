@@ -1,0 +1,328 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.DigitalInputUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WLS3200Gen2.UserControls" xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model"
+             mc:Ignorable="d" 
+              x:Name="DigitalInput"
+             d:DesignHeight="400" d:DesignWidth="600">
+    <Grid  DataContext="{Binding ElementName=DigitalInput}"   >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+    
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="0 EMO" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="1 POWER" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="2 電磁鎖" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="3 CDA" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="4 Chuck內環真空 8" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="5 Chuck外環真空 12" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="6 Macro內環真空 8" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="7 Macro外環真空 12" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="8 " Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="9 " Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="10 " Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="11 " Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="3 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="4 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="5 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="6 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="7 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="8 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="9 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="10 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="1 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="2 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="3 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="4 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="5 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="6 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="7 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="8 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="9 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="10 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+        
+        <Grid Grid.Column="3">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="1 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="2 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="3 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="4 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="5 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="6 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="7 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="8 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="9 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
+                <StackPanel Orientation="Horizontal" >
+                    <Label Content="10 Vaccum" Width="120"/>
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </Grid>
+</UserControl>

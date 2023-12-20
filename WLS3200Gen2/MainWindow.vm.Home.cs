@@ -19,7 +19,7 @@ namespace WLS3200Gen2
     {
         private ObservableCollection<WorkItem> workItems = new ObservableCollection<WorkItem>();
     
-        private string logMessage;
+        private string logMessage  ;
         private bool isRunning = false;
         private bool isRunCommand = false; 
         private ProcessSetting processSetting = new ProcessSetting();

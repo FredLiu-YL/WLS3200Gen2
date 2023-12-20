@@ -116,6 +116,12 @@
     <Compile Include="UserControls\CassetteStateUC.xaml.cs">
       <DependentUpon>CassetteStateUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\DigitalInputUC.xaml.cs">
+      <DependentUpon>DigitalInputUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\DigitalOutputUC.xaml.cs">
+      <DependentUpon>DigitalOutputUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LoadPortUnitUC.xaml.cs">
       <DependentUpon>LoadPortUnitUC.xaml</DependentUpon>
     </Compile>
@@ -145,6 +151,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\CassetteStateUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\DigitalInputUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\DigitalOutputUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -221,9 +235,7 @@
       <Name>YuanliCore.Model</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UserControl\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.9.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.9.0\build\MaterialDesignThemes.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

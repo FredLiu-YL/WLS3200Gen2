@@ -951,61 +951,29 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition />
-                        <RowDefinition />
+                        <RowDefinition Height="0.4*" />
                     </Grid.RowDefinitions>
                     <Grid>
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition Width="0.3*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <motion:AxisMotionUC />
                             <motion:AxisMotionUC />
-                            <Grid Height="350">
+                            <motion:AxisMotionUC />
+                            <motion:AxisMotionUC />
+                            <Grid Height="470">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <GroupBox Header="Output" Grid.Column="0">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-
-                                        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
-                                        <StackPanel Orientation="Horizontal" >
-                                                <Label Content="1 Vaccum" Width="120"/>
-                                                <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                        </Border>
-                                        <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
-                                            <StackPanel Orientation="Horizontal" >
-                                                <Label Content="1 Vaccum" Width="120"/>
-                                                <usercontrols:SignalUC Width="20" Height="20" IsSignal="False" />
-                                            </StackPanel>
-                                        </Border>
-
-
-                                    </Grid>
+                                    <UserControlUC:DigitalOutputUC Margin="-2"/>
                                 </GroupBox>
                                 <GroupBox Header="Input" Grid.Column="1" >
-
+                                    <UserControlUC:DigitalInputUC Margin="-2" />
                                 </GroupBox>
                             </Grid>
                         </StackPanel>
