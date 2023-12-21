@@ -15,6 +15,16 @@ namespace WLS3200Gen2.Model.Component
 
         public bool?[] Slot => slot;
 
+        public void GetParam()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetStatus()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Home()
         {
 
@@ -23,6 +33,21 @@ namespace WLS3200Gen2.Model.Component
         public void Initial()
         {
 
+        }
+
+        public void Load()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetParam()
+        {
+            throw new NotImplementedException();
         }
 
         public void SlotMapping()

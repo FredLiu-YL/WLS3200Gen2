@@ -12,18 +12,39 @@ namespace WLS3200Gen2.Model
 
     public interface ILoadPort
     {
-
         bool IsMapping { get; }
 
+        /// <summary>
+        /// null:沒片子 true:有片子 false:片子異常
+        /// </summary>
         bool?[] Slot { get; }
-
         // 初始化
         void Initial();
         /// <summary>
-        /// 做在籍檢知
+        /// 打開門，且自動SlotMapping
         /// </summary>
-        void SlotMapping();
+        void Load();
+        /// <summary>
+        /// 回歸到關門狀態，也可以應用在UnLoad
+        /// </summary>
         void Home();
+        /// <summary>
+        /// 取得目前狀態
+        /// </summary>
+        void GetStatus();
+        /// <summary>
+        /// 取得參數設定
+        /// </summary>
+        void GetParam();
+        /// <summary>
+        /// 設定參數
+        /// </summary>
+        void SetParam();
+        /// <summary>
+        /// 異常復原
+        /// </summary>
+        void Reset();
+
 
 
     }
