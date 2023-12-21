@@ -27,7 +27,7 @@ namespace WLS3200Gen2
         private Axis tableX , tableY , tableR;
         private Axis robotAxis;
         private AxisConfig tableXConfig, tableYConfig, tableRConfig, robotAxisConfig;
-        private double tablePosX, tablePosY;
+        private double tablePosX, tablePosY ,tablePosR;
 
         private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
         private WriteableBitmap mainImage;
@@ -56,6 +56,7 @@ namespace WLS3200Gen2
         //刷新座標
         public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
         public double TablePosY { get => tablePosY; set => SetValue(ref tablePosY, value); }
+        public double TablePosR { get => tablePosR; set => SetValue(ref tablePosR, value); }
 
         public string Version { get => version; set => SetValue(ref version, value); }
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
@@ -144,7 +145,7 @@ namespace WLS3200Gen2
                     //var pos = atfMachine.Table_Module.GetPostion();
                     TablePosX = machine.MicroDetection.AxisX.Position;
                     TablePosY = machine.MicroDetection.AxisY.Position;
-
+                    TablePosR = machine.MicroDetection.AxisR.Position;
                     //if (atfMachine.AFModule.AFSystem != null)
                     //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
                     await Task.Delay(300);

@@ -31,6 +31,7 @@ namespace WLS3200Gen2.Model.Module
             this.Microscope = microscope;
             AxisX = axes[0];
             AxisY = axes[1];
+            AxisR = axes[2];
             TableVacuum = outputs[1];
             LiftPin = outputs[2];
 

@@ -70,7 +70,7 @@ namespace WLS3200Gen2.Model
             var dis = motionController.IutputSignals.ToArray();
             var dos = motionController.OutputSignals.ToArray();
 
-            Feeder = new Feeder(robot, loadPort, macro, aligner, axes[2]);
+            Feeder = new Feeder(robot, loadPort, macro, aligner, axes[3]);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
@@ -117,21 +117,40 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
                 List<AxisInfo> axesInfos = new List<AxisInfo>();
-                for (int i = 0; i < 3; i++)
+           
+                for (int i = 0; i < 4; i++)
                 {
-                    if (i == 1)
+                    switch (i)
                     {
-                        AxisInfo axisInfo = new AxisInfo();
-                        axisInfo.AxisName = "AxisY";
-                        axisInfo.AxisID = 1;
-                        axesInfos.Add(axisInfo);
+                        case 0:
+                            AxisInfo axisXInfo = new AxisInfo();
+                            axisXInfo.AxisName = "AxisX";
+                            axisXInfo.AxisID = 0;
+                            axesInfos.Add(axisXInfo);
+                            break;
+                        case 1:
+                            AxisInfo axisYInfo = new AxisInfo();
+                            axisYInfo.AxisName = "AxisY";
+                            axisYInfo.AxisID = 1;
+                            axesInfos.Add(axisYInfo);
+                            break;
+                        case 2:
+                            AxisInfo axisRInfo = new AxisInfo();
+                            axisRInfo.AxisName = "AxisR";
+                            axisRInfo.AxisID = 2;
+                            axesInfos.Add(axisRInfo);
+
+                            break;
+                        case 3:
+                            AxisInfo axisInfo = new AxisInfo();
+                            axisInfo.AxisName = "RobotAxis";
+                            axisInfo.AxisID = 3;
+                            axesInfos.Add(axisInfo);
+
+                            break;
                     }
-                    else
-                    {
-                        AxisInfo axisInfo = new AxisInfo();
-                        axisInfo.AxisName = "AxisX";
-                        axesInfos.Add(axisInfo);
-                    }
+
+                     
                 }
 
                 var doNames = new string[] { "do1", "do2", "do3" };
