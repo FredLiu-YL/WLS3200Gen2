@@ -477,7 +477,19 @@
 
                                     </TabItem>
 
-                                    <TabItem Width="250" Header="Detection">
+                                    <TabItem Width="250"  >
+                                        <TabItem.Header>
+                                            <Grid Margin="-5" Width="240"  >
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="3*" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <usercontrols:SignalUC Width="30" Height="30" IsSignal="True" />
+                                                <TextBlock Text="Detection" Grid.Column="1" FontSize="26" />
+                                                <materialDesign:PackIcon Grid.Column="2" Margin="0,0,0,0"  Width="40"  Height="40"  Kind="ArrowRightBold" />
+                                            </Grid>
+                                        </TabItem.Header>
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="2*"/>
@@ -960,10 +972,10 @@
                             <ColumnDefinition Width="0.3*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <motion:AxisMotionUC />
-                            <motion:AxisMotionUC />
-                            <motion:AxisMotionUC />
-                            <motion:AxisMotionUC />
+                            <motion:AxisMotionUC Axis="{Binding TableX }"  AxisSetConfig="{Binding TableXConfig }"   />
+                            <motion:AxisMotionUC Axis="{Binding TableY }"  AxisSetConfig="{Binding TableYConfig }"/>
+                            <motion:AxisMotionUC Axis="{Binding TableR }"  AxisSetConfig="{Binding TableRConfig }"/>
+                            <motion:AxisMotionUC Axis="{Binding RobotAxis }" AxisSetConfig="{Binding RobotAxisConfig }" />
                             <Grid Height="480">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -986,7 +998,7 @@
 
         </TabControl>
 
-        <Grid HorizontalAlignment="Left" Margin="0,403,0,10" Width="70">
+        <Grid HorizontalAlignment="Left" Margin="10,453,0,0" Width="70">
             <StackPanel Grid.Row="1"   Width="auto"  Height="auto">
                 <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
                 <TextBlock  HorizontalAlignment="Center"   Text="Account" />

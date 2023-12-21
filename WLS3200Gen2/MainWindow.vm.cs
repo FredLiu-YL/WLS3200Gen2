@@ -24,9 +24,11 @@ namespace WLS3200Gen2
         private Task taskRefresh1 = Task.CompletedTask;
         private UserAccount account;
         private string version;
-        private Axis tableX;
-        private Axis tableY;
+        private Axis tableX , tableY , tableR;
+        private Axis robotAxis;
+        private AxisConfig tableXConfig, tableYConfig, tableRConfig, robotAxisConfig;
         private double tablePosX, tablePosY;
+
         private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
         private WriteableBitmap mainImage;
 
@@ -42,8 +44,19 @@ namespace WLS3200Gen2
 
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
+        public Axis TableR { get => tableR; set => SetValue(ref tableR, value); }
+        public Axis RobotAxis { get => robotAxis; set => SetValue(ref robotAxis, value); }
+        public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
+        public AxisConfig TableYConfig { get => tableYConfig; set => SetValue(ref tableYConfig, value); }
+        public AxisConfig TableRConfig { get => tableRConfig; set => SetValue(ref tableRConfig, value); }
+        public AxisConfig RobotAxisConfig { get => robotAxisConfig; set => SetValue(ref robotAxisConfig, value); }
+
+
+
+        //刷新座標
         public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
         public double TablePosY { get => tablePosY; set => SetValue(ref tablePosY, value); }
+
         public string Version { get => version; set => SetValue(ref version, value); }
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
 
@@ -65,6 +78,18 @@ namespace WLS3200Gen2
                 machine.Home();
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
+                TableR = machine.MicroDetection.AxisR;
+                RobotAxis = machine.Feeder.RobotAxis;
+               
+
+                TableXConfig = machineSetting.TableXConfig;
+                TableYConfig = machineSetting.TableYConfig;
+                TableRConfig = machineSetting.TableRConfig;
+                RobotAxisConfig = machineSetting.RobotAxisConfig;
+
+
+
+
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;

@@ -40,6 +40,7 @@ namespace WLS3200Gen2.Model.Module
 
         public Axis AxisX { get; }
         public Axis AxisY { get; }
+        public Axis AxisR { get; }
         public DigitalOutput TableVacuum { get; }
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
