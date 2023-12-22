@@ -67,13 +67,16 @@ namespace WLS3200Gen2.Model
         {
 
             Axis[] axes = motionController.Axes.ToArray();
-            var dis = motionController.IutputSignals.ToArray();
-            var dos = motionController.OutputSignals.ToArray();
+            DigitalInput[] dis = motionController.IutputSignals.ToArray();
+            DigitalOutput[] dos = motionController.OutputSignals.ToArray();
 
             Feeder = new Feeder(robot, loadPort, macro, aligner, axes[3]);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
+
+
+
         public async void Home()
         {
             try
@@ -233,6 +236,18 @@ namespace WLS3200Gen2.Model
 
             return robot;
         }
+
+        public DigitalInput[] GetInputs()
+        {
+            DigitalInput[] dis = motionController.IutputSignals.ToArray();
+            return dis;
+        }
+        public DigitalOutput[] GetOutputs()
+        {
+            DigitalOutput[] dos = motionController.OutputSignals.ToArray();
+            return dos;
+        }
+       
 
     }
 

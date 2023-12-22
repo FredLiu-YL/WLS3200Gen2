@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Account;
+using YuanliCore.Interface;
 using YuanliCore.Model.LoadPort;
 using YuanliCore.Model.UserControls;
 using YuanliCore.Motion;
@@ -24,13 +25,16 @@ namespace WLS3200Gen2
         private Task taskRefresh1 = Task.CompletedTask;
         private UserAccount account;
         private string version;
-        private Axis tableX , tableY , tableR;
+        private Axis tableX, tableY, tableR;
         private Axis robotAxis;
         private AxisConfig tableXConfig, tableYConfig, tableRConfig, robotAxisConfig;
-        private double tablePosX, tablePosY ,tablePosR;
+        private double tablePosX, tablePosY, tablePosR;
 
         private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
         private WriteableBitmap mainImage;
+        private DigitalInput[] digitalInputs;
+        private DigitalOutput[] digitalOutputs;
+
 
         private bool isRefresh;
 
@@ -50,7 +54,8 @@ namespace WLS3200Gen2
         public AxisConfig TableYConfig { get => tableYConfig; set => SetValue(ref tableYConfig, value); }
         public AxisConfig TableRConfig { get => tableRConfig; set => SetValue(ref tableRConfig, value); }
         public AxisConfig RobotAxisConfig { get => robotAxisConfig; set => SetValue(ref robotAxisConfig, value); }
-
+        public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
+        public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
 
 
         //刷新座標
@@ -81,7 +86,9 @@ namespace WLS3200Gen2
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
                 RobotAxis = machine.Feeder.RobotAxis;
-               
+
+                DigitalInputs = machine.GetInputs();
+                DigitalOutputs = machine.GetOutputs();
 
                 TableXConfig = machineSetting.TableXConfig;
                 TableYConfig = machineSetting.TableYConfig;
@@ -97,7 +104,7 @@ namespace WLS3200Gen2
                 TabControlSelectedIndex = 0;
 
                 for (int i = 0; i < 5; i++)
-                    LoadPort1Wafers.Add(new WaferUIData {WaferStates=  ExistStates.Exist, SN=(i+1).ToString() });
+                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString() });
                 for (int i = 5; i < 10; i++)
                     LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString() });
                 for (int i = 10; i < 25; i++)

@@ -163,5 +163,44 @@ namespace WLS3200Gen2
             }
         });
 
+
+
+        public ICommand TESTCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+
+                DigitalInputs[0].IsSignal = false;
+                DigitalInputs[1].IsSignal = true;
+                DigitalInputs[2].IsSignal = true;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand TEST1Command => new RelayCommand(async () =>
+        {
+            try
+            {
+
+                DigitalInputs[0].IsSignal = true;
+                DigitalInputs[1].IsSignal = false;
+                DigitalInputs[2].IsSignal = false;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+
     }
 }

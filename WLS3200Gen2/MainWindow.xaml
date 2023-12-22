@@ -313,9 +313,13 @@
                                                             </ListBox.ItemContainerStyle>
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
-                                                                     --><!--這裡放置你的 UserControl--><!-- 
+                                                                     -->
+                                                        <!--這裡放置你的 UserControl-->
+                                                        <!-- 
                                                                     <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
-                                                                    --><!--<Button/>--><!--
+                                                                    -->
+                                                        <!--<Button/>-->
+                                                        <!--
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>-->
@@ -982,15 +986,17 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <GroupBox Header="Output" Grid.Column="0">
-                                    <UserControlUC:DigitalOutputUC Margin="-2"/>
+                                    <UserControlUC:DigitalOutputUC Margin="-2" OutputSignals="{Binding DigitalOutputs }"   />
                                 </GroupBox>
                                 <GroupBox Header="Input" Grid.Column="1" >
-                                    <UserControlUC:DigitalInputUC Margin="-2" />
+                                    <UserControlUC:DigitalInputUC Margin="-2" InputSignals="{Binding DigitalInputs }"   />
                                 </GroupBox>
                             </Grid>
                         </StackPanel>
 
                     </Grid>
+                    <Button HorizontalAlignment="Left" Margin="284,106,0,134" Grid.Row="1" Width="75"    Command="{Binding TESTCommand}" />
+                    <Button Content="Button" HorizontalAlignment="Left" Margin="439,106,0,134" Grid.Row="1" Width="75"  Command="{Binding TEST1Command}" />
 
                 </Grid>
             </TabItem>

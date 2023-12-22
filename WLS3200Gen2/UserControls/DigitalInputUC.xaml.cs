@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -25,10 +26,28 @@ namespace WLS3200Gen2.UserControls
         public DigitalInputUC()
         {
             InitializeComponent();
+
+        }
+
+        public static readonly DependencyProperty InputSignalsProperty = DependencyProperty.Register("InputSignals", typeof(DigitalInput[]), typeof(DigitalInputUC), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public DigitalInput[] InputSignals
+        {
+            get => (DigitalInput[])GetValue(InputSignalsProperty);
+            set => SetValue(InputSignalsProperty, value);
         }
 
 
+       
+        private async Task Refresh()
+        {
+            Task.Run(() => {
 
+                
+
+
+            });
+
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -43,6 +62,11 @@ namespace WLS3200Gen2.UserControls
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void DigitalInput_Unloaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

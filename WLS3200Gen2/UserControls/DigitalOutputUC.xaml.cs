@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -22,11 +23,21 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class DigitalOutputUC : UserControl, INotifyPropertyChanged
     {
+
+
         public DigitalOutputUC()
         {
             InitializeComponent();
         }
 
+        public static readonly DependencyProperty OutputSignalsProperty = DependencyProperty.Register("OutputSignals", typeof(DigitalOutput[]), typeof(DigitalOutputUC), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+
+        public DigitalOutput[] OutputSignals
+        {
+            get => (DigitalOutput[])GetValue(OutputSignalsProperty);
+            set => SetValue(OutputSignalsProperty, value);
+        }
 
 
 
