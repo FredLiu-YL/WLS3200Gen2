@@ -98,6 +98,7 @@
     <Compile Include="Component\DummyLoadPort.cs" />
     <Compile Include="Component\DummyMacro.cs" />
     <Compile Include="Component\DummyRobot.cs" />
+    <Compile Include="Component\HirataAligner_RS232.cs" />
     <Compile Include="Component\HirataLoadPort_RS232.cs" />
     <Compile Include="InterfaceTemporary.cs" />
     <Compile Include="Machine.Process.cs" />

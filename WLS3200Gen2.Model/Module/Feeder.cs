@@ -195,7 +195,7 @@ namespace WLS3200Gen2.Model.Module
         {
             await WaferMacroToStandBy();
             await WaferStandByToAligner();
-            tempAligner.Run();
+            tempAligner.Run(0);
             await WaferAlignerToStandBy();
 
             return processTempPre_Wafer;
