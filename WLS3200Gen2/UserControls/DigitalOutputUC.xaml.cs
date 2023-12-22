@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -23,8 +24,8 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class DigitalOutputUC : UserControl, INotifyPropertyChanged
     {
-
-
+        private bool[] OutputSwitchs;
+        private bool isClick;
         public DigitalOutputUC()
         {
             InitializeComponent();
@@ -40,7 +41,29 @@ namespace WLS3200Gen2.UserControls
         }
 
 
+        public ICommand OutputSwitchCommand => new RelayCommand<string>((par) =>
+       {
+           try
+           {
+               int id= Convert.ToInt32(par);
+               if (isClick) return;//防止連點
+               isClick = true;
+               if (!OutputSignals[id].IsSwitchOn)
+                   OutputSignals[id].On();
+               else
+                   OutputSignals[id].Off();
 
+               isClick = false;
+           }
+           catch (Exception ex)
+           {
+
+               MessageBox.Show(ex.Message);
+           }
+           finally
+           {
+           }
+       });
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

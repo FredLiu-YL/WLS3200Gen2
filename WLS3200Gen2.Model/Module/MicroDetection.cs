@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Interface;
+using YuanliCore.Model;
 using YuanliCore.Model.Interface;
 using YuanliCore.Motion;
 
@@ -24,7 +25,13 @@ namespace WLS3200Gen2.Model.Module
         private CancellationTokenSource cancelToken;
         private Subject<BitmapSource> subject = new Subject<BitmapSource>();
         private IDisposable camlive;
-        public IObservable<BitmapSource> Observable => subject;
+
+
+        private OpticalAlignment opticalAlignment;
+
+
+
+
         public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs)
         {
             this.camera = camera;
@@ -36,7 +43,9 @@ namespace WLS3200Gen2.Model.Module
             LiftPin = outputs[2];
 
             ObservableDetection();
-          
+
+
+            opticalAlignment = new OpticalAlignment(AxisX, AxisY, this.camera);
         }
 
         public Axis AxisX { get; }
@@ -46,7 +55,7 @@ namespace WLS3200Gen2.Model.Module
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
         public DetectionRecipe detectionRecipe;
-
+        public IObservable<BitmapSource> Observable => subject;
 
         public async Task Home()
         {
@@ -63,25 +72,31 @@ namespace WLS3200Gen2.Model.Module
             this.pauseToken = pst;
             this.cancelToken = ctk;
 
-
+            //入料準備
 
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+    
             
+            //對位
+            opticalAlignment.CancelToken = cancelToken;
+            opticalAlignment.PauseToken = pauseToken;        
+            ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
+
+            cancelToken.Token.ThrowIfCancellationRequested();
+            await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+
             //每一個座標需要檢查的座標
-            foreach (var point in recipe.DetectionPoints)
+            foreach (DetectionPoint point in recipe.DetectionPoints)
             {
-                //對位
+                //轉換成對位後實際座標
+                var transPosition = transForm.TransPoint(point.Position);
 
-
-
-
-                await TableMoveToAsync(point.Position);
+                await TableMoveToAsync(transPosition);
                 await Task.Delay(200);
                 BitmapSource bmp = camera.GrabAsync();
-
                 subject.OnNext(bmp);//AOI另外丟到其他執行續處理
-              
+
                 if (isAutoSave)
                 {
 
@@ -98,6 +113,8 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
+        
+
         public async Task TableMoveToAsync(Point pos)
         {
 
@@ -107,10 +124,11 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
+
         public async Task DefectDetection(BitmapSource bmp)
         {
 
-          
+
 
         }
 

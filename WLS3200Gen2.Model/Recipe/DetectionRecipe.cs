@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using YuanliCore.Model;
 
 namespace WLS3200Gen2.Model.Recipe
 {
@@ -11,7 +12,7 @@ namespace WLS3200Gen2.Model.Recipe
     {
         public IEnumerable<DetectionPoint> DetectionPoints;
 
-
+        public AlignmentRecipe AlignRecipe;
 
     }
 

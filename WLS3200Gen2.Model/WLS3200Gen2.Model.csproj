@@ -106,9 +106,11 @@
     <Compile Include="MachineSetting.cs" />
     <Compile Include="Module\Feeder.cs" />
     <Compile Include="Module\MicroDetection.cs" />
+    <Compile Include="Module\OpticalAlignment.cs" />
     <Compile Include="Module\ProcessDataOutput.cs" />
     <Compile Include="Module\SECS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recipe\AlignmentRecipe.cs" />
     <Compile Include="Recipe\Cassette.cs" />
     <Compile Include="Recipe\DetectionRecipe.cs" />
     <Compile Include="Recipe\Die.cs" />
@@ -117,6 +119,10 @@
     <Compile Include="Recipe\Wafer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\YuanliCore\YuanliCore.CogVision\YuanliCore.CogVision.csproj">
+      <Project>{7794CBB3-58F6-4E99-9AB2-C3A257A361A9}</Project>
+      <Name>YuanliCore.CogVision</Name>
+    </ProjectReference>
     <ProjectReference Include="..\YuanliCore\YuanliCore.Model\YuanliCore.Model.csproj">
       <Project>{14946968-1DA0-4F66-ABD0-10D45D580E00}</Project>
       <Name>YuanliCore.Model</Name>
