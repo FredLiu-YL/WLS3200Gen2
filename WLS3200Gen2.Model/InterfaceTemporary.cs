@@ -12,12 +12,80 @@ namespace WLS3200Gen2.Model
 
     public interface ILoadPort
     {
+        /// <summary>
+        /// 是否有Mapping資訊
+        /// </summary>
         bool IsMapping { get; }
-
         /// <summary>
         /// null:沒片子 true:有片子 false:片子異常
         /// </summary>
         bool?[] Slot { get; }
+
+
+        /// <summary>
+        /// Error的狀態 正常、可復原的錯誤、不可復原的錯誤
+        /// </summary>
+        string ErrorStatus { get; }
+        /// <summary>
+        /// LoadPort目前運作的位置
+        /// </summary>
+        string DeviceStatus { get; }
+        /// <summary>
+        /// 異常狀態Str:00-FF
+        /// </summary>
+        string ErrorCode { get; }
+        /// <summary>
+        /// Cassette放置是否正確
+        /// </summary>
+        bool IsCassettePutOK { get; }
+        /// <summary>
+        /// Cassette是否夾住
+        /// </summary>
+        bool IsClamp { get; }
+        /// <summary>
+        /// 轉開門機構，是否有轉開
+        /// </summary>
+        bool IsSwitchDoor { get; }
+        /// <summary>
+        /// 吸附門真空，是否開啟
+        /// </summary>
+        bool IsVaccum { get; }
+        /// <summary>
+        /// 門是否打開了
+        /// </summary>
+        bool IsDoorOpen { get; }
+        /// <summary>
+        /// Sensor確認門是否打開
+        /// </summary>
+        bool IsSensorCheckDoorOpen { get; }
+        /// <summary>
+        ///  移動Cassette前進後退的平台，是否前進到可以運作的位置
+        /// </summary>
+        bool IsDock { get; }
+
+        /// <summary>
+        /// Wafer厚薄度(um)
+        /// </summary>
+        int WaferThickness { get; set; }
+        /// <summary>
+        /// Cassette間距(um)
+        /// </summary>
+        int CassettePitch { get; set; }
+        /// <summary>
+        /// Cassette間距(um)
+        /// </summary>
+        int StarOffset { get; set; }
+        /// <summary>
+        /// Wafer間距容忍值
+        /// </summary>
+        int WaferPitchTolerance { get; set; }
+        /// <summary>
+        /// Wafer位置容忍值
+        /// </summary>
+        int WaferPositionTolerance { get; set; }
+
+
+
         // 初始化
         void Initial();
         /// <summary>
@@ -43,10 +111,7 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 異常復原
         /// </summary>
-        void Reset();
-
-
-
+        void AlarmReset();
     }
     public interface IRobot
     {
@@ -131,11 +196,12 @@ namespace WLS3200Gen2.Model
 
     public interface IAligner
     {
-
         void Initial();
         void Home();
-
-        void Run();
+        void Run(double degree);
+        void VaccumOn();
+        void VaccumOff();
+        void AlarmReset();
 
     }
     public interface IMacro

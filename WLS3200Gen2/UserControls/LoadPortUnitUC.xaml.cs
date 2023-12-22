@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WLS3200Gen2.Model;
+using YuanliCore.Model.UserControls;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -30,7 +32,7 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty LoadPortWafersProperty = DependencyProperty.Register(nameof(LoadPortWafers), typeof(ObservableCollection<WaferUIData>), typeof(LoadPortUnitUC),
                                                                                        new FrameworkPropertyMetadata(new ObservableCollection<WaferUIData>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-      
+
 
         public LoadPortUnitUC()
         {
@@ -49,8 +51,94 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(LoadPortWafersProperty, value);
         }
 
+        public ICommand OpenCassetteLoad => new RelayCommand(async () =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    LoadPort.Load();
+                    LoadPortWafers.Clear();
+                    int i = 1;
+                    foreach (var item in LoadPort.Slot)
+                    {
+                        if (item == null)
+                        {
+                            LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString() });
+                        }
+                        else if (item == true)
+                        {
+                            LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString() });
+                        }
+                        else
+                        {
+                            LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.Error, SN = (i + 1).ToString() });
+                        }
+                        i++;
+                    }
 
-
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand UnLoad => new RelayCommand(async () =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    LoadPort.Home();
+                    LoadPortWafers.Clear();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand AlarmReset => new RelayCommand(async () =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    LoadPort.AlarmReset();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand ParamSet => new RelayCommand(async () =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    LoadPort.SetParam();
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

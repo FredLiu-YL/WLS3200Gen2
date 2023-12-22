@@ -4,9 +4,40 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Test"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         
+        xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls;assembly=WLS3200Gen2"
+        mc:Ignorable="d"
+         DataContext="{Binding Main, Source={StaticResource Locator}}"   
+        Title="MainWindow" Height="400" Width="350">
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <Style TargetType="{x:Type Border}" x:Key="HorizontalDividerBorder">
+                    <Setter Property="Background" Value="{DynamicResource MaterialDesignDivider}"/>
+                    <Setter Property="UseLayoutRounding" Value="True"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Height" Value="1"/>
+                </Style>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Closing">
+                <i:InvokeCommandAction  Command="{Binding ClosingCommand}"   />
+            </i:EventTrigger>
+            <i:EventTrigger EventName="Loaded">
+                <i:InvokeCommandAction  Command="{Binding LoadedCommand}"  />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+        <GroupBox >
+            <UserControlUC:LoadPortUnitUC LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" />
+        </GroupBox>
     </Grid>
 </Window>

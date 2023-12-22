@@ -15,6 +15,32 @@ namespace WLS3200Gen2.Model.Component
 
         public bool?[] Slot => slot;
 
+        public string ErrorStatus => throw new NotImplementedException();
+
+        public string DeviceStatus => throw new NotImplementedException();
+
+        public string ErrorCode => throw new NotImplementedException();
+
+        public bool IsCassettePutOK => throw new NotImplementedException();
+
+        public bool IsClamp => throw new NotImplementedException();
+
+        public bool IsSwitchDoor => throw new NotImplementedException();
+
+        public bool IsVaccum => throw new NotImplementedException();
+
+        public bool IsDoorOpen => throw new NotImplementedException();
+
+        public bool IsSensorCheckDoorOpen => throw new NotImplementedException();
+
+        public bool IsDock => throw new NotImplementedException();
+
+        public int WaferThickness { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int CassettePitch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int StarOffset { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int WaferPitchTolerance { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int WaferPositionTolerance { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public void GetParam()
         {
             throw new NotImplementedException();
@@ -40,7 +66,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void Reset()
+        public void AlarmReset()
         {
             throw new NotImplementedException();
         }

@@ -12,9 +12,10 @@ namespace WLS3200Gen2.Model.Component
     public class HirataLoadPort_RS232 : ILoadPort
     {
         private bool isMapping;
-
         private bool?[] slot;
-
+        private string errorStatus, deviceStatus, errorCode;
+        private bool isCassettePutOK, isClamp, isSwitchDoor, isVaccum, isDoorOpen, isSensorCheckDoorOpen, isDock;
+        private int waferThickness, cassettePitch, starOffset, waferPitchTolerance, waferPositionTolerance;
         private SerialPort serialPort = new SerialPort();
         private readonly object lockObj = new object();
         private const char SOH = (char)0x01;
@@ -31,6 +32,25 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsMapping => isMapping;
         public bool?[] Slot => slot;
+        public string ErrorStatus => errorStatus;
+        public string DeviceStatus => deviceStatus;
+        public string ErrorCode => errorCode;
+        public bool IsCassettePutOK => isCassettePutOK;
+        public bool IsClamp => isClamp;
+        public bool IsSwitchDoor => isSwitchDoor;
+        public bool IsVaccum => isVaccum;
+        public bool IsDoorOpen => isDoorOpen;
+        public bool IsSensorCheckDoorOpen => isSensorCheckDoorOpen;
+        public bool IsDock => isDock;
+
+
+        public int WaferThickness { get => waferThickness; set => waferThickness = value; }
+        public int CassettePitch { get => cassettePitch; set => cassettePitch = value; }
+        public int StarOffset { get => starOffset; set => starOffset = value; }
+        public int WaferPitchTolerance { get => waferPitchTolerance; set => waferPitchTolerance = value; }
+        public int WaferPositionTolerance { get => waferPositionTolerance; set => waferPositionTolerance = value; }
+
+
 
         public HirataLoadPort_RS232(string comPort)
         {
@@ -45,7 +65,7 @@ namespace WLS3200Gen2.Model.Component
                 serialPort.Handshake = Handshake.None;
                 //serialPort.RtsEnable = false;
                 //serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler_Notch_Finder);
-                serialPort.Open();
+                //serialPort.Open();
                 //serialPort.DataReceived += TriggerDataReceive;
             }
             catch (Exception ex)
@@ -159,93 +179,87 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Set_Reset(LoadPortItems loadPortItems)
+        public LoadPortItems Set_Reset()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsSetOK = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("SET:RSET;", false);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsSetOK = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("SET:RSET;", false);
-                    foreach (var item in str3)
+                    if (item.Contains("SET"))
                     {
-                        if (item.Contains("SET"))
-                        {
-                            loadPortItems.IsSetOK = true;
-                        }
+                        loadPortItems.IsSetOK = true;
                     }
-                    //await SendMessage(loadPortItems, "SET:RSET;", LoadPortSendMessageType.Set);
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         ///  LoadPort自動關門
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_UnLoad(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_UnLoad()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:ORGN;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:ORGN;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:ORGN;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 取得LoadPort目前狀態
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Get_Status(LoadPortItems loadPortItems)
+        public LoadPortItems Get_Status()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsGetOK = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("GET:STAS;", false);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsGetOK = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("GET:STAS;", false);
-                    foreach (var item in str3)
+                    if (item.Contains("GET"))
                     {
-                        if (item.Contains("GET"))
-                        {
-                            loadPortItems.IsGetOK = true;
-                            TransStatus(loadPortItems, item);
-                        }
+                        loadPortItems.IsGetOK = true;
+                        TransStatus(loadPortItems, item);
                     }
-                    //await SendMessage(loadPortItems, "GET:STAS;", LoadPortSendMessageType.GetStats);
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 取得LoadPort設定的Cassette參數(板厚、板間距、板數量、板片起始位置偏移、板厚誤差、板間距誤差、板子大小)
@@ -253,34 +267,32 @@ namespace WLS3200Gen2.Model.Component
         /// <param name="loadPortItems"></param>
         /// <param name="fOUPType"></param>
         /// <returns></returns>
-        public async Task Get_FOUPParam(LoadPortItems loadPortItems, LoadPortFOUPType fOUPType)
+        public LoadPortItems Get_FOUPParam(LoadPortFOUPType fOUPType)
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                if (LoadPortFOUPType.TYPE_1 != LoadPortFOUPType.None)
                 {
-                    if (LoadPortFOUPType.TYPE_1 != LoadPortFOUPType.None)
+                    string A = ((int)fOUPType).ToString("D2");
+                    loadPortItems.IsGetOK = false;
+                    List<string> str3 = new List<string>();
+                    str3 = SendGetMessage("GET:MAPP" + A + ";", false);
+                    foreach (var item in str3)
                     {
-                        string A = ((int)fOUPType).ToString("D2");
-                        loadPortItems.IsGetOK = false;
-                        List<string> str3 = new List<string>();
-                        str3 = SendGetMessage("GET:MAPP" + A + ";", false);
-                        foreach (var item in str3)
+                        if (item.Contains("GET"))
                         {
-                            if (item.Contains("GET"))
-                            {
-                                loadPortItems.IsGetOK = true;
-                                TransFOUP_Parameter(loadPortItems, item);
-                            }
+                            loadPortItems.IsGetOK = true;
+                            TransFOUP_Parameter(loadPortItems, item);
                         }
-                        //await SendMessage(loadPortItems, "GET:MAPP" + A + ";", LoadPortSendMessageType.GetMapp);
                     }
+                    return loadPortItems;
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 設定LoadPort的Cassette參數(板厚、板間距、板數量、板片起始位置偏移、板厚誤差、板間距誤差、板子大小)
@@ -288,41 +300,39 @@ namespace WLS3200Gen2.Model.Component
         /// <param name="loadPortItems"></param>
         /// <param name="fOUP_Parameter"></param>
         /// <returns></returns>
-        public async Task Set_FOUPParam(LoadPortItems loadPortItems, LoadPortFOUP_Parameter fOUP_Parameter)
+        public LoadPortItems Set_FOUPParam(LoadPortFOUP_Parameter fOUP_Parameter)
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                if (fOUP_Parameter.FOUPType != LoadPortFOUPType.None)
                 {
-                    if (fOUP_Parameter.FOUPType != LoadPortFOUPType.None)
+                    loadPortItems.IsSetOK = false;
+                    string A = ((int)fOUP_Parameter.FOUPType).ToString("D2");
+                    string B = fOUP_Parameter.WaferThickness.ToString("X4");
+                    string C = fOUP_Parameter.CassettePitch.ToString("X4");
+                    string D = fOUP_Parameter.CassetteSlotCount.ToString("X4");
+                    string E = fOUP_Parameter.OffsetDistance.ToString("X4");
+                    string F = fOUP_Parameter.WaferPitchTolerance.ToString("X4");
+                    string G = fOUP_Parameter.WaferPositionTolerance.ToString("X4");
+                    string H = ((int)fOUP_Parameter.SizeStatus).ToString("D2");
+                    loadPortItems.IsSetOK = false;
+                    List<string> str3 = new List<string>();
+                    str3 = SendGetMessage("SET:MAPP" + A + B + C + D + E + F + G + H + ";", false);
+                    foreach (var item in str3)
                     {
-                        loadPortItems.IsSetOK = false;
-                        string A = ((int)fOUP_Parameter.FOUPType).ToString("D2");
-                        string B = fOUP_Parameter.WaferThickness.ToString("X4");
-                        string C = fOUP_Parameter.CassettePitch.ToString("X4");
-                        string D = fOUP_Parameter.CassetteSlotCount.ToString("X4");
-                        string E = fOUP_Parameter.OffsetDistance.ToString("X4");
-                        string F = fOUP_Parameter.WaferPitchTolerance.ToString("X4");
-                        string G = fOUP_Parameter.WaferPositionTolerance.ToString("X4");
-                        string H = ((int)fOUP_Parameter.SizeStatus).ToString("D2");
-                        loadPortItems.IsSetOK = false;
-                        List<string> str3 = new List<string>();
-                        str3 = SendGetMessage("SET:MAPP" + A + B + C + D + E + F + G + H + ";", false);
-                        foreach (var item in str3)
+                        if (item.Contains("SET"))
                         {
-                            if (item.Contains("SET"))
-                            {
-                                loadPortItems.IsSetOK = true;
-                            }
+                            loadPortItems.IsSetOK = true;
                         }
-                        //await SendMessage(loadPortItems, "SET:MAPP" + A + B + C + D + E + F + G + H + ";", LoadPortSendMessageType.Set);
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 設定LoadPort的Cassette第幾組Type
@@ -359,7 +369,7 @@ namespace WLS3200Gen2.Model.Component
         }
 
         /////////////////////////////////////////////////////////////////////////以下沒有門的Load指令//////////////////////////////////////////////////////////////////////////
-        ///Mov_ClampON -> Mov_DockON -> Mov_VaccumON -> 判斷真空是否成立 -> 不成功 -> Set_Reset -> Mov_DoorOpen -> Mov_DoorToOpenPos -> Mov_MappingElevator_StartPos -> Mov_MappingFW -> Mov_MappingElevator_EndPos -> Mov_MappingBW -> Mov_Elevator_LoadPos
+        ///Mov_ClampON -> Mov_DockMoveIn -> Mov_VaccumON -> 判斷真空是否成立 -> 不成功 -> Set_Reset -> Mov_DoorOpen -> Mov_DoorToOpenPos -> Mov_MappingElevator_StartPos -> Mov_MappingFW -> Mov_MappingElevator_EndPos -> Mov_MappingBW -> Mov_Elevator_LoadPos
         ///                                                              ->   成功 ->　Mov_LoadMapping_FromDock
 
         /// <summary>
@@ -367,45 +377,42 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_ClampON(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_ClampON()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:FCCL;", true);
+                foreach (var item in str3)
                 {
-                    //MOV:FCOP
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:FCCL;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort鬆開
@@ -456,44 +463,42 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_DockMoveIn(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_DockMoveIn()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
-                {  //MOV:Y_BW
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:Y_FW;", true);
-                    foreach (var item in str3)
-                    {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
-                    }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
-                }
-                catch (Exception ex)
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:Y_FW;", true);
+                foreach (var item in str3)
                 {
-                    throw ex;
+                    if (item.Contains("MOV"))
+                    {
+                        loadPortItems.IsMovOK = true;
+                    }
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort移動Cassette平台移動到可拿Cassette位置
@@ -544,44 +549,44 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_VaccumON(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_VaccumON()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                loadPortItems.ErrorCode = "";
+                loadPortItems.IsError = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:VCON;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:VCON;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort開門
@@ -632,308 +637,294 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_DoorToOpenPos(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_DoorToOpenPos()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:DRFW;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:DRFW;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort電梯機構，移動到Mapping開始位置
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_MappingElevator_StartPos(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_MappingElevator_StartPos()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:Z_ST;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:Z_ST;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// Mapping偵測Sensor伸進去
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_MappingFW(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_MappingFW()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:MAFW;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:MAFW;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort電梯機構，移動到Mapping結束位置
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_MappingElevator_EndPos(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_MappingElevator_EndPos()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:Z_ED;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:Z_ED;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// Mapping偵測Sensor回來
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_MappingBW(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_MappingBW()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:MABW;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:MABW;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort電梯機構，移動到遠離Cassette區域位置
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_Elevator_LoadPos(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_Elevator_LoadPos()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:Z_DN;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:Z_DN;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// LoadPort從Dock狀態到Load+Mapping
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public async Task Mov_LoadMapping_FromDock(LoadPortItems loadPortItems)
+        public LoadPortItems Mov_LoadMapping_FromDock()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                loadPortItems.IsMovOK = false;
+                loadPortItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:FDML;", true);
+                foreach (var item in str3)
                 {
-                    loadPortItems.IsMovOK = false;
-                    loadPortItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:FDML;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            loadPortItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            loadPortItems.IsDone = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            loadPortItems.ErrorCode = error_code;
-                            loadPortItems.IsError = true;
-                        }
+                        loadPortItems.IsMovOK = true;
                     }
-                    //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                    if (item.Contains("INF"))
+                    {
+                        loadPortItems.IsDone = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
@@ -1380,7 +1371,15 @@ namespace WLS3200Gen2.Model.Component
 
         public void Initial()
         {
-            throw new NotImplementedException();
+            try
+            {
+                Open();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public async void Load()
@@ -1389,29 +1388,68 @@ namespace WLS3200Gen2.Model.Component
             {
                 LoadPortItems loadPortItems = new LoadPortItems();
                 await Task.Run(() =>
-             {
-                 loadPortItems = Mov_Load();
-                 loadPortItems = Get_Mapping();
+                {
+                    loadPortItems = Mov_Load();
+                    if (loadPortItems.IsMovOK == true)
+                    {
+                        loadPortItems = Mov_DockMoveIn();
+                        if (loadPortItems.IsMovOK == true)
+                        {
+                            loadPortItems = Mov_VaccumON();
+                            //如果真空吸的起來，代表有門
+                            if (loadPortItems.IsMovOK == true)
+                            {
+                                loadPortItems = Mov_LoadMapping_FromDock();
+                                if (loadPortItems.IsMovOK == true)
+                                {
 
-                 slot = new bool?[loadPortItems.MappingWaferStatus.Count];
-                 int idx = 0;
-                 foreach (var item in loadPortItems.MappingWaferStatus)
-                 {
-                     if (item == LoadPortMapping_Result.WaferExists)
-                     {
-                         slot[idx] = true;
-                     }
-                     else if (item == LoadPortMapping_Result.WaferNo)
-                     {
-                         slot[idx] = null;
-                     }
-                     else
-                     {
-                         slot[idx] = false;
-                     }
-                     idx++;
-                 }
-             });
+                                }
+                            }
+                            else if (loadPortItems.IsError = true && loadPortItems.ErrorCode == "16")
+                            {
+                                loadPortItems = Set_Reset();
+                                if (loadPortItems.IsSetOK == true)
+                                {
+                                    loadPortItems = Get_Status();
+                                    TransStatusToUI(loadPortItems);
+                                    if (loadPortItems.ErrorStatus == LoadPortErrorType.Normal)
+                                    {
+                                        loadPortItems = Mov_DoorToOpenPos();
+                                        if (loadPortItems.IsMovOK == true)
+                                        {
+                                            loadPortItems = Mov_MappingElevator_StartPos();
+                                            if (loadPortItems.IsMovOK == true)
+                                            {
+                                                loadPortItems = Mov_MappingFW();
+                                                if (loadPortItems.IsMovOK == true)
+                                                {
+                                                    loadPortItems = Mov_MappingElevator_EndPos();
+                                                    if (loadPortItems.IsMovOK == true)
+                                                    {
+                                                        loadPortItems = Mov_MappingBW();
+                                                        if (loadPortItems.IsMovOK == true)
+                                                        {
+                                                            loadPortItems = Mov_Elevator_LoadPos();
+                                                            if (loadPortItems.IsMovOK == true)
+                                                            {
+
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    loadPortItems = Get_Mapping();
+                    TransMappingToUI(loadPortItems);
+                    loadPortItems = Get_Status();
+                    TransStatusToUI(loadPortItems);
+                    isMapping = true;
+                });
             }
             catch (Exception ex)
             {
@@ -1419,30 +1457,249 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void Home()
+        public async void Home()
         {
-            throw new NotImplementedException();
+            try
+            {
+                LoadPortItems loadPortItems = new LoadPortItems();
+                await Task.Run(() =>
+                {
+                    loadPortItems = Mov_UnLoad();
+                    loadPortItems = Get_Status();
+                    TransStatusToUI(loadPortItems);
+                });
+                isMapping = false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void GetStatus()
+        public async void GetStatus()
         {
-            throw new NotImplementedException();
+            try
+            {
+                LoadPortItems loadPortItems = new LoadPortItems();
+                await Task.Run(() =>
+                {
+                    loadPortItems = Get_Status();
+                    TransStatusToUI(loadPortItems);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void GetParam()
+        public async void GetParam()
         {
-            throw new NotImplementedException();
+            try
+            {
+                LoadPortItems loadPortItems = new LoadPortItems();
+                await Task.Run(() =>
+                {
+                    loadPortItems = Get_FOUPParam(LoadPortFOUPType.TYPE_1);
+                    TransParamToUI(loadPortItems);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void SetParam()
+        public async void SetParam()
         {
-            throw new NotImplementedException();
+            try
+            {
+                LoadPortItems loadPortItems = new LoadPortItems();
+                await Task.Run(() =>
+                {
+                    LoadPortFOUP_Parameter fOUP_Parameter = new LoadPortFOUP_Parameter();
+                    fOUP_Parameter.WaferThickness = waferThickness;
+                    fOUP_Parameter.CassettePitch = cassettePitch;
+                    fOUP_Parameter.OffsetDistance = starOffset;
+                    fOUP_Parameter.WaferPitchTolerance = waferPitchTolerance;
+                    fOUP_Parameter.WaferPositionTolerance = waferPositionTolerance;
+                    loadPortItems = Set_FOUPParam(fOUP_Parameter);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void Reset()
+        public async void AlarmReset()
         {
-            throw new NotImplementedException();
+            try
+            {
+                LoadPortItems loadPortItems = new LoadPortItems();
+                await Task.Run(() =>
+                {
+                    loadPortItems = Set_Reset();
+                    loadPortItems = Get_Status();
+                    TransStatusToUI(loadPortItems);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+        public void TransMappingToUI(LoadPortItems loadPortItems)
+        {
+            try
+            {
+                slot = new bool?[loadPortItems.MappingWaferStatus.Count];
+                int idx = 0;
+                foreach (var item in loadPortItems.MappingWaferStatus)
+                {
+                    if (item == LoadPortMapping_Result.WaferExists)
+                    {
+                        slot[idx] = true;
+                    }
+                    else if (item == LoadPortMapping_Result.WaferNo)
+                    {
+                        slot[idx] = null;
+                    }
+                    else
+                    {
+                        slot[idx] = false;
+                    }
+                    idx++;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void TransStatusToUI(LoadPortItems loadPortItems)
+        {
+            try
+            {
+                if (loadPortItems.ErrorStatus == LoadPortErrorType.Normal)
+                {
+                    errorStatus = "正常";
+                }
+                else if (loadPortItems.ErrorStatus == LoadPortErrorType.ErrorCanRecover)
+                {
+                    errorStatus = "可復原的錯誤";
+                }
+                else if (loadPortItems.ErrorStatus == LoadPortErrorType.ErrorNotRecover)
+                {
+                    errorStatus = "不可復原的錯誤";
+                }
+
+                if (loadPortItems.MachineDeviceStatus == LoadPortMachineDeviceType.Run)
+                {
+                    deviceStatus = "運作中";
+                }
+                else if (loadPortItems.MachineDeviceStatus == LoadPortMachineDeviceType.Load)
+                {
+                    deviceStatus = "可取片位置";
+                }
+                else if (loadPortItems.MachineDeviceStatus == LoadPortMachineDeviceType.HomePosition)
+                {
+                    deviceStatus = "原點位置";
+                }
+
+                errorCode = loadPortItems.ErrorCode;
+
+                if (loadPortItems.CassetteStatus == LoadPortCassetteType.PutOK)
+                {
+                    isCassettePutOK = true;
+                }
+                else
+                {
+                    isCassettePutOK = false;
+                }
+
+                if (loadPortItems.ClampStatus == LoadPortClampType.UnClamp)
+                {
+                    isClamp = false;
+                }
+                else
+                {
+                    isClamp = true;
+                }
+
+                if (loadPortItems.DoorStatus == LoadPortDoorType.Close)
+                {
+                    isSwitchDoor = false;
+                }
+                else
+                {
+                    isSwitchDoor = true;
+                }
+
+                if (loadPortItems.VaccumStatus == LoadPortVaccumType.Vaccum)
+                {
+                    isVaccum = true;
+                }
+                else
+                {
+                    isVaccum = false;
+                }
+
+                if (loadPortItems.DoorPositionStatus == LoadPortDoorPositionType.Close)
+                {
+                    isDoorOpen = false;
+                }
+                else
+                {
+                    isDoorOpen = true;
+                }
+
+                if (loadPortItems.DieSensorStatus == LoadPortDieSensorType.Lighting)
+                {
+                    isSensorCheckDoorOpen = true;
+                }
+                else
+                {
+                    isSensorCheckDoorOpen = false;
+                }
+                //isSensorCheckDoorOpen
+
+
+                if (loadPortItems.DockStatus == LoadPortDockType.UnDock)
+                {
+                    isDock = false;
+                }
+                else
+                {
+                    isDock = true;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void TransParamToUI(LoadPortItems loadPortItems)
+        {
+            try
+            {
+                waferThickness = loadPortItems.FOUP_ParameterStatus.WaferThickness;
+                cassettePitch = loadPortItems.FOUP_ParameterStatus.CassettePitch;
+                starOffset = loadPortItems.FOUP_ParameterStatus.OffsetDistance;
+                waferPitchTolerance = loadPortItems.FOUP_ParameterStatus.WaferPitchTolerance;
+                waferPositionTolerance = loadPortItems.FOUP_ParameterStatus.WaferPositionTolerance;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
     }
     public class LoadPortItems
     {
@@ -1673,11 +1930,11 @@ namespace WLS3200Gen2.Model.Component
     {
         None = -1,
         /// <summary>
-        /// LoadPort轉開門機構_開門
+        /// LoadPort轉開門機構_轉開狀態
         /// </summary>
         Open = 0,
         /// <summary>
-        /// LoadPort轉開門機構_關門
+        /// LoadPort轉開門機構_可插入狀態(正常狀態下)
         /// </summary>
         Close = 1,
         /// <summary>
