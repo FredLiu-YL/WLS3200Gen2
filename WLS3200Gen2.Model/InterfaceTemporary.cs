@@ -9,7 +9,72 @@ using System.Windows;
 
 namespace WLS3200Gen2.Model
 {
-
+    public class LoadPortStatus
+    {
+        /// <summary>
+        /// Error的狀態 正常、可復原的錯誤、不可復原的錯誤
+        /// </summary>
+        public string ErrorStatus { get; }
+        /// <summary>
+        /// LoadPort目前運作的位置
+        /// </summary>
+        public string DeviceStatus { get; }
+        /// <summary>
+        /// 異常狀態Str:00-FF
+        /// </summary>
+        public string ErrorCode { get; }
+        /// <summary>
+        /// Cassette放置是否正確
+        /// </summary>
+        public bool IsCassettePutOK { get; }
+        /// <summary>
+        /// Cassette是否夾住
+        /// </summary>
+        public bool IsClamp { get; }
+        /// <summary>
+        /// 轉開門機構，是否有轉開
+        /// </summary>
+        public bool IsSwitchDoor { get; }
+        /// <summary>
+        /// 吸附門真空，是否開啟
+        /// </summary>
+        public bool IsVaccum { get; }
+        /// <summary>
+        /// 門是否打開了
+        /// </summary>
+        public bool IsDoorOpen { get; }
+        /// <summary>
+        /// Sensor確認門是否打開
+        /// </summary>
+        public bool IsSensorCheckDoorOpen { get; }
+        /// <summary>
+        ///  移動Cassette前進後退的平台，是否前進到可以運作的位置
+        /// </summary>
+        public bool IsDock { get; }
+    }
+    public class LoadPortParam
+    {
+        /// <summary>
+        /// Wafer厚薄度(um)
+        /// </summary>
+        public int WaferThickness { get; set; }
+        /// <summary>
+        /// Cassette間距(um)
+        /// </summary>
+        public int CassettePitch { get; set; }
+        /// <summary>
+        /// Cassette間距(um)
+        /// </summary>
+        public int StarOffset { get; set; }
+        /// <summary>
+        /// Wafer間距容忍值
+        /// </summary>
+        public int WaferPitchTolerance { get; set; }
+        /// <summary>
+        /// Wafer位置容忍值
+        /// </summary>
+        public int WaferPositionTolerance { get; set; }
+    }
     public interface ILoadPort
     {
         /// <summary>
@@ -21,93 +86,21 @@ namespace WLS3200Gen2.Model
         /// </summary>
         bool?[] Slot { get; }
 
+        Task<LoadPortStatus> GetStatus();
 
-        /// <summary>
-        /// Error的狀態 正常、可復原的錯誤、不可復原的錯誤
-        /// </summary>
-        string ErrorStatus { get; }
-        /// <summary>
-        /// LoadPort目前運作的位置
-        /// </summary>
-        string DeviceStatus { get; }
-        /// <summary>
-        /// 異常狀態Str:00-FF
-        /// </summary>
-        string ErrorCode { get; }
-        /// <summary>
-        /// Cassette放置是否正確
-        /// </summary>
-        bool IsCassettePutOK { get; }
-        /// <summary>
-        /// Cassette是否夾住
-        /// </summary>
-        bool IsClamp { get; }
-        /// <summary>
-        /// 轉開門機構，是否有轉開
-        /// </summary>
-        bool IsSwitchDoor { get; }
-        /// <summary>
-        /// 吸附門真空，是否開啟
-        /// </summary>
-        bool IsVaccum { get; }
-        /// <summary>
-        /// 門是否打開了
-        /// </summary>
-        bool IsDoorOpen { get; }
-        /// <summary>
-        /// Sensor確認門是否打開
-        /// </summary>
-        bool IsSensorCheckDoorOpen { get; }
-        /// <summary>
-        ///  移動Cassette前進後退的平台，是否前進到可以運作的位置
-        /// </summary>
-        bool IsDock { get; }
-
-        /// <summary>
-        /// Wafer厚薄度(um)
-        /// </summary>
-        int WaferThickness { get; set; }
-        /// <summary>
-        /// Cassette間距(um)
-        /// </summary>
-        int CassettePitch { get; set; }
-        /// <summary>
-        /// Cassette間距(um)
-        /// </summary>
-        int StarOffset { get; set; }
-        /// <summary>
-        /// Wafer間距容忍值
-        /// </summary>
-        int WaferPitchTolerance { get; set; }
-        /// <summary>
-        /// Wafer位置容忍值
-        /// </summary>
-        int WaferPositionTolerance { get; set; }
-
-
+        Task<LoadPortParam> GetParam();
 
         // 初始化
         void Initial();
         /// <summary>
         /// 打開門，且自動SlotMapping
         /// </summary>
-        void Load();
+        Task Load();
         /// <summary>
         /// 回歸到關門狀態，也可以應用在UnLoad
         /// </summary>
-        void Home();
-        /// <summary>
-        /// 取得目前狀態
-        /// </summary>
-        void GetStatus();
-        /// <summary>
-        /// 取得參數設定
-        /// </summary>
-        void GetParam();
-        /// <summary>
-        /// 設定參數
-        /// </summary>
-        void SetParam();
+        Task Home();
+
         /// <summary>
         /// 異常復原
         /// </summary>
@@ -196,13 +189,39 @@ namespace WLS3200Gen2.Model
 
     public interface IAligner
     {
+        /// <summary>
+        /// Aligner目前運作的狀態
+        /// </summary>
+        string DeviceStatus { get; }
+        /// <summary>
+        /// 異常狀態Str:00-FF
+        /// </summary>
+        string ErrorCode { get; }
+        /// <summary>
+        /// AlignerNotch偵測狀態
+        /// </summary>
+        string NotchStatus { get; }
+        /// <summary>
+        /// 是否有Wafer
+        /// </summary>
+        bool IsWafer { get; }
+        /// <summary>
+        /// 是否在原點
+        /// </summary>
+        bool IsOrg { get; }
+        /// <summary>
+        /// 是否真空建立
+        /// </summary>
+        bool IsVaccum { get; }
+
+
         void Initial();
         void Home();
         void Run(double degree);
         void VaccumOn();
         void VaccumOff();
         void AlarmReset();
-
+        void GetStatus();
     }
     public interface IMacro
     {

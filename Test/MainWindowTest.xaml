@@ -9,7 +9,7 @@
         xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls;assembly=WLS3200Gen2"
         mc:Ignorable="d"
          DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="MainWindow" Height="400" Width="350">
+        Title="MainWindow" Height="420" Width="350">
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
@@ -36,8 +36,17 @@
                 <i:InvokeCommandAction  Command="{Binding LoadedCommand}"  />
             </i:EventTrigger>
         </i:Interaction.Triggers>
-        <GroupBox >
-            <UserControlUC:LoadPortUnitUC LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" />
-        </GroupBox>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button    Command="{Binding OpenCCommand}"    />
+            <UserControlUC:LoadPortUnitUC  Grid.Row="1"  LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}"  />
+        </Grid>
+       
+       
+       
     </Grid>
 </Window>
