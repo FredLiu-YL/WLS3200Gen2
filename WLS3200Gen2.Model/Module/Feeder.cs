@@ -53,6 +53,10 @@ namespace WLS3200Gen2.Model.Module
         public FeederSetting Setting;
 
         public Task WaitEFEMonSafe = Task.CompletedTask;
+
+
+        public Action MicroFixed;
+
         public async Task Home()
         {
             try
@@ -134,10 +138,10 @@ namespace WLS3200Gen2.Model.Module
 
             }
 
-            var waferuse=  cassette.Wafers.Where(w => w != null);
+            var waferuse = cassette.Wafers.Where(w => w != null);
             processWafers = new Queue<Wafer>(waferuse);
 
- 
+
         }
         public void ProcessEnd()
         {
@@ -158,7 +162,7 @@ namespace WLS3200Gen2.Model.Module
 
                 return Task.Run(async () =>
                  {
-                     
+
                      if (processWafers.Count() > 0)
                      {
                          processTempPre_Wafer = processWafers.Dequeue();
@@ -170,12 +174,12 @@ namespace WLS3200Gen2.Model.Module
                      }
 
 
-                  
+
 
                      if (processWafers.Count == 0)
                          isCassetteDone = true;
 
-                   
+
 
                  });
             }
@@ -188,18 +192,41 @@ namespace WLS3200Gen2.Model.Module
         }
 
         /// <summary>
-        /// 從Macro->Aligner->主設備
+        /// 從Macro->Aligner-> StandBy位置
         /// </summary>
         /// <returns></returns>
-        public async Task<Wafer> LoadAsync()
+        public async Task LoadToMicroReadyAsync()
         {
             await WaferMacroToStandBy();
             await WaferStandByToAligner();
             tempAligner.Run(0);
             await WaferAlignerToStandBy();
 
+
+        }
+        /// <summary>
+        /// wafer放進主設備
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Wafer> LoadToMicroAsync()
+        {
+   
+            
+            //await WaferAlignerToStandBy();
+  
+            await RobotAxis.MoveToAsync(Setting.MicroPos);
+            Robot.PutBackWafer(ArmStation.Micro);
+            Robot.ArmcatchPos(ArmStation.Micro);
+            Robot.VacuumOff();
+            MicroFixed?.Invoke(); //顯微鏡平台固定WAFER ( 真空開)
+            Robot.ArmPutdown();
+            Robot.ArmToRetract(ArmStation.Micro);
+            Robot.ArmToStandby();
+
             return processTempPre_Wafer;
         }
+
+
         public async Task UnLoadAsync(int cassetteIndex)
         {
             await WaferMicroToStandBy();
@@ -213,7 +240,7 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task LoadWaferFromCassette(int cassetteIndex)
         {
-          
+
 
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
 
@@ -237,6 +264,7 @@ namespace WLS3200Gen2.Model.Module
             Robot.PutBackWafer(ArmStation.Cassette);
             Robot.ArmcatchPos(ArmStation.Cassette);
             Robot.VacuumOff();
+
             Robot.ArmPutdown();
             Robot.ArmToRetract(ArmStation.Cassette);
             Robot.ArmToStandby();
@@ -357,8 +385,7 @@ namespace WLS3200Gen2.Model.Module
             Robot.ArmToStandby();
 
         }
-
-
+     
 
         public Cassette SlotMapping(ILoadPort loadPort)
         {

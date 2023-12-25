@@ -170,9 +170,7 @@ namespace WLS3200Gen2
             try
             {
 
-                DigitalInputs[0].IsSignal = false;
-                DigitalInputs[1].IsSignal = true;
-                DigitalInputs[2].IsSignal = true;
+               
             }
             catch (Exception ex)
             {
@@ -188,9 +186,7 @@ namespace WLS3200Gen2
             try
             {
 
-                DigitalInputs[0].IsSignal = true;
-                DigitalInputs[1].IsSignal = false;
-                DigitalInputs[2].IsSignal = false;
+    
             }
             catch (Exception ex)
             {
