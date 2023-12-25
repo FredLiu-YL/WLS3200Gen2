@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
@@ -15,7 +16,11 @@ namespace WLS3200Gen2.Model
         public AxisConfig TableRConfig { get; set; } = new AxisConfig();
         public AxisConfig RobotAxisConfig { get; set; } = new AxisConfig();
 
-
+        public Point TableWaferCatchPosition { get; set; }
+        public double RobotAxisStandbyPosition { get; set; }
+        public double RobotAxisAlignTakePosition { get; set; }
+        public double RobotAxisMacroTakePosition { get; set; }
+        public double RobotAxisLoadPortTakePosition { get; set; }
 
 
         public RobotType RobotsType { get; set; }

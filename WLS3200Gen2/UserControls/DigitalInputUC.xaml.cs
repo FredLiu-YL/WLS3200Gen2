@@ -26,7 +26,7 @@ namespace WLS3200Gen2.UserControls
         public DigitalInputUC()
         {
             InitializeComponent();
-
+            Refresh();
         }
 
         public static readonly DependencyProperty InputSignalsProperty = DependencyProperty.Register("InputSignals", typeof(DigitalInput[]), typeof(DigitalInputUC), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -40,13 +40,17 @@ namespace WLS3200Gen2.UserControls
        
         private async Task Refresh()
         {
-            Task.Run(() => {
+            try
+            {
 
-                
+    
 
+            }
+            catch (Exception ex)
+            {
 
-            });
-
+                throw ex;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

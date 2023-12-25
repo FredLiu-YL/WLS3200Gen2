@@ -55,12 +55,21 @@ namespace WLS3200Gen2.Model
                         cts.Token.ThrowIfCancellationRequested();
                         await pts.Token.WaitWhilePausedAsync(cts.Token); //暫停在Macro上
 
-                        //macro動作完成後 ，載到主設備內 
-                        Wafer waferInside = await Feeder.LoadAsync();
-      
-                        //預載一片在Macro上
-                        Task taskLoad = Feeder.LoadToReadyAsync();
+                        //顯微鏡站準備接WAFER
+                        Task catchWafertask= MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
 
+                        //到預備位置準備進片
+                        await Feeder.LoadToMicroReadyAsync();
+                        await catchWafertask; //等待顯微鏡站準備完成
+
+                        //wafer送到主設備內 
+                        Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
+                        Wafer waferInside = await Feeder.LoadToMicroAsync();
+
+
+                        //預載一片在Macro上
+                        Task taskLoad = Feeder.LoadToReadyAsync();                       
+                    
                         //執行主設備動作
                         await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
 
@@ -122,5 +131,14 @@ namespace WLS3200Gen2.Model
             cts.Cancel();
 
         }
+
+        private void MicroVacuumOn()
+        {
+
+            MicroDetection.TableVacuum.On();
+
+        }
+        
+
     }
 }

@@ -50,9 +50,10 @@ namespace WLS3200Gen2.Model.Module
                 await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
 
             }
+            //獲得設計座標
+            Point[] designPos = ConvertDesignPos();
 
-            //設計座標與實際座標做對應 ，計算出轉換矩陣
-            Point[] designPos = alignmentRecipe.fiducialDatas.Select(f => f.DesignPosition).ToArray();
+            //設計座標與實際座標做對應 ，計算出轉換矩陣       
             affineTransform = new CogAffineTransform(designPos, targetPos);
 
             return affineTransform;
@@ -78,6 +79,15 @@ namespace WLS3200Gen2.Model.Module
         {
 
             return new Point();
+        }
+
+        //因 Index 或 設計圖座標 與Table的 XY軸方向可能不一致 ，所以需要多一個轉換方法將設計座標轉換成與實際機台座標同方向
+        //如果原先設計座標就是以機台本身取得的座標 則直接取出就好 (目前設計邏輯都是在UI端就定實際機台座標)
+        private Point[] ConvertDesignPos()
+        {
+
+            Point[] designPos = alignmentRecipe.fiducialDatas.Select(f => f.DesignPosition).ToArray();
+            return designPos;
         }
 
     }

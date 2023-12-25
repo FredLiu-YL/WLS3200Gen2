@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
+using YuanliCore.CameraLib;
 using YuanliCore.Interface;
 using YuanliCore.Model;
 using YuanliCore.Model.Interface;
@@ -23,7 +24,7 @@ namespace WLS3200Gen2.Model.Module
         private ICamera camera;
         private PauseTokenSource pauseToken;
         private CancellationTokenSource cancelToken;
-        private Subject<BitmapSource> subject = new Subject<BitmapSource>();
+        private Subject<(BitmapSource, bool)> subject = new Subject<(BitmapSource, bool)>();
         private IDisposable camlive;
 
 
@@ -55,12 +56,28 @@ namespace WLS3200Gen2.Model.Module
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
         public DetectionRecipe detectionRecipe;
-        public IObservable<BitmapSource> Observable => subject;
+        public IObservable<(BitmapSource image, bool isAutoSave)> Observable => subject;
 
         public async Task Home()
         {
 
             await Task.Run(() => { });
+
+        }
+        /// <summary>
+        /// 接料準備動作
+        /// </summary>
+        /// <param name="tableWaferCatchPosition"></param>
+        /// <param name="pst"></param>
+        /// <param name="ctk"></param>
+        /// <returns></returns>
+        public async Task CatchWaferPrepare(Point tableWaferCatchPosition,  PauseTokenSource pst, CancellationTokenSource ctk)
+        {
+
+            await TableMoveToAsync(tableWaferCatchPosition);
+
+            //如果有lift 或夾持機構 需要做處理
+
 
         }
 
@@ -72,15 +89,16 @@ namespace WLS3200Gen2.Model.Module
             this.pauseToken = pst;
             this.cancelToken = ctk;
 
-            //入料準備
+            //入料準備?
+
 
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-    
-            
+
+
             //對位
             opticalAlignment.CancelToken = cancelToken;
-            opticalAlignment.PauseToken = pauseToken;        
+            opticalAlignment.PauseToken = pauseToken;
             ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
 
             cancelToken.Token.ThrowIfCancellationRequested();
@@ -95,14 +113,9 @@ namespace WLS3200Gen2.Model.Module
                 await TableMoveToAsync(transPosition);
                 await Task.Delay(200);
                 BitmapSource bmp = camera.GrabAsync();
-                subject.OnNext(bmp);//AOI另外丟到其他執行續處理
+                subject.OnNext((bmp, isAutoSave));//AOI另外丟到其他執行續處理
 
-                if (isAutoSave)
-                {
-
-                }
-
-                pauseToken.IsPaused = true;
+                // pauseToken.IsPaused = true;
 
                 cancelToken.Token.ThrowIfCancellationRequested();
                 await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
@@ -113,18 +126,24 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
-        
+
 
         public async Task TableMoveToAsync(Point pos)
         {
-
+            await Task.WhenAll(AxisX.MoveToAsync(pos.X),
+                    AxisY.MoveToAsync(pos.Y));
         }
         public async Task TableMoveAsync(Vector distance)
         {
-
+            await Task.WhenAll(AxisX.MoveAsync(distance.X),
+                    AxisY.MoveAsync(distance.Y));
         }
 
-
+        /// <summary>
+        /// 檢測功能
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
         public async Task DefectDetection(BitmapSource bmp)
         {
 
@@ -140,7 +159,11 @@ namespace WLS3200Gen2.Model.Module
                     .ObserveOn(TaskPoolScheduler.Default)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
                     .Subscribe(async frame =>
                     {
-                        await DefectDetection(frame);
+                        if (frame.isAutoSave)
+                        {
+                            frame.image.Save("C:\\TEST", ImageFileFormats.Bmp);
+                        }
+                        await DefectDetection(frame.image);
                     });
         }
 
