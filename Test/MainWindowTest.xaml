@@ -9,7 +9,7 @@
         xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls;assembly=WLS3200Gen2"
         mc:Ignorable="d"
          DataContext="{Binding Main, Source={StaticResource Locator}}"   
-        Title="MainWindow" Height="420" Width="350">
+        Title="MainWindow" Height="800" Width="710">
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
@@ -39,14 +39,18 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.1*"/>
-                <RowDefinition/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="450"/>
+                <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
-            <Button    Command="{Binding OpenCCommand}"    />
-            <UserControlUC:LoadPortUnitUC  Grid.Row="1"  LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}"  />
+            <Grid.ColumnDefinitions >
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="160"/>
+            </Grid.ColumnDefinitions>
+            <!--<Button    Command="{Binding OpenCCommand}"    />-->
+            <UserControlUC:LoadPortUnitUC Grid.Column="0" Grid.Row="1"  LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" />
+            <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
         </Grid>
-       
-       
-       
     </Grid>
 </Window>

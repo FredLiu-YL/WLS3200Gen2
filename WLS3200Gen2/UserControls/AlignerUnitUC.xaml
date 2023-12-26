@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.AlignerUnitUC"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
+      xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model"
+      mc:Ignorable="d" 
+      x:Name="AlignerUnit"             
+      d:DesignHeight="200" d:DesignWidth="350">
+
+    <Grid  DataContext="{Binding ElementName=AlignerUnit}" Background="White">
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="0.5*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid >
+            <Grid.RowDefinitions >
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Border Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" />
+            <Button Grid.Column="0" Grid.Row="0" Margin="1" Background="Tan" BorderBrush="Tan" Content="Home" Command="{Binding Home}" IsEnabled="{Binding IsAlignerEnabled}"/>
+            <Button Grid.Column="0" Grid.Row="1" Margin="1" Content="VaccumOn" Command="{Binding VaccumOn}" IsEnabled="{Binding IsAlignerEnabled}"/>
+            <Button Grid.Column="0" Grid.Row="2" Margin="1" Content="VaccumOff" Command="{Binding VaccumOff}" IsEnabled="{Binding IsAlignerEnabled}"/>
+            <Border Grid.Column="0" Grid.Row="3" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="3" />
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
+                <Label VerticalAlignment="Center" FontSize="11" Content="Degree:"  Width="50" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="60" Text="{Binding Degree}" />
+            </StackPanel>
+            <Button Grid.Column="0" Grid.Row="4" Margin="1" Background="Tan" BorderBrush="Tan" Content="Run" Command="{Binding Run}" IsEnabled="{Binding IsAlignerEnabled}"/>
+            <Button Grid.Row="5" Margin="1" Height="30" Background="CadetBlue" BorderBrush="CadetBlue"  Content="Alarm Reset" Command="{Binding AlarmReset}" IsEnabled="{Binding IsAlignerEnabled}"/>
+
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions >
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" FontSize="18"  Text="Status"    Background="Azure" />
+            <StackPanel Grid.Row="1" Orientation="Horizontal" >
+                <Label  Grid.Row="5" VerticalAlignment="Center" FontSize="10" Content="Device Status:" />
+                <TextBox  Grid.Row="6" VerticalAlignment="Center" Text="{Binding AlignerUIShow.DeviceStatus}" />
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" >
+                <Label  Grid.Row="5" VerticalAlignment="Center" FontSize="10" Content="Error Code:" />
+                <TextBox  Grid.Row="6" VerticalAlignment="Center" Text="{Binding AlignerUIShow.ErrorCode}" />
+            </StackPanel>
+            <StackPanel Grid.Row="3" Orientation="Horizontal" >
+                <Label  Grid.Row="5" VerticalAlignment="Center" FontSize="10" Content="Notch Status:" />
+                <TextBox  Grid.Row="6" VerticalAlignment="Center" Text="{Binding AlignerUIShow.NotchStatus}" />
+            </StackPanel>
+            <StackPanel Grid.Row="4" Orientation="Horizontal">
+                <TextBlock   Text="Wafer狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding AlignerUIShow.IsWafer }"  />
+            </StackPanel>
+            <StackPanel Grid.Row="5" Orientation="Horizontal">
+                <TextBlock   Text="原點狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="20,0,0,0" Width="20" Height="20" IsSignal="{Binding AlignerUIShow.IsOrg }"  />
+            </StackPanel>
+            <StackPanel Grid.Row="6" Orientation="Horizontal">
+                <TextBlock   Text="真空狀態" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="20,0,0,0" Width="20" Height="20" IsSignal="{Binding AlignerUIShow.IsVaccum }"  />
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

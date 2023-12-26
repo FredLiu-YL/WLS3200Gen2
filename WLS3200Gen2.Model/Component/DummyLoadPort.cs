@@ -20,6 +20,11 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
+        public void Close()
+        {
+            throw new NotImplementedException();
+        }
+
         public LoadPortParam GetParam()
         {
             throw new NotImplementedException();
@@ -45,6 +50,11 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
+        public Task SetParam(LoadPortParam loadPortParam)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SlotMapping()
         {
             try
@@ -64,6 +74,11 @@ namespace WLS3200Gen2.Model.Component
 
                 throw ex;
             }
+        }
+
+        Task ILoadPort.AlarmReset()
+        {
+            throw new NotImplementedException();
         }
 
         Task<LoadPortParam> ILoadPort.GetParam()

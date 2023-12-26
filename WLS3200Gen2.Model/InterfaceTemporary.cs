@@ -14,43 +14,43 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// Error的狀態 正常、可復原的錯誤、不可復原的錯誤
         /// </summary>
-        public string ErrorStatus { get; }
+        public string ErrorStatus { get; set; }
         /// <summary>
         /// LoadPort目前運作的位置
         /// </summary>
-        public string DeviceStatus { get; }
+        public string DeviceStatus { get; set; }
         /// <summary>
         /// 異常狀態Str:00-FF
         /// </summary>
-        public string ErrorCode { get; }
+        public string ErrorCode { get; set; }
         /// <summary>
         /// Cassette放置是否正確
         /// </summary>
-        public bool IsCassettePutOK { get; }
+        public bool IsCassettePutOK { get; set; }
         /// <summary>
         /// Cassette是否夾住
         /// </summary>
-        public bool IsClamp { get; }
+        public bool IsClamp { get; set; }
         /// <summary>
         /// 轉開門機構，是否有轉開
         /// </summary>
-        public bool IsSwitchDoor { get; }
+        public bool IsSwitchDoor { get; set; }
         /// <summary>
         /// 吸附門真空，是否開啟
         /// </summary>
-        public bool IsVaccum { get; }
+        public bool IsVaccum { get; set; }
         /// <summary>
         /// 門是否打開了
         /// </summary>
-        public bool IsDoorOpen { get; }
+        public bool IsDoorOpen { get; set; }
         /// <summary>
         /// Sensor確認門是否打開
         /// </summary>
-        public bool IsSensorCheckDoorOpen { get; }
+        public bool IsSensorCheckDoorOpen { get; set; }
         /// <summary>
         ///  移動Cassette前進後退的平台，是否前進到可以運作的位置
         /// </summary>
-        public bool IsDock { get; }
+        public bool IsDock { get; set; }
     }
     public class LoadPortParam
     {
@@ -78,22 +78,29 @@ namespace WLS3200Gen2.Model
     public interface ILoadPort
     {
         /// <summary>
-        /// 是否有Mapping資訊
-        /// </summary>
-        bool IsMapping { get; }
-        /// <summary>
         /// null:沒片子 true:有片子 false:片子異常
         /// </summary>
         bool?[] Slot { get; }
-
+        /// <summary>
+        /// 取得狀態
+        /// </summary>
+        /// <returns></returns>
         Task<LoadPortStatus> GetStatus();
-
+        /// <summary>
+        /// 取得設定參數
+        /// </summary>
+        /// <returns></returns>
         Task<LoadPortParam> GetParam();
-
-        // 初始化
+        /// <summary>
+        /// 初始化
+        /// </summary>
         void Initial();
         /// <summary>
-        /// 打開門，且自動SlotMapping
+        /// 關閉
+        /// </summary>
+        void Close();
+        /// <summary>
+        /// 打開門，會自動SlotMapping
         /// </summary>
         Task Load();
         /// <summary>
@@ -104,7 +111,12 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 異常復原
         /// </summary>
-        void AlarmReset();
+        Task AlarmReset();
+
+        /// <summary>
+        /// 參數設定
+        /// </summary>
+        Task SetParam(LoadPortParam loadPortParam);
     }
     public interface IRobot
     {
@@ -185,43 +197,74 @@ namespace WLS3200Gen2.Model
         Macro,
         Micro
     }
-
-
-    public interface IAligner
+    public class AlignerStatus
     {
         /// <summary>
         /// Aligner目前運作的狀態
         /// </summary>
-        string DeviceStatus { get; }
+        public string DeviceStatus { get; set; }
         /// <summary>
         /// 異常狀態Str:00-FF
         /// </summary>
-        string ErrorCode { get; }
+        public string ErrorCode { get; set; }
         /// <summary>
         /// AlignerNotch偵測狀態
         /// </summary>
-        string NotchStatus { get; }
+        public string NotchStatus { get; set; }
         /// <summary>
         /// 是否有Wafer
         /// </summary>
-        bool IsWafer { get; }
+        public bool IsWafer { get; set; }
         /// <summary>
         /// 是否在原點
         /// </summary>
-        bool IsOrg { get; }
+        public bool IsOrg { get; set; }
         /// <summary>
         /// 是否真空建立
         /// </summary>
-        bool IsVaccum { get; }
-
-
+        public bool IsVaccum { get; set; }
+    }
+    public interface IAligner
+    {
+        /// <summary>
+        /// 初始化
+        /// </summary>
         void Initial();
-        void Home();
-        void Run(double degree);
-        void VaccumOn();
-        void VaccumOff();
-        void AlarmReset();
-        void GetStatus();
+        /// <summary>
+        /// 關閉
+        /// </summary>
+        void Close();
+        /// <summary>
+        /// 回到原點
+        /// </summary>
+        /// <returns></returns>
+        Task Home();
+        /// <summary>
+        /// 找到Notch後，偏移多少角度(degree)
+        /// </summary>
+        /// <param name="degree"></param>
+        /// <returns></returns>
+        Task Run(double degree);
+        /// <summary>
+        /// 真空開啟
+        /// </summary>
+        /// <returns></returns>
+        Task VaccumOn();
+        /// <summary>
+        /// 真空關閉
+        /// </summary>
+        /// <returns></returns>
+        Task VaccumOff();
+        /// <summary>
+        /// 異常重置
+        /// </summary>
+        /// <returns></returns>
+        Task AlarmReset();
+        /// <summary>
+        /// 取得目前狀態
+        /// </summary>
+        /// <returns></returns>
+        Task<AlignerStatus> GetStatus();
     }
     public interface IMacro
     {

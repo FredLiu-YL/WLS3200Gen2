@@ -666,6 +666,11 @@ namespace WLS3200Gen2.Model.Component
                                     if (item.Contains(message.Substring(0, 3)))
                                     {
                                         isSendOK_2 = true;
+                                        string code = item.Substring(0, 2);
+                                        if (code != "00")
+                                        {
+                                            isSendOK_1 = true;
+                                        }
                                     }
                                     if (item.Contains("INF") || item.Contains("ABS"))
                                     {
@@ -772,12 +777,6 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 Open();
-                AlignerItems alignerItems = new AlignerItems();
-                alignerItems = Command_GetStatus();
-                if (alignerItems.IsGetOK == true)
-                {
-
-                }
             }
             catch (Exception ex)
             {
@@ -786,7 +785,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public async void Home()
+        public async Task Home()
         {
             try
             {
@@ -805,7 +804,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public async void Run(double degree)
+        public async Task Run(double degree)
         {
             try
             {
@@ -829,7 +828,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public async void VaccumOn()
+        public async Task VaccumOn()
         {
             try
             {
@@ -849,7 +848,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public async void VaccumOff()
+        public async Task VaccumOff()
         {
             try
             {
@@ -869,7 +868,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public async void AlarmReset()
+        public async Task AlarmReset()
         {
             try
             {
@@ -889,33 +888,103 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public async void GetStatus()
+        public async Task<AlignerStatus> GetStatus()
         {
             try
             {
+                AlignerStatus alignerStatus = new AlignerStatus();
                 AlignerItems alignerItems = new AlignerItems();
                 await Task.Run(() =>
                 {
                     alignerItems = Command_GetStatus();
                     if (alignerItems.IsGetOK == true)
                     {
-
+                        alignerStatus = UpdateStatus(alignerItems);
                     }
-                    //aligner_tb2.Text = 
-                    //    "ErrorStatus:" + alignerItems.AlignerErrorStatus + "\r\n" +
-                    //    "ModeStatus:" + alignerItems.AlignerModeStatus + "\r\n" +
-                    //    "MachineDeviceStatus:" + alignerItems.AlignerMachineDeviceStatus + "\r\n" +
-                    //    "RunStatus:" + alignerItems.AlignerRunStatus + "\r\n" +
-                    //    "ErrorCode:" + alignerItems.ErrorCode + "\r\n" +
-                    //    "WaferStatus:" + alignerItems.AlignerWaferStatus + "\r\n" +
-                    //    "OriginStatus:" + alignerItems.AlignerOriginStatus + "\r\n" +
-                    //    "VaccumStatus:" + alignerItems.AlignerVaccumStatus + "\r\n" +
-                    //    "LiftStatus:" + alignerItems.AlignerLiftStatus + "\r\n" +
-                    //    "NotchDetectionStatus:" + alignerItems.AlignerNotchDetectionStatus + "\r\n";
                 });
+                return alignerStatus;
             }
             catch (Exception ex)
             {
+                throw ex;
+            }
+        }
+        public AlignerStatus UpdateStatus(AlignerItems alignerItems)
+        {
+            try
+            {
+                AlignerStatus alignerStatus = new AlignerStatus();
+                if (alignerItems.AlignerMachineDeviceStatus == AlignerMachineDeviceType.Load_Ready)
+                {
+                    alignerStatus.DeviceStatus = "完成";
+                }
+                else if (alignerItems.AlignerMachineDeviceStatus == AlignerMachineDeviceType.Supply)
+                {
+                    alignerStatus.DeviceStatus = "供應正常";
+                }
+                else if (alignerItems.AlignerMachineDeviceStatus == AlignerMachineDeviceType.Extraction)
+                {
+                    alignerStatus.DeviceStatus = "提取";
+                }
+                else
+                {
+                    alignerStatus.DeviceStatus = "正常";
+                }
+
+                alignerStatus.ErrorCode = alignerItems.ErrorCode;
+                if (alignerItems.AlignerNotchDetectionStatus == AlignerNotchDetectionType.Detected_OK)
+                {
+                    alignerStatus.NotchStatus = "有偵測到Notch";
+                }
+                else if (alignerItems.AlignerNotchDetectionStatus == AlignerNotchDetectionType.PosFinNotch_Completed)
+                {
+                    alignerStatus.NotchStatus = "FinNotch座標完成";
+                }
+                else if (alignerItems.AlignerNotchDetectionStatus == AlignerNotchDetectionType.PosIDReader_Completed)
+                {
+                    alignerStatus.NotchStatus = "IDReader座標完成";
+                }
+                else if (alignerItems.AlignerNotchDetectionStatus == AlignerNotchDetectionType.Detected_Not)
+                {
+                    alignerStatus.NotchStatus = "未偵測到Notch";
+                }
+                else
+                {
+                    alignerStatus.NotchStatus = "None";
+                }
+
+                if (alignerItems.AlignerWaferStatus == AlignerWaferType.Wafer_Have)
+                {
+                    alignerStatus.IsWafer = true;
+                }
+                else
+                {
+                    alignerStatus.IsWafer = false;
+                }
+
+                if (alignerItems.AlignerOriginStatus == AlignerOriginType.Origin_On)
+                {
+                    alignerStatus.IsOrg = true;
+                }
+                else
+                {
+                    alignerStatus.IsOrg = false;
+                }
+
+                if (alignerItems.AlignerVaccumStatus == AlignerVaccumType.ON)
+                {
+                    alignerStatus.IsVaccum = true;
+                }
+                else
+                {
+                    alignerStatus.IsVaccum = false;
+                }
+
+                return alignerStatus;
+            }
+            catch (Exception ex)
+            {
+
                 throw ex;
             }
         }
@@ -1019,12 +1088,27 @@ namespace WLS3200Gen2.Model.Component
         Online = 0,
         Maintenance = 1
     }
+    /// <summary>
+    /// 目前運作的狀態
+    /// </summary>
     public enum AlignerMachineDeviceType
     {
         None = -1,
+        /// <summary>
+        /// 未知
+        /// </summary>
         Unknown = 0,
+        /// <summary>
+        /// 供應正常
+        /// </summary>
         Supply = 1,
-        Extraction = 2,//提取
+        /// <summary>
+        /// 提取
+        /// </summary>
+        Extraction = 2,
+        /// <summary>
+        /// 加載完成
+        /// </summary>
         Load_Ready = 3
     }
     public enum AlignerRunType
@@ -1036,19 +1120,37 @@ namespace WLS3200Gen2.Model.Component
     public enum AlignerWaferType
     {
         None = -1,
+        /// <summary>
+        /// 沒有片子
+        /// </summary>
         Wafer_Without = 0,
+        /// <summary>
+        /// 有片子
+        /// </summary>
         Wafer_Have = 1
     }
     public enum AlignerOriginType
     {
         None = -1,
+        /// <summary>
+        /// 不在原點上
+        /// </summary>
         Origin_Not = 0,
+        /// <summary>
+        /// 在原點上
+        /// </summary>
         Origin_On = 1
     }
     public enum AlignerVaccumType
     {
         None = -1,
+        /// <summary>
+        /// 無真空建立
+        /// </summary>
         OFF = 0,
+        /// <summary>
+        /// 真空建立
+        /// </summary>
         ON = 1
     }
     public enum AlignerLiftType
@@ -1061,9 +1163,21 @@ namespace WLS3200Gen2.Model.Component
     public enum AlignerNotchDetectionType
     {
         None = -1,
+        /// <summary>
+        /// 有偵測到
+        /// </summary>
         Detected_OK = 0,
+        /// <summary>
+        /// FinNotch座標完成
+        /// </summary>
         PosFinNotch_Completed = 1,
+        /// <summary>
+        /// IDReader座標完成
+        /// </summary>
         PosIDReader_Completed = 2,
+        /// <summary>
+        /// 未偵測到
+        /// </summary>
         Detected_Not = 3,
     }
     public enum AlignerSendMessageType
