@@ -20,6 +20,24 @@ namespace WLS3200Gen2.Model.Component
         private const string ADR = "00";
         private bool start_flag = false;
         private List<char> RxData;
+        private string deviceStatus;
+        private string errorCode;
+        private string notchStatus;
+        private bool isWafer;
+        private bool isOrg;
+        private bool isVaccum;
+
+        public string DeviceStatus => deviceStatus;
+
+        public string ErrorCode => errorCode;
+
+        public string NotchStatus => notchStatus;
+
+        public bool IsWafer => isWafer;
+
+        public bool IsOrg => isOrg;
+
+        public bool IsVaccum => isVaccum;
 
         public HirataAligner_RS232(string comPort)
         {
@@ -77,37 +95,35 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Move_ORG(AlignerItems alignerItems)
+        public AlignerItems Command_MovORG()
         {
             try
             {
-                await Task.Run(async () =>
+                try
                 {
-                    try
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems.IsMovOK = false;
+                    alignerItems.IsDone = false;
+                    List<string> str3 = new List<string>();
+                    str3 = SendGetMessage("MOV:ORGN;", true);
+                    foreach (var item in str3)
                     {
-                        alignerItems.IsMovOK = false;
-                        alignerItems.IsDone = false;
-                        List<string> str3 = new List<string>();
-                        str3 = SendGetMessage("MOV:ORGN;", true);
-                        foreach (var item in str3)
+                        if (item.Contains("MOV"))
                         {
-                            if (item.Contains("MOV"))
-                            {
-                                alignerItems.IsMovOK = true;
-                            }
-                            if (item.Contains("INF"))
-                            {
-                                alignerItems.IsDone = true;
-                            }
+                            alignerItems.IsMovOK = true;
+                        }
+                        if (item.Contains("INF"))
+                        {
+                            alignerItems.IsDone = true;
                         }
                     }
-                    catch (Exception ex)
-                    {
+                    return alignerItems;
+                }
+                catch (Exception ex)
+                {
 
-                        throw ex;
-                    }
-                });
-
+                    throw ex;
+                }
             }
             catch (Exception ex)
             {
@@ -120,7 +136,7 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public AlignerItems Move_FindNotch()
+        public AlignerItems Command_MovFindNotch()
         {
             try
             {
@@ -283,37 +299,36 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Get_Status(AlignerItems alignerItems)
+        public AlignerItems Command_GetStatus()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems.IsGetOK = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("GET:STAS;", false);
+                foreach (var item in str3)
                 {
-                    alignerItems.IsStas = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("GET:STAS;", false);
-                    foreach (var item in str3)
+                    if (item.Contains("GET:STAS"))
                     {
-                        if (item.Contains("GET:STAS"))
-                        {
-                            alignerItems.IsStas = true;
-                            TransStatus(alignerItems, item);
-                        }
+                        alignerItems = TransStatus(item);
+                        alignerItems.IsGetOK = true;
                     }
                 }
-                catch (Exception ex)
-                {
+                return alignerItems;
+            }
+            catch (Exception ex)
+            {
 
-                    throw ex;
-                }
-            });
+                throw ex;
+            }
         }
         /// <summary>
         /// Aligner真空開啟
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public AlignerItems Vaccum_ON()
+        public AlignerItems Command_MovVaccumON()
         {
             try
             {
@@ -346,41 +361,40 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Vaccum_OFF(AlignerItems alignerItems)
+        public AlignerItems Command_MovVaccumOFF()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems.IsMovOK = false;
+                alignerItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:ACOP;", true);
+                foreach (var item in str3)
                 {
-                    alignerItems.IsMovOK = false;
-                    alignerItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:ACOP;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            alignerItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            alignerItems.IsDone = true;
-                        }
+                        alignerItems.IsMovOK = true;
+                    }
+                    if (item.Contains("INF"))
+                    {
+                        alignerItems.IsDone = true;
                     }
                 }
-                catch (Exception ex)
-                {
+                return alignerItems;
+            }
+            catch (Exception ex)
+            {
 
-                    throw ex;
-                }
-            });
+                throw ex;
+            }
         }
         /// <summary>
         /// 設定找到AlignerNotch後偏移的位置
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public AlignerItems Set_FindNotchPos(double degree)
+        public AlignerItems Command_SetFindNotchPos(double degree)
         {
             try
             {
@@ -393,7 +407,7 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (item.Contains("SET"))
                     {
-                        alignerItems.IsMovOK = true;
+                        alignerItems.IsSetOK = true;
                     }
                     if (item.Contains("INF"))
                     {
@@ -447,144 +461,152 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Set_Reset(AlignerItems alignerItems)
+        public AlignerItems Command_SetReset()
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems.IsSetOK = false;
+                alignerItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("SET:RSET;", true);
+                foreach (var item in str3)
                 {
-                    alignerItems.IsSetOK = false;
-                    alignerItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("SET:RSET;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("SET"))
                     {
-                        if (item.Contains("SET"))
-                        {
-                            alignerItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            alignerItems.IsDone = true;
-                        }
+                        alignerItems.IsMovOK = true;
+                    }
+                    if (item.Contains("INF"))
+                    {
+                        alignerItems.IsDone = true;
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return alignerItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         /// <summary>
         /// 轉換Get_Status讀取的狀態
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <param name="str"></param>
-        public void TransStatus(AlignerItems alignerItems, string str)
+        public AlignerItems TransStatus(string str)
         {
-            char[] receive_data;
-            receive_data = str.ToCharArray();
-            //string type_code = str.Substring(0, 4);
-            //if (type_code != "0000")
-            //{
-            //    //switch (str.Substring(0, 4))
-            //    //{
-            //    //    case "0100":
-            //    //        logger_Notch_Finder.Write_Error_Logger("Checksum error");
-            //    //        break;
-            //    //    case "0200":
-            //    //        logger_Notch_Finder.Write_Error_Logger("Command error");
-            //    //        break;
-            //    //    case "0300":
-            //    //        logger_Notch_Finder.Write_Error_Logger("None");
-            //    //        break;
-            //    //    case "0400":
-            //    //        logger_Notch_Finder.Write_Error_Logger("Interlock");
-            //    //        break;
-            //    //    case "0500":
-            //    //        logger_Notch_Finder.Write_Error_Logger("In alarming");
-            //    //        break;
-            //    //    case "0600":
-            //    //        可能要下STOP(MOV:STTP)
-            //    //        logger_Notch_Finder.Write_Error_Logger("In command processing");
-            //    //        break;
-            //    //    case "0700":
-            //    //        logger_Notch_Finder.Write_Error_Logger("Mode error");
-            //    //        break;
-            //    //}
-            //}
-            if (receive_data.Length > 20)
+            try
             {
-                int start_idx = 13;
-
-                if (receive_data[start_idx].ToString() == "0")
+                AlignerItems alignerItems = new AlignerItems();
+                char[] receive_data;
+                receive_data = str.ToCharArray();
+                //string type_code = str.Substring(0, 4);
+                //if (type_code != "0000")
+                //{
+                //    //switch (str.Substring(0, 4))
+                //    //{
+                //    //    case "0100":
+                //    //        logger_Notch_Finder.Write_Error_Logger("Checksum error");
+                //    //        break;
+                //    //    case "0200":
+                //    //        logger_Notch_Finder.Write_Error_Logger("Command error");
+                //    //        break;
+                //    //    case "0300":
+                //    //        logger_Notch_Finder.Write_Error_Logger("None");
+                //    //        break;
+                //    //    case "0400":
+                //    //        logger_Notch_Finder.Write_Error_Logger("Interlock");
+                //    //        break;
+                //    //    case "0500":
+                //    //        logger_Notch_Finder.Write_Error_Logger("In alarming");
+                //    //        break;
+                //    //    case "0600":
+                //    //        可能要下STOP(MOV:STTP)
+                //    //        logger_Notch_Finder.Write_Error_Logger("In command processing");
+                //    //        break;
+                //    //    case "0700":
+                //    //        logger_Notch_Finder.Write_Error_Logger("Mode error");
+                //    //        break;
+                //    //}
+                //}
+                if (receive_data.Length > 20)
                 {
-                    alignerItems.AlignerErrorStatus = AlignerErrorType.Normal;
-                }
-                else if (receive_data[start_idx].ToString() == "1")
-                {
-                    alignerItems.AlignerErrorStatus = AlignerErrorType.Error;
-                }
+                    int start_idx = 13;
 
-                alignerItems.AlignerModeStatus = (AlignerModeType)(int.Parse(receive_data[start_idx + 1].ToString()));
+                    if (receive_data[start_idx].ToString() == "0")
+                    {
+                        alignerItems.AlignerErrorStatus = AlignerErrorType.Normal;
+                    }
+                    else if (receive_data[start_idx].ToString() == "1")
+                    {
+                        alignerItems.AlignerErrorStatus = AlignerErrorType.Error;
+                    }
 
-                if (receive_data[start_idx + 2] == '0' || receive_data[start_idx + 2] == '1' || receive_data[start_idx + 2] == '2')
-                {
-                    alignerItems.AlignerMachineDeviceStatus = (AlignerMachineDeviceType)(int.Parse(receive_data[start_idx + 2].ToString()));
-                }
-                else if (receive_data[start_idx + 2] == '4')
-                {
-                    alignerItems.AlignerMachineDeviceStatus = AlignerMachineDeviceType.Load_Ready;
-                }
+                    alignerItems.AlignerModeStatus = (AlignerModeType)(int.Parse(receive_data[start_idx + 1].ToString()));
 
-                alignerItems.AlignerRunStatus = (AlignerRunType)(int.Parse(receive_data[start_idx + 3].ToString()));
+                    if (receive_data[start_idx + 2] == '0' || receive_data[start_idx + 2] == '1' || receive_data[start_idx + 2] == '2')
+                    {
+                        alignerItems.AlignerMachineDeviceStatus = (AlignerMachineDeviceType)(int.Parse(receive_data[start_idx + 2].ToString()));
+                    }
+                    else if (receive_data[start_idx + 2] == '4')
+                    {
+                        alignerItems.AlignerMachineDeviceStatus = AlignerMachineDeviceType.Load_Ready;
+                    }
 
-                char[] tmp = { receive_data[start_idx + 4], receive_data[start_idx + 5] };
-                if (new string(tmp) == "00")
-                {
-                    alignerItems.ErrorCode = "";
-                }
-                else
-                {
-                    alignerItems.ErrorCode = new string(tmp);
-                }
+                    alignerItems.AlignerRunStatus = (AlignerRunType)(int.Parse(receive_data[start_idx + 3].ToString()));
+
+                    char[] tmp = { receive_data[start_idx + 4], receive_data[start_idx + 5] };
+                    if (new string(tmp) == "00")
+                    {
+                        alignerItems.ErrorCode = "";
+                    }
+                    else
+                    {
+                        alignerItems.ErrorCode = new string(tmp);
+                    }
 
 
-                if (receive_data[start_idx + 6] == '0' && receive_data[start_idx + 7] == '1' && receive_data[start_idx + 8] == '1')
-                {
-                    alignerItems.AlignerWaferStatus = AlignerWaferType.Wafer_Without;
-                }
-                else if (receive_data[start_idx + 6] == '1' && receive_data[start_idx + 7] == '1' && receive_data[start_idx + 8] == '1')
-                {
-                    alignerItems.AlignerWaferStatus = AlignerWaferType.Wafer_Have;
-                }
+                    if (receive_data[start_idx + 6] == '0' && receive_data[start_idx + 7] == '1' && receive_data[start_idx + 8] == '1')
+                    {
+                        alignerItems.AlignerWaferStatus = AlignerWaferType.Wafer_Without;
+                    }
+                    else if (receive_data[start_idx + 6] == '1' && receive_data[start_idx + 7] == '1' && receive_data[start_idx + 8] == '1')
+                    {
+                        alignerItems.AlignerWaferStatus = AlignerWaferType.Wafer_Have;
+                    }
 
-                alignerItems.AlignerOriginStatus = (AlignerOriginType)(int.Parse(receive_data[start_idx + 9].ToString()));
+                    alignerItems.AlignerOriginStatus = (AlignerOriginType)(int.Parse(receive_data[start_idx + 9].ToString()));
 
-                alignerItems.AlignerVaccumStatus = (AlignerVaccumType)(int.Parse(receive_data[start_idx + 10].ToString()));
+                    alignerItems.AlignerVaccumStatus = (AlignerVaccumType)(int.Parse(receive_data[start_idx + 10].ToString()));
 
-                alignerItems.AlignerLiftStatus = (AlignerLiftType)(int.Parse(receive_data[start_idx + 11].ToString()));
+                    alignerItems.AlignerLiftStatus = (AlignerLiftType)(int.Parse(receive_data[start_idx + 11].ToString()));
 
-                //AlignerNotchDetectionStatus
+                    //AlignerNotchDetectionStatus
 
-                if (receive_data[start_idx + 12] == '1' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
-                {
-                    alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.Detected_OK;
+                    if (receive_data[start_idx + 12] == '1' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
+                    {
+                        alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.Detected_OK;
+                    }
+                    else if (receive_data[start_idx + 12] == '2' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
+                    {
+                        alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.PosFinNotch_Completed;
+                    }
+                    else if (receive_data[start_idx + 12] == '3' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
+                    {
+                        alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.PosIDReader_Completed;
+                    }
+                    else if (receive_data[start_idx + 12] == '0' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
+                    {
+                        alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.Detected_Not;
+                    }
                 }
-                else if (receive_data[start_idx + 12] == '2' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
-                {
-                    alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.PosFinNotch_Completed;
-                }
-                else if (receive_data[start_idx + 12] == '3' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
-                {
-                    alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.PosIDReader_Completed;
-                }
-                else if (receive_data[start_idx + 12] == '0' && receive_data[start_idx + 13] == '0' && receive_data[start_idx + 14] == '0')
-                {
-                    alignerItems.AlignerNotchDetectionStatus = AlignerNotchDetectionType.Detected_Not;
-                }
+                return alignerItems;
             }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
         }
 
 
@@ -750,6 +772,12 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 Open();
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems = Command_GetStatus();
+                if (alignerItems.IsGetOK == true)
+                {
+
+                }
             }
             catch (Exception ex)
             {
@@ -765,7 +793,10 @@ namespace WLS3200Gen2.Model.Component
                 AlignerItems alignerItems = new AlignerItems();
                 await Task.Run(() =>
                 {
-                    alignerItems = Vaccum_ON();
+                    alignerItems = Command_MovORG();
+                    if (alignerItems.IsMovOK == true)
+                    {
+                    }
                 });
             }
             catch (Exception ex)
@@ -781,8 +812,15 @@ namespace WLS3200Gen2.Model.Component
                 AlignerItems alignerItems = new AlignerItems();
                 await Task.Run(() =>
                 {
-                    alignerItems = Set_FindNotchPos(degree);
-                    alignerItems = Move_FindNotch();
+                    alignerItems = Command_SetFindNotchPos(degree);
+                    if (alignerItems.IsSetOK == true)
+                    {
+                        alignerItems = Command_MovFindNotch();
+                        if (alignerItems.IsMovOK == true)
+                        {
+
+                        }
+                    }
                 });
             }
             catch (Exception ex)
@@ -798,7 +836,11 @@ namespace WLS3200Gen2.Model.Component
                 AlignerItems alignerItems = new AlignerItems();
                 await Task.Run(() =>
                 {
-                    alignerItems = Vaccum_ON();
+                    alignerItems = Command_MovVaccumON();
+                    if (alignerItems.IsMovOK == true)
+                    {
+
+                    }
                 });
             }
             catch (Exception ex)
@@ -807,14 +849,75 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void VaccumOff()
+        public async void VaccumOff()
         {
-            throw new NotImplementedException();
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_MovVaccumOFF();
+                    if (alignerItems.IsMovOK == true)
+                    {
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void AlarmReset()
+        public async void AlarmReset()
         {
-            throw new NotImplementedException();
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_SetReset();
+                    if (alignerItems.IsSetOK == true)
+                    {
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async void GetStatus()
+        {
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_GetStatus();
+                    if (alignerItems.IsGetOK == true)
+                    {
+
+                    }
+                    //aligner_tb2.Text = 
+                    //    "ErrorStatus:" + alignerItems.AlignerErrorStatus + "\r\n" +
+                    //    "ModeStatus:" + alignerItems.AlignerModeStatus + "\r\n" +
+                    //    "MachineDeviceStatus:" + alignerItems.AlignerMachineDeviceStatus + "\r\n" +
+                    //    "RunStatus:" + alignerItems.AlignerRunStatus + "\r\n" +
+                    //    "ErrorCode:" + alignerItems.ErrorCode + "\r\n" +
+                    //    "WaferStatus:" + alignerItems.AlignerWaferStatus + "\r\n" +
+                    //    "OriginStatus:" + alignerItems.AlignerOriginStatus + "\r\n" +
+                    //    "VaccumStatus:" + alignerItems.AlignerVaccumStatus + "\r\n" +
+                    //    "LiftStatus:" + alignerItems.AlignerLiftStatus + "\r\n" +
+                    //    "NotchDetectionStatus:" + alignerItems.AlignerNotchDetectionStatus + "\r\n";
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public class CheckSumAdd
@@ -865,7 +968,7 @@ namespace WLS3200Gen2.Model.Component
         /// <summary>
         /// Get_Status指令OK
         /// </summary>
-        public bool IsStas;
+        public bool IsGetOK;
         /// <summary>
         /// Mov指令或者是Set指令執行做完了
         /// </summary>
@@ -900,7 +1003,7 @@ namespace WLS3200Gen2.Model.Component
             IsMovOK = false;
             IsSetOK = false;
             IsError = false;
-            IsStas = false;
+            IsGetOK = false;
             IsDone = false;
         }
     }

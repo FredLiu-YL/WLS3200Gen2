@@ -8,22 +8,8 @@
              xmlns:wls3200controls="clr-namespace:YuanliCore.Model.UserControls"
              mc:Ignorable="d"
              x:Name="LoadPortUnit"
-             d:DesignHeight="400" d:DesignWidth="350">
+             d:DesignHeight="400" d:DesignWidth="350"   >
 
-    <UserControl.Resources>
-        <ResourceDictionary >
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.bluegrey.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-        </ResourceDictionary>
-
-    </UserControl.Resources>
     <Grid   DataContext="{Binding ElementName=LoadPortUnit}" Background="White"  >
         <Grid.ColumnDefinitions >
             <ColumnDefinition Width="0.6*" />
@@ -45,7 +31,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
+
 
             <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="4" />
             <Button Grid.Row="0" Margin="2" Background="Tan" BorderBrush="Tan" FontSize="10" Content="Open Cassette Load" Command="{Binding OpenCassetteLoad}"/>
@@ -57,42 +43,29 @@
             <TextBlock Grid.Row="4" FontSize="16" Margin="2"  Text="Param:" Background="Azure" />
             <StackPanel Grid.Row="5" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="WaferThickness:"  Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPort.WaferThickness}" />
+                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.WaferThickness}" />
             </StackPanel>
             <StackPanel Grid.Row="6" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="CassettePitch:"   Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPort.CassettePitch}" />
+                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.CassettePitch}" />
             </StackPanel>
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="StarOffset:"  Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPort.StarOffset}" />
+                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.StarOffset}" />
             </StackPanel>
             <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="11" Content="WaferPitchTolerance:" Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPort.WaferPitchTolerance}" />
+                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.WaferPitchTolerance}" />
             </StackPanel>
             <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="11" Content="WaferPosTolerance:"  Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPort.WaferPositionTolerance}" />
+                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.WaferPositionTolerance}" />
             </StackPanel>
             <Button Grid.Row="10" Margin="2" Background="Tan" BorderBrush="Tan" Content="Param Set" Command="{Binding ParamSet}" />
         </Grid>
+
+
         <wls3200controls:CassetteStateUC    Grid.Column="0" Margin="0" LoadPortWafers="{Binding LoadPortWafers}"/>
-        <!--<ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPortWafers}">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="Margin" Value="0"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    -->
-        <!-- 這裡放置你的 UserControl -->
-        <!--
-                    <wls3200controls:ExistNotifyUC SN="{Binding SN}" ExistState="{Binding WaferStates}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>-->
 
 
         <Grid  Grid.Column="2 " >
@@ -115,44 +88,44 @@
             <Border Grid.Row="1" Grid.RowSpan="13" BorderBrush="Black" BorderThickness="1"/>
             <TextBlock FontSize="18"  Text="Status"    Background="Azure" />
             <TextBlock Grid.Row="1" Text="Error Status" />
-            <TextBox Grid.Row="2" Text="{Binding LoadPort.ErrorStatus}"/>
+            <TextBox Grid.Row="2" Text="{Binding LoadPortUIShow.ErrorStatus}"/>
 
             <TextBlock Grid.Row="3" Text="Device Status" />
-            <TextBox Grid.Row="4" Text="{Binding LoadPort.DeviceStatus}"/>
+            <TextBox Grid.Row="4" Text="{Binding LoadPortUIShow.DeviceStatus}"/>
 
             <StackPanel Grid.Row="5" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="10" Content="Error Code:" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPort.ErrorCode}" />
+                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.ErrorCode}" />
             </StackPanel>
 
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <TextBlock   Text="容器狀態" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsCassettePutOK}"  />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsCassettePutOK}"  />
             </StackPanel>
             <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <TextBlock   Text="夾爪狀態" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsClamp}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsClamp}" />
             </StackPanel>
             <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <TextBlock   Text="門閂狀態" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsSwitchDoor}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsSwitchDoor}" />
             </StackPanel>
             <StackPanel Grid.Row="10" Orientation="Horizontal">
                 <TextBlock   Text="吸附狀態" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsVaccum}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsVaccum}" />
             </StackPanel>
             <StackPanel Grid.Row="11" Orientation="Horizontal">
                 <TextBlock   Text="開門狀態" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsDoorOpen}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsDoorOpen}" />
             </StackPanel>
 
             <StackPanel Grid.Row="12" Orientation="Horizontal">
                 <TextBlock   Text="晶圓突出" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsSensorCheckDoorOpen}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsSensorCheckDoorOpen}" />
             </StackPanel>
             <StackPanel Grid.Row="13" Orientation="Horizontal">
                 <TextBlock   Text="Dock       " VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="7,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPort.IsDock}" />
+                <usercontrols:SignalUC Margin="7,0,0,0" Width="20" Height="20" IsSignal="{Binding LoadPortUIShow.IsDock}" />
             </StackPanel>
 
         </Grid>
