@@ -13,6 +13,10 @@ namespace YuanliCore.Data
             CassetteIndex = index;
         }
 
+
+        /// <summary>
+        /// 在卡匣內第幾格 必填!
+        /// </summary>
         public int CassetteIndex { get; set; }
 
         /// <summary>
@@ -27,6 +31,14 @@ namespace YuanliCore.Data
         public Die[] Dies { get; set; }
 
 
+        public WaferProcessStatus ProcessStatus { get; set; }
+    }
+
+    public enum WaferProcessStatus
+    {
+        Usable,
+        InProgress,
+        Complate
 
     }
 }

@@ -137,7 +137,7 @@ namespace WLS3200Gen2.Model.Module
                 isSotMapping = true;
 
             }
-
+            //判斷有WAFER的格子
             var waferuse = cassette.Wafers.Where(w => w != null);
             processWafers = new Queue<Wafer>(waferuse);
 
@@ -166,9 +166,9 @@ namespace WLS3200Gen2.Model.Module
                      if (processWafers.Count() > 0)
                      {
                          processTempPre_Wafer = processWafers.Dequeue();
+                       
 
-
-                         await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
+                          await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
                          await WaferStandByToMacro();
 
                      }
@@ -227,10 +227,10 @@ namespace WLS3200Gen2.Model.Module
         }
 
 
-        public async Task UnLoadAsync(int cassetteIndex)
+        public async Task UnLoadAsync(Wafer wafer)
         {
             await WaferMicroToStandBy();
-            await UnLoadWaferToCassette(cassetteIndex);
+            await UnLoadWaferToCassette(wafer);
 
         }
         /// <summary>
@@ -250,7 +250,8 @@ namespace WLS3200Gen2.Model.Module
             Robot.ArmToRetract(ArmStation.Cassette);
             Robot.ArmToStandby();
 
-
+            //設定 Cassette內WAFER的狀態
+            Cassette.Wafers[cassetteIndex].ProcessStatus = WaferProcessStatus.InProgress;
 
         }
         /// <summary>
@@ -258,7 +259,7 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         /// <param name="cassetteIndex">第幾格</param>
         /// <returns></returns>
-        public async Task UnLoadWaferToCassette(int cassetteIndex)
+        public async Task UnLoadWaferToCassette(Wafer wafer)
         {
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
             Robot.PutBackWafer(ArmStation.Cassette);
@@ -269,6 +270,9 @@ namespace WLS3200Gen2.Model.Module
             Robot.ArmToRetract(ArmStation.Cassette);
             Robot.ArmToStandby();
 
+            wafer.ProcessStatus = WaferProcessStatus.Complate;
+            //設定 Cassette內WAFER的狀態
+            Cassette.Wafers[wafer.CassetteIndex] = wafer;
 
         }
 

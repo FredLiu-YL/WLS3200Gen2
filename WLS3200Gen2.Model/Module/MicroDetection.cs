@@ -64,6 +64,7 @@ namespace WLS3200Gen2.Model.Module
             await Task.Run(() => { });
 
         }
+
         /// <summary>
         /// 接料準備動作
         /// </summary>
@@ -78,10 +79,23 @@ namespace WLS3200Gen2.Model.Module
 
             //如果有lift 或夾持機構 需要做處理
 
-
         }
 
+        /// <summary>
+        /// 出料準備動作
+        /// </summary>
+        /// <param name="tableWaferCatchPosition"></param>
+        /// <param name="pst"></param>
+        /// <param name="ctk"></param>
+        /// <returns></returns>
+        public async Task PutWaferPrepare(Point tableWaferCatchPosition)
+        {
 
+            await TableMoveToAsync(tableWaferCatchPosition);
+            TableVacuum.Off();
+            //如果有lift 或夾持機構 需要做處理
+
+        }
 
 
         public async Task Run(DetectionRecipe recipe, bool isAutoSave, PauseTokenSource pst, CancellationTokenSource ctk)

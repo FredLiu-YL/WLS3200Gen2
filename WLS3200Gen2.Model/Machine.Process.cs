@@ -56,7 +56,7 @@ namespace WLS3200Gen2.Model
                         await pts.Token.WaitWhilePausedAsync(cts.Token); //暫停在Macro上
 
                         //顯微鏡站準備接WAFER
-                        Task catchWafertask= MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
+                        Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
 
                         //到預備位置準備進片
                         await Feeder.LoadToMicroReadyAsync();
@@ -66,16 +66,23 @@ namespace WLS3200Gen2.Model
                         Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
                         Wafer waferInside = await Feeder.LoadToMicroAsync();
 
+                        Task taskLoad = Task.CompletedTask;
+                        var waferusable = Feeder.Cassette.Wafers.Select(w => w.ProcessStatus == WaferProcessStatus.Usable);
+                        if (waferusable.Count() > 0)//如果還有片
+                        {
+                            //預載一片在Macro上
+                            taskLoad = Feeder.LoadToReadyAsync();
+                        }
 
-                        //預載一片在Macro上
-                        Task taskLoad = Feeder.LoadToReadyAsync();                       
-                    
+
+
+
                         //執行主設備動作
                         await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
 
-
+                        await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
                         //退片
-                        await Feeder.UnLoadAsync(waferInside.CassetteIndex);
+                        await Feeder.UnLoadAsync(waferInside);
 
 
                         await Task.Delay(300);
@@ -86,14 +93,14 @@ namespace WLS3200Gen2.Model
                         await taskLoad;
 
                         //判斷卡匣空了
-                        if (Feeder.IsCassetteDone == true)
+                        if (waferusable.Count()==0)
                         {
                             break;
                         }
 
                     }
 
-                  
+
                 });
 
 
@@ -101,12 +108,12 @@ namespace WLS3200Gen2.Model
             catch (OperationCanceledException canceleEx)
             {
 
-               
+
             }
             catch (Exception ex)
             {
 
-                 
+
             }
             finally
             {
@@ -138,7 +145,7 @@ namespace WLS3200Gen2.Model
             MicroDetection.TableVacuum.On();
 
         }
-        
+
 
     }
 }
