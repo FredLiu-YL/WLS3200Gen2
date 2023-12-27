@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WLS3200Gen2.Model.Recipe;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 
@@ -47,7 +49,7 @@ namespace WLS3200Gen2.UserControls
         private int locateIndexY2;
         private int locateIndexX3;
         private int locateIndexY3;
-
+        private LocateMode modeForUI = LocateMode.Pattern;
         private bool islocateEdgeMode;
         private bool islocatePatternMode;
         private int locateModeIndex;
@@ -71,6 +73,10 @@ namespace WLS3200Gen2.UserControls
                                                                    new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty CurrentPosYProperty = DependencyProperty.Register(nameof(CurrentPosY), typeof(double), typeof(LocateUC),
                                                                  new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+
+       public static readonly DependencyProperty SelectModeProperty = DependencyProperty.Register(nameof(SelectMode), typeof(LocateMode), typeof(LocateUC),
+                                                         new FrameworkPropertyMetadata(LocateMode.Pattern, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)); 
 
         public BitmapSource MainImage
         {
@@ -110,7 +116,38 @@ namespace WLS3200Gen2.UserControls
             get => (Action<CogMatcher>)GetValue(MatchFindProperty);
             set => SetValue(MatchFindProperty, value);
         }
+        public LocateMode SelectMode 
+        {
+            get => (LocateMode)GetValue(SelectModeProperty);
+            set => SetValue(SelectModeProperty, value);
+        }
+     
 
+       public LocateMode ModeForUI
+        {
+            get
+            {
+                if (modeForUI == LocateMode.Edge)
+                    LocateModeIndex = 0;
+                else if (modeForUI == LocateMode.Pattern)
+                    LocateModeIndex = 1;
+                SelectMode = modeForUI;
+                return modeForUI;
+            }
+            set => SetValue(ref modeForUI, value);
+        } 
+        /*  {
+
+              get {
+                  if (mode == LocateMode.Edge)
+                      LocateModeIndex = 0;
+                  else if (mode == LocateMode.Pattern)
+                      LocateModeIndex = 1;
+
+                  return mode; }
+              set => SetValue(ref mode, value);
+
+          }*/
         public double LocateGrabPosX1 { get => locateGrabPosX1; set => SetValue(ref locateGrabPosX1, value); }
         public double LocateGrabPosX2 { get => locateGrabPosX2; set => SetValue(ref locateGrabPosX2, value); }
         public double LocateGrabPosX3 { get => locateGrabPosX3; set => SetValue(ref locateGrabPosX3, value); }
@@ -119,16 +156,16 @@ namespace WLS3200Gen2.UserControls
         public double LocateGrabPosY3 { get => locateGrabPosY3; set => SetValue(ref locateGrabPosY3, value); }
 
 
-        public int LocateIndexX1 
+        public int LocateIndexX1
         {
-            get => locateIndexX1;  
-            set => SetValue(ref locateIndexX1, value); 
+            get => locateIndexX1;
+            set => SetValue(ref locateIndexX1, value);
         }
-        public int LocateIndexX2 
+        public int LocateIndexX2
 
         {
-            get =>   locateIndexX2;  
-            set => SetValue(ref locateIndexX2, value); 
+            get => locateIndexX2;
+            set => SetValue(ref locateIndexX2, value);
         }
         public int LocateIndexX3 { get => locateIndexX3; set => SetValue(ref locateIndexX3, value); }
         public int LocateIndexY1 { get => locateIndexY1; set => SetValue(ref locateIndexY1, value); }
@@ -171,11 +208,11 @@ namespace WLS3200Gen2.UserControls
 
 
 
-        public ICommand ClosingCommand => new RelayCommand( () =>
-        {
-            UpdateParam();
+        public ICommand ClosingCommand => new RelayCommand(() =>
+       {
+           UpdateParam();
 
-        });
+       });
 
         public ICommand LoadedCommand => new RelayCommand(() =>
         {
@@ -237,15 +274,15 @@ namespace WLS3200Gen2.UserControls
             {
                 case "Sample1":
                     tempMatcher.RunParams = MatchParam1.MatchParam;
-                    
+
                     break;
                 case "Sample2":
                     tempMatcher.RunParams = MatchParam2.MatchParam;
-                   
+
                     break;
                 case "Sample3":
                     tempMatcher.RunParams = MatchParam3.MatchParam;
-                   
+
                     break;
                 default:
                     break;
@@ -281,8 +318,8 @@ namespace WLS3200Gen2.UserControls
             switch (key)
             {
                 case "set1":
-                    LocateGrabPosX1= CurrentPosX;
-                    LocateGrabPosY1= CurrentPosY;
+                    LocateGrabPosX1 = CurrentPosX;
+                    LocateGrabPosY1 = CurrentPosY;
                     break;
                 case "set2":
                     LocateGrabPosX2 = CurrentPosX;
@@ -317,10 +354,10 @@ namespace WLS3200Gen2.UserControls
             MatchParam1.Index = new Point(LocateIndexX1, LocateIndexY1);
             MatchParam2.Index = new Point(LocateIndexX2, LocateIndexY2);
             MatchParam3.Index = new Point(LocateIndexX3, LocateIndexY3);
-           
+
 
         }
-        
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -353,6 +390,55 @@ namespace WLS3200Gen2.UserControls
 
         public PatmaxParams MatchParam { get; set; }
 
+    }
+
+
+    public class LocateModePatternConver : IValueConverter
+    {
+        //当值从绑定源传播给绑定目标时，调用方法Convert
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if ((LocateMode)value == LocateMode.Pattern)
+                return true;
+            else
+                return false;
+        }
+
+        //当值从绑定目标传播给绑定源时，调用此方法ConvertBack
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool)value)
+                return LocateMode.Pattern;
+            else
+                return LocateMode.Edge;
+
+
+        }
+    }
+
+    public class LocateModeEdgeConver : IValueConverter
+    {
+        //当值从绑定源传播给绑定目标时，调用方法Convert
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            if ((LocateMode)value == LocateMode.Edge)
+                return true;
+            else
+                return false;
+        }
+
+        //当值从绑定目标传播给绑定源时，调用此方法ConvertBack
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool)value)
+                return LocateMode.Edge;
+            else
+                return LocateMode.Pattern;
+
+
+        }
     }
 
 }

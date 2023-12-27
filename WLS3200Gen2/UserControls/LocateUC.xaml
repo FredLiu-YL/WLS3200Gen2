@@ -10,9 +10,13 @@
                x:Name="LocateUserControls"
              d:DesignHeight="750" d:DesignWidth="350">
     <Grid  DataContext="{Binding ElementName=LocateUserControls}" >
-        <i:Interaction.Triggers>
-
+        <Grid.Resources>
+            <local:LocateModePatternConver x:Key="BoolToEnumConverter" />
+            <local:LocateModeEdgeConver x:Key="BoolToEnumEdgeConverter" />
             
+        </Grid.Resources>
+        <i:Interaction.Triggers>
+  
             <i:EventTrigger EventName="Loaded">
                 <i:InvokeCommandAction  Command="{Binding LoadedCommand}"  />
             </i:EventTrigger>
@@ -59,8 +63,8 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <ListBox x:Name="RadioButtonGroupChoiceChipPrimaryOutline" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
-                        <ListBoxItem Content="Edge"  IsSelected="{Binding IsLocateEdgeMode }" />
-                        <ListBoxItem Content="Pattern" IsSelected="{Binding IsLocatePatternMode }"  />
+                        <ListBoxItem Content="Edge"  IsSelected="{Binding ModeForUI, Converter={StaticResource BoolToEnumEdgeConverter}}" />
+                        <ListBoxItem Content="Pattern" IsSelected="{Binding ModeForUI, Converter={StaticResource BoolToEnumConverter}}"  />
                     </ListBox>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>

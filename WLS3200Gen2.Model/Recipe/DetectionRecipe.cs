@@ -28,7 +28,17 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         public Point Position { get; set; }
 
-       
+
+
+    }
+
+
+    public enum LocateMode
+    {
+
+        Pattern,
+        Edge
+
 
     }
 }
