@@ -8,31 +8,24 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyAligner : IAligner
     {
-        public string DeviceStatus => throw new NotImplementedException();
-
-        public string ErrorCode => throw new NotImplementedException();
-
-        public string NotchStatus => throw new NotImplementedException();
-
-        public bool IsWafer => throw new NotImplementedException();
-
-        public bool IsOrg => throw new NotImplementedException();
-
-        public bool IsVaccum => throw new NotImplementedException();
-
-        public void AlarmReset()
+        public Task AlarmReset()
         {
             throw new NotImplementedException();
         }
 
-        public void GetStatus()
+        public void Close()
         {
             throw new NotImplementedException();
         }
 
-        public void Home()
+        public Task<AlignerStatus> GetStatus()
         {
-             
+            throw new NotImplementedException();
+        }
+
+        public Task Home()
+        {
+            throw new NotImplementedException();
         }
 
         public void Initial()
@@ -40,22 +33,17 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void Run()
+        public Task Run(double degree)
         {
             throw new NotImplementedException();
         }
 
-        public void Run(double degree)
+        public Task VaccumOff()
         {
             throw new NotImplementedException();
         }
 
-        public void VaccumOff()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void VaccumOn()
+        public Task VaccumOn()
         {
             throw new NotImplementedException();
         }

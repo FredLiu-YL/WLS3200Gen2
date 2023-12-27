@@ -12,9 +12,9 @@
 
     <Grid   DataContext="{Binding ElementName=LoadPortUnit}" Background="White"  >
         <Grid.ColumnDefinitions >
-            <ColumnDefinition Width="0.6*" />
-            <ColumnDefinition Width="1.2*"/>
-            <ColumnDefinition  Width="0.92*"/>
+            <ColumnDefinition Width="0.25*" />
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition  Width="0.25*"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -34,34 +34,34 @@
 
 
             <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="4" />
-            <Button Grid.Row="0" Margin="2" Background="Tan" BorderBrush="Tan" FontSize="10" Content="Open Cassette Load" Command="{Binding OpenCassetteLoad}"/>
-            <Button Grid.Row="1" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" Command="{Binding OpenCassetteLoad}"/>
-            <Button Grid.Row="2" Margin="3" Content="UnLoad" Command="{Binding UnLoad}"/>
-            <Button Grid.Row="3" Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue"  Content="Alarm Reset" Command="{Binding AlarmReset}" />
+            <Button Grid.Row="0" Margin="2" Background="Tan" BorderBrush="Tan" FontSize="10" Content="Open Cassette Load" Command="{Binding OpenCassetteLoad}" IsEnabled="{Binding IsLoadPortEnabled}"/>
+            <Button Grid.Row="1" Margin="2" Background="Tan" BorderBrush="Tan" Content="Load" Command="{Binding OpenCassetteLoad}" IsEnabled="{Binding IsLoadPortEnabled}"/>
+            <Button Grid.Row="2" Margin="3" Content="UnLoad" Command="{Binding UnLoad}" IsEnabled="{Binding IsLoadPortEnabled}"/>
+            <Button Grid.Row="3" Margin="2" Height="30" Background="CadetBlue" BorderBrush="CadetBlue"  Content="Alarm Reset" Command="{Binding AlarmReset}" IsEnabled="{Binding IsLoadPortEnabled}"/>
 
             <Border Grid.Row="4" BorderBrush="Black" BorderThickness="1" Grid.RowSpan="9" />
             <TextBlock Grid.Row="4" FontSize="16" Margin="2"  Text="Param:" Background="Azure" />
             <StackPanel Grid.Row="5" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="WaferThickness:"  Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.WaferThickness}" />
+                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.WaferThickness}" />
             </StackPanel>
             <StackPanel Grid.Row="6" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="CassettePitch:"   Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.CassettePitch}" />
+                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.CassettePitch}" />
             </StackPanel>
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="StarOffset:"  Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.StarOffset}" />
+                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.StarOffset}" />
             </StackPanel>
             <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="11" Content="WaferPitchTolerance:" Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.WaferPitchTolerance}" />
+                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.WaferPitchTolerance}" />
             </StackPanel>
             <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="11" Content="WaferPosTolerance:"  Width="110" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.WaferPositionTolerance}" />
+                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.WaferPositionTolerance}" />
             </StackPanel>
-            <Button Grid.Row="10" Margin="2" Background="Tan" BorderBrush="Tan" Content="Param Set" Command="{Binding ParamSet}" />
+            <Button Grid.Row="10" Margin="2" Background="Tan" BorderBrush="Tan" Content="Param Set" Command="{Binding ParamSet}" IsEnabled="{Binding IsLoadPortEnabled}" />
         </Grid>
 
 
@@ -93,10 +93,8 @@
             <TextBlock Grid.Row="3" Text="Device Status" />
             <TextBox Grid.Row="4" Text="{Binding LoadPortUIShow.DeviceStatus}"/>
 
-            <StackPanel Grid.Row="5" Orientation="Horizontal">
-                <Label VerticalAlignment="Center" FontSize="10" Content="Error Code:" />
-                <TextBox FontSize="18" Width="45" Text="{Binding LoadPortUIShow.ErrorCode}" />
-            </StackPanel>
+            <Label  Grid.Row="5" VerticalAlignment="Center" FontSize="10" Content="Error Code:" />
+            <TextBox  Grid.Row="6"  Text="{Binding LoadPortUIShow.ErrorCode}" />
 
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <TextBlock   Text="容器狀態" VerticalAlignment="Center" />

@@ -113,6 +113,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Recipe\Wafer.cs" />
+    <Compile Include="UserControls\AlignerUnitUC.xaml.cs">
+      <DependentUpon>AlignerUnitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\CassetteStateUC.xaml.cs">
       <DependentUpon>CassetteStateUC.xaml</DependentUpon>
     </Compile>
@@ -147,6 +150,10 @@
       <DependentUpon>WorkholderUC.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\AlignerUnitUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
