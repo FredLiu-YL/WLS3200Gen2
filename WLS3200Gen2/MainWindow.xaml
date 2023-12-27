@@ -247,7 +247,7 @@
                         <RowDefinition />
                         <RowDefinition  Height="0.40*"/>
                     </Grid.RowDefinitions>
-                    <views:VirtualCanvas Grid.Row="0" />
+                    <views:VirtualCanvas Grid.Row="0" ImageSource="{Binding MainImage}" ItemsSource="{Binding Drawings}"   MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" ClearShapeAction="{Binding ClearShapeAction}" />
                     <Grid Grid.Column="1" Grid.RowSpan="2" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="4.5*"/>
@@ -460,7 +460,7 @@
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                         </Grid.RowDefinitions>
-                                                        <UserControlUC:LocateUC  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" />
+                                                        <UserControlUC:LocateUC  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" MatchFind="{Binding SampleFind}"  />
                                                         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
                                                                 <Button Margin="2" Content="Locate Run" />

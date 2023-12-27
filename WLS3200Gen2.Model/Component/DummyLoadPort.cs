@@ -30,19 +30,19 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task Home()
+        public async Task Home()
         {
-            throw new NotImplementedException();
+           
         }
 
         public void Initial()
         {
-            throw new NotImplementedException();
+     
         }
 
-        public Task Load()
+        public async Task Load()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void SlotMapping()

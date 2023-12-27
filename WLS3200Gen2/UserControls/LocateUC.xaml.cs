@@ -25,7 +25,7 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class LocateUC : UserControl, INotifyPropertyChanged
     {
-        private CogMatcher matcher = new CogMatcher(); //使用Vision pro 實體
+        private CogMatcher tempMatcher = new CogMatcher(); //使用Vision pro 實體
         /*  private PatmaxParams matchParam1 = new PatmaxParams(1);
           private PatmaxParams matchParam2 = new PatmaxParams(2);
           private PatmaxParams matchParam3 = new PatmaxParams(3);*/
@@ -64,6 +64,14 @@ namespace WLS3200Gen2.UserControls
         public static readonly DependencyProperty MatchParam3Property = DependencyProperty.Register(nameof(MatchParam3), typeof(LocateParam), typeof(LocateUC),
                                                                           new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        public static readonly DependencyProperty MatchFindProperty = DependencyProperty.Register(nameof(MatchFind), typeof(Action<CogMatcher>), typeof(LocateUC),
+                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty CurrentPosXProperty = DependencyProperty.Register(nameof(CurrentPosX), typeof(double), typeof(LocateUC),
+                                                                   new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty CurrentPosYProperty = DependencyProperty.Register(nameof(CurrentPosY), typeof(double), typeof(LocateUC),
+                                                                 new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
         public BitmapSource MainImage
         {
             get => (BitmapSource)GetValue(MainImageProperty);
@@ -86,6 +94,22 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(MatchParam3Property, value);
         }
 
+        public double CurrentPosX
+        {
+            get => (double)GetValue(CurrentPosXProperty);
+            set => SetValue(CurrentPosXProperty, value);
+        }
+        public double CurrentPosY
+        {
+            get => (double)GetValue(CurrentPosYProperty);
+            set => SetValue(CurrentPosYProperty, value);
+        }
+
+        public Action<CogMatcher> MatchFind
+        {
+            get => (Action<CogMatcher>)GetValue(MatchFindProperty);
+            set => SetValue(MatchFindProperty, value);
+        }
 
         public double LocateGrabPosX1 { get => locateGrabPosX1; set => SetValue(ref locateGrabPosX1, value); }
         public double LocateGrabPosX2 { get => locateGrabPosX2; set => SetValue(ref locateGrabPosX2, value); }
@@ -95,8 +119,17 @@ namespace WLS3200Gen2.UserControls
         public double LocateGrabPosY3 { get => locateGrabPosY3; set => SetValue(ref locateGrabPosY3, value); }
 
 
-        public int LocateIndexX1 { get => locateIndexX1; set => SetValue(ref locateIndexX1, value); }
-        public int LocateIndexX2 { get => locateIndexX2; set => SetValue(ref locateIndexX2, value); }
+        public int LocateIndexX1 
+        {
+            get => locateIndexX1;  
+            set => SetValue(ref locateIndexX1, value); 
+        }
+        public int LocateIndexX2 
+
+        {
+            get =>   locateIndexX2;  
+            set => SetValue(ref locateIndexX2, value); 
+        }
         public int LocateIndexX3 { get => locateIndexX3; set => SetValue(ref locateIndexX3, value); }
         public int LocateIndexY1 { get => locateIndexY1; set => SetValue(ref locateIndexY1, value); }
         public int LocateIndexY2 { get => locateIndexY2; set => SetValue(ref locateIndexY2, value); }
@@ -136,6 +169,18 @@ namespace WLS3200Gen2.UserControls
             InitializeComponent();
         }
 
+
+
+        public ICommand ClosingCommand => new RelayCommand( () =>
+        {
+            UpdateParam();
+
+        });
+
+        public ICommand LoadedCommand => new RelayCommand(() =>
+        {
+
+        });
         public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
         {
             try
@@ -144,25 +189,25 @@ namespace WLS3200Gen2.UserControls
                 switch (key)
                 {
                     case "Sample1":
-                        matcher.RunParams = MatchParam1.MatchParam;
-                        matcher.EditParameter(MainImage);
+                        tempMatcher.RunParams = MatchParam1.MatchParam;
+                        tempMatcher.EditParameter(MainImage);
 
-                        MatchParam1.MatchParam = (PatmaxParams)matcher.RunParams;
+                        MatchParam1.MatchParam = (PatmaxParams)tempMatcher.RunParams;
                         if (MatchParam1.MatchParam.PatternImage != null)
                             LocateSampleImage1 = MatchParam1.MatchParam.PatternImage.ToBitmapSource();
                         break;
                     case "Sample2":
-                        matcher.RunParams = MatchParam2.MatchParam;
-                        matcher.EditParameter(MainImage);
+                        tempMatcher.RunParams = MatchParam2.MatchParam;
+                        tempMatcher.EditParameter(MainImage);
 
-                        MatchParam2.MatchParam = (PatmaxParams)matcher.RunParams;
+                        MatchParam2.MatchParam = (PatmaxParams)tempMatcher.RunParams;
                         if (MatchParam2.MatchParam.PatternImage != null)
                             LocateSampleImage2 = MatchParam2.MatchParam.PatternImage.ToBitmapSource();
                         break;
                     case "Sample3":
-                        matcher.RunParams = MatchParam3.MatchParam;
-                        matcher.EditParameter(MainImage);
-                        MatchParam3.MatchParam = (PatmaxParams)matcher.RunParams;
+                        tempMatcher.RunParams = MatchParam3.MatchParam;
+                        tempMatcher.EditParameter(MainImage);
+                        MatchParam3.MatchParam = (PatmaxParams)tempMatcher.RunParams;
                         if (MatchParam3.MatchParam.PatternImage != null)
                             LocateSampleImage3 = MatchParam3.MatchParam.PatternImage.ToBitmapSource();
                         break;
@@ -171,7 +216,7 @@ namespace WLS3200Gen2.UserControls
                 }
 
 
-
+                UpdateParam();
 
 
                 //  UpdateRecipe();
@@ -186,28 +231,96 @@ namespace WLS3200Gen2.UserControls
         });
         public ICommand LocateSampleCommand => new RelayCommand<string>(async key =>
         {
-            /*  ClearShapeAction.Execute(Drawings);
-              resultPoint = matcher.Find(Image.ToByteFrame());
 
-              foreach (var item in resultPoint)
-              {
-                  var center = new ROICross
-                  {
-                      X = item.Center.X,
-                      Y = item.Center.Y,
-                      Size = 5,
-                      StrokeThickness = 2,
-                      Stroke = Brushes.Red,
-                      IsInteractived = false
-                  };
-                  AddShapeAction.Execute(center);
 
-              }*/
+            switch (key)
+            {
+                case "Sample1":
+                    tempMatcher.RunParams = MatchParam1.MatchParam;
+                    
+                    break;
+                case "Sample2":
+                    tempMatcher.RunParams = MatchParam2.MatchParam;
+                   
+                    break;
+                case "Sample3":
+                    tempMatcher.RunParams = MatchParam3.MatchParam;
+                   
+                    break;
+                default:
+                    break;
+            }
+            UpdateParam();
+            MatchFind?.Invoke(tempMatcher);
+
+            /*   
+             *   ClearShapeAction.Execute(Drawings);
+                     resultPoint = tempMatcher.Find(Image.ToByteFrame());
+
+                       foreach (var item in resultPoint)
+                       {
+                           var center = new ROICross
+                           {
+                               X = item.Center.X,
+                               Y = item.Center.Y,
+                               Size = 5,
+                               StrokeThickness = 2,
+                               Stroke = Brushes.Red,
+                               IsInteractived = false
+                           };
+                           AddShapeAction.Execute(center);
+
+                       } 
+                     */
+
 
         });
 
+        public ICommand GetPositionCommand => new RelayCommand<string>(async key =>
+        {
+            switch (key)
+            {
+                case "set1":
+                    LocateGrabPosX1= CurrentPosX;
+                    LocateGrabPosY1= CurrentPosY;
+                    break;
+                case "set2":
+                    LocateGrabPosX2 = CurrentPosX;
+                    LocateGrabPosY2 = CurrentPosY;
 
+                    break;
+                case "set3":
+                    LocateGrabPosX3 = CurrentPosX;
+                    LocateGrabPosY3 = CurrentPosY;
 
+                    break;
+                default:
+                    break;
+            }
+
+            UpdateParam();
+        });
+
+        public void UpdateParam()
+        {
+
+            if (MatchParam1 == null || MatchParam2 == null) return;
+            //正常拍照座標跟設計座標應該分開 ，暫時先一起  有需要再分
+            MatchParam1.GrabPosition = new Point(LocateGrabPosX1, LocateGrabPosY1);
+            MatchParam2.GrabPosition = new Point(LocateGrabPosX2, LocateGrabPosY2);
+            MatchParam3.GrabPosition = new Point(LocateGrabPosX3, LocateGrabPosY3);
+
+            MatchParam1.DesignPosition = new Point(LocateGrabPosX1, LocateGrabPosY1);
+            MatchParam2.DesignPosition = new Point(LocateGrabPosX2, LocateGrabPosY2);
+            MatchParam3.DesignPosition = new Point(LocateGrabPosX3, LocateGrabPosY3);
+
+            MatchParam1.Index = new Point(LocateIndexX1, LocateIndexY1);
+            MatchParam2.Index = new Point(LocateIndexX2, LocateIndexY2);
+            MatchParam3.Index = new Point(LocateIndexX3, LocateIndexY3);
+           
+
+        }
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -233,7 +346,8 @@ namespace WLS3200Gen2.UserControls
 
             MatchParam = new PatmaxParams(number);
         }
-
+        //正常拍照座標跟設計座標應該分開 ，暫時先一起  有需要再分
+        public Point GrabPosition { get; set; }
         public Point DesignPosition { get; set; }
         public Point Index { get; set; }
 

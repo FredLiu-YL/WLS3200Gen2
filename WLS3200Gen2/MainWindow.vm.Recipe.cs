@@ -14,6 +14,7 @@ using WLS3200Gen2.UserControls;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 using YuanliCore.Model.UserControls;
+using YuanliCore.Views.CanvasShapes;
 
 namespace WLS3200Gen2
 {
@@ -31,6 +32,8 @@ namespace WLS3200Gen2
         private LocateParam locateParam1 = new LocateParam(1);
         private LocateParam locateParam2 = new LocateParam(2);
         private LocateParam locateParam3 = new LocateParam(3);
+        private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
+        private Action<CogMatcher> sampleFind;
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
@@ -46,6 +49,18 @@ namespace WLS3200Gen2
         private ExistStates testStates;
         public ExistStates TestStates { get => testStates; set => SetValue(ref testStates, value); }
 
+        public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
+
+        /// <summary>
+        /// 滑鼠在影像內 Pixcel 座標
+        /// </summary>
+        public System.Windows.Point MousePixcel { get; set; }
+
+
+        /// <summary>
+        /// 取得或設定 shape 
+        /// </summary>
+        public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
         public ICommand LoadWafereCommand => new RelayCommand<string>(async key =>
         {
 
@@ -92,25 +107,36 @@ namespace WLS3200Gen2
         });
         public ICommand LocateSampleCommand => new RelayCommand<string>(async key =>
         {
-            /*  ClearShapeAction.Execute(Drawings);
-              resultPoint = matcher.Find(Image.ToByteFrame());
 
-              foreach (var item in resultPoint)
-              {
-                  var center = new ROICross
-                  {
-                      X = item.Center.X,
-                      Y = item.Center.Y,
-                      Size = 5,
-                      StrokeThickness = 2,
-                      Stroke = Brushes.Red,
-                      IsInteractived = false
-                  };
-                  AddShapeAction.Execute(center);
-
-              }*/
+            
 
         });
+
+
+        private void SampleFindAction(CogMatcher matcher)
+        {
+            ClearShapeAction.Execute(Drawings);
+
+            IEnumerable<MatchResult> resultPoint = matcher.Find(MainImage.ToByteFrame());
+
+            foreach (var item in resultPoint)
+            {
+                var center = new ROICross
+                {
+                    X = item.Center.X,
+                    Y = item.Center.Y,
+                    Size = 5,
+                    StrokeThickness = 2,
+                    Stroke = System.Windows.Media.Brushes.Red,
+                    IsInteractived = false
+                };
+                AddShapeAction.Execute(center);
+
+            }
+
+
+
+        }
     }
 
     public class WaferUIData : INotifyPropertyChanged

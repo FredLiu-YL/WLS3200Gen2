@@ -67,6 +67,14 @@ namespace WLS3200Gen2
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
 
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
+        public ICommand AddShapeAction { get; set; }
+        /// <summary>
+        /// 清除 Shape
+        /// </summary>
+        public ICommand ClearShapeAction { get; set; }
 
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
@@ -113,6 +121,8 @@ namespace WLS3200Gen2
                 LogMessage = "Equipment Ready．．．";
                 isRefresh = true;
                 taskRefresh1 = Task.Run(RefreshPos);
+
+                SampleFind = SampleFindAction;
             }
             catch (Exception ex)
             {
