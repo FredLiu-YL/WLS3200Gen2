@@ -35,7 +35,7 @@ namespace YuanliCore.Model.UserControls
                                                                                 new FrameworkPropertyMetadata(ExistStates.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty SNProperty = DependencyProperty.Register(nameof(SN), typeof(string), typeof(ExistNotifyUC),
-                                                                              new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+                                                                              new FrameworkPropertyMetadata("12", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty SNWidthProperty = DependencyProperty.Register(nameof(SNWidth), typeof(int), typeof(ExistNotifyUC),
                                                                              new FrameworkPropertyMetadata(20, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));

@@ -847,13 +847,13 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="0.5*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Row="0"  Grid.ColumnSpan="2">
                         <GroupBox Grid.Column="0" Header="EFEM" FontSize="24"  >
                             <Grid >
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1.1*" />
+                                    <ColumnDefinition Width="0.9*" />
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>

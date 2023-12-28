@@ -17,7 +17,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <!-- 這裡放置你的 UserControl -->
-                    <local:ExistNotifyUC SN="{Binding SN}" ExistState="{Binding WaferStates}" SNWidth="{Binding SNWidth}" />
+                    <local:ExistNotifyUC SN="{Binding SN}" ExistState="{Binding WaferStates}" SNWidth="{Binding SNWidth}"   />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using YuanliCore.AffineTransform;
+using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 using YuanliCore.Model;
 using YuanliCore.Motion;
@@ -21,6 +22,8 @@ namespace WLS3200Gen2.Model.Module
         private Axis axisX, axisY;
         private ICamera camera;
         private ITransform affineTransform;
+
+        private CogMatcher matcher = new CogMatcher();
 
         public OpticalAlignment(Axis axisX, Axis axisY, ICamera camera)
         {
@@ -40,9 +43,23 @@ namespace WLS3200Gen2.Model.Module
             foreach (FiducialData fiducial in alignmentRecipe.fiducialDatas)
             {
 
+
                 await TableMoveToAsync(fiducial.GrabPosition.X, fiducial.GrabPosition.Y);
                 BitmapSource image = camera.GrabAsync();
-                Point actualPos = await GetTargetPos(image, fiducial.GrabPosition.X, fiducial.GrabPosition.Y);
+
+                //Pattern match參數傳入 蒐尋器內
+                matcher.RunParams = fiducial.Param;
+                MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
+
+                if(result.Length==0)
+                {
+                    //沒搜尋到  要做些處置
+
+                    CancelToken.Token.ThrowIfCancellationRequested();
+                    await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                    throw new Exception("搜尋失敗");
+                }
+                Point actualPos = await GetTargetPos(image, fiducial.GrabPosition.X, fiducial.GrabPosition.Y, result[0].Center);
 
                 targetPos.Add(actualPos);
 
@@ -74,8 +91,8 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
-
-        private async Task<Point> GetTargetPos(BitmapSource image, double currentPosX, double currentPosY)
+        //Pixel轉換成實際座標
+        private async Task<Point> GetTargetPos(BitmapSource image, double currentPosX, double currentPosY, Point objPixel)
         {
 
             return new Point();

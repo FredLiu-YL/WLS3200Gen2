@@ -31,8 +31,6 @@ namespace WLS3200Gen2.Model.Module
         private OpticalAlignment opticalAlignment;
 
 
-
-
         public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs)
         {
             this.camera = camera;
@@ -117,10 +115,12 @@ namespace WLS3200Gen2.Model.Module
 
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
+              
             //每一個座標需要檢查的座標
             foreach (DetectionPoint point in recipe.DetectionPoints)
             {
+
+ 
                 //轉換成對位後實際座標
                 var transPosition = transForm.TransPoint(point.Position);
 

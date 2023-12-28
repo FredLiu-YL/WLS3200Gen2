@@ -10,9 +10,9 @@ namespace WLS3200Gen2.Model.Recipe
 {
     public class DetectionRecipe
     {
-        public IEnumerable<DetectionPoint> DetectionPoints;
-
-        public AlignmentRecipe AlignRecipe;
+        public IEnumerable<DetectionPoint> DetectionPoints { get; set; }
+  
+        public AlignmentRecipe AlignRecipe { get; set; }
 
     }
 

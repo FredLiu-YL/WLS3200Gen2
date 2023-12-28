@@ -108,7 +108,7 @@ namespace WLS3200Gen2
         public ICommand LocateSampleCommand => new RelayCommand<string>(async key =>
         {
 
-            
+
 
         });
 
