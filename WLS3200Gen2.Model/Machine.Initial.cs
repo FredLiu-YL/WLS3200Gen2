@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Component;
+using WLS3200Gen2.Model.Component.Adlink;
 using WLS3200Gen2.Model.Module;
 using YuanliCore.CameraLib;
 using YuanliCore.Interface;
-using YuanliCore.Interface.Motion;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
@@ -119,52 +119,52 @@ namespace WLS3200Gen2.Model
             IMotionController motionController = null;
             if (isSimulate)
             {
-                List<AxisInfo> axesInfos = new List<AxisInfo>();
-           
+                List<AxisConfig> axisConfig = new List<AxisConfig>();
+
                 for (int i = 0; i < 4; i++)
                 {
                     switch (i)
                     {
                         case 0:
-                            AxisInfo axisXInfo = new AxisInfo();
-                            axisXInfo.AxisName = "AxisX";
-                            axisXInfo.AxisID = 0;
-                            axesInfos.Add(axisXInfo);
+                            AxisConfig axisXConfig = new AxisConfig();
+                            axisXConfig.AxisName = "AxisX";
+                            axisXConfig.AxisID = 0;
+                            axisConfig.Add(axisXConfig);
                             break;
                         case 1:
-                            AxisInfo axisYInfo = new AxisInfo();
-                            axisYInfo.AxisName = "AxisY";
-                            axisYInfo.AxisID = 1;
-                            axesInfos.Add(axisYInfo);
+                            AxisConfig axisYConfig = new AxisConfig();
+                            axisYConfig.AxisName = "AxisY";
+                            axisYConfig.AxisID = 1;
+                            axisConfig.Add(axisYConfig);
                             break;
                         case 2:
-                            AxisInfo axisRInfo = new AxisInfo();
+                            AxisConfig axisRInfo = new AxisConfig();
                             axisRInfo.AxisName = "AxisR";
                             axisRInfo.AxisID = 2;
-                            axesInfos.Add(axisRInfo);
+                            axisConfig.Add(axisRInfo);
 
                             break;
                         case 3:
-                            AxisInfo axisInfo = new AxisInfo();
-                            axisInfo.AxisName = "RobotAxis";
-                            axisInfo.AxisID = 3;
-                            axesInfos.Add(axisInfo);
-
+                            AxisConfig axisRobotInfo = new AxisConfig();
+                            axisRobotInfo.AxisName = "RobotAxis";
+                            axisRobotInfo.AxisID = 3;
+                            axisConfig.Add(axisRobotInfo);
                             break;
                     }
-
-                     
                 }
 
                 var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
 
-                motionController = new SimulateMotionControllor(axesInfos, doNames, diNames);
+                motionController = new SimulateMotionControllor(axisConfig, doNames, diNames);
             }
             else
             {
+                List<AxisConfig> axisConfig = new List<AxisConfig>();
+                var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
 
-
+                motionController = new APS168Controller(axisConfig, doNames, diNames);
             }
 
             return motionController;
@@ -247,7 +247,7 @@ namespace WLS3200Gen2.Model
             DigitalOutput[] dos = motionController.OutputSignals.ToArray();
             return dos;
         }
-       
+
 
     }
 
