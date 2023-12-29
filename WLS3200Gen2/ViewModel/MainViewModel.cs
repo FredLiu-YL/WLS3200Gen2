@@ -32,7 +32,7 @@ namespace WLS3200Gen2
         private Machine machine;
         private MachineSetting machineSetting;
         private bool isSimulate;
-
+        private MainRecipe mainRecipe = new MainRecipe();
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>

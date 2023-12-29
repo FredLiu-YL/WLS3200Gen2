@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
+using YuanliCore.Model;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -35,23 +36,12 @@ namespace WLS3200Gen2.UserControls
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
 
-        private double locateGrabPosX1;
-        private double locateGrabPosX2;
-        private double locateGrabPosX3;
-        private double locateGrabPosY1;
-        private double locateGrabPosY2;
-        private double locateGrabPosY3;
 
+        private double offsetX, offsetY;
 
-        private int locateIndexX1;
-        private int locateIndexY1;
-        private int locateIndexX2;
-        private int locateIndexY2;
-        private int locateIndexX3;
-        private int locateIndexY3;
+   
         private LocateMode modeForUI = LocateMode.Pattern;
-        private bool islocateEdgeMode;
-        private bool islocatePatternMode;
+    
         private int locateModeIndex;
 
 
@@ -75,8 +65,12 @@ namespace WLS3200Gen2.UserControls
                                                                  new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
-       public static readonly DependencyProperty SelectModeProperty = DependencyProperty.Register(nameof(SelectMode), typeof(LocateMode), typeof(LocateUC),
-                                                         new FrameworkPropertyMetadata(LocateMode.Pattern, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)); 
+        public static readonly DependencyProperty SelectModeProperty = DependencyProperty.Register(nameof(SelectMode), typeof(LocateMode), typeof(LocateUC),
+                                                          new FrameworkPropertyMetadata(LocateMode.Pattern, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty OffsetProperty = DependencyProperty.Register(nameof(Offset), typeof(Vector), typeof(LocateUC),
+                                                  new FrameworkPropertyMetadata(new Vector(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
 
         public BitmapSource MainImage
         {
@@ -111,19 +105,25 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(CurrentPosYProperty, value);
         }
 
+        public Vector Offset
+        {
+            get => (Vector)GetValue(OffsetProperty);
+            set => SetValue(OffsetProperty, value);
+        }
+
         public Action<CogMatcher> MatchFind
         {
             get => (Action<CogMatcher>)GetValue(MatchFindProperty);
             set => SetValue(MatchFindProperty, value);
         }
-        public LocateMode SelectMode 
+        public LocateMode SelectMode
         {
             get => (LocateMode)GetValue(SelectModeProperty);
             set => SetValue(SelectModeProperty, value);
         }
-     
 
-       public LocateMode ModeForUI
+
+        public LocateMode ModeForUI
         {
             get
             {
@@ -135,7 +135,7 @@ namespace WLS3200Gen2.UserControls
                 return modeForUI;
             }
             set => SetValue(ref modeForUI, value);
-        } 
+        }
         /*  {
 
               get {
@@ -148,56 +148,36 @@ namespace WLS3200Gen2.UserControls
               set => SetValue(ref mode, value);
 
           }*/
-        public double LocateGrabPosX1 { get => locateGrabPosX1; set => SetValue(ref locateGrabPosX1, value); }
-        public double LocateGrabPosX2 { get => locateGrabPosX2; set => SetValue(ref locateGrabPosX2, value); }
-        public double LocateGrabPosX3 { get => locateGrabPosX3; set => SetValue(ref locateGrabPosX3, value); }
-        public double LocateGrabPosY1 { get => locateGrabPosY1; set => SetValue(ref locateGrabPosY1, value); }
-        public double LocateGrabPosY2 { get => locateGrabPosY2; set => SetValue(ref locateGrabPosY2, value); }
-        public double LocateGrabPosY3 { get => locateGrabPosY3; set => SetValue(ref locateGrabPosY3, value); }
+       
+   
 
-
-        public int LocateIndexX1
+        public double OffsetX
         {
-            get => locateIndexX1;
-            set => SetValue(ref locateIndexX1, value);
+            get
+            {
+                Offset = new Vector(offsetX, offsetY);
+                return offsetX;
+            }
+            set => SetValue(ref offsetX, value);
         }
-        public int LocateIndexX2
-
+        public double OffsetY
         {
-            get => locateIndexX2;
-            set => SetValue(ref locateIndexX2, value);
+            get
+            {
+                Offset = new Vector(offsetX, offsetY);
+                return offsetY;
+            }
+            set => SetValue(ref offsetY, value);
         }
-        public int LocateIndexX3 { get => locateIndexX3; set => SetValue(ref locateIndexX3, value); }
-        public int LocateIndexY1 { get => locateIndexY1; set => SetValue(ref locateIndexY1, value); }
-        public int LocateIndexY2 { get => locateIndexY2; set => SetValue(ref locateIndexY2, value); }
-        public int LocateIndexY3 { get => locateIndexY3; set => SetValue(ref locateIndexY3, value); }
+
+        
+      
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
-        public bool IsLocateEdgeMode
-        {
-            get
-            {
-                if (islocateEdgeMode)
-                    LocateModeIndex = 0;
-                return islocateEdgeMode;
-
-            }
-            set => SetValue(ref islocateEdgeMode, value);
-        }
-        public bool IsLocatePatternMode
-        {
-            get
-            {
-                if (islocatePatternMode)
-                    LocateModeIndex = 1;
-                return islocatePatternMode;
-
-            }
-            set => SetValue(ref islocatePatternMode, value);
-        }
+        
         public int LocateModeIndex { get => locateModeIndex; set => SetValue(ref locateModeIndex, value); }
 
 
@@ -210,7 +190,7 @@ namespace WLS3200Gen2.UserControls
 
         public ICommand ClosingCommand => new RelayCommand(() =>
        {
-           UpdateParam();
+         //  UpdateParam();
 
        });
 
@@ -253,7 +233,7 @@ namespace WLS3200Gen2.UserControls
                 }
 
 
-                UpdateParam();
+              //  UpdateParam();
 
 
                 //  UpdateRecipe();
@@ -287,7 +267,7 @@ namespace WLS3200Gen2.UserControls
                 default:
                     break;
             }
-            UpdateParam();
+          //  UpdateParam();
             MatchFind?.Invoke(tempMatcher);
 
             /*   
@@ -318,27 +298,33 @@ namespace WLS3200Gen2.UserControls
             switch (key)
             {
                 case "set1":
-                    LocateGrabPosX1 = CurrentPosX;
-                    LocateGrabPosY1 = CurrentPosY;
+                    MatchParam1.GrabPositionX = CurrentPosX;
+                    MatchParam1.GrabPositionY = CurrentPosY;
+                    MatchParam1.DesignPositionX = CurrentPosX;
+                    MatchParam1.DesignPositionY = CurrentPosY;
                     break;
                 case "set2":
-                    LocateGrabPosX2 = CurrentPosX;
-                    LocateGrabPosY2 = CurrentPosY;
+                    MatchParam2.GrabPositionX = CurrentPosX;
+                    MatchParam2.GrabPositionY = CurrentPosY;
+                    MatchParam2.DesignPositionX = CurrentPosX;
+                    MatchParam2.DesignPositionY = CurrentPosY;
 
                     break;
                 case "set3":
-                    LocateGrabPosX3 = CurrentPosX;
-                    LocateGrabPosY3 = CurrentPosY;
+                    MatchParam3.GrabPositionX = CurrentPosX;
+                    MatchParam3.GrabPositionY = CurrentPosY;
+                    MatchParam3.DesignPositionX = CurrentPosX;
+                    MatchParam3.DesignPositionY = CurrentPosY;
 
                     break;
                 default:
                     break;
             }
 
-            UpdateParam();
+         //   UpdateParam();
         });
 
-        public void UpdateParam()
+       /* public void UpdateParam()
         {
 
             if (MatchParam1 == null || MatchParam2 == null) return;
@@ -356,7 +342,7 @@ namespace WLS3200Gen2.UserControls
             MatchParam3.Index = new Point(LocateIndexX3, LocateIndexY3);
 
 
-        }
+        }*/
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -376,21 +362,6 @@ namespace WLS3200Gen2.UserControls
 
     }
 
-    public class LocateParam
-    {
-        public LocateParam(int number)
-        {
-
-            MatchParam = new PatmaxParams(number);
-        }
-        //正常拍照座標跟設計座標應該分開 ，暫時先一起  有需要再分
-        public Point GrabPosition { get; set; }
-        public Point DesignPosition { get; set; }
-        public Point Index { get; set; }
-
-        public PatmaxParams MatchParam { get; set; }
-
-    }
 
 
     public class LocateModePatternConver : IValueConverter

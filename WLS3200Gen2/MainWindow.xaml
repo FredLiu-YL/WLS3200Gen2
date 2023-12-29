@@ -460,12 +460,13 @@
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                         </Grid.RowDefinitions>
-                                                        <UserControlUC:LocateUC  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" MatchFind="{Binding SampleFind}"  />
+                                                        <UserControlUC:LocateUC  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
+                                                                                 MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" Offset="{Binding AlignOffset}"   />
                                                         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
-                                                                <Button Margin="2" Content="Locate Run" />
-                                                                <Button Margin="2" Content="Locate Run" />
-                                                                <Button Margin="2" Content="Locate Run" />
+                                                                <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}"  />
+                                                                <Button Margin="2" Content="Locate Run" Command="{Binding LocateRunCommand}"  />
+                                                            
                                                             </StackPanel>
 
                                                         </Border>

@@ -27,7 +27,7 @@ namespace WLS3200Gen2
         private Visibility informationUIVisibility, workholderUCVisibility;
 
         private int tabControlSelectedIndex;
-   
+        private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS";
 
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
@@ -152,12 +152,16 @@ namespace WLS3200Gen2
         });
         public ICommand SaveRecipeCommand => new RelayCommand(() =>
         {
+
+            string name = "RecipeName";
+            string path = $"{systemPath}\\Recipe\\{name}";
             FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", "MainRecipe");
             win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             bool isDialogResult = (bool)win.ShowDialog();
             if (isDialogResult)
             {
+                mainRecipe.Save(path);
                 // machine.BonderRecipe.RecipeID = win.FileName;
                 // machine.BonderRecipe.Save(win.FilePathName);
             }

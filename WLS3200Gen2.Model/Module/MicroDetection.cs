@@ -70,7 +70,7 @@ namespace WLS3200Gen2.Model.Module
         /// <param name="pst"></param>
         /// <param name="ctk"></param>
         /// <returns></returns>
-        public async Task CatchWaferPrepare(Point tableWaferCatchPosition,  PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task CatchWaferPrepare(Point tableWaferCatchPosition, PauseTokenSource pst, CancellationTokenSource ctk)
         {
 
             await TableMoveToAsync(tableWaferCatchPosition);
@@ -111,16 +111,16 @@ namespace WLS3200Gen2.Model.Module
             //對位
             opticalAlignment.CancelToken = cancelToken;
             opticalAlignment.PauseToken = pauseToken;
-            ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
-
+            //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
+            ITransform transForm = await Alignment(recipe.AlignRecipe);
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-              
+
             //每一個座標需要檢查的座標
             foreach (DetectionPoint point in recipe.DetectionPoints)
             {
 
- 
+
                 //轉換成對位後實際座標
                 var transPosition = transForm.TransPoint(point.Position);
 
@@ -164,7 +164,17 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
+        /// <summary>
+        /// 對位功能
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        public async Task<ITransform> Alignment(AlignmentRecipe recipe)
+        {
 
+            ITransform transForm = await opticalAlignment.Alignment(recipe);
+            return transForm;
+        }
 
 
         private void ObservableDetection()

@@ -40,15 +40,15 @@ namespace WLS3200Gen2.Model.Module
         {
             List<Point> targetPos = new List<Point>();
             //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
-            foreach (FiducialData fiducial in alignmentRecipe.fiducialDatas)
+            foreach (LocateParam fiducial in alignmentRecipe.FiducialDatas)
             {
 
 
-                await TableMoveToAsync(fiducial.GrabPosition.X, fiducial.GrabPosition.Y);
+                await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
                 BitmapSource image = camera.GrabAsync();
 
                 //Pattern match參數傳入 蒐尋器內
-                matcher.RunParams = fiducial.Param;
+                matcher.RunParams = fiducial.MatchParam;
                 MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
 
                 if(result.Length==0)
@@ -59,7 +59,7 @@ namespace WLS3200Gen2.Model.Module
                     await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
                     throw new Exception("搜尋失敗");
                 }
-                Point actualPos = await GetTargetPos(image, fiducial.GrabPosition.X, fiducial.GrabPosition.Y, result[0].Center);
+                Point actualPos = await GetTargetPos(image, fiducial.GrabPositionX, fiducial.GrabPositionY, result[0].Center);
 
                 targetPos.Add(actualPos);
 
@@ -103,7 +103,7 @@ namespace WLS3200Gen2.Model.Module
         private Point[] ConvertDesignPos()
         {
 
-            Point[] designPos = alignmentRecipe.fiducialDatas.Select(f => f.DesignPosition).ToArray();
+            Point[] designPos = alignmentRecipe.FiducialDatas.Select(f =>new Point( f.DesignPositionX, f.DesignPositionY)).ToArray();
             return designPos;
         }
 

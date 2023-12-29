@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
+using YuanliCore.Model;
 using YuanliCore.Model.UserControls;
 using YuanliCore.Views.CanvasShapes;
 
@@ -34,6 +36,9 @@ namespace WLS3200Gen2
         private LocateParam locateParam3 = new LocateParam(3);
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
+        private LocateMode selectMode;
+        private Vector alignOffset;
+        private ExistStates testStates;
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
@@ -45,9 +50,11 @@ namespace WLS3200Gen2
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
         public LocateParam LocateParam2 { get => locateParam2; set => SetValue(ref locateParam2, value); }
         public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
+        public LocateMode SelectMode { get => selectMode; set => SetValue(ref selectMode, value); }
 
-        private ExistStates testStates;
         public ExistStates TestStates { get => testStates; set => SetValue(ref testStates, value); }
+
+        public Vector AlignOffset { get => alignOffset; set => SetValue(ref alignOffset, value); }
 
         public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
 
@@ -111,7 +118,22 @@ namespace WLS3200Gen2
 
 
         });
+        public ICommand ParamConfirmCommand => new RelayCommand(async () =>
+        {
 
+
+            SetLocateRecipe();
+
+
+        });
+        public ICommand LocateRunCommand => new RelayCommand(async () =>
+        {
+            SetLocateRecipe();
+
+            await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
+
+
+        });
 
         private void SampleFindAction(CogMatcher matcher)
         {
@@ -137,6 +159,19 @@ namespace WLS3200Gen2
 
 
         }
+        private void SetLocateRecipe()
+        {
+            List<LocateParam> datas = new List<LocateParam>();
+
+            datas.Add(LocateParam1);
+            datas.Add(LocateParam2);
+            datas.Add(LocateParam3);
+            mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
+            mainRecipe.DetectRecipe.AlignRecipe.Offset = AlignOffset;
+            mainRecipe.DetectRecipe.AlignRecipe.FiducialDatas = datas.ToArray();
+
+        }
+
     }
 
     public class WaferUIData : INotifyPropertyChanged
