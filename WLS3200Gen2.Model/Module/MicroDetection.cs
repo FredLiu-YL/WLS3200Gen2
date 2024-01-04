@@ -37,7 +37,8 @@ namespace WLS3200Gen2.Model.Module
             this.Microscope = microscope;
             AxisX = axes[0];
             AxisY = axes[1];
-            AxisR = axes[2];
+            AxisR = axes[3];
+            AxisZ = axes[2];
             TableVacuum = outputs[1];
             LiftPin = outputs[2];
 
@@ -50,16 +51,38 @@ namespace WLS3200Gen2.Model.Module
         public Axis AxisX { get; }
         public Axis AxisY { get; }
         public Axis AxisR { get; }
+        public Axis AxisZ { get; }
         public DigitalOutput TableVacuum { get; }
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
+
         public DetectionRecipe detectionRecipe;
         public IObservable<(BitmapSource image, bool isAutoSave)> Observable => subject;
 
         public async Task Home()
         {
+            try
+            {
+                //Task axisZHome = Task.Run(async () =>
+                //{
+                //    await AxisZ.HomeAsync();
+                //});
+                //await Task.Run(() => { });
+                await AxisZ.HomeAsync();
 
-            await Task.Run(() => { });
+                Task axisXHome = AxisX.HomeAsync();
+
+                Task axisYHome = AxisY.HomeAsync();
+
+                Task axisRHome = AxisR.HomeAsync();
+
+                await Task.WhenAll(axisXHome, axisYHome, axisRHome);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
 
         }
 

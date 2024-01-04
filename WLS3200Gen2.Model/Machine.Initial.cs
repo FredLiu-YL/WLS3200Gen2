@@ -70,7 +70,7 @@ namespace WLS3200Gen2.Model
             DigitalInput[] dis = motionController.IutputSignals.ToArray();
             DigitalOutput[] dos = motionController.OutputSignals.ToArray();
 
-            Feeder = new Feeder(robot, loadPort, macro, aligner, axes[3]);
+            Feeder = new Feeder(robot, loadPort, macro, aligner, axes[4]);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
@@ -138,16 +138,22 @@ namespace WLS3200Gen2.Model
                             axisConfig.Add(axisYConfig);
                             break;
                         case 2:
+                            AxisConfig axisZInfo = new AxisConfig();
+                            axisZInfo.AxisName = "AxisZ";
+                            axisZInfo.AxisID = 2;
+                            axisConfig.Add(axisZInfo);
+                            break;
+                        case 3:
                             AxisConfig axisRInfo = new AxisConfig();
                             axisRInfo.AxisName = "AxisR";
-                            axisRInfo.AxisID = 2;
+                            axisRInfo.AxisID = 3;
                             axisConfig.Add(axisRInfo);
 
                             break;
-                        case 3:
+                        case 4:
                             AxisConfig axisRobotInfo = new AxisConfig();
                             axisRobotInfo.AxisName = "RobotAxis";
-                            axisRobotInfo.AxisID = 3;
+                            axisRobotInfo.AxisID = 4;
                             axisConfig.Add(axisRobotInfo);
                             break;
                     }
@@ -157,14 +163,64 @@ namespace WLS3200Gen2.Model
                 var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
 
                 motionController = new SimulateMotionControllor(axisConfig, doNames, diNames);
+                motionController.InitializeCommand();
             }
             else
             {
                 List<AxisConfig> axisConfig = new List<AxisConfig>();
+                for (int i = 0; i <= 4; i++)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            AxisConfig axisXConfig = new AxisConfig();
+                            axisXConfig.AxisName = "AxisX";
+                            axisXConfig.AxisID = 1500;
+                            axisXConfig.MoveVel = new VelocityParams(1000000, 0.5);
+                            axisXConfig.HomeVel = new VelocityParams(100000, 0.5);
+                            axisConfig.Add(axisXConfig);
+                            break;
+                        case 1:
+                            AxisConfig axisYConfig = new AxisConfig();
+                            axisYConfig.AxisName = "AxisY";
+                            axisYConfig.AxisID = 1501;
+                            axisYConfig.MoveVel = new VelocityParams(1000000, 0.5);
+                            axisYConfig.HomeVel = new VelocityParams(100000, 0.5);
+                            axisConfig.Add(axisYConfig);
+                            break;
+                        case 2:
+                            AxisConfig axisZInfo = new AxisConfig();
+                            axisZInfo.AxisName = "AxisZ";
+                            axisZInfo.AxisID = 1502;
+                            axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
+                            axisZInfo.HomeVel = new VelocityParams(5000, 0.2);
+                            axisConfig.Add(axisZInfo);
+                            break;
+                        case 3:
+                            AxisConfig axisRInfo = new AxisConfig();
+                            axisRInfo.AxisName = "AxisR";
+                            axisRInfo.AxisID = 1503;
+                            axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
+                            axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
+                            axisConfig.Add(axisRInfo);
+
+                            break;
+                        case 4:
+                            AxisConfig axisRobotInfo = new AxisConfig();
+                            axisRobotInfo.AxisName = "RobotAxis";
+                            axisRobotInfo.AxisID = 1504;
+                            axisRobotInfo.MoveVel = new VelocityParams(3000000, 0.2);
+                            axisRobotInfo.HomeVel = new VelocityParams(300000, 0.2);
+                            axisConfig.Add(axisRobotInfo);
+                            break;
+                    }
+                }
                 var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
 
-                motionController = new APS168Controller(axisConfig, doNames, diNames);
+
+
+                motionController = new Adlink7856(axisConfig, doNames, diNames);
             }
 
             return motionController;

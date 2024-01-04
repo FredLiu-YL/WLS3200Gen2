@@ -92,8 +92,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component\Adlink\APS168Controller.cs" />
+    <Compile Include="Component\Adlink\Adlink7856.cs" />
     <Compile Include="Component\Adlink\APS168EX.cs" />
+    <Compile Include="Component\Adlink\APS168x64EX.cs" />
     <Compile Include="Component\ArtificialCamera.cs" />
     <Compile Include="Component\ArtificialLoadPort.cs" />
     <Compile Include="Component\DummyAligner.cs" />

@@ -15,7 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using WLS3200Gen2;
 
 namespace Test
 {
@@ -28,6 +27,8 @@ namespace Test
         {
             InitializeComponent();
         }
-        
+       
+
     }
+
 }
