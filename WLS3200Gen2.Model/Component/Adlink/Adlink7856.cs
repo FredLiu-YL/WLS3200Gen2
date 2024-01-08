@@ -47,13 +47,28 @@ namespace WLS3200Gen2.Model.Component.Adlink
         /// </summary>
         private int[] axisRealID;
 
+        /// <summary>
+        /// 各自軸卡的Input點位
+        /// </summary>
+        private int[] totalInput;
+        /// <summary>
+        /// Input點位對應的ID
+        /// </summary>
+        private int[] inputRealModID;
+        /// <summary>
+        /// 各自軸卡的Output點位
+        /// </summary>
+        private int[] totalOutput;
+        /// <summary>
+        /// Output點位對應的ID
+        /// </summary>
+        private int[] outputRealModID;
+
         private List<VelocityParams> axesMovVel = new List<VelocityParams>();
 
         private List<double> axeslimitN = new List<double>();
 
         private List<double> axeslimitP = new List<double>();
-
-        private List<bool> isAxesServoOn = new List<bool>();
 
         public Adlink7856(IEnumerable<AxisConfig> axisInfos, IEnumerable<string> doNames, IEnumerable<string> diNames)
         {
@@ -76,6 +91,22 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 axisRealID[3] = 1503;
                 axisRealID[4] = 1504;
 
+                totalInput = new int[2];
+                totalInput[0] = 16;
+                totalInput[1] = 16;
+                inputRealModID = new int[2];
+                inputRealModID[0] = 1;
+                inputRealModID[1] = 3;
+
+                totalOutput = new int[3];
+                totalOutput[0] = 16;
+                totalOutput[1] = 16;
+                totalOutput[2] = 32;
+                outputRealModID = new int[3];
+                outputRealModID[0] = 1;
+                outputRealModID[1] = 3;
+                outputRealModID[2] = 5;
+
                 axes = axisInfos.Select((info, i) =>
                 {
                     axesPos.Add(0);
@@ -84,8 +115,6 @@ namespace WLS3200Gen2.Model.Component.Adlink
                         AxisName = info.AxisName
                     };
                 }).ToArray();
-
-
 
                 var axisInfosArray = axisInfos.ToArray();
                 //有多少軸就創建多少顆驅動器參數
@@ -98,11 +127,10 @@ namespace WLS3200Gen2.Model.Component.Adlink
                     axes[i].HomeVelocity = axisInfosArray[i].HomeVel;
                     axes[i].HomeMode = axisInfosArray[i].HomeMode;
                     axes[i].HomeDirection = axisInfosArray[i].HomeDirection;
-                    isAxesServoOn.Add(false);
                 }
 
                 OutputSignals = doNames.Select((n, i) => new DigitalOutput(i, this));
-                IutputSignals = diNames.Select(n => new DigitalInput(n)).ToArray();
+                InputSignals = diNames.Select(n => new DigitalInput(n)).ToArray();
             }
             catch (Exception)
             {
@@ -115,7 +143,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
 
         public Axis[] Axes => axes;
 
-        public DigitalInput[] IutputSignals { get; private set; }
+        public DigitalInput[] InputSignals { get; private set; }
 
         public IEnumerable<DigitalOutput> OutputSignals { get; set; }
         public void InitializeCommand()
@@ -133,10 +161,10 @@ namespace WLS3200Gen2.Model.Component.Adlink
                         }
                         else
                         {
-                            isAxesServoOn[i] = true;
-                            //Axes[i].IsOpen = true;
+                            Axes[i].IsOpen = true;
                         }
                     }
+                    Task.Run(ReflashInput);
                 }
                 else
                 {
@@ -149,11 +177,50 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 throw ex;
             }
         }
-        public DigitalOutput[] SetOutputs(IEnumerable<string> names)
+        public DigitalOutput[] SetOutputNames(IEnumerable<string> names)
         {
             throw new NotImplementedException();
         }
-        public DigitalInput[] SetInputs(IEnumerable<string> names)
+        public void SetOutputCommand(int id, bool isOn)
+        {
+            try
+            {
+                int setCardNo = -1;
+                int cardNo = 0;
+                for (int i = 0; i < totalOutput.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        if (0 <= id && id < totalOutput[0])
+                        {
+                            setCardNo = cardNo;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (totalOutput[i - 1] <= id && id < totalOutput[i])
+                        {
+                            setCardNo = cardNo;
+                            break;
+                        }
+                    }
+                    cardNo++;
+                }
+                if (setCardNo >= 0)
+                {
+                    //int realID = OutputSignals[id]
+                    APS168SetOutput(setCardNo, id, isOn);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public DigitalInput[] SetInputNames(IEnumerable<string> names)
         {
             throw new NotImplementedException();
         }
@@ -162,6 +229,27 @@ namespace WLS3200Gen2.Model.Component.Adlink
         public Axis[] SetAxesParam(IEnumerable<AxisConfig> axisConfig)
         {
             throw new NotImplementedException();
+        }
+        public void SetServoCommand(int id, bool isOn)
+        {
+            try
+            {
+                if (isOn == true)
+                {
+                    Axes[id].IsOpen = true;
+                    ServoOn(id);
+                }
+                else
+                {
+                    Axes[id].IsOpen = false;
+                    ServoOff(id);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
         public void MoveCommand(int id, double distance)
         {
@@ -554,7 +642,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
         /// </summary>
         /// <param name="modNo"></param>
         /// <param name="output"></param>
-        private void APS168SetOutput(int modNo, string[] output)
+        private void APS168SetOutput(int setModID, int id, bool isOn)
         {
             try
             {
@@ -566,25 +654,39 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 // IO1: 1 cbBit15 蜂鳴器
 
                 int DOData = 0;
-                APS168Lib.APS_get_field_bus_d_output(cardID, Bus_HSL, modNo, ref DOData);
+                int realModID = outputRealModID[setModID];
+                int outputCount = totalOutput[setModID];
+                APS168Lib.APS_get_field_bus_d_output(cardID, Bus_HSL, realModID, ref DOData);
                 string binaryValue = Convert.ToString(DOData, 2);
-                string paddedBinaryValue = binaryValue.PadLeft(output.Length, '0');
-
+                string paddedBinaryValue = binaryValue.PadLeft(outputCount, '0');
+                char[] paddedBinaryArray = paddedBinaryValue.ToCharArray();
+                if (isOn == true)
+                {
+                    paddedBinaryArray[id] = '1';
+                }
+                else
+                {
+                    paddedBinaryArray[id] = '0';
+                }
 
                 int value = 0;
                 int bit = 0x1;
                 //int On_Idx = 11;//紅燈
-                for (int i = 0; i < output.Length; i++)
+                for (int i = 0; i < outputCount; i++)
                 {
                     // 如果 bitcheck 被選取，則設置對應位元
-                    if (paddedBinaryValue[(paddedBinaryValue.Length - 1) - i] == '1')
+                    if (paddedBinaryArray[(outputCount - 1) - i] == '1')
                     {
                         value |= bit;
                     }
                     // 將位元左移一位
                     bit = bit << 1;
                 }
-                Function_Result(APS168Lib.APS_set_field_bus_d_output(cardID, Bus_HSL, modNo, value));
+                Function_Result(APS168Lib.APS_set_field_bus_d_output(cardID, Bus_HSL, realModID, value));
+                if (FunctionFail == true)
+                {
+
+                }
             }
             catch (Exception ex)
             {
@@ -597,15 +699,17 @@ namespace WLS3200Gen2.Model.Component.Adlink
         /// <param name="modNo"></param>
         /// <param name="inputcount"></param>
         /// <returns></returns>
-        private int[] APS168GetInput(int modNo, int inputcount)
+        private int[] APS168GetInput(int setModID)
         {
             try
             {
-
                 int DI_Value = 0;
-                APS168Lib.APS_get_field_bus_d_input(cardID, Bus_HSL, modNo, ref DI_Value);
+                int realModID = inputRealModID[setModID];
+                int inputcount = totalInput[setModID];
+                APS168Lib.APS_get_field_bus_d_input(cardID, Bus_HSL, realModID, ref DI_Value);
                 string ss = Convert.ToString(DI_Value, 2).PadLeft(inputcount, '0');//  DI_Value.ToString("x");
                 int[] inputArray = ss.Select(c => int.Parse(c.ToString())).ToArray();
+
                 return inputArray;
             }
             catch (Exception ex)
@@ -964,6 +1068,43 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 throw;
             }
         }
+        private async Task ReflashInput()
+        {
+            try
+            {
+                while (true)
+                {
+                    int inputIdx = 0;
+                    int[][] getInput = new int[inputRealModID.Length][];
+                    for (int i = 0; i < inputRealModID.Length; i++)
+                    {
+                        getInput[i] = APS168GetInput(i);
+
+                        for (int j = 0; j < getInput[i].Length; j++)
+                        {
+                            if (getInput[i][j] == 0)
+                            {
+                                InputSignals[inputIdx].IsSignal = false;
+                            }
+                            else
+                            {
+                                InputSignals[inputIdx].IsSignal = true;
+                            }
+                            inputIdx++;
+                        }
+                    }
+                    await Task.Delay(100);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
+        }
+
 
         private class AxisInfo
         {

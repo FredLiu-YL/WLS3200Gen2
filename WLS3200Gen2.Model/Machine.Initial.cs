@@ -67,7 +67,7 @@ namespace WLS3200Gen2.Model
         {
 
             Axis[] axes = motionController.Axes.ToArray();
-            DigitalInput[] dis = motionController.IutputSignals.ToArray();
+            DigitalInput[] dis = motionController.InputSignals.ToArray();
             DigitalOutput[] dos = motionController.OutputSignals.ToArray();
 
             Feeder = new Feeder(robot, loadPort, macro, aligner, axes[4]);
@@ -295,7 +295,7 @@ namespace WLS3200Gen2.Model
 
         public DigitalInput[] GetInputs()
         {
-            DigitalInput[] dis = motionController.IutputSignals.ToArray();
+            DigitalInput[] dis = motionController.InputSignals.ToArray();
             return dis;
         }
         public DigitalOutput[] GetOutputs()

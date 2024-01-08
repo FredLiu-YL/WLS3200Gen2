@@ -19,13 +19,13 @@
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="Height" Value="1"/>
                 </Style>
-                <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
 
-                </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary.MergedDictionaries>-->
             </ResourceDictionary>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
@@ -50,13 +50,20 @@
             <Grid.ColumnDefinitions >
                 <ColumnDefinition Width="350"/>
                 <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="650"/>
+                <ColumnDefinition Width="600"/>
+                <ColumnDefinition Width="120"/>
             </Grid.ColumnDefinitions>
             <!--<Button    Command="{Binding OpenCCommand}"    />-->
             <UserControlUC:LoadPortUnitUC Grid.Column="0" Grid.Row="1"  LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" />
             <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
-
-            <motion:AxisMotionUC Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2" Axis="{Binding TableX }"  AxisSetConfig="{Binding TableXConfig }" Margin="0,0,-1189,127"   />
+            <GroupBox Header="Output" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1">
+                <UserControlUC:DigitalOutputUC OutputSignals="{Binding DigitalOutputs }"  />
+            </GroupBox>
+            <GroupBox Header="Input" Grid.Column="3" Grid.Row="1" >
+                <UserControlUC:DigitalInputUC     />
+            </GroupBox>
+            <motion:AxisMotionUC Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2" Axis="{Binding TableX }"  AxisSetConfig="{Binding TableXConfig }" Margin="0,0,0,115"    />
 
         </Grid>
     </Grid>

@@ -60,19 +60,16 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        /// <summary>
-        /// 開啟連線
-        /// </summary>
-        public void Open()
+        public void Initial()
         {
             try
             {
-                serialPort.Open();
+                Open();
             }
             catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
         /// <summary>
@@ -90,6 +87,141 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public async Task Home()
+        {
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_MovORG();
+                    if (alignerItems.IsMovOK == true)
+                    {
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task Run(double degree)
+        {
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_SetFindNotchPos(degree);
+                    if (alignerItems.IsSetOK == true)
+                    {
+                        alignerItems = Command_MovFindNotch();
+                        if (alignerItems.IsMovOK == true)
+                        {
+
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task VaccumOn()
+        {
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_MovVaccumON();
+                    if (alignerItems.IsMovOK == true)
+                    {
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task VaccumOff()
+        {
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_MovVaccumOFF();
+                    if (alignerItems.IsMovOK == true)
+                    {
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task AlarmReset()
+        {
+            try
+            {
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_SetReset();
+                    if (alignerItems.IsSetOK == true)
+                    {
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task<AlignerStatus> GetStatus()
+        {
+            try
+            {
+                AlignerStatus alignerStatus = new AlignerStatus();
+                AlignerItems alignerItems = new AlignerItems();
+                await Task.Run(() =>
+                {
+                    alignerItems = Command_GetStatus();
+                    if (alignerItems.IsGetOK == true)
+                    {
+                        alignerStatus = UpdateStatus(alignerItems);
+                    }
+                });
+                return alignerStatus;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 開啟連線
+        /// </summary>
+        public void Open()
+        {
+            try
+            {
+                serialPort.Open();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+        
         /// <summary>
         /// Aligner移動到原點位置
         /// </summary>
@@ -765,144 +897,6 @@ namespace WLS3200Gen2.Model.Component
                 checkSum.CSh = check_sum_str[len - 2];
                 checkSum.CSl = check_sum_str[len - 1];
                 return checkSum;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public void Initial()
-        {
-            try
-            {
-                Open();
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-
-        public async Task Home()
-        {
-            try
-            {
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_MovORG();
-                    if (alignerItems.IsMovOK == true)
-                    {
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task Run(double degree)
-        {
-            try
-            {
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_SetFindNotchPos(degree);
-                    if (alignerItems.IsSetOK == true)
-                    {
-                        alignerItems = Command_MovFindNotch();
-                        if (alignerItems.IsMovOK == true)
-                        {
-
-                        }
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task VaccumOn()
-        {
-            try
-            {
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_MovVaccumON();
-                    if (alignerItems.IsMovOK == true)
-                    {
-
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task VaccumOff()
-        {
-            try
-            {
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_MovVaccumOFF();
-                    if (alignerItems.IsMovOK == true)
-                    {
-
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task AlarmReset()
-        {
-            try
-            {
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_SetReset();
-                    if (alignerItems.IsSetOK == true)
-                    {
-
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task<AlignerStatus> GetStatus()
-        {
-            try
-            {
-                AlignerStatus alignerStatus = new AlignerStatus();
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_GetStatus();
-                    if (alignerItems.IsGetOK == true)
-                    {
-                        alignerStatus = UpdateStatus(alignerItems);
-                    }
-                });
-                return alignerStatus;
             }
             catch (Exception ex)
             {

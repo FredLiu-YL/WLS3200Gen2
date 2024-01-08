@@ -27,12 +27,17 @@ namespace Test
         private Axis tableX;
         private AxisConfig tableXConfig;
         IMotionController motionController;
+        private DigitalInput[] digitalInputs;
+        private DigitalOutput[] digitalOutputs;
+
 
         public LoadPortUI loadPortUIShow = new LoadPortUI();
 
         public AlignerUI alignerUIShow = new AlignerUI();
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
+        public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
+        public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
 
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
@@ -138,12 +143,16 @@ namespace Test
                             break;
                     }
                 }
-                var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
-                var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                //var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                //var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                var doNames = new string[64];
+                var diNames = new string[32];
 
                 motionController = new Adlink7856(axisConfig, doNames, diNames);
                 motionController.InitializeCommand();
 
+                DigitalOutputs = motionController.OutputSignals.ToArray();
+                DigitalInputs = motionController.InputSignals.ToArray();
                 TableX = motionController.Axes[0];
 
                 AxisConfig axis_TableXConfig = new AxisConfig();
@@ -191,6 +200,9 @@ namespace Test
                         AlignerUIShow.IsOrg = alignerStatus.IsOrg;
                         AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
                     }
+
+
+                    
 
                     await Task.Delay(300);
                 }
