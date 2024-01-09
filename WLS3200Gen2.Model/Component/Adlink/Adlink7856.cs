@@ -151,6 +151,10 @@ namespace WLS3200Gen2.Model.Component.Adlink
             try
             {
                 IsOpen = InitialCard();
+                foreach (var item in OutputSignals)
+                {
+                    item.IsSwitchOn = false;
+                }
                 if (IsOpen == true)
                 {
                     for (int i = 0; i < Axes.Length; i++)

@@ -24,12 +24,12 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class DigitalOutputUC : UserControl, INotifyPropertyChanged
     {
-        private bool[] OutputSwitchs;
         private bool isClick;
         public DigitalOutputUC()
         {
             InitializeComponent();
         }
+
 
         public static readonly DependencyProperty OutputSignalsProperty = DependencyProperty.Register("OutputSignals", typeof(DigitalOutput[]), typeof(DigitalOutputUC), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
@@ -45,14 +45,18 @@ namespace WLS3200Gen2.UserControls
        {
            try
            {
-               int id= Convert.ToInt32(par);
+               int id = Convert.ToInt32(par);
                if (isClick) return;//防止連點
                isClick = true;
-               if (!OutputSignals[id].IsSwitchOn)
-                   OutputSignals[id].On();
-               else
-                   OutputSignals[id].Off();
 
+               if (OutputSignals[id].IsSwitchOn == true )
+               {
+                   OutputSignals[id].On();
+               }
+               else
+               {
+                   OutputSignals[id].Off();
+               }
                isClick = false;
            }
            catch (Exception ex)
@@ -80,4 +84,6 @@ namespace WLS3200Gen2.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
+    
+
 }

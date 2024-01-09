@@ -109,6 +109,7 @@
     <Compile Include="Machine.cs" />
     <Compile Include="MachineSetting.cs" />
     <Compile Include="Module\Feeder.cs" />
+    <Compile Include="Module\MacroDetection.cs" />
     <Compile Include="Module\MicroDetection.cs" />
     <Compile Include="Module\OpticalAlignment.cs" />
     <Compile Include="Module\ProcessDataOutput.cs" />

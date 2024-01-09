@@ -89,6 +89,13 @@ namespace Test
         {
             try
             {
+                OutputSwitchs = new bool[64];
+                for (int i = 0; i < OutputSwitchs.Length; i++)
+                {
+                    OutputSwitchs[i] = new bool();
+                    OutputSwitchs[i] = false;
+                }
+
                 List<AxisConfig> axisConfig = new List<AxisConfig>();
                 for (int i = 0; i <= 4; i++)
                 {
@@ -159,6 +166,50 @@ namespace Test
                 axis_TableXConfig.MoveVel = motionController.Axes[0].AxisVelocity;
                 axis_TableXConfig.HomeVel = motionController.Axes[0].HomeVelocity;
                 TableXConfig = axis_TableXConfig;
+
+                DigitalOutput[] outputs = DigitalOutputs;
+
+                OuterRingRollXServo = outputs[52];
+                OuterRingRollXOrg = outputs[53];
+                OuterRingRollXForward = outputs[48];
+                OuterRingRollXBackward = outputs[49];
+                OuterRingRollXStop = outputs[50];
+                OuterRingRollXAlarmReset = outputs[51];
+
+                OuterRingPitchYServo = outputs[58];
+                OuterRingPitchYOrg = outputs[59];
+                OuterRingPitchYForward = outputs[54];
+                OuterRingPitchYBackward = outputs[55];
+                OuterRingPitchYStop = outputs[56];
+                OuterRingPitchYAlarmReset = outputs[57];
+
+                OuterRingYawZServo = outputs[36];
+                OuterRingYawZOrg = outputs[37];
+                OuterRingYawZForward = outputs[32];
+                OuterRingYawZBackward = outputs[33];
+                OuterRingYawZStop = outputs[34];
+                OuterRingYawZAlarmReset = outputs[35];
+
+                OuterRingLiftMotorStart = outputs[21];
+                OuterRingLiftMotorM0 = outputs[22];
+                OuterRingLiftMotorM1 = outputs[23];
+                OuterRingLiftMotorAlarmReset = outputs[19];
+                OuterRingLiftMotorServoOff = outputs[20];
+                OuterRingLiftMotorStop = outputs[18];
+
+                InnerRingYawZServo = outputs[43];
+                InnerRingYawZOrg = outputs[42];
+                InnerRingYawZForward = outputs[38];
+                InnerRingYawZBackward = outputs[39];
+                InnerRingYawZStop = outputs[40];
+                InnerRingYawZAlarmReset = outputs[41];
+
+                InnerRingLiftMotorStart = outputs[29];
+                InnerRingLiftMotorM0 = outputs[30];
+                InnerRingLiftMotorM1 = outputs[31];
+                InnerRingLiftMotorAlarmReset = outputs[27];
+                InnerRingLiftMotorServoOff = outputs[28];
+                InnerRingLiftMotorStop = outputs[26];
             }
             catch (Exception ex)
             {
@@ -202,7 +253,7 @@ namespace Test
                     }
 
 
-                    
+
 
                     await Task.Delay(300);
                 }
@@ -214,6 +265,50 @@ namespace Test
             }
 
         }
+        public DigitalOutput OuterRingRollXServo { get; set; }
+        public DigitalOutput OuterRingRollXOrg { get; set; }
+        public DigitalOutput OuterRingRollXForward { get; set; }
+        public DigitalOutput OuterRingRollXBackward { get; set; }
+        public DigitalOutput OuterRingRollXStop { get; set; }
+        public DigitalOutput OuterRingRollXAlarmReset { get; set; }
+
+        public DigitalOutput OuterRingPitchYServo { get; set; }
+        public DigitalOutput OuterRingPitchYOrg { get; set; }
+        public DigitalOutput OuterRingPitchYForward { get; set; }
+        public DigitalOutput OuterRingPitchYBackward { get; set; }
+        public DigitalOutput OuterRingPitchYStop { get; set; }
+        public DigitalOutput OuterRingPitchYAlarmReset { get; set; }
+
+        public DigitalOutput OuterRingYawZServo { get; set; }
+        public DigitalOutput OuterRingYawZOrg { get; set; }
+        public DigitalOutput OuterRingYawZForward { get; set; }
+        public DigitalOutput OuterRingYawZBackward { get; set; }
+        public DigitalOutput OuterRingYawZStop { get; set; }
+        public DigitalOutput OuterRingYawZAlarmReset { get; set; }
+
+        public DigitalOutput OuterRingLiftMotorStart { get; set; }
+        public DigitalOutput OuterRingLiftMotorM0 { get; set; }
+        public DigitalOutput OuterRingLiftMotorM1 { get; set; }
+        public DigitalOutput OuterRingLiftMotorAlarmReset { get; set; }
+        public DigitalOutput OuterRingLiftMotorServoOff { get; set; }
+        public DigitalOutput OuterRingLiftMotorStop { get; set; }
+
+
+
+
+        public DigitalOutput InnerRingYawZServo { get; set; }
+        public DigitalOutput InnerRingYawZOrg { get; set; }
+        public DigitalOutput InnerRingYawZForward { get; set; }
+        public DigitalOutput InnerRingYawZBackward { get; set; }
+        public DigitalOutput InnerRingYawZStop { get; set; }
+        public DigitalOutput InnerRingYawZAlarmReset { get; set; }
+
+        public DigitalOutput InnerRingLiftMotorStart { get; set; }
+        public DigitalOutput InnerRingLiftMotorM0 { get; set; }
+        public DigitalOutput InnerRingLiftMotorM1 { get; set; }
+        public DigitalOutput InnerRingLiftMotorAlarmReset { get; set; }
+        public DigitalOutput InnerRingLiftMotorServoOff { get; set; }
+        public DigitalOutput InnerRingLiftMotorStop { get; set; }
 
         public ICommand OpenCCommand => new RelayCommand<string>(async key =>
         {
@@ -255,6 +350,32 @@ namespace Test
         public AlignerUI AlignerUIShow { get => alignerUIShow; set => SetValue(ref alignerUIShow, value); }
 
 
+        public ICommand OutputSwitchCommand => new RelayCommand<string>((par) =>
+        {
+            try
+            {
+                motionController.SetOutputCommand(0, true);
 
+                //if (OutputSwitchs[0] == false)
+                //{
+                //    OutputSwitchs[0] = true;
+                //}
+                //else
+                //{
+                //    OutputSwitchs[0] = false;
+                //}
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+
+        private bool[] outputSwitchs;
+        public bool[] OutputSwitchs { get => outputSwitchs; set => SetValue(ref outputSwitchs, value); }
     }
 }
