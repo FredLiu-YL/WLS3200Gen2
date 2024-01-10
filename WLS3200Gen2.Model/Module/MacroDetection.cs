@@ -26,29 +26,29 @@ namespace WLS3200Gen2.Model.Module
         private CancellationTokenSource cancelToken;
         private Subject<(BitmapSource, bool)> subject = new Subject<(BitmapSource, bool)>();
         private IDisposable camlive;
-        public MacroDetection(ICamera camera, DigitalOutput[] outputs, DigitalInput[] inputs)
+        public MacroDetection(DigitalOutput[] outputs, DigitalInput[] inputs)
         {
             //this.camera = camera;
-            InnerRingRollXServo = outputs[52];
-            InnerRingRollXOrg = outputs[53];
-            InnerRingRollXForward = outputs[48];
-            InnerRingRollXBackward = outputs[49];
-            InnerRingRollXStop = outputs[50];
-            InnerRingRollXAlarmReset = outputs[51];
+            InnerRingPitchXServo = outputs[52];
+            InnerRingPitchXOrg = outputs[53];
+            InnerRingPitchXForward = outputs[48];
+            InnerRingPitchXBackward = outputs[49];
+            InnerRingPitchXStop = outputs[50];
+            InnerRingPitchXAlarmReset = outputs[51];
 
-            InnerRingPitchYServo = outputs[58];
-            InnerRingPitchYOrg = outputs[59];
-            InnerRingPitchYForward = outputs[54];
-            InnerRingPitchYBackward = outputs[55];
-            InnerRingPitchYStop = outputs[56];
-            InnerRingPitchYAlarmReset = outputs[57];
+            InnerRingRollYServo = outputs[58];
+            InnerRingRollYOrg = outputs[59];
+            InnerRingRollYForward = outputs[54];
+            InnerRingRollYBackward = outputs[55];
+            InnerRingRollYStop = outputs[56];
+            InnerRingRollYAlarmReset = outputs[57];
 
-            InnerRingYawZServo = outputs[43];
-            InnerRingYawZOrg = outputs[42];
-            InnerRingYawZForward = outputs[38];
-            InnerRingYawZBackward = outputs[39];
-            InnerRingYawZStop = outputs[40];
-            InnerRingYawZAlarmReset = outputs[41];
+            InnerRingYawTServo = outputs[43];
+            InnerRingYawTOrg = outputs[42];
+            InnerRingYawTForward = outputs[38];
+            InnerRingYawTBackward = outputs[39];
+            InnerRingYawTStop = outputs[40];
+            InnerRingYawTAlarmReset = outputs[41];
 
             InnerRingLiftMotorStart = outputs[29];
             InnerRingLiftMotorM0 = outputs[30];
@@ -58,12 +58,12 @@ namespace WLS3200Gen2.Model.Module
             InnerRingLiftMotorStop = outputs[26];
 
 
-            OuterRingPitchYServo = outputs[36];
-            OuterRingPitchYOrg = outputs[37];
-            OuterRingPitchYForward = outputs[32];
-            OuterRingPitchYBackward = outputs[33];
-            OuterRingPitchYStop = outputs[34];
-            OuterRingPitchYAlarmReset = outputs[35];
+            OuterRingRollYServo = outputs[36];
+            OuterRingRollYOrg = outputs[37];
+            OuterRingRollYForward = outputs[32];
+            OuterRingRollYBackward = outputs[33];
+            OuterRingRollYStop = outputs[34];
+            OuterRingRollYAlarmReset = outputs[35];
 
             OuterRingLiftMotorStart = outputs[21];
             OuterRingLiftMotorM0 = outputs[22];
@@ -73,13 +73,13 @@ namespace WLS3200Gen2.Model.Module
             OuterRingLiftMotorStop = outputs[18];
             ////Input
             ///
-            InnerRingRollXIsORG = inputs[23];
-            InnerRingPitchYIsORG = inputs[21];
+            InnerRingPitchXIsORG = inputs[23];
+            InnerRingRollYIsORG = inputs[21];
             InnerRingLiftMotorIsOK = inputs[28];
             InnerRingLiftMotorIsORG = inputs[29];
 
-            OuterRingPitchYMotorIsOK = inputs[17];
-            OuterRingPitchYMotorIsORG = inputs[18];
+            OuterRingRollYMotorIsOK = inputs[17];
+            OuterRingRollYMotorIsORG = inputs[18];
 
             OuterRingLiftMotorIsOK = inputs[25];
             OuterRingLiftMotorIsORG = inputs[26];
@@ -90,71 +90,72 @@ namespace WLS3200Gen2.Model.Module
 
             //ObservableDetection();
         }
-        public DigitalOutput InnerRingRollXServo { get; }
-        public DigitalOutput InnerRingRollXOrg { get; }
-        public DigitalOutput InnerRingRollXForward { get; }
-        public DigitalOutput InnerRingRollXBackward { get; }
-        public DigitalOutput InnerRingRollXStop { get; }
-        public DigitalOutput InnerRingRollXAlarmReset { get; }
+        private DigitalOutput InnerRingPitchXServo { get; }
+        private DigitalOutput InnerRingPitchXOrg { get; }
+        private DigitalOutput InnerRingPitchXForward { get; }
+        private DigitalOutput InnerRingPitchXBackward { get; }
+        private DigitalOutput InnerRingPitchXStop { get; }
+        private DigitalOutput InnerRingPitchXAlarmReset { get; }
 
-        public DigitalOutput InnerRingPitchYServo { get; }
-        public DigitalOutput InnerRingPitchYOrg { get; }
-        public DigitalOutput InnerRingPitchYForward { get; }
-        public DigitalOutput InnerRingPitchYBackward { get; }
-        public DigitalOutput InnerRingPitchYStop { get; }
-        public DigitalOutput InnerRingPitchYAlarmReset { get; }
+        private DigitalOutput InnerRingRollYServo { get; }
+        private DigitalOutput InnerRingRollYOrg { get; }
+        private DigitalOutput InnerRingRollYForward { get; }
+        private DigitalOutput InnerRingRollYBackward { get; }
+        private DigitalOutput InnerRingRollYStop { get; }
+        private DigitalOutput InnerRingRollYAlarmReset { get; }
 
-        public DigitalOutput InnerRingYawZServo { get; }
-        public DigitalOutput InnerRingYawZOrg { get; }
-        public DigitalOutput InnerRingYawZForward { get; }
-        public DigitalOutput InnerRingYawZBackward { get; }
-        public DigitalOutput InnerRingYawZStop { get; }
-        public DigitalOutput InnerRingYawZAlarmReset { get; }
+        private DigitalOutput InnerRingYawTServo { get; }
+        private DigitalOutput InnerRingYawTOrg { get; }
+        private DigitalOutput InnerRingYawTForward { get; }
+        private DigitalOutput InnerRingYawTBackward { get; }
+        private DigitalOutput InnerRingYawTStop { get; }
+        private DigitalOutput InnerRingYawTAlarmReset { get; }
 
         /// <summary>
         /// 內環升降馬達開始運作 M1,M0 00:Down 10:Up
         /// </summary>
-        public DigitalOutput InnerRingLiftMotorStart { get; }
-        public DigitalOutput InnerRingLiftMotorM0 { get; }
-        public DigitalOutput InnerRingLiftMotorM1 { get; }
-        public DigitalOutput InnerRingLiftMotorAlarmReset { get; }
-        public DigitalOutput InnerRingLiftMotorServoOff { get; }
-        public DigitalOutput InnerRingLiftMotorStop { get; }
+        private DigitalOutput InnerRingLiftMotorStart { get; }
+        private DigitalOutput InnerRingLiftMotorM0 { get; }
+        private DigitalOutput InnerRingLiftMotorM1 { get; }
+        private DigitalOutput InnerRingLiftMotorAlarmReset { get; }
+        private DigitalOutput InnerRingLiftMotorServoOff { get; }
+        private DigitalOutput InnerRingLiftMotorStop { get; }
 
 
-        public DigitalOutput OuterRingPitchYServo { get; }
-        public DigitalOutput OuterRingPitchYOrg { get; }
-        public DigitalOutput OuterRingPitchYForward { get; }
-        public DigitalOutput OuterRingPitchYBackward { get; }
-        public DigitalOutput OuterRingPitchYStop { get; }
-        public DigitalOutput OuterRingPitchYAlarmReset { get; }
+        private DigitalOutput OuterRingRollYServo { get; }
+        private DigitalOutput OuterRingRollYOrg { get; }
+        private DigitalOutput OuterRingRollYForward { get; }
+        private DigitalOutput OuterRingRollYBackward { get; }
+        private DigitalOutput OuterRingRollYStop { get; }
+        private DigitalOutput OuterRingRollYAlarmReset { get; }
 
         /// <summary>
         /// 外環升降馬達開始運作 M1,M0 00:Down 01:UpToDown 11:Up 10:DownToUp
         /// </summary>
-        public DigitalOutput OuterRingLiftMotorStart { get; }
-        public DigitalOutput OuterRingLiftMotorM0 { get; }
-        public DigitalOutput OuterRingLiftMotorM1 { get; }
-        public DigitalOutput OuterRingLiftMotorAlarmReset { get; }
-        public DigitalOutput OuterRingLiftMotorServoOff { get; }
-        public DigitalOutput OuterRingLiftMotorStop { get; }
+        private DigitalOutput OuterRingLiftMotorStart { get; }
+        private DigitalOutput OuterRingLiftMotorM0 { get; }
+        private DigitalOutput OuterRingLiftMotorM1 { get; }
+        private DigitalOutput OuterRingLiftMotorAlarmReset { get; }
+        private DigitalOutput OuterRingLiftMotorServoOff { get; }
+        private DigitalOutput OuterRingLiftMotorStop { get; }
 
-        public DigitalInput InnerRingRollXIsORG { get; }
-        public DigitalInput InnerRingPitchYIsORG { get; }
-        public DigitalInput InnerRingLiftMotorIsOK { get; }
-        public DigitalInput InnerRingLiftMotorIsORG { get; }
+        private DigitalInput InnerRingPitchXIsORG { get; }
+        private DigitalInput InnerRingRollYIsORG { get; }
+        private DigitalInput InnerRingLiftMotorIsOK { get; }
+        private DigitalInput InnerRingLiftMotorIsORG { get; }
 
-        public DigitalInput OuterRingPitchYMotorIsOK { get; }
-        public DigitalInput OuterRingPitchYMotorIsORG { get; }
+        private DigitalInput OuterRingRollYMotorIsOK { get; }
+        private DigitalInput OuterRingRollYMotorIsORG { get; }
 
-        public DigitalInput OuterRingLiftMotorIsOK { get; }
-        public DigitalInput OuterRingLiftMotorIsORG { get; }
+        private DigitalInput OuterRingLiftMotorIsOK { get; }
+        private DigitalInput OuterRingLiftMotorIsORG { get; }
 
 
-        public async Task HomeAllRing(bool isFirstHome)
+        public async Task HomeAllRing()
         {
             try
             {
+                bool isFirstHome = true;
                 await HomeInnerRing(isFirstHome);
                 await HomeOuterRing(isFirstHome);
             }
@@ -232,17 +233,17 @@ namespace WLS3200Gen2.Model.Module
                     {
                         throw new Exception($"外環 不在上方，請工程師確認!!");
                     }
-                    OuterRingPitchYOrg.Off();
+                    OuterRingRollYOrg.Off();
                     await Task.Delay(25);
-                    OuterRingPitchYOrg.On();
+                    OuterRingRollYOrg.On();
                     await Task.Delay(150);
-                    while (OuterRingPitchYMotorIsOK.IsSignal != true || OuterRingPitchYMotorIsORG.IsSignal != true)
+                    while (OuterRingRollYMotorIsOK.IsSignal != true || OuterRingRollYMotorIsORG.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
                         if (i >= 200) throw new Exception($"外環 翻轉馬達復歸異常Time out");
                     }
-                    OuterRingPitchYOrg.Off();
+                    OuterRingRollYOrg.Off();
                     await Task.Delay(25);
                     //外環抬升軸下降復歸
                     i = 0;
@@ -307,13 +308,13 @@ namespace WLS3200Gen2.Model.Module
 
                     //X、Y翻轉復歸
                     i = 0;
-                    InnerRingRollXOrg.Off();
-                    InnerRingRollXOrg.Off();
+                    InnerRingPitchXOrg.Off();
+                    InnerRingPitchXOrg.Off();
                     await Task.Delay(50);
-                    InnerRingRollXOrg.On();
-                    InnerRingRollXOrg.On();
+                    InnerRingPitchXOrg.On();
+                    InnerRingPitchXOrg.On();
                     await Task.Delay(150);
-                    while (InnerRingRollXIsORG.IsSignal != true || InnerRingPitchYIsORG.IsSignal != true)
+                    while (InnerRingPitchXIsORG.IsSignal != true || InnerRingRollYIsORG.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
@@ -336,9 +337,9 @@ namespace WLS3200Gen2.Model.Module
                     //內環旋轉馬達歸零
                     i = 0;
                     await Task.Delay(25);
-                    InnerRingYawZOrg.Off();
+                    InnerRingYawTOrg.Off();
                     await Task.Delay(50);
-                    InnerRingYawZOrg.On();
+                    InnerRingYawTOrg.On();
                 });
             }
             catch (Exception ex)
@@ -350,10 +351,10 @@ namespace WLS3200Gen2.Model.Module
 
 
         /// <summary>
-        /// 外環上升/下降
+        /// 外環上升
         /// </summary>
         /// <returns></returns>
-        public async Task LiftUpOuterRing()
+        public async Task OuterRingLiftUp()
         {
             try
             {
@@ -421,7 +422,7 @@ namespace WLS3200Gen2.Model.Module
         /// 內環上升
         /// </summary>
         /// <returns></returns>
-        public async Task LiftUpInnerRing()
+        public async Task InnerRingLiftUp()
         {
             try
             {
@@ -576,7 +577,7 @@ namespace WLS3200Gen2.Model.Module
         ///// 外環 縱軸/翻滾 X 移動
         ///// </summary>
         ///// <param name="isForward"></param>
-        //public void OuterRingRollX_Move(bool isForward)
+        //public void OuterRingPitchX_Move(bool isForward)
         //{
 
         //}
@@ -584,7 +585,7 @@ namespace WLS3200Gen2.Model.Module
         ///// 外環 縱軸/翻滾 X 停止
         ///// </summary>
         ///// <param name="isForward"></param>
-        //public async Task OuterRingRollX_Stop(bool isForward)
+        //public async Task OuterRingPitchX_Stop(bool isForward)
         //{
 
         //}
@@ -592,7 +593,7 @@ namespace WLS3200Gen2.Model.Module
         /// 外環 橫軸/俯仰 Y 移動
         /// </summary>
         /// <param name="isForward"></param>
-        public async Task OuterRingPitchY_Move(bool isForward)
+        public void OuterRingRollY_Move(bool isForward)
         {
             try
             {
@@ -600,13 +601,13 @@ namespace WLS3200Gen2.Model.Module
                 {
                     if (isForward == true)
                     {
-                        OuterRingPitchYForward.On();
-                        OuterRingPitchYBackward.Off();
+                        OuterRingRollYForward.On();
+                        OuterRingRollYBackward.Off();
                     }
                     else
                     {
-                        OuterRingPitchYForward.Off();
-                        OuterRingPitchYBackward.On();
+                        OuterRingRollYForward.Off();
+                        OuterRingRollYBackward.On();
                     }
 
                 }
@@ -625,12 +626,12 @@ namespace WLS3200Gen2.Model.Module
         /// 外環 橫軸/俯仰 Y 停止
         /// </summary>
         /// <param name="isForward"></param>
-        public async Task OuterRingPitchY_Stop()
+        public void OuterRingRollY_Stop()
         {
             try
             {
-                OuterRingPitchYForward.Off();
-                OuterRingPitchYBackward.Off();
+                OuterRingRollYForward.Off();
+                OuterRingRollYBackward.Off();
             }
             catch (Exception ex)
             {
@@ -642,7 +643,7 @@ namespace WLS3200Gen2.Model.Module
         ///// 外環 垂軸/偏擺 Z 移動
         ///// </summary>
         ///// <param name="isForward"></param>
-        //public async Task OuterRingYawZ_Move(bool isForward)
+        //public async Task OuterRingYawT_Move(bool isForward)
         //{
 
         //}
@@ -650,14 +651,14 @@ namespace WLS3200Gen2.Model.Module
         ///// 外環 垂軸/偏擺 Z 停止
         ///// </summary>
         ///// <param name="isForward"></param>
-        //public async Task OuterRingYawZ_Stop(bool isForward)
+        //public async Task OuterRingYawT_Stop(bool isForward)
         //{
 
         //}
         /// <summary>
         /// 內環 縱軸/翻滾 移動
         /// </summary>
-        public void InnerRingRollX_Move(bool isForward)
+        public void InnerRingPitchX_Move(bool isForward)
         {
             try
             {
@@ -665,13 +666,13 @@ namespace WLS3200Gen2.Model.Module
                 {
                     if (isForward == true)
                     {
-                        InnerRingRollXForward.On();
-                        InnerRingRollXBackward.Off();
+                        InnerRingPitchXForward.On();
+                        InnerRingPitchXBackward.Off();
                     }
                     else
                     {
-                        InnerRingRollXForward.Off();
-                        InnerRingRollXBackward.On();
+                        InnerRingPitchXForward.Off();
+                        InnerRingPitchXBackward.On();
                     }
 
                 }
@@ -689,12 +690,12 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 內環 縱軸/翻滾 停止
         /// </summary>
-        public void InnerRingRollX_Stop()
+        public void InnerRingPitchX_Stop()
         {
             try
             {
-                InnerRingRollXForward.Off();
-                InnerRingRollXBackward.Off();
+                InnerRingPitchXForward.Off();
+                InnerRingPitchXBackward.Off();
             }
             catch (Exception ex)
             {
@@ -705,7 +706,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 內環 縱軸/翻滾 移動
         /// </summary>
-        public async Task InnerRingPitchY_Move(bool isForward)
+        public void InnerRingRollY_Move(bool isForward)
         {
             try
             {
@@ -713,13 +714,13 @@ namespace WLS3200Gen2.Model.Module
                 {
                     if (isForward == true)
                     {
-                        InnerRingPitchYForward.On();
-                        InnerRingPitchYBackward.Off();
+                        InnerRingRollYForward.On();
+                        InnerRingRollYBackward.Off();
                     }
                     else
                     {
-                        InnerRingPitchYForward.Off();
-                        InnerRingPitchYBackward.On();
+                        InnerRingRollYForward.Off();
+                        InnerRingRollYBackward.On();
                     }
 
                 }
@@ -737,12 +738,12 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 內環 縱軸/翻滾 停止
         /// </summary>
-        public async Task InnerRingPitchY_Stop()
+        public void InnerRingRollY_Stop()
         {
             try
             {
-                InnerRingPitchYForward.Off();
-                InnerRingPitchYBackward.Off();
+                InnerRingRollYForward.Off();
+                InnerRingRollYBackward.Off();
             }
             catch (Exception ex)
             {
@@ -754,7 +755,7 @@ namespace WLS3200Gen2.Model.Module
         /// 內環 垂軸/偏擺 移動
         /// </summary>
         /// <param name="isForward"></param>
-        public async Task InnerRingYawZ_Move(bool isForward)
+        public void InnerRingYawT_Move(bool isForward)
         {
             try
             {
@@ -762,13 +763,13 @@ namespace WLS3200Gen2.Model.Module
                 {
                     if (isForward == true)
                     {
-                        InnerRingYawZForward.On();
-                        InnerRingYawZBackward.Off();
+                        InnerRingYawTForward.On();
+                        InnerRingYawTBackward.Off();
                     }
                     else
                     {
-                        InnerRingYawZForward.Off();
-                        InnerRingYawZBackward.On();
+                        InnerRingYawTForward.Off();
+                        InnerRingYawTBackward.On();
                     }
 
                 }
@@ -787,12 +788,12 @@ namespace WLS3200Gen2.Model.Module
         /// 內環 垂軸/偏擺 停止
         /// </summary>
         /// <param name="isForward"></param>
-        public async Task InnerRingYawZ_Stop()
+        public void InnerRingYawT_Stop()
         {
             try
             {
-                InnerRingYawZForward.Off();
-                InnerRingYawZBackward.Off();
+                InnerRingYawTForward.Off();
+                InnerRingYawTBackward.Off();
             }
             catch (Exception ex)
             {

@@ -142,6 +142,9 @@
     <Compile Include="UserControls\LocateUC.xaml.cs">
       <DependentUpon>LocateUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MacroUC.xaml.cs">
+      <DependentUpon>MacroUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ProductionUC.xaml.cs">
       <DependentUpon>ProductionUC.xaml</DependentUpon>
     </Compile>
@@ -185,6 +188,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\LocateUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\MacroUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

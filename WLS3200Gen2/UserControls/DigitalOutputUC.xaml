@@ -290,55 +290,55 @@
             <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="35 外環旋轉馬達異常清除" FontSize="10" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[35].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="36 外環旋轉Servo Off" FontSize="11" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[36].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="37 外環旋轉回原點" FontSize="12" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[37].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="38 內環旋轉JOG正轉" FontSize="12" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[38].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="39 內環旋轉JOG反轉" FontSize="12" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[39].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="40 內環旋轉停止" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[40].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="41 內環旋轉馬達異常" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[41].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="10" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="42 內環旋轉回原點" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[42].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="11" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="43" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[43].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="12" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
@@ -390,79 +390,79 @@
             <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="48 X傾斜JOG正轉" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[48].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="49 X傾斜JOG反轉" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[49].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="50 X傾斜停止" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[50].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="51 X傾斜馬達異常清除" FontSize="10" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[51].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="52 X傾斜Servo Off" FontSize="11" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[52].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="53 X傾斜回原點" FontSize="12" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[53].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="54 Y傾斜JOG正轉" FontSize="12" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[54].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="55 Y傾斜JOG反轉" FontSize="12" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[55].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="56 Y傾斜停止" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[56].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="57 Y傾斜馬達異常清除" FontSize="10" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[57].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="10" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="58 Servo Off" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[58].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="11" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="59 Y傾斜回原點" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[59].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="12" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="60"  FontSize="11" Width="120"/>
-                    <ToggleButton IsChecked="True" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
+                    <ToggleButton IsChecked="{Binding OutputSignals[60].IsSwitchOn}" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" ToolTip="MaterialDesignSwitchDarkToggleButton" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="13" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">

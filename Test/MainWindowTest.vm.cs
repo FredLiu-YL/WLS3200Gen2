@@ -11,6 +11,7 @@ using GalaSoft.MvvmLight.Command;
 using WLS3200Gen2;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Component.Adlink;
+using WLS3200Gen2.Model.Module;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Interface;
 using YuanliCore.Motion;
@@ -29,8 +30,8 @@ namespace Test
         IMotionController motionController;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
-
-
+        private MacroDetection macroDetection1;
+        public MacroDetection MacroDetection1 { get => macroDetection1; set => SetValue(ref macroDetection1, value); }
         public LoadPortUI loadPortUIShow = new LoadPortUI();
 
         public AlignerUI alignerUIShow = new AlignerUI();
@@ -169,7 +170,7 @@ namespace Test
 
                 DigitalOutput[] outputs = DigitalOutputs;
 
-              
+                MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
             }
             catch (Exception ex)
             {
@@ -225,7 +226,7 @@ namespace Test
             }
 
         }
-    
+
 
         public ICommand OpenCCommand => new RelayCommand<string>(async key =>
         {
