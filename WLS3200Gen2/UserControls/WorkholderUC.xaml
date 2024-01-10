@@ -21,7 +21,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid DataContext="{Binding ElementName=Workholder}" >
+    <Grid DataContext="{Binding ElementName=Workholder}" Background="White"  >
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.15*"/>
@@ -50,7 +50,7 @@
                 GroupName="GroupChoiceChipOutline"
                 IsChecked="{Binding RelativeIsChecked}"
                 Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
-              
+
 
             </StackPanel>
             <Grid Grid.Column="3" Grid.Row="1" >

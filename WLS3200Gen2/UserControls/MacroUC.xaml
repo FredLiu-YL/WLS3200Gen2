@@ -1,0 +1,131 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.MacroUC"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
+        mc:Ignorable="d"
+        x:Name="Macro"
+        Height="200" Width="600" Loaded="MainGrid_Loaded">
+    <UserControl.Resources>
+        <ResourceDictionary >
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding ElementName=Macro}" Background="White"  >
+
+        <Grid>
+            <Grid.ColumnDefinitions >
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions >
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Button Grid.Column="0" Grid.Row="0" Content="Home" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding AllHome}"/>
+
+            <Button Grid.Column="0" Grid.Row="1" Content="內環檢測 位置" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding GoInnerRingCheckPos}"/>
+            <Button Grid.Column="1" Grid.Row="1" Content="前" Width="130" Height="30" HorizontalAlignment="Left">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y+"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="Y+"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="2" Grid.Row="1" Content="後" Width="130" Height="30" HorizontalAlignment="Left" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y-"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="Y-"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="3" Grid.Row="1" Content="結束 內環檢測" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding InnerRingHome}"/>
+            <Button Grid.Column="1" Grid.Row="2" Content="左" Width="130" Height="30" HorizontalAlignment="Left">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X+"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="X+"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="2" Grid.Row="2" Content="右" Width="130" Height="30" HorizontalAlignment="Left" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X-"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="X-"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="1" Grid.Row="3" Content="正轉" Width="130" Height="30" HorizontalAlignment="Left" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T+"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="T+"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="2" Grid.Row="3" Content="反轉" Width="130" Height="30" HorizontalAlignment="Left" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T-"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="T-"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+
+            <Button Grid.Column="0" Grid.Row="4" Content="外環檢測 位置" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding GoOuterRingCheckPos}"/>
+            <Button Grid.Column="1" Grid.Row="4" Content="正翻" Width="130" Height="30" HorizontalAlignment="Left">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y+"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroOuterMoveCommand}"  CommandParameter="Y+"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="2" Grid.Row="4" Content="反翻" Width="130" Height="30" HorizontalAlignment="Left">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y-"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction  Command="{Binding MacroOuterMoveCommand}"  CommandParameter="Y-"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Grid.Column="3" Grid.Row="4" Content="結束 外環檢測" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding OuterRingHome}"/>
+
+        </Grid>
+    </Grid>
+</UserControl>

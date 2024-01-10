@@ -191,6 +191,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             {
                 int setCardNo = -1;
                 int cardNo = 0;
+                int lowCount = 0;
                 for (int i = 0; i < totalOutput.Length; i++)
                 {
                     if (i == 0)
@@ -200,14 +201,16 @@ namespace WLS3200Gen2.Model.Component.Adlink
                             setCardNo = cardNo;
                             break;
                         }
+                        lowCount = totalOutput[0];
                     }
                     else
                     {
-                        if (totalOutput[i - 1] <= id && id < totalOutput[i])
+                        if (lowCount <= id && id < lowCount + totalOutput[i])
                         {
                             setCardNo = cardNo;
                             break;
                         }
+                        lowCount += totalOutput[i];
                     }
                     cardNo++;
                 }
@@ -660,17 +663,22 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 int DOData = 0;
                 int realModID = outputRealModID[setModID];
                 int outputCount = totalOutput[setModID];
+                int lowCount = 0;
+                for (int i = 0; i < setModID; i++)
+                {
+                    lowCount += totalOutput[i];
+                }
                 APS168Lib.APS_get_field_bus_d_output(cardID, Bus_HSL, realModID, ref DOData);
                 string binaryValue = Convert.ToString(DOData, 2);
                 string paddedBinaryValue = binaryValue.PadLeft(outputCount, '0');
                 char[] paddedBinaryArray = paddedBinaryValue.ToCharArray();
                 if (isOn == true)
                 {
-                    paddedBinaryArray[id] = '1';
+                    paddedBinaryArray[(outputCount - 1) - (id - lowCount)] = '1';
                 }
                 else
                 {
-                    paddedBinaryArray[id] = '0';
+                    paddedBinaryArray[(outputCount - 1) - (id - lowCount)] = '0';
                 }
 
                 int value = 0;
@@ -1084,9 +1092,11 @@ namespace WLS3200Gen2.Model.Component.Adlink
                     {
                         getInput[i] = APS168GetInput(i);
 
-                        for (int j = 0; j < getInput[i].Length; j++)
+                        int[] getInput2 = APS168GetInput(i);
+
+                        for (int j = 0; j < getInput2.Length; j++)
                         {
-                            if (getInput[i][j] == 0)
+                            if (getInput2[(getInput2.Length - 1) - j] == 0)
                             {
                                 InputSignals[inputIdx].IsSignal = false;
                             }
@@ -1094,6 +1104,14 @@ namespace WLS3200Gen2.Model.Component.Adlink
                             {
                                 InputSignals[inputIdx].IsSignal = true;
                             }
+                            //if (getInput[i][j] == 0)
+                            //{
+                            //    InputSignals[inputIdx].IsSignal = false;
+                            //}
+                            //else
+                            //{
+                            //    InputSignals[inputIdx].IsSignal = true;
+                            //}
                             inputIdx++;
                         }
                     }
