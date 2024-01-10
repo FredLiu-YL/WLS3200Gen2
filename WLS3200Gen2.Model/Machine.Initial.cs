@@ -231,8 +231,9 @@ namespace WLS3200Gen2.Model
             ICamera camera = null;
             if (isSimulate)
             {
-
-                camera = new SimulateCamera("d:\\fff123.bmp");
+    
+                camera = new SimulateCamera("9.bmp");
+              
             }
             else
             {

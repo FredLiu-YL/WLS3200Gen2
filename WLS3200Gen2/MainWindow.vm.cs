@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +36,7 @@ namespace WLS3200Gen2
         private WriteableBitmap mainImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
-
+        private IDisposable camlive;
 
         private bool isRefresh;
 
@@ -123,6 +125,9 @@ namespace WLS3200Gen2
                 taskRefresh1 = Task.Run(RefreshPos);
 
                 SampleFind = SampleFindAction;
+
+
+                CameraLive();
             }
             catch (Exception ex)
             {
@@ -175,6 +180,38 @@ namespace WLS3200Gen2
                 // throw ex;
             }
 
+        }
+
+
+        private void CameraLive()
+        {
+            var camera = machine.MicroDetection.Camera;
+            var dis = machine.MicroDetection.Camera.Grab();
+
+
+            try
+            {
+
+
+                MainImage = new WriteableBitmap(camera.Width, camera.Height, 96, 96, camera.PixelFormat, null);
+
+
+                camlive = camera.Frames.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
+                             .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
+                             .Subscribe(frame =>
+                             {
+
+                                 var a = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                                 if (frame != null) MainImage.WritePixels(frame);
+                             //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
+                         });
+
+            }
+            catch (Exception)
+            {
+
+
+            }
         }
     }
 }

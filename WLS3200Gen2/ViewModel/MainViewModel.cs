@@ -2,12 +2,15 @@ using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Account;
 using YuanliCore.CameraLib;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2
 {
@@ -52,6 +55,7 @@ namespace WLS3200Gen2
 
             //預設為最高權限使用者
             Account.CurrentAccount.Right = RightsModel.Visitor;
+
         }
 
         private MainRecipe ChangeRecipe()
@@ -59,6 +63,10 @@ namespace WLS3200Gen2
 
             return new MainRecipe();
         }
+
+
+        
+
         private void CurrentAccountChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Name")

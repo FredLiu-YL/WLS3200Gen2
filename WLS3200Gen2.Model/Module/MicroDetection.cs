@@ -21,7 +21,7 @@ namespace WLS3200Gen2.Model.Module
 {
     public class MicroDetection
     {
-        private ICamera camera;
+ 
         private PauseTokenSource pauseToken;
         private CancellationTokenSource cancelToken;
         private Subject<(BitmapSource, bool)> subject = new Subject<(BitmapSource, bool)>();
@@ -29,11 +29,11 @@ namespace WLS3200Gen2.Model.Module
 
 
         private OpticalAlignment opticalAlignment;
-
+       
 
         public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs)
         {
-            this.camera = camera;
+        
             this.Microscope = microscope;
             AxisX = axes[0];
             AxisY = axes[1];
@@ -41,13 +41,13 @@ namespace WLS3200Gen2.Model.Module
             AxisZ = axes[2];
             TableVacuum = outputs[1];
             LiftPin = outputs[2];
-
+            Camera = camera;
             ObservableDetection();
 
 
-            opticalAlignment = new OpticalAlignment(AxisX, AxisY, this.camera);
+            opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
         }
-
+        public ICamera Camera { get; }
         public Axis AxisX { get; }
         public Axis AxisY { get; }
         public Axis AxisR { get; }
@@ -56,7 +56,7 @@ namespace WLS3200Gen2.Model.Module
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
 
-        public DetectionRecipe detectionRecipe;
+        public DetectionRecipe DetectionRecipe { set; get; }
         public IObservable<(BitmapSource image, bool isAutoSave)> Observable => subject;
 
         public async Task Home()
@@ -149,7 +149,7 @@ namespace WLS3200Gen2.Model.Module
 
                 await TableMoveToAsync(transPosition);
                 await Task.Delay(200);
-                BitmapSource bmp = camera.GrabAsync();
+                BitmapSource bmp = Camera.GrabAsync();
                 subject.OnNext((bmp, isAutoSave));//AOI另外丟到其他執行續處理
 
                 // pauseToken.IsPaused = true;

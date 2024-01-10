@@ -123,7 +123,9 @@
                                     materialDesign:ColorZoneAssist.Foreground="{DynamicResource PrimaryHueMidBrush}"  
                                     materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="0"
                                     Style="{StaticResource MaterialDesignFilledTabControl}">
-                            <TabItem Header="Micro"/>
+                            <TabItem Header="Micro">
+                                <views:VirtualCanvas Grid.Row="1"  ImageSource="{Binding MainImage}" />
+                            </TabItem>
                             <TabItem Header="Macro">
                                 <views:VirtualCanvas Grid.Row="1" />
                             </TabItem>
@@ -460,7 +462,7 @@
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                         </Grid.RowDefinitions>
-                                                        <UserControlUC:LocateUC  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
+                                                        <UserControlUC:LocateUC MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
                                                                                  MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" Offset="{Binding AlignOffset}"   />
                                                         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
