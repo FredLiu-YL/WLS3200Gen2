@@ -27,8 +27,6 @@ namespace WLS3200Gen2.UserControls
         {
             InitializeComponent();
         }
-
-
         public static readonly DependencyProperty MacroDetectionProperty = DependencyProperty.Register(nameof(MacroDetection), typeof(MacroDetection), typeof(MacroUC),
                                                                                          new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public MacroDetection MacroDetection
@@ -36,6 +34,7 @@ namespace WLS3200Gen2.UserControls
             get => (MacroDetection)GetValue(MacroDetectionProperty);
             set => SetValue(MacroDetectionProperty, value);
         }
+
 
         public ICommand AllHome => new RelayCommand(async () =>
         {
@@ -55,7 +54,14 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                await MacroDetection.InnerRingLiftUp();
+                if (MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                {
+                    await MacroDetection.InnerRingLiftUp();
+                }
+                else
+                {
+                    MessageBox.Show("內環 不能上升!");
+                }
             }
             catch (Exception ex)
             {
@@ -136,7 +142,14 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                await MacroDetection.HomeInnerRing(false);
+                if (MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                {
+                    await MacroDetection.HomeInnerRing(false);
+                }
+                else
+                {
+                    MessageBox.Show("內環 不能下降!");
+                }
             }
             catch (Exception ex)
             {
@@ -144,6 +157,29 @@ namespace WLS3200Gen2.UserControls
             }
             finally
             {
+            }
+        });
+
+        public ICommand GoOuterRingCheckPos => new RelayCommand(async () =>
+        {
+            try
+            {
+                if (MacroDetection.CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || MacroDetection.CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
+                {
+                    await MacroDetection.OuterRingLiftUp();
+                }
+                else
+                {
+                    MessageBox.Show("外環 不能上升!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
             }
         });
         public ICommand MacroOuterContinueMoveCommand => new RelayCommand<string>(async key =>
@@ -185,26 +221,20 @@ namespace WLS3200Gen2.UserControls
                 MessageBox.Show(ex.Message);
             }
         });
-        public ICommand GoOuterRingCheckPos => new RelayCommand(async () =>
-        {
-            try
-            {
-                await MacroDetection.OuterRingLiftUp();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-            }
-        });
-
         public ICommand OuterRingHome => new RelayCommand(async () =>
         {
             try
             {
-                await MacroDetection.HomeOuterRing(false);
+                if (MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OuterInTop)
+                {
+                    await MacroDetection.HomeOuterRing(false);
+                }
+                else
+                {
+                    MessageBox.Show("外環 不能復歸!");
+                }
+
+
             }
             catch (Exception ex)
             {

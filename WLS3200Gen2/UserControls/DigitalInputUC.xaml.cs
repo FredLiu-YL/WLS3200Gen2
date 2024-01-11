@@ -26,7 +26,6 @@ namespace WLS3200Gen2.UserControls
         public DigitalInputUC()
         {
             InitializeComponent();
-            Refresh();
         }
 
         public static readonly DependencyProperty InputSignalsProperty = DependencyProperty.Register("InputSignals", typeof(DigitalInput[]), typeof(DigitalInputUC), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
