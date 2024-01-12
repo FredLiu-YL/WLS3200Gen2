@@ -1115,7 +1115,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                             inputIdx++;
                         }
                     }
-                    await Task.Delay(100);
+                    await Task.Delay(50);
                 }
             }
             catch (Exception ex)

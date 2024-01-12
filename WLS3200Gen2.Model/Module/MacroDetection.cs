@@ -1,10 +1,12 @@
 ﻿using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,29 +21,41 @@ using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model.Module
 {
-    public class MacroDetection
+    public class MacroDetection : INotifyPropertyChanged
     {
         private ICamera camera;
         private PauseTokenSource pauseToken;
         private CancellationTokenSource cancelToken;
         private Subject<(BitmapSource, bool)> subject = new Subject<(BitmapSource, bool)>();
         private IDisposable camlive;
+        private bool isCanMoveAllHome = false;
+        private bool isInnerCanMoveStartPos = false;
+        private bool isInnerUsing = false;
+        private bool isOuterCanMoveStartPos = false;
+        private bool isOuterUsing = false;
+
         public MacroDetection(DigitalOutput[] outputs, DigitalInput[] inputs)
         {
             //this.camera = camera;
-            InnerRingPitchXServo = outputs[52];
-            InnerRingPitchXOrg = outputs[53];
-            InnerRingPitchXForward = outputs[48];
-            InnerRingPitchXBackward = outputs[49];
-            InnerRingPitchXStop = outputs[50];
-            InnerRingPitchXAlarmReset = outputs[51];
+            IsCanMoveAllHome = true;
+            IsInnerCanMoveStartPos = true;
+            IsOuterCanMoveStartPos = true;
 
-            InnerRingRollYServo = outputs[58];
-            InnerRingRollYOrg = outputs[59];
-            InnerRingRollYForward = outputs[54];
-            InnerRingRollYBackward = outputs[55];
-            InnerRingRollYStop = outputs[56];
-            InnerRingRollYAlarmReset = outputs[57];
+            InnerRingVacuum = outputs[1];
+
+            InnerRingPitchXServo = outputs[58];//58
+            InnerRingPitchXOrg = outputs[59];//59
+            InnerRingPitchXForward = outputs[54];//54
+            InnerRingPitchXBackward = outputs[55];//55
+            InnerRingPitchXStop = outputs[56];//56
+            InnerRingPitchXAlarmReset = outputs[57];//57
+
+            InnerRingRollYServo = outputs[52];//52
+            InnerRingRollYOrg = outputs[53];//53
+            InnerRingRollYForward = outputs[48];//48
+            InnerRingRollYBackward = outputs[49];//49
+            InnerRingRollYStop = outputs[50];//50
+            InnerRingRollYAlarmReset = outputs[51];//51
 
             InnerRingYawTServo = outputs[43];
             InnerRingYawTOrg = outputs[42];
@@ -73,15 +87,20 @@ namespace WLS3200Gen2.Model.Module
             OuterRingLiftMotorStop = outputs[18];
             ////Input
             ///
+            InnerRingIsVacuumOn = inputs[5];
+
             InnerRingPitchXIsORG = inputs[23];
             InnerRingRollYIsORG = inputs[21];
-            InnerRingLiftMotorIsOK = inputs[28];
+
+            InnerRingLiftMotorIsOK = inputs[27];
+            InnerRingLiftMotorIsMoveOK = inputs[28];
             InnerRingLiftMotorIsORG = inputs[29];
 
-            OuterRingRollYMotorIsOK = inputs[17];
-            OuterRingRollYMotorIsORG = inputs[18];
+            OuterRingRollYMotorIsOK = inputs[18];
+            OuterRingRollYMotorIsORG = inputs[17];
 
-            OuterRingLiftMotorIsOK = inputs[25];
+            OuterRingLiftMotorIsOK = inputs[24];
+            OuterRingLiftMotorIsMoveOK = inputs[25];
             OuterRingLiftMotorIsORG = inputs[26];
 
 
@@ -90,6 +109,8 @@ namespace WLS3200Gen2.Model.Module
 
             //ObservableDetection();
         }
+        private DigitalOutput InnerRingVacuum { get; }
+
         private DigitalOutput InnerRingPitchXServo { get; }
         private DigitalOutput InnerRingPitchXOrg { get; }
         private DigitalOutput InnerRingPitchXForward { get; }
@@ -130,7 +151,7 @@ namespace WLS3200Gen2.Model.Module
         private DigitalOutput OuterRingRollYAlarmReset { get; }
 
         /// <summary>
-        /// 外環升降馬達開始運作 M1,M0 00:Down 01:UpToDown 11:Up 10:DownToUp
+        /// 外環升降馬達開始運作 M1,M0 00:Down 10:DownToUp 11:Up 01:UpToDown
         /// </summary>
         private DigitalOutput OuterRingLiftMotorStart { get; }
         private DigitalOutput OuterRingLiftMotorM0 { get; }
@@ -139,25 +160,57 @@ namespace WLS3200Gen2.Model.Module
         private DigitalOutput OuterRingLiftMotorServoOff { get; }
         private DigitalOutput OuterRingLiftMotorStop { get; }
 
+        private DigitalInput InnerRingIsVacuumOn { get; }
+
         private DigitalInput InnerRingPitchXIsORG { get; }
         private DigitalInput InnerRingRollYIsORG { get; }
         private DigitalInput InnerRingLiftMotorIsOK { get; }
+        private DigitalInput InnerRingLiftMotorIsMoveOK { get; }
         private DigitalInput InnerRingLiftMotorIsORG { get; }
 
         private DigitalInput OuterRingRollYMotorIsOK { get; }
         private DigitalInput OuterRingRollYMotorIsORG { get; }
 
         private DigitalInput OuterRingLiftMotorIsOK { get; }
+        private DigitalInput OuterRingLiftMotorIsMoveOK { get; }
         private DigitalInput OuterRingLiftMotorIsORG { get; }
 
-
+        public bool IsCanMoveAllHome { get => isCanMoveAllHome; set => SetValue(ref isCanMoveAllHome, value); }
+        public bool IsInnerCanMoveStartPos { get => isInnerCanMoveStartPos; set => SetValue(ref isInnerCanMoveStartPos, value); }
+        public bool IsInnerUsing { get => isInnerUsing; set => SetValue(ref isInnerUsing, value); }
+        public bool IsOuterCanMoveStartPos { get => isOuterCanMoveStartPos; set => SetValue(ref isOuterCanMoveStartPos, value); }
+        public bool IsOuterUsing { get => isOuterUsing; set => SetValue(ref isOuterUsing, value); }
         public async Task HomeAllRing()
         {
             try
             {
                 bool isFirstHome = true;
+
+                string returnStr = "";
+                if (InnerRingLiftMotorIsOK.IsSignal != true)
+                {
+                    returnStr += " 內環抬升馬達異常";
+                }
+                if (OuterRingRollYMotorIsOK.IsSignal != true)
+                {
+                    returnStr += " 外環翻轉馬達異常";
+                }
+                if (OuterRingLiftMotorIsOK.IsSignal != true)
+                {
+                    returnStr += " 外環抬升馬達異常";
+                }
+                if (returnStr != "")
+                {
+                    throw new Exception("Macro復歸異常" + returnStr);
+                }
+                IsCanMoveAllHome = false;
+                IsInnerCanMoveStartPos = false;
+                IsOuterCanMoveStartPos = false;
                 await HomeInnerRing(isFirstHome);
                 await HomeOuterRing(isFirstHome);
+                IsCanMoveAllHome = true;
+                IsInnerCanMoveStartPos = true;
+                IsOuterCanMoveStartPos = true;
             }
             catch (Exception ex)
             {
@@ -178,11 +231,11 @@ namespace WLS3200Gen2.Model.Module
                 {
                     int i = 0;
 
+                    //外環抬升軸上來
                     if (isFirstHome == true)
                     {
-                        //外環抬升軸上來
                         i = 0;
-                        if (OuterRingLiftMotorIsORG.IsSignal != true || OuterRingLiftMotorIsOK.IsSignal != true)
+                        if (OuterRingLiftMotorIsORG.IsSignal != true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
                         {
                             throw new Exception($"外環 不在下方，請工程師確認!!");
                         }
@@ -196,7 +249,8 @@ namespace WLS3200Gen2.Model.Module
                         await Task.Delay(25);
                         OuterRingLiftMotorStart.On();
                         await Task.Delay(150);
-                        while (OuterRingLiftMotorIsOK.IsSignal != true)
+                        //上升第一段
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                         {
                             i++;
                             await Task.Delay(50);
@@ -204,19 +258,21 @@ namespace WLS3200Gen2.Model.Module
                         }
                         OuterRingLiftMotorStart.Off();
                         OuterRingLiftMotorM1.Off();
-                        await Task.Delay(50);
-                        while (OuterRingLiftMotorIsOK.IsSignal != true)
+                        await Task.Delay(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                         {
                             i++;
                             await Task.Delay(50);
                             if (i >= 200) throw new Exception($"外環 馬達異常Time out");
                         }
+                        //上升第二段
                         OuterRingLiftMotorM0.On();
                         await Task.Delay(25);
                         OuterRingLiftMotorM1.On();
                         await Task.Delay(25);
                         OuterRingLiftMotorStart.On();
-                        while (OuterRingLiftMotorIsOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
+                        await Task.Delay(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
                         {
                             i++;
                             await Task.Delay(50);
@@ -227,9 +283,13 @@ namespace WLS3200Gen2.Model.Module
                         OuterRingLiftMotorM1.Off();
                         await Task.Delay(25);
                     }
+                    if (isFirstHome == false )
+                    {
+                        IsOuterUsing = false;
+                    }
                     //外環旋轉復歸
                     i = 0;
-                    if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsOK.IsSignal != true)
+                    if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
                     {
                         throw new Exception($"外環 不在上方，請工程師確認!!");
                     }
@@ -247,10 +307,11 @@ namespace WLS3200Gen2.Model.Module
                     await Task.Delay(25);
                     //外環抬升軸下降復歸
                     i = 0;
-                    if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsOK.IsSignal != true)
+                    if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
                     {
                         throw new Exception($"外環 不在上方，請工程師確認!!");
                     }
+                    //外環下降第一段
                     OuterRingLiftMotorStart.Off();
                     OuterRingLiftMotorM0.Off();
                     OuterRingLiftMotorM1.Off();
@@ -258,26 +319,31 @@ namespace WLS3200Gen2.Model.Module
                     OuterRingLiftMotorM0.On();
                     await Task.Delay(25);
                     OuterRingLiftMotorStart.On();
-                    await Task.Delay(25);
-                    await Task.Delay(150);
-                    while (OuterRingLiftMotorIsOK.IsSignal != true)
+                    await Task.Delay(300);
+                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
                         if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
                     }
+                    if (isFirstHome != true)
+                    {
+                        InnerRingVacuum.On();
+                        await Task.Delay(50);
+                    }
+                    //外環下降第二段
                     OuterRingLiftMotorStart.Off();
                     OuterRingLiftMotorM0.Off();
                     await Task.Delay(50);
-                    while (OuterRingLiftMotorIsOK.IsSignal != true)
+                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
                         if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
                     }
                     OuterRingLiftMotorStart.On();
-                    await Task.Delay(50);
-                    while (OuterRingLiftMotorIsOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal != true)
+                    await Task.Delay(150);
+                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
@@ -285,6 +351,13 @@ namespace WLS3200Gen2.Model.Module
                     }
                     OuterRingLiftMotorStart.Off();
                     await Task.Delay(50);
+
+                    if (isFirstHome ==false )
+                    {
+                        IsCanMoveAllHome = true;
+                        IsInnerCanMoveStartPos = true;
+                        IsOuterCanMoveStartPos = true;
+                    }
                 });
             }
             catch (Exception ex)
@@ -304,22 +377,29 @@ namespace WLS3200Gen2.Model.Module
             {
                 await Task.Run(async () =>
                 {
+                    if (isFirstHome == false)
+                    {
+                        IsInnerUsing = false;
+                    }
                     int i = 0;
 
                     //X、Y翻轉復歸
                     i = 0;
                     InnerRingPitchXOrg.Off();
-                    InnerRingPitchXOrg.Off();
+                    InnerRingRollYOrg.Off();
                     await Task.Delay(50);
                     InnerRingPitchXOrg.On();
-                    InnerRingPitchXOrg.On();
-                    await Task.Delay(150);
+                    await Task.Delay(50);
+                    InnerRingRollYOrg.On();
+                    await Task.Delay(200);
                     while (InnerRingPitchXIsORG.IsSignal != true || InnerRingRollYIsORG.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
                         if (i >= 200) throw new Exception($"內環 X、Y翻轉復歸Time out");
                     }
+                    InnerRingPitchXOrg.Off();
+                    InnerRingRollYOrg.Off();
                     //內環下降復歸
                     i = 0;
                     await Task.Delay(25);
@@ -328,18 +408,27 @@ namespace WLS3200Gen2.Model.Module
                     InnerRingLiftMotorM1.Off();
                     await Task.Delay(25);
                     InnerRingLiftMotorStart.On();
-                    while (InnerRingLiftMotorIsOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal != true)
+                    await Task.Delay(150);
+                    while (InnerRingLiftMotorIsMoveOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal != true)
                     {
                         i++;
                         await Task.Delay(50);
                         if (i >= 200) throw new Exception($"內環 下降復歸Time out");
                     }
+                    InnerRingLiftMotorStart.Off();
                     //內環旋轉馬達歸零
                     i = 0;
                     await Task.Delay(25);
                     InnerRingYawTOrg.Off();
                     await Task.Delay(50);
                     InnerRingYawTOrg.On();
+
+                    if (isFirstHome == false)
+                    {
+                        IsCanMoveAllHome = true;
+                        IsInnerCanMoveStartPos = true;
+                        IsOuterCanMoveStartPos = true;
+                    }
                 });
             }
             catch (Exception ex)
@@ -361,8 +450,13 @@ namespace WLS3200Gen2.Model.Module
                 await Task.Run(async () =>
                 {
                     int i = 0;
-                    if (CheckCanMoveOuterRing() == CheckCanMove.OuterInOrg || CheckCanMoveOuterRing() == CheckCanMove.OK)
+                    if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
                     {
+                        IsCanMoveAllHome = false;
+                        IsInnerCanMoveStartPos = false;
+                        IsOuterCanMoveStartPos = false;
+                        
+                        //外環上升第一段
                         await Task.Delay(25);
                         OuterRingLiftMotorStart.Off();
                         OuterRingLiftMotorM0.Off();
@@ -371,8 +465,8 @@ namespace WLS3200Gen2.Model.Module
                         OuterRingLiftMotorM1.On();
                         await Task.Delay(25);
                         OuterRingLiftMotorStart.On();
-                        await Task.Delay(150);
-                        while (OuterRingLiftMotorIsOK.IsSignal != true)
+                        await Task.Delay(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                         {
                             i++;
                             await Task.Delay(50);
@@ -382,18 +476,22 @@ namespace WLS3200Gen2.Model.Module
                         OuterRingLiftMotorM0.Off();
                         OuterRingLiftMotorM1.Off();
                         await Task.Delay(50);
-                        while (OuterRingLiftMotorIsOK.IsSignal != true)
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                         {
                             i++;
                             await Task.Delay(50);
                             if (i >= 200) throw new Exception($"外環 上升異常");
                         }
+                        InnerRingVacuum.Off();
+                        await Task.Delay(50);
+                        //外環上升第二段
                         OuterRingLiftMotorM0.On();
                         await Task.Delay(25);
                         OuterRingLiftMotorM1.On();
                         await Task.Delay(25);
                         OuterRingLiftMotorStart.On();
-                        while (OuterRingLiftMotorIsOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal != true)
+                        await Task.Delay(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
                         {
                             i++;
                             await Task.Delay(50);
@@ -404,6 +502,7 @@ namespace WLS3200Gen2.Model.Module
                         OuterRingLiftMotorM1.Off();
                         await Task.Delay(50);
 
+                        IsOuterUsing = true;
                     }
                     else
                     {
@@ -429,8 +528,12 @@ namespace WLS3200Gen2.Model.Module
                 await Task.Run(async () =>
                 {
                     int i = 0;
-                    if (CheckCanMoveInnerRing() == CheckCanMove.InnerInOrg || CheckCanMoveInnerRing() == CheckCanMove.OK)
+                    if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
                     {
+                        IsCanMoveAllHome = false;
+                        IsInnerCanMoveStartPos = false;
+                        IsOuterCanMoveStartPos = false;
+
                         await Task.Delay(25);
                         InnerRingLiftMotorStart.Off();
                         InnerRingLiftMotorM0.Off();
@@ -440,12 +543,16 @@ namespace WLS3200Gen2.Model.Module
                         await Task.Delay(25);
                         InnerRingLiftMotorStart.On();
                         await Task.Delay(150);
-                        while (InnerRingLiftMotorIsOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal == true)
+                        while (InnerRingLiftMotorIsMoveOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal == true)
                         {
                             i++;
                             await Task.Delay(50);
                             if (i >= 200) throw new Exception($"內環 上升異常");
                         }
+                        InnerRingLiftMotorStart.Off();
+                        InnerRingLiftMotorM1.Off();
+
+                        IsInnerUsing = true;
                     }
                     else
                     {
@@ -460,21 +567,12 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        private enum CheckCanMove
-        {
-            OK = 1,
-            InnerInOrg = 2,
-            InnerInTop = 3,
-            OuterInOrg = 4,
-            OuterInTop = 5,
-            InnerMotorError = 6,
-            OuterMotorError = 7
-        }
+
         /// <summary>
         /// 是否可以外環動作
         /// </summary>
         /// <returns></returns>
-        private CheckCanMove CheckCanMoveOuterRing()
+        public CheckMacroCanMove CheckMacroCanMoveOuterRing()
         {
             //Outer In Top
             //Inner In Org
@@ -482,21 +580,21 @@ namespace WLS3200Gen2.Model.Module
             {
                 if (OuterRingLiftMotorIsORG.IsSignal != false)
                 {
-                    return CheckCanMove.OuterInOrg;
+                    return CheckMacroCanMove.OuterInOrg;
                 }
-                if (OuterRingLiftMotorIsOK.IsSignal != true)
+                if (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                 {
-                    return CheckCanMove.OuterMotorError;
+                    return CheckMacroCanMove.OuterMotorError;
                 }
                 if (InnerRingLiftMotorIsORG.IsSignal != true)
                 {
-                    return CheckCanMove.InnerInTop;
+                    return CheckMacroCanMove.InnerInTop;
                 }
-                if (InnerRingLiftMotorIsOK.IsSignal != true)
+                if (InnerRingLiftMotorIsMoveOK.IsSignal != true)
                 {
-                    return CheckCanMove.InnerMotorError;
+                    return CheckMacroCanMove.InnerMotorError;
                 }
-                return CheckCanMove.OK;
+                return CheckMacroCanMove.OK;
             }
             catch (Exception ex)
             {
@@ -508,7 +606,7 @@ namespace WLS3200Gen2.Model.Module
         /// 是否可以內環動作
         /// </summary>
         /// <returns></returns>
-        private CheckCanMove CheckCanMoveInnerRing()
+        public CheckMacroCanMove CheckMacroCanMoveInnerRing()
         {
             //Outer In Org
             //Inner In Top
@@ -516,21 +614,21 @@ namespace WLS3200Gen2.Model.Module
             {
                 if (OuterRingLiftMotorIsORG.IsSignal != true)
                 {
-                    return CheckCanMove.OuterInTop;
+                    return CheckMacroCanMove.OuterInTop;
                 }
-                if (OuterRingLiftMotorIsOK.IsSignal != true)
+                if (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                 {
-                    return CheckCanMove.OuterMotorError;
+                    return CheckMacroCanMove.OuterMotorError;
                 }
                 if (InnerRingLiftMotorIsORG.IsSignal != false)
                 {
-                    return CheckCanMove.InnerInOrg;
+                    return CheckMacroCanMove.InnerInOrg;
                 }
-                if (InnerRingLiftMotorIsOK.IsSignal != true)
+                if (InnerRingLiftMotorIsMoveOK.IsSignal != true)
                 {
-                    return CheckCanMove.InnerMotorError;
+                    return CheckMacroCanMove.InnerMotorError;
                 }
-                return CheckCanMove.OK;
+                return CheckMacroCanMove.OK;
             }
             catch (Exception ex)
             {
@@ -542,7 +640,7 @@ namespace WLS3200Gen2.Model.Module
         /// 是否內外環都復歸成功
         /// </summary>
         /// <returns></returns>
-        private CheckCanMove CheckRingInOrg()
+        private CheckMacroCanMove CheckRingInOrg()
         {
             //Outer In Org
             //Inner In Top
@@ -550,21 +648,21 @@ namespace WLS3200Gen2.Model.Module
             {
                 if (OuterRingLiftMotorIsORG.IsSignal != true)
                 {
-                    return CheckCanMove.OuterInTop;
+                    return CheckMacroCanMove.OuterInTop;
                 }
-                if (OuterRingLiftMotorIsOK.IsSignal != true)
+                if (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                 {
-                    return CheckCanMove.OuterMotorError;
+                    return CheckMacroCanMove.OuterMotorError;
                 }
                 if (InnerRingLiftMotorIsORG.IsSignal != true)
                 {
-                    return CheckCanMove.InnerInTop;
+                    return CheckMacroCanMove.InnerInTop;
                 }
-                if (InnerRingLiftMotorIsOK.IsSignal != true)
+                if (InnerRingLiftMotorIsMoveOK.IsSignal != true)
                 {
-                    return CheckCanMove.InnerMotorError;
+                    return CheckMacroCanMove.InnerMotorError;
                 }
-                return CheckCanMove.OK;
+                return CheckMacroCanMove.OK;
             }
             catch (Exception ex)
             {
@@ -597,7 +695,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                if (CheckCanMoveOuterRing() == CheckCanMove.OK)
+                if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
                 {
                     if (isForward == true)
                     {
@@ -662,12 +760,12 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                if (CheckCanMoveInnerRing() == CheckCanMove.OK)
+                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
                 {
                     if (isForward == true)
                     {
-                        InnerRingPitchXForward.On();
                         InnerRingPitchXBackward.Off();
+                        InnerRingPitchXForward.On();
                     }
                     else
                     {
@@ -710,12 +808,12 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                if (CheckCanMoveInnerRing() == CheckCanMove.OK)
+                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
                 {
                     if (isForward == true)
                     {
-                        InnerRingRollYForward.On();
                         InnerRingRollYBackward.Off();
+                        InnerRingRollYForward.On();
                     }
                     else
                     {
@@ -759,12 +857,12 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                if (CheckCanMoveInnerRing() == CheckCanMove.OK)
+                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
                 {
                     if (isForward == true)
                     {
-                        InnerRingYawTForward.On();
                         InnerRingYawTBackward.Off();
+                        InnerRingYawTForward.On();
                     }
                     else
                     {
@@ -827,5 +925,35 @@ namespace WLS3200Gen2.Model.Module
         //                await DefectDetection(frame.image);
         //            });
         //}
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return;
+            T oldValue = field;
+            field = value;
+            OnPropertyChanged(propertyName, oldValue, value);
+        }
+
+        protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
+        {
+            // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void MainGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+    }
+    public enum CheckMacroCanMove
+    {
+        OK = 1,
+        InnerInOrg = 2,
+        InnerInTop = 3,
+        OuterInOrg = 4,
+        OuterInTop = 5,
+        InnerMotorError = 6,
+        OuterMotorError = 7
     }
 }

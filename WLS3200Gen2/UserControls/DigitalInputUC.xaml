@@ -72,13 +72,13 @@
             </Border>
             <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="6 Macro內環真空 8" Width="120"/>
+                    <Label Content="6 Macro內環真空" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[6].IsSignal }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="7 Macro外環真空 12" Width="120"/>
+                    <Label Content="7 Macro外環真空" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[7].IsSignal }" />
                 </StackPanel>
             </Border>
@@ -160,13 +160,13 @@
             </Border>
             <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="17 外環翻轉馬達正常" Width="120"/>
+                    <Label Content="17 外環翻轉ORG" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[17].IsSignal }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="18 外環翻轉ORG" Width="120"/>
+                    <Label Content="18 外環翻轉馬達正常" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[18].IsSignal }" />
                 </StackPanel>
             </Border>
@@ -184,7 +184,7 @@
             </Border>
             <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="21 Y HOME?" Width="120"/>
+                    <Label Content="21 內環Y傾斜HOME" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[21].IsSignal }"/>
                 </StackPanel>
             </Border>
@@ -196,19 +196,19 @@
             </Border>
             <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="23 X HOME?" Width="120"/>
+                    <Label Content="23 內環X傾斜HOME" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding  InputSignals[23].IsSignal }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="24" Width="120"/>
+                    <Label Content="24 外環馬達正常" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[24].IsSignal }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="25 外環馬達正常" Width="120"/>
+                    <Label Content="25 外環馬達運作完成" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[25].IsSignal }" />
                 </StackPanel>
             </Border>
@@ -221,13 +221,13 @@
             </Border>
             <Border Grid.Row="11" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="27" Width="120"/>
+                    <Label Content="27 內環馬達正常" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[27].IsSignal }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="12" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
-                    <Label Content="28 內環馬達正常" Width="120"/>
+                    <Label Content="28 內環馬達運作完成" Width="120"/>
                     <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[28].IsSignal }" />
                 </StackPanel>
             </Border>
