@@ -105,9 +105,7 @@ namespace WLS3200Gen2
                 TableRConfig = machineSetting.TableRConfig;
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
-
-
-
+ 
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
@@ -203,8 +201,8 @@ namespace WLS3200Gen2
 
                                  var a = System.Threading.Thread.CurrentThread.ManagedThreadId;
                                  if (frame != null) MainImage.WritePixels(frame);
-                             //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
-                         });
+                                 //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
+                             });
 
             }
             catch (Exception)

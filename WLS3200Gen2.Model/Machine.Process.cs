@@ -60,6 +60,7 @@ namespace WLS3200Gen2.Model
 
                         //到預備位置準備進片
                         await Feeder.LoadToMicroReadyAsync();
+
                         await catchWafertask; //等待顯微鏡站準備完成
 
                         //wafer送到主設備內 

@@ -39,9 +39,9 @@ namespace WLS3200Gen2.UserControls
 
         private double offsetX, offsetY;
 
-   
+
         private LocateMode modeForUI = LocateMode.Pattern;
-    
+
         private int locateModeIndex;
 
 
@@ -108,6 +108,13 @@ namespace WLS3200Gen2.UserControls
         public Vector Offset
         {
             get => (Vector)GetValue(OffsetProperty);
+            /*get
+            {
+                var temp = (Vector)GetValue(OffsetProperty);
+                OffsetX = temp.X;
+                OffsetY = temp.Y;
+                return temp;
+            }*/
             set => SetValue(OffsetProperty, value);
         }
 
@@ -148,8 +155,8 @@ namespace WLS3200Gen2.UserControls
               set => SetValue(ref mode, value);
 
           }*/
-       
-   
+
+
 
         public double OffsetX
         {
@@ -170,14 +177,14 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(ref offsetY, value);
         }
 
-        
-      
+
+
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
-        
+
         public int LocateModeIndex { get => locateModeIndex; set => SetValue(ref locateModeIndex, value); }
 
 
@@ -190,7 +197,7 @@ namespace WLS3200Gen2.UserControls
 
         public ICommand ClosingCommand => new RelayCommand(() =>
        {
-         //  UpdateParam();
+           //  UpdateParam();
 
        });
 
@@ -206,12 +213,13 @@ namespace WLS3200Gen2.UserControls
                 switch (key)
                 {
                     case "Sample1":
+
                         tempMatcher.RunParams = MatchParam1.MatchParam;
                         tempMatcher.EditParameter(MainImage);
 
                         MatchParam1.MatchParam = (PatmaxParams)tempMatcher.RunParams;
                         if (MatchParam1.MatchParam.PatternImage != null)
-                            LocateSampleImage1 = MatchParam1.MatchParam.PatternImage.ToBitmapSource();
+                            MatchParam1.SampleImage = MatchParam1.MatchParam.PatternImage;
                         break;
                     case "Sample2":
                         tempMatcher.RunParams = MatchParam2.MatchParam;
@@ -219,21 +227,21 @@ namespace WLS3200Gen2.UserControls
 
                         MatchParam2.MatchParam = (PatmaxParams)tempMatcher.RunParams;
                         if (MatchParam2.MatchParam.PatternImage != null)
-                            LocateSampleImage2 = MatchParam2.MatchParam.PatternImage.ToBitmapSource();
+                            MatchParam2.SampleImage = MatchParam2.MatchParam.PatternImage;
                         break;
                     case "Sample3":
                         tempMatcher.RunParams = MatchParam3.MatchParam;
                         tempMatcher.EditParameter(MainImage);
                         MatchParam3.MatchParam = (PatmaxParams)tempMatcher.RunParams;
                         if (MatchParam3.MatchParam.PatternImage != null)
-                            LocateSampleImage3 = MatchParam3.MatchParam.PatternImage.ToBitmapSource();
+                            MatchParam3.SampleImage = MatchParam3.MatchParam.PatternImage;
                         break;
                     default:
                         break;
                 }
 
 
-              //  UpdateParam();
+                //  UpdateParam();
 
 
                 //  UpdateRecipe();
@@ -267,7 +275,7 @@ namespace WLS3200Gen2.UserControls
                 default:
                     break;
             }
-          //  UpdateParam();
+            //  UpdateParam();
             MatchFind?.Invoke(tempMatcher);
 
             /*   
@@ -321,28 +329,28 @@ namespace WLS3200Gen2.UserControls
                     break;
             }
 
-         //   UpdateParam();
+            //   UpdateParam();
         });
 
-       /* public void UpdateParam()
-        {
+        /* public void UpdateParam()
+         {
 
-            if (MatchParam1 == null || MatchParam2 == null) return;
-            //正常拍照座標跟設計座標應該分開 ，暫時先一起  有需要再分
-            MatchParam1.GrabPosition = new Point(LocateGrabPosX1, LocateGrabPosY1);
-            MatchParam2.GrabPosition = new Point(LocateGrabPosX2, LocateGrabPosY2);
-            MatchParam3.GrabPosition = new Point(LocateGrabPosX3, LocateGrabPosY3);
+             if (MatchParam1 == null || MatchParam2 == null) return;
+             //正常拍照座標跟設計座標應該分開 ，暫時先一起  有需要再分
+             MatchParam1.GrabPosition = new Point(LocateGrabPosX1, LocateGrabPosY1);
+             MatchParam2.GrabPosition = new Point(LocateGrabPosX2, LocateGrabPosY2);
+             MatchParam3.GrabPosition = new Point(LocateGrabPosX3, LocateGrabPosY3);
 
-            MatchParam1.DesignPosition = new Point(LocateGrabPosX1, LocateGrabPosY1);
-            MatchParam2.DesignPosition = new Point(LocateGrabPosX2, LocateGrabPosY2);
-            MatchParam3.DesignPosition = new Point(LocateGrabPosX3, LocateGrabPosY3);
+             MatchParam1.DesignPosition = new Point(LocateGrabPosX1, LocateGrabPosY1);
+             MatchParam2.DesignPosition = new Point(LocateGrabPosX2, LocateGrabPosY2);
+             MatchParam3.DesignPosition = new Point(LocateGrabPosX3, LocateGrabPosY3);
 
-            MatchParam1.Index = new Point(LocateIndexX1, LocateIndexY1);
-            MatchParam2.Index = new Point(LocateIndexX2, LocateIndexY2);
-            MatchParam3.Index = new Point(LocateIndexX3, LocateIndexY3);
+             MatchParam1.Index = new Point(LocateIndexX1, LocateIndexY1);
+             MatchParam2.Index = new Point(LocateIndexX2, LocateIndexY2);
+             MatchParam3.Index = new Point(LocateIndexX3, LocateIndexY3);
 
 
-        }*/
+         }*/
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -412,4 +420,26 @@ namespace WLS3200Gen2.UserControls
         }
     }
 
+
+    public class ImageBMPConver : IValueConverter
+    {
+        //当值从绑定源传播给绑定目标时，调用方法Convert
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+            var bmp = value as Frame<byte[]>;
+            return bmp.ToBitmapSource();
+
+
+        }
+
+        //当值从绑定目标传播给绑定源时，调用此方法ConvertBack
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+            var bmp = value as BitmapSource;
+
+            return bmp.ToByteFrame();
+        }
+    }
 }

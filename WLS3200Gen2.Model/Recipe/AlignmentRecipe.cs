@@ -18,10 +18,12 @@ namespace YuanliCore.Model
         /// 對位成功後 ，原點位置偏移量
         /// </summary>
         public Vector Offset { get; set; }
+        
         /// <summary>
         /// 對位方式  
         /// </summary>
         public LocateMode AlignmentMode { get; set; }
+        
         /// <summary>
         /// 定位點資訊
         /// </summary>
@@ -50,16 +52,19 @@ namespace YuanliCore.Model
     {
         private double grabPositionX, grabPositionY, designPositionX, designPositionY;
         private int indexX, indexY;
+        private Frame<byte[]> sampleImage;
 
         public LocateParam(int number)
         {
 
             MatchParam = new PatmaxParams(number);
         }
-        public Frame<byte[]> SampleImage { get; set; }
+        /// <summary>
+        /// 樣本圖
+        /// </summary>
+        public Frame<byte[]> SampleImage { get => sampleImage; set => SetValue(ref sampleImage, value); }
 
         //正常拍照座標跟設計座標應該分開 ，暫時先一起  有需要再分
-
         public double GrabPositionX { get => grabPositionX; set => SetValue(ref grabPositionX, value); }
         public double GrabPositionY { get => grabPositionY; set => SetValue(ref grabPositionY, value); }
         public double DesignPositionX { get => designPositionX; set => SetValue(ref designPositionX, value); }
@@ -69,7 +74,9 @@ namespace YuanliCore.Model
         public int IndexX { get => indexX; set => SetValue(ref indexX, value); }
         public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
 
-
+        /// <summary>
+        /// Cognex 資料存在這裡 需要獨立序列化 id 在100-199  用於檔案區隔  。從100開始是因為檔案名稱搜尋1開頭比較簡單
+        /// </summary>
         public PatmaxParams MatchParam { get; set; }
 
 

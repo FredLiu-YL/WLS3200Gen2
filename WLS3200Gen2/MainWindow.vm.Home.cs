@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,16 +19,16 @@ namespace WLS3200Gen2
     public partial class MainViewModel
     {
         private ObservableCollection<WorkItem> workItems = new ObservableCollection<WorkItem>();
-    
-        private string logMessage  ;
+
+        private string logMessage;
         private bool isRunning = false;
-        private bool isRunCommand = false; 
+        private bool isRunCommand = false;
         private ProcessSetting processSetting = new ProcessSetting();
 
         private Visibility informationUIVisibility, workholderUCVisibility;
 
         private int tabControlSelectedIndex;
-        private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS";
+        private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
 
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
@@ -72,7 +73,7 @@ namespace WLS3200Gen2
             }
             finally
             {
-               
+
             }
         });
 
@@ -138,33 +139,71 @@ namespace WLS3200Gen2
 
             }
         });
-   
+
         public ICommand ReadRecipeCommand => new RelayCommand(() =>
         {
-            FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", "MainRecipe");
-            win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-            bool isDialogResult = (bool)win.ShowDialog();
-            if (isDialogResult)
+            try
             {
-                // machine.BonderRecipe = MicroBonderRecipes.Load(win.FilePathName);
+                string path = $"{systemPath}\\Recipe\\";
+
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+
+                }
+
+
+                FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", path);
+                win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                bool isDialogResult = (bool)win.ShowDialog();
+                if (isDialogResult)
+                {
+                    var recipename = win.FileName;
+                    mainRecipe.Load(path, recipename);
+
+                }
+
+                SetRecipeToLocateParam(mainRecipe.DetectRecipe);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
             }
         });
         public ICommand SaveRecipeCommand => new RelayCommand(() =>
         {
-
-            string name = "RecipeName";
-            string path = $"{systemPath}\\Recipe\\{name}";
-            FileInfoWindow win = new FileInfoWindow(false, "WLS3200Gen2", "MainRecipe");
-            win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-            bool isDialogResult = (bool)win.ShowDialog();
-            if (isDialogResult)
+            try
             {
-                mainRecipe.Save(path);
-                // machine.BonderRecipe.RecipeID = win.FileName;
-                // machine.BonderRecipe.Save(win.FilePathName);
+           
+                string path = $"{systemPath}\\Recipe\\";
+
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                   
+                }
+
+                FileInfoWindow win = new FileInfoWindow(true, "WLS3200Gen2", path);
+                win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+                bool isDialogResult = (bool)win.ShowDialog();
+                if (isDialogResult)
+                {
+     
+                    var recipename = win.FileName;
+                    // machine.BonderRecipe.Save(win.FilePathName);
+                    mainRecipe.RecipeSave(path, recipename);
+                }
             }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+
         });
 
 
@@ -174,7 +213,7 @@ namespace WLS3200Gen2
             try
             {
 
-               
+
             }
             catch (Exception ex)
             {
@@ -190,7 +229,7 @@ namespace WLS3200Gen2
             try
             {
 
-    
+
             }
             catch (Exception ex)
             {

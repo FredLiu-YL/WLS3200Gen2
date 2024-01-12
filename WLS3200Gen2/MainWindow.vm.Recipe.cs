@@ -31,9 +31,9 @@ namespace WLS3200Gen2
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
 
-        private LocateParam locateParam1 = new LocateParam(1);
-        private LocateParam locateParam2 = new LocateParam(2);
-        private LocateParam locateParam3 = new LocateParam(3);
+        private LocateParam locateParam1 = new LocateParam(101);//Locate pattern 從100號開始
+        private LocateParam locateParam2 = new LocateParam(102);//Locate pattern 從100號開始
+        private LocateParam locateParam3 = new LocateParam(103);//Locate pattern 從100號開始
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
         private LocateMode selectMode;
@@ -122,13 +122,13 @@ namespace WLS3200Gen2
         {
 
 
-            SetLocateRecipe();
+            SetLocateParamToRecipe();
 
 
         });
         public ICommand LocateRunCommand => new RelayCommand(async () =>
         {
-            SetLocateRecipe();
+            SetLocateParamToRecipe();
 
             await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
 
@@ -159,7 +159,7 @@ namespace WLS3200Gen2
 
 
         }
-        private void SetLocateRecipe()
+        private void SetLocateParamToRecipe()
         {
             List<LocateParam> datas = new List<LocateParam>();
 
@@ -172,6 +172,18 @@ namespace WLS3200Gen2
 
         }
 
+        private void SetRecipeToLocateParam(DetectionRecipe detectionRecipe)
+        {
+            if (detectionRecipe.AlignRecipe.FiducialDatas[0]!=null)
+                LocateParam1 = detectionRecipe.AlignRecipe.FiducialDatas[0];
+            if (detectionRecipe.AlignRecipe.FiducialDatas[1] != null)
+                LocateParam2 = detectionRecipe.AlignRecipe.FiducialDatas[1];
+            if (detectionRecipe.AlignRecipe.FiducialDatas[2] != null)
+                LocateParam3 = detectionRecipe.AlignRecipe.FiducialDatas[2];
+
+            SelectMode = detectionRecipe.AlignRecipe.AlignmentMode;
+            AlignOffset = detectionRecipe.AlignRecipe.Offset;
+        }
     }
 
     public class WaferUIData : INotifyPropertyChanged
