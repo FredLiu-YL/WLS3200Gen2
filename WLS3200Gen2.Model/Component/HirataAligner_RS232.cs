@@ -128,36 +128,28 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public async Task VaccumOn()
+        public async Task Vaccum(bool IsOn)
         {
             try
             {
                 AlignerItems alignerItems = new AlignerItems();
                 await Task.Run(() =>
                 {
-                    alignerItems = Command_MovVaccumON();
-                    if (alignerItems.IsMovOK == true)
+                    if (IsOn == true)
                     {
+                        alignerItems = Command_MovVaccumON();
+                        if (alignerItems.IsMovOK == true)
+                        {
 
+                        }
                     }
-                });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public async Task VaccumOff()
-        {
-            try
-            {
-                AlignerItems alignerItems = new AlignerItems();
-                await Task.Run(() =>
-                {
-                    alignerItems = Command_MovVaccumOFF();
-                    if (alignerItems.IsMovOK == true)
+                    else
                     {
+                        alignerItems = Command_MovVaccumOFF();
+                        if (alignerItems.IsMovOK == true)
+                        {
 
+                        }
                     }
                 });
             }
@@ -221,7 +213,7 @@ namespace WLS3200Gen2.Model.Component
                 throw;
             }
         }
-        
+
         /// <summary>
         /// Aligner移動到原點位置
         /// </summary>
