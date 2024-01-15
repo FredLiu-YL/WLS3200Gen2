@@ -162,10 +162,10 @@ namespace WLS3200Gen2
                 {
                     var recipename = win.FileName;
                     mainRecipe.Load(path, recipename);
-
+                    SetRecipeToLocateParam(mainRecipe.DetectRecipe);
                 }
 
-                SetRecipeToLocateParam(mainRecipe.DetectRecipe);
+
             }
             catch (Exception ex)
             {

@@ -37,7 +37,7 @@ namespace WLS3200Gen2
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
         private LocateMode selectMode;
-        private Vector alignOffset;
+        private double alignOffsetX, alignOffsetY;
         private ExistStates testStates;
 
 
@@ -54,7 +54,8 @@ namespace WLS3200Gen2
 
         public ExistStates TestStates { get => testStates; set => SetValue(ref testStates, value); }
 
-        public Vector AlignOffset { get => alignOffset; set => SetValue(ref alignOffset, value); }
+        public double AlignOffsetX { get => alignOffsetX; set => SetValue(ref alignOffsetX, value); }
+        public double AlignOffsetY { get => alignOffsetY; set => SetValue(ref alignOffsetY, value); }
 
         public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
 
@@ -167,22 +168,24 @@ namespace WLS3200Gen2
             datas.Add(LocateParam2);
             datas.Add(LocateParam3);
             mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
-            mainRecipe.DetectRecipe.AlignRecipe.Offset = AlignOffset;
+            mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
+            mainRecipe.DetectRecipe.AlignRecipe.OffsetY = AlignOffsetY;
             mainRecipe.DetectRecipe.AlignRecipe.FiducialDatas = datas.ToArray();
 
         }
 
         private void SetRecipeToLocateParam(DetectionRecipe detectionRecipe)
         {
-            if (detectionRecipe.AlignRecipe.FiducialDatas[0]!=null)
+            if (detectionRecipe.AlignRecipe.FiducialDatas!= null && detectionRecipe.AlignRecipe.FiducialDatas[0]!=null)
                 LocateParam1 = detectionRecipe.AlignRecipe.FiducialDatas[0];
-            if (detectionRecipe.AlignRecipe.FiducialDatas[1] != null)
+            if (detectionRecipe.AlignRecipe.FiducialDatas != null && detectionRecipe.AlignRecipe.FiducialDatas[1] != null)
                 LocateParam2 = detectionRecipe.AlignRecipe.FiducialDatas[1];
-            if (detectionRecipe.AlignRecipe.FiducialDatas[2] != null)
+            if (detectionRecipe.AlignRecipe.FiducialDatas != null && detectionRecipe.AlignRecipe.FiducialDatas[2] != null)
                 LocateParam3 = detectionRecipe.AlignRecipe.FiducialDatas[2];
 
             SelectMode = detectionRecipe.AlignRecipe.AlignmentMode;
-            AlignOffset = detectionRecipe.AlignRecipe.Offset;
+            AlignOffsetX = detectionRecipe.AlignRecipe.OffsetX;
+            AlignOffsetY = detectionRecipe.AlignRecipe.OffsetY;
         }
     }
 

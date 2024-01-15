@@ -37,7 +37,7 @@ namespace WLS3200Gen2.UserControls
         private BitmapSource locateSampleImage3;
 
 
-        private double offsetX, offsetY;
+      //  private double offsetX, offsetY;
 
 
         private LocateMode modeForUI = LocateMode.Pattern;
@@ -68,10 +68,13 @@ namespace WLS3200Gen2.UserControls
         public static readonly DependencyProperty SelectModeProperty = DependencyProperty.Register(nameof(SelectMode), typeof(LocateMode), typeof(LocateUC),
                                                           new FrameworkPropertyMetadata(LocateMode.Pattern, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public static readonly DependencyProperty OffsetProperty = DependencyProperty.Register(nameof(Offset), typeof(Vector), typeof(LocateUC),
-                                                  new FrameworkPropertyMetadata(new Vector(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        //public static readonly DependencyProperty OffsetProperty = DependencyProperty.Register(nameof(Offset), typeof(Vector), typeof(LocateUC),
+        //                                          new FrameworkPropertyMetadata(new Vector(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnOffsetChanged)));
 
-
+        public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Register(nameof(OffsetX), typeof(double), typeof(LocateUC),
+                                        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Register(nameof(OffsetY), typeof(double), typeof(LocateUC),
+                                new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public BitmapSource MainImage
         {
             get => (BitmapSource)GetValue(MainImageProperty);
@@ -105,18 +108,11 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(CurrentPosYProperty, value);
         }
 
-        public Vector Offset
+      /*  public Vector Offset
         {
             get => (Vector)GetValue(OffsetProperty);
-            /*get
-            {
-                var temp = (Vector)GetValue(OffsetProperty);
-                OffsetX = temp.X;
-                OffsetY = temp.Y;
-                return temp;
-            }*/
-            set => SetValue(OffsetProperty, value);
-        }
+            set=> SetValue(OffsetProperty, value);
+        }*/
 
         public Action<CogMatcher> MatchFind
         {
@@ -160,21 +156,13 @@ namespace WLS3200Gen2.UserControls
 
         public double OffsetX
         {
-            get
-            {
-                Offset = new Vector(offsetX, offsetY);
-                return offsetX;
-            }
-            set => SetValue(ref offsetX, value);
+            get => (double)GetValue(OffsetXProperty);
+            set => SetValue(OffsetXProperty, value);
         }
         public double OffsetY
         {
-            get
-            {
-                Offset = new Vector(offsetX, offsetY);
-                return offsetY;
-            }
-            set => SetValue(ref offsetY, value);
+            get => (double)GetValue(OffsetYProperty);
+            set => SetValue(OffsetYProperty, value);
         }
 
 
@@ -331,7 +319,16 @@ namespace WLS3200Gen2.UserControls
 
             //   UpdateParam();
         });
-
+        private static void OnOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var dp = d as LocateUC;
+            dp.SetOffset();
+        }
+        private void SetOffset()
+        {
+         //   OffsetX = Offset.X;
+         //   OffsetY = Offset.Y;
+        }
         /* public void UpdateParam()
          {
 

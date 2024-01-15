@@ -463,7 +463,7 @@
                                                             <RowDefinition />
                                                         </Grid.RowDefinitions>
                                                         <UserControlUC:LocateUC MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
-                                                                                 MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" Offset="{Binding AlignOffset}"   />
+                                                                                 MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}"   />
                                                         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
                                                                 <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}"  />

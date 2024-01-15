@@ -17,8 +17,8 @@ namespace YuanliCore.Model
         /// <summary>
         /// 對位成功後 ，原點位置偏移量
         /// </summary>
-        public Vector Offset { get; set; }
-        
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
         /// <summary>
         /// 對位方式  
         /// </summary>
