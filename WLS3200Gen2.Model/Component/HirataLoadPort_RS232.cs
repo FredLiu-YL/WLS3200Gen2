@@ -342,32 +342,31 @@ namespace WLS3200Gen2.Model.Component
         /// <param name="loadPortItems"></param>
         /// <param name="fOUPType"></param>
         /// <returns></returns>
-        public async Task Set_Type(LoadPortItems loadPortItems, LoadPortFOUPType fOUPType)
+        public LoadPortItems Set_Type(LoadPortFOUPType fOUPType)
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                LoadPortItems loadPortItems = new LoadPortItems();
+                if (fOUPType != LoadPortFOUPType.None)
                 {
-                    if (fOUPType != LoadPortFOUPType.None)
+                    loadPortItems.IsSetOK = false;
+                    List<string> str3 = new List<string>();
+                    str3 = SendGetMessage("SET:TYP" + ((int)fOUPType + 1) + ";", false);
+                    foreach (var item in str3)
                     {
-                        loadPortItems.IsSetOK = false;
-                        List<string> str3 = new List<string>();
-                        str3 = SendGetMessage("SET:TYP" + ((int)fOUPType + 1) + ";", false);
-                        foreach (var item in str3)
+                        if (item.Contains("SET"))
                         {
-                            if (item.Contains("SET"))
-                            {
-                                loadPortItems.IsSetOK = true;
-                            }
+                            loadPortItems.IsSetOK = true;
                         }
-                        //await SendMessage(loadPortItems, "SET:TYP" + ((int)fOUPType + 1) + ";", LoadPortSendMessageType.Set);
                     }
+                    //await SendMessage(loadPortItems, "SET:TYP" + ((int)fOUPType + 1) + ";", LoadPortSendMessageType.Set);
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            });
+                return loadPortItems;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /////////////////////////////////////////////////////////////////////////以下沒有門的Load指令//////////////////////////////////////////////////////////////////////////
@@ -1452,7 +1451,7 @@ namespace WLS3200Gen2.Model.Component
                     //        }
                     //    }
                     //}
-                    loadPortItems = Get_FOUPParam(LoadPortFOUPType.TYPE_1);
+                    loadPortItems = Set_Type(LoadPortFOUPType.TYPE_1);
                     loadPortItems = Get_Mapping(loadPortItems.FOUP_ParameterStatus.CassetteSlotCount);
                     UpdateMapping(loadPortItems);
                 });

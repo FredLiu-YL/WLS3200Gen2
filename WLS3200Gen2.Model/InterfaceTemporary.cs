@@ -246,15 +246,11 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         Task Run(double degree);
         /// <summary>
-        /// 真空開啟
+        /// 真空 IsOn=true 開啟 IsOn=fals 關閉
         /// </summary>
+        /// <param name="IsOn"></param>
         /// <returns></returns>
-        Task VaccumOn();
-        /// <summary>
-        /// 真空關閉
-        /// </summary>
-        /// <returns></returns>
-        Task VaccumOff();
+        Task Vaccum(bool IsOn);
         /// <summary>
         /// 異常重置
         /// </summary>
