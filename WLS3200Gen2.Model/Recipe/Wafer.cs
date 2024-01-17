@@ -8,6 +8,10 @@ namespace YuanliCore.Data
 {
     public class Wafer
     {
+        /// <summary>
+        /// 流程中使用 傳遞Wafer資訊
+        /// </summary>
+        /// <param name="index"></param>
         public Wafer(int index)
         {
             CassetteIndex = index;

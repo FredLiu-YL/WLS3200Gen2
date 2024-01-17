@@ -11,8 +11,14 @@ namespace WLS3200Gen2.Model.Recipe
     public class DetectionRecipe
     {
         public IEnumerable<DetectionPoint> DetectionPoints { get; set; }
-
+        /// <summary>
+        /// 對位參數
+        /// </summary>
         public AlignmentRecipe AlignRecipe { get; set; } = new AlignmentRecipe();
+        /// <summary>
+        /// MAP資訊
+        /// </summary>
+        public WaferMapping WaferMap { get; set; }
 
     }
 
