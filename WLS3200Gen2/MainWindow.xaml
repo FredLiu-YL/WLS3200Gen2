@@ -352,7 +352,7 @@
                                                         <TextBlock Margin="2" Text="Wafer:" FontSize="20" />
                                                         <TextBox  Margin="5,0,0,0" Width="40"  Text="21"   FontSize="20"  />
                                                     </StackPanel>
-                                                    <Button Grid.Column="2" Content="Load" Command="{Binding LoadWafereCommand}"  />
+                                                    <Button Grid.Column="2" Content="Load" Command="{Binding LoadWaferCommand}"  />
 
                                                     <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal">
                                                         <TextBlock Margin="2" Text="LoadPort:" FontSize="20" />
@@ -411,10 +411,11 @@
                                                         <RowDefinition/>
                                                     </Grid.RowDefinitions>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140"/>
+                                                        <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
                                                         <Button Content="MapLayout Edit" FontSize="20" Height="50" Width="200"/>
                                                     </StackPanel>
-                                                    <views:VirtualCanvas Margin="-5" Grid.Row="1"  IsShowBar="True"  />
+                                                    <views:VirtualCanvas Margin="-5" Grid.Row="1"  IsShowBar="True"  ImageSource="{Binding MapImage}" ItemsSource="{Binding MapDrawings}"   
+                                                                      AddShapeAction="{Binding AddMapShapeAction}" ClearShapeAction="{Binding ClearMapShapeAction}"  />
                                                 </Grid>
 
                                             </GroupBox>
@@ -451,7 +452,25 @@
                                                     <RowDefinition Height="2*" />
                                                     <RowDefinition />
                                                 </Grid.RowDefinitions>
-                                                <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" Grid.ColumnSpan="2" />
+                                                <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" Grid.ColumnSpan="2"   ImageSource="{Binding MapImage}" ItemsSource="{Binding MapDrawings}"   
+                                                                      AddShapeAction="{Binding AddMapShapeAction}" ClearShapeAction="{Binding ClearMapShapeAction}"  />
+                                                <Grid Grid.Row="1" Grid.ColumnSpan="2" >
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Grid.Row="0" Orientation="Horizontal" >
+                                                        <Label Content="Index" Width="80" FontSize="26" />
+                                                        <Label Content="Col" Width="70" FontSize="26" />
+                                                        <TextBox Text="{Binding MoveIndexX}"    FontSize="22"   Width="70" />
+                                                        <Label Content="Row" Width="70" FontSize="26" />
+                                                        <TextBox Text="{Binding MoveIndexY}"   FontSize="26"  Width="70" />
+                                                        <Button Content="Move" Height="50" FontSize="20"  Width="100"  Command="{Binding LocatedMoveDieCommand}"  />
+                                                    </StackPanel>
+                                                </Grid>
                                             </Grid>
 
                                             <Grid Grid.Column="1">

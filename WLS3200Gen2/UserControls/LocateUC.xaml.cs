@@ -66,7 +66,7 @@ namespace WLS3200Gen2.UserControls
 
 
         public static readonly DependencyProperty SelectModeProperty = DependencyProperty.Register(nameof(SelectMode), typeof(LocateMode), typeof(LocateUC),
-                                                          new FrameworkPropertyMetadata(LocateMode.Pattern, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+                                                          new FrameworkPropertyMetadata(LocateMode.Pattern, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnOffsetChanged)));
 
         //public static readonly DependencyProperty OffsetProperty = DependencyProperty.Register(nameof(Offset), typeof(Vector), typeof(LocateUC),
         //                                          new FrameworkPropertyMetadata(new Vector(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnOffsetChanged)));
@@ -326,8 +326,14 @@ namespace WLS3200Gen2.UserControls
         }
         private void SetOffset()
         {
-         //   OffsetX = Offset.X;
-         //   OffsetY = Offset.Y;
+            ModeForUI = SelectMode;
+            if (modeForUI == LocateMode.Edge)
+                LocateModeIndex = 0;
+            else if (modeForUI == LocateMode.Pattern)
+                LocateModeIndex = 1;
+          
+
+
         }
         /* public void UpdateParam()
          {

@@ -102,7 +102,7 @@ namespace WLS3200Gen2.Model.Recipe
 
                 DetectRecipe.AlignRecipe.FiducialDatas[i].MatchParam = param as PatmaxParams;
 
-
+             
             }
             // AOI 八角形
             /*  string[] algorithmfiles2 = Directory.GetFiles(path, "*VsTool_3*");

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
+using YuanliCore.AffineTransform;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 using YuanliCore.Model;
@@ -35,10 +36,13 @@ namespace WLS3200Gen2
         private LocateParam locateParam2 = new LocateParam(102);//Locate pattern 從100號開始
         private LocateParam locateParam3 = new LocateParam(103);//Locate pattern 從100號開始
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
+        private ObservableCollection<ROIShape> mapDrawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
         private LocateMode selectMode;
         private double alignOffsetX, alignOffsetY;
         private ExistStates testStates;
+        private ITransform transForm; //紀錄 從設計座標轉換成對位後座標的 公式
+        private double moveIndexX, moveIndexY;
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
@@ -59,6 +63,12 @@ namespace WLS3200Gen2
 
         public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
 
+
+
+        public double MoveIndexX { get => moveIndexX; set => SetValue(ref moveIndexX, value); }
+        public double MoveIndexY { get => moveIndexY; set => SetValue(ref moveIndexY, value); }
+
+
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>
@@ -69,7 +79,10 @@ namespace WLS3200Gen2
         /// 取得或設定 shape 
         /// </summary>
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
-        public ICommand LoadWafereCommand => new RelayCommand<string>(async key =>
+
+        public ObservableCollection<ROIShape> MapDrawings { get => mapDrawings; set => SetValue(ref mapDrawings, value); }
+
+        public ICommand LoadWaferCommand => new RelayCommand<string>(async key =>
         {
 
             LoadPort2Wafers.Add(
@@ -89,7 +102,29 @@ namespace WLS3200Gen2
             TestStates = ExistStates.Exist;
         });
 
+        public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
+        {
 
+            mainRecipe.DetectRecipe.WaferMap = new WaferMapping();
+
+            foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
+            {
+
+
+            }
+
+
+            /* var center = new ROICross
+             {
+                 X = item.Center.X,
+                 Y = item.Center.Y,
+                 Size = 5,
+                 StrokeThickness = 2,
+                 Stroke = System.Windows.Media.Brushes.Red,
+                 IsInteractived = false
+             };
+             AddShapeAction.Execute(center);*/
+        });
 
         public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
         {
@@ -131,11 +166,22 @@ namespace WLS3200Gen2
         {
             SetLocateParamToRecipe();
 
-            await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
+            transForm = await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
 
 
         });
+        public ICommand LocatedMoveDieCommand => new RelayCommand(async () =>
+        {
+            //挑選出 對應index 的Die
+            YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
+            YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
 
+            //設計座標轉換對位後座標
+            Point transPos = transForm.TransPoint(new Point(die.PosX, die.PosY));
+
+            await machine.MicroDetection.TableMoveToAsync(transPos);
+
+        });
         private void SampleFindAction(CogMatcher matcher)
         {
             ClearShapeAction.Execute(Drawings);
@@ -167,6 +213,29 @@ namespace WLS3200Gen2
             datas.Add(LocateParam1);
             datas.Add(LocateParam2);
             datas.Add(LocateParam3);
+
+            //需要做出一個轉換矩陣 對應index 與 機台座標
+            var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
+            var index2 = new Point(LocateParam2.IndexX, LocateParam2.IndexY);
+            var index3 = new Point(LocateParam3.IndexX, LocateParam3.IndexY);
+
+            var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
+            var pos2 = new Point(LocateParam2.GrabPositionX, LocateParam2.GrabPositionY);
+            var pos3 = new Point(LocateParam3.GrabPositionX, LocateParam3.GrabPositionY);
+
+            var indexs = new Point[] { index1, index2, index3 };
+            var poss = new Point[] { pos1, pos2, pos3 };
+            var transform = new CogAffineTransform(indexs, poss);
+
+            //依序轉換完INDEX  塞回機械座標
+            foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
+            {
+                Point pos = transform.TransPoint(new Point(die.IndexX, die.IndexY));
+                die.PosX = pos.X;
+                die.PosY = pos.Y;
+            }
+
+
             mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
             mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
             mainRecipe.DetectRecipe.AlignRecipe.OffsetY = AlignOffsetY;
@@ -176,7 +245,7 @@ namespace WLS3200Gen2
 
         private void SetRecipeToLocateParam(DetectionRecipe detectionRecipe)
         {
-            if (detectionRecipe.AlignRecipe.FiducialDatas!= null && detectionRecipe.AlignRecipe.FiducialDatas[0]!=null)
+            if (detectionRecipe.AlignRecipe.FiducialDatas != null && detectionRecipe.AlignRecipe.FiducialDatas[0] != null)
                 LocateParam1 = detectionRecipe.AlignRecipe.FiducialDatas[0];
             if (detectionRecipe.AlignRecipe.FiducialDatas != null && detectionRecipe.AlignRecipe.FiducialDatas[1] != null)
                 LocateParam2 = detectionRecipe.AlignRecipe.FiducialDatas[1];
@@ -184,6 +253,7 @@ namespace WLS3200Gen2
                 LocateParam3 = detectionRecipe.AlignRecipe.FiducialDatas[2];
 
             SelectMode = detectionRecipe.AlignRecipe.AlignmentMode;
+
             AlignOffsetX = detectionRecipe.AlignRecipe.OffsetX;
             AlignOffsetY = detectionRecipe.AlignRecipe.OffsetY;
         }

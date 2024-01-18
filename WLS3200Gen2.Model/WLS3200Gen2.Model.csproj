@@ -124,6 +124,7 @@
     <Compile Include="Recipe\MainRecipe.cs" />
     <Compile Include="Recipe\ProcessSetting.cs" />
     <Compile Include="Recipe\Wafer.cs" />
+    <Compile Include="Recipe\WaferMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\YuanliCore\YuanliCore.CogVision\YuanliCore.CogVision.csproj">

@@ -33,7 +33,7 @@ namespace WLS3200Gen2
         private double tablePosX, tablePosY, tablePosR;
 
         private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
-        private WriteableBitmap mainImage;
+        private WriteableBitmap mainImage , mapImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
@@ -69,6 +69,7 @@ namespace WLS3200Gen2
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
 
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
+        public WriteableBitmap MapImage { get => mapImage; set => SetValue(ref mapImage, value); }
         /// <summary>
         /// 新增 Shape
         /// </summary>
@@ -77,7 +78,15 @@ namespace WLS3200Gen2
         /// 清除 Shape
         /// </summary>
         public ICommand ClearShapeAction { get; set; }
-
+        
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
+        public ICommand AddMapShapeAction { get; set; }
+        /// <summary>
+        /// 清除 Shape
+        /// </summary>
+        public ICommand ClearMapShapeAction { get; set; }
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
         {
