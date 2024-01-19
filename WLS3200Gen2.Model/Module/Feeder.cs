@@ -166,9 +166,9 @@ namespace WLS3200Gen2.Model.Module
                      if (processWafers.Count() > 0)
                      {
                          processTempPre_Wafer = processWafers.Dequeue();
-                       
 
-                          await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
+
+                         await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
                          await WaferStandByToMacro();
 
                      }
@@ -199,7 +199,7 @@ namespace WLS3200Gen2.Model.Module
         {
             await WaferMacroToStandBy();
             await WaferStandByToAligner();
-            tempAligner.Run(0);
+            await tempAligner.Run(0);
             await WaferAlignerToStandBy();
 
 
@@ -210,18 +210,18 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task<Wafer> LoadToMicroAsync()
         {
-   
-            
+
+
             //await WaferAlignerToStandBy();
-  
+
             await RobotAxis.MoveToAsync(Setting.MicroPos);
-            Robot.PutBackWafer(ArmStation.Micro);
-            Robot.ArmcatchPos(ArmStation.Micro);
-            Robot.VacuumOff();
+            await Robot.PutWafer_Standby(ArmStation.Micro);
+            await Robot.PutWafer_GoIn(ArmStation.Micro);
+            await Robot.LockWafer(false);
             MicroFixed?.Invoke(); //顯微鏡平台固定WAFER ( 真空開)
-            Robot.ArmPutdown();
-            Robot.ArmToRetract(ArmStation.Micro);
-            Robot.ArmToStandby();
+            await Robot.PutWafer_PutDown(ArmStation.Micro);
+            await Robot.PutWafer_Retract(ArmStation.Micro);
+            await Robot.PutWafer_Safety(ArmStation.Micro);
 
             return processTempPre_Wafer;
         }
@@ -243,12 +243,12 @@ namespace WLS3200Gen2.Model.Module
 
 
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
-
-            Robot.TakeWaferCassette(cassetteIndex);
-            Robot.ArmLiftup();
-            Robot.VacuumOn();
-            Robot.ArmToRetract(ArmStation.Cassette);
-            Robot.ArmToStandby();
+            await Robot.PickWafer_Standby(ArmStation.Micro, cassetteIndex);
+            await Robot.PickWafer_GoIn(ArmStation.Micro, cassetteIndex);
+            await Robot.PickWafer_LiftUp(ArmStation.Micro, cassetteIndex);
+            await Robot.LockWafer(true);
+            await Robot.PickWafer_Retract(ArmStation.Micro, cassetteIndex);
+            await Robot.PickWafer_Safety(ArmStation.Micro);
 
             //設定 Cassette內WAFER的狀態
             Cassette.Wafers[cassetteIndex].ProcessStatus = WaferProcessStatus.InProgress;
@@ -262,13 +262,13 @@ namespace WLS3200Gen2.Model.Module
         public async Task UnLoadWaferToCassette(Wafer wafer)
         {
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
-            Robot.PutBackWafer(ArmStation.Cassette);
-            Robot.ArmcatchPos(ArmStation.Cassette);
-            Robot.VacuumOff();
+            await Robot.PutWafer_Standby(ArmStation.Cassette, wafer.CassetteIndex);
+            await Robot.PutWafer_GoIn(ArmStation.Cassette, wafer.CassetteIndex);
+            await Robot.LockWafer(false);
 
-            Robot.ArmPutdown();
-            Robot.ArmToRetract(ArmStation.Cassette);
-            Robot.ArmToStandby();
+            await Robot.PutWafer_PutDown(ArmStation.Cassette, wafer.CassetteIndex);
+            await Robot.PutWafer_Retract(ArmStation.Cassette, wafer.CassetteIndex);
+            await Robot.PutWafer_Safety(ArmStation.Cassette);
 
             wafer.ProcessStatus = WaferProcessStatus.Complate;
             //設定 Cassette內WAFER的狀態
@@ -280,19 +280,14 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-
-
                 await RobotAxis.MoveToAsync(Setting.MacroPos);
-                Robot.PutBackWafer(ArmStation.Macro);
-                Robot.ArmcatchPos(ArmStation.Macro);
-                Robot.VacuumOff();
-                Robot.ArmPutdown();
-
-                Robot.ArmToRetract(ArmStation.Macro);
+                await Robot.PutWafer_Standby(ArmStation.Macro);
+                await Robot.PutWafer_GoIn(ArmStation.Macro);
+                await Robot.LockWafer(false);
+                await Robot.PutWafer_PutDown(ArmStation.Macro);
+                await Robot.PutWafer_Retract(ArmStation.Macro);
                 Macro.FixWafer();
-                Robot.ArmToStandby();
-
-
+                await Robot.PutWafer_Safety(ArmStation.Macro);
             }
             catch (Exception)
             {
@@ -306,20 +301,14 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-
-
                 await RobotAxis.MoveToAsync(Setting.MacroPos);
                 Macro.ReleaseWafer();
-                Robot.TakeWafer(ArmStation.Macro);
-                Robot.ArmcatchPos(ArmStation.Macro);
-                Robot.VacuumOn();
-                Robot.ArmLiftup();
-                Robot.ArmToRetract(ArmStation.Macro);
-                Robot.ArmToStandby();
-
-
-
-
+                await Robot.PickWafer_Standby(ArmStation.Macro);
+                await Robot.PickWafer_GoIn(ArmStation.Macro);
+                await Robot.LockWafer(true);
+                await Robot.PickWafer_LiftUp(ArmStation.Macro);
+                await Robot.PickWafer_Retract(ArmStation.Macro);
+                await Robot.PickWafer_Safety(ArmStation.Macro);
             }
             catch (Exception)
             {
@@ -334,17 +323,13 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-
-
                 await RobotAxis.MoveToAsync(Setting.AlignPos);
-                Robot.PutBackWafer(ArmStation.Align);
-                Robot.ArmcatchPos(ArmStation.Align);
-                Robot.VacuumOff();
-                Robot.ArmPutdown();
-                Robot.ArmToRetract(ArmStation.Align);
-                Robot.ArmToStandby();
-
-
+                await Robot.PutWafer_Standby(ArmStation.Align);
+                await Robot.PutWafer_GoIn(ArmStation.Align);
+                await Robot.LockWafer(false);
+                await Robot.PutWafer_PutDown(ArmStation.Align);
+                await Robot.PutWafer_Retract(ArmStation.Align);
+                await Robot.PutWafer_Safety(ArmStation.Align);
             }
             catch (Exception)
             {
@@ -361,12 +346,12 @@ namespace WLS3200Gen2.Model.Module
 
                 await RobotAxis.MoveToAsync(Setting.AlignPos);
 
-                Robot.TakeWafer(ArmStation.Align);
-                Robot.ArmcatchPos(ArmStation.Align);
-                Robot.VacuumOn();
-                Robot.ArmLiftup();
-                Robot.ArmToRetract(ArmStation.Align);
-                Robot.ArmToStandby();
+                await Robot.PickWafer_Standby(ArmStation.Align);
+                await Robot.PickWafer_GoIn(ArmStation.Align);
+                await Robot.LockWafer(true);
+                await Robot.PickWafer_LiftUp(ArmStation.Align);
+                await Robot.PickWafer_Retract(ArmStation.Align);
+                await Robot.PickWafer_Safety(ArmStation.Align);
 
             }
             catch (Exception)
@@ -381,15 +366,15 @@ namespace WLS3200Gen2.Model.Module
         public async Task WaferMicroToStandBy()
         {
             await RobotAxis.MoveAsync(Setting.MicroPos);
-            Robot.TakeWafer(ArmStation.Micro);
-            Robot.ArmcatchPos(ArmStation.Micro);
-            Robot.VacuumOn();
-            Robot.ArmLiftup();
-            Robot.ArmToRetract(ArmStation.Micro);
-            Robot.ArmToStandby();
+            await Robot.PickWafer_Standby(ArmStation.Micro);
+            await Robot.PickWafer_GoIn(ArmStation.Micro);
+            await Robot.LockWafer(true);
+            await Robot.PickWafer_LiftUp(ArmStation.Micro);
+            await Robot.PickWafer_Retract(ArmStation.Micro);
+            await Robot.PickWafer_Safety(ArmStation.Micro);
 
         }
-     
+
 
         public Cassette SlotMapping(ILoadPort loadPort)
         {
