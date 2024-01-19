@@ -191,127 +191,79 @@ namespace WLS3200Gen2.Model
     public interface IRobot
     {
         /// <summary>
-        /// 軸卡是否正常開啟
+        /// 手臂是否正常開啟
         /// </summary>
         bool IsOpen { get; }
         /// <summary>
-        /// 軸資訊
+        /// 移動軸到位容許範圍
         /// </summary>
-        RobotAxis[] Axes { get; }
+        double MoveTolerance { get; }
         /// <summary>
-        /// Input點位狀態
+        /// Cassette裡的Wafer間距
         /// </summary>
-        DigitalInput[] InputSignals { get; }
+        double CassetteWaferPitch { get; set; }
         /// <summary>
-        /// Output點位狀態
-        /// </summary>
-        IEnumerable<DigitalOutput> OutputSignals { get; }
-        /// <summary>
-        /// 軸卡初始化
+        /// 手臂初始化
         /// </summary>
         void InitializeCommand();
         /// <summary>
-        /// 
+        /// Robot回Home
         /// </summary>
-        /// <param name="names"></param>
+        Task Home();
+        /// <summary>
+        /// Robot停止動作
+        /// </summary>
+        Task Continue();
+        /// <summary>
+        /// Robot停止動作
+        /// </summary>
+        Task Stop();
+        /// <summary>
+        /// 取得Robot位置
+        /// </summary>
         /// <returns></returns>
-        DigitalInput[] SetInputNames(IEnumerable<string> names);
+        RobotPoint GetPositionCommand();
         /// <summary>
-        /// 
+        /// 取wafer從LoadPort到Robot上方
         /// </summary>
-        /// <param name="names"></param>
+        /// <param name="slotIdx"></param>
         /// <returns></returns>
-        DigitalOutput[] SetOutputNames(IEnumerable<string> names);
+        //Task PickWaferLoadPortToRobot(int slotIdx);
+        //Task PickWaferAlignerToRobot();
+        //Task PickWaferAlignerToRobot(int slotIdx);
         /// <summary>
-        /// Output點位設定
+        /// 取得目前Robot狀態
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="isOn"></param>
-        void SetOutputCommand(int id, bool isOn);
-        /// <summary>
-        /// 設定軸卡參數
-        /// </summary>
-        /// <param name="axisConfig"></param>
         /// <returns></returns>
-        RobotAxis[] SetAxesParam(IEnumerable<AxisConfig> axisConfig);
+        Task<RobotStatus> GetStatus();
         /// <summary>
-        /// 設定軸開啟/關閉
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="isOn"></param>
-        void SetServoCommand(int id, bool isOn);
-        /// <summary>
-        /// 軸移動相對位置
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="distance"></param>
-        void MoveCommand(int id, double distance);
-        /// <summary>
-        /// 軸移動絕對位置
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="position"></param>
-        void MoveToCommand(int id, double position);
-        /// <summary>
-        /// 軸停止
-        /// </summary>
-        /// <param name="id"></param>
-        void StopCommand(int id);
-        /// <summary>
-        /// 軸回Home
-        /// </summary>
-        /// <param name="id"></param>
-        void HomeCommand(int id);
-        /// <summary>
-        /// 取得目前軸位置
+        /// 取得軸速度(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        double GetPositionCommand(int id);
+        Task GetSpeedPercent();
         /// <summary>
-        /// 取得軸Sensor狀態:ORG、NEL、PEL
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        AxisSensor GetSensorCommand(int id);
-        /// <summary>
-        /// 取得軸軟體正、負極限
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="limitN"></param>
-        /// <param name="limitP"></param>
-        void GetLimitCommand(int id, out double limitN, out double limitP);
-        /// <summary>
-        /// 設定軸軟體正、負極限
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="minPos"></param>
-        /// <param name="maxPos"></param>
-        void SetLimitCommand(int id, double minPos, double maxPos);
-        /// <summary>
-        /// 取得軸速度
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        VelocityParams GetSpeedCommand(int id);
-        /// <summary>
-        /// 設定軸速度
+        /// 設定軸速度(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="motionVelocity"></param>
-        void SetSpeedCommand(int id, VelocityParams motionVelocity);
+        Task SetSpeedPercentCommand(int motionPercent);
         /// <summary>
-        /// 設定軸方向
+        /// 手臂固定Wafer(真空/夾持)
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="direction"></param>
-        void SetAxisDirectionCommand(int id, AxisDirection direction);
-        /// <summary>
-        /// 取得軸方向
-        /// </summary>
-        /// <param name="id"></param>
+        /// <param name="isOn"></param>
         /// <returns></returns>
-        AxisDirection GetAxisDirectionCommand(int id);
+        Task LockWafer(bool isOn);
+        /// <summary>
+        /// 手臂是否固定住Wafer
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsLockOK();
+        /// <summary>
+        /// 手臂是否有Wafer
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsHaveWafer();
     }
     public interface IEFEMRobot : IRobot
     {
@@ -320,59 +272,122 @@ namespace WLS3200Gen2.Model
         CancellationTokenSource cancelToken { get; set; }
 
 
+        /// <summary>
+        /// 取片從卡匣 手臂到安全位置
+        /// </summary>
+        /// <returns></returns>
+        Task PickWafer_Safety(ArmStation armStation);
+        /// <summary>
+        /// 取片從卡匣 手臂到準備位置
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PickWafer_Standby(ArmStation armStation, int layer);
+        /// <summary>
+        /// 取片從卡匣 手臂伸進去卡匣裡
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PickWafer_GoIn(ArmStation armStation, int layer);
+        /// <summary>
+        /// 取片從卡匣 手臂抬起接片
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PickWafer_LiftUp(ArmStation armStation, int layer);
+        /// <summary>
+        /// 取片從卡匣 手臂縮回來
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PickWafer_Retract(ArmStation armStation, int layer);
+
 
         /// <summary>
-        /// 取片 伸出手臂進卡匣 (尚未抬起或下降)
+        /// 取片從Aligner 手臂到準備位置
         /// </summary>
-        /// <param name="Layer"></param>
-        void TakeWaferCassette(int layer);
+        /// <returns></returns>
+        Task PickWafer_Standby(ArmStation armStation);
         /// <summary>
-        /// 放片 伸出手臂進卡匣 (尚未抬起或下降)
+        /// 取片從Aligner 手臂伸進去Aligner裡
         /// </summary>
-        /// <param name="Layer"></param>
-        void PutBackWaferCassette(int layer);
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PickWafer_GoIn(ArmStation armStation);
+        /// <summary>
+        /// 取片從Aligner 手臂抬起接片
+        /// </summary>
+        /// <returns></returns>
+        Task PickWafer_LiftUp(ArmStation armStation);
+        /// <summary>
+        /// 取片從Aligner 手臂縮回來
+        /// </summary>
+        /// <returns></returns>
+        Task PickWafer_Retract(ArmStation armStation);
+
+
+
+
+
+
+
+        /// <summary>
+        /// 放片至卡匣 手臂到安全位置
+        /// </summary>
+        /// <returns></returns>
+        Task PutWafer_Safety(ArmStation armStation);
+        /// <summary>
+        /// 放片至卡匣 手臂到準備位置
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PutWafer_Standby(ArmStation armStation, int layer);
+        /// <summary>
+        /// 放片至卡匣 手臂伸進去卡匣裡
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PutWafer_GoIn(ArmStation armStation, int layer);
+        /// <summary>
+        /// 放片至卡匣 手臂放下片子
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PutWafer_PutDown(ArmStation armStation, int layer);
+        /// <summary>
+        /// 放片至卡匣 手臂縮回來
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Task PutWafer_Retract(ArmStation armStation, int layer);
 
 
         /// <summary>
-        /// 取片 伸出手臂 (尚未抬起或下降)
+        /// 放片至Aligner 手臂到準備位置
         /// </summary>
-        /// <param name="Layer"></param>
-        void TakeWafer(ArmStation armPosition);
-
+        /// <returns></returns>
+        Task PutWafer_Standby(ArmStation armStation);
         /// <summary>
-        /// 放片 伸出手臂 (尚未抬起或下降)
+        /// 放片至Aligner 手臂伸進去Aligner裡
         /// </summary>
-        /// <param name="Layer"></param>
-        void PutBackWafer(ArmStation armPosition);
-
-
+        /// <returns></returns>
+        Task PutWafer_GoIn(ArmStation armStation);
         /// <summary>
-        /// 手臂抬起
+        /// 放片至Aligner 手臂放下片子
         /// </summary>
-        void ArmLiftup();
+        /// <returns></returns>
+        Task PutWafer_PutDown(ArmStation armStation);
         /// <summary>
-        /// 手臂放下
+        /// 放片至Aligner 手臂縮回來
         /// </summary>
-        void ArmPutdown();
-        /// <summary>
-        /// 手臂轉成待機姿態
-        /// </summary>
-        void ArmToStandby();
-        /// <summary>
-        /// 手臂收回
-        /// </summary>
-        void ArmToRetract(ArmStation armPosition);
-        /// <summary>
-        /// 接料位置
-        /// </summary>
-        /// <param name="armPosition"></param>
-        void ArmcatchPos(ArmStation armPosition);
-
+        /// <returns></returns>
+        Task PutWafer_Retract(ArmStation armStation);
 
     }
     public enum ArmStation
     {
-        Cassette,
+        Cassette1,
+        Cassette2,
         Align,
         Macro,
         Micro

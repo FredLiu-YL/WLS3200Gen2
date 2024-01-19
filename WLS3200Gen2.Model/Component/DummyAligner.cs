@@ -38,6 +38,11 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
+        public Task Vaccum(bool IsOn)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task VaccumOff()
         {
             throw new NotImplementedException();

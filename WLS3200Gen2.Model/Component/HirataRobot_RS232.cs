@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nito.AsyncEx;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -10,26 +11,25 @@ using System.Threading.Tasks;
 
 namespace WLS3200Gen2.Model.Component
 {
-    public class HirataRobot_RS232
+    public class HirataRobot_RS232 : IEFEMRobot
     {
         private SerialPort serialPort = new SerialPort();
         private readonly object lockObj = new object();
 
-        //LP1:880 Aligner:810 Microscope:1810 LP2:980 Macro:710
-        private string[] loadPort1_Pick_Command = new string[] { " GP 880", " GP 881", " GP 882", " GP 883" };
-        private string[] loadPort1_Put_Command = new string[] { " GP 680", " GP 681", " GP 682", " GP 683" };
-        private double wafer_Pitch = 10;
-        private string[] loadPort2_Pick_Command = new string[] { " GP 980", " GP 981", " GP 982", " GP 983" };
-        private string[] loadPort2_Put_Command = new string[] { " GP 780", " GP 781", " GP 782", " GP 783" };
+        private int[] loadPort1_Pick_Command = new int[] { 880, 881, 882, 883 };
+        private int[] loadPort1_Put_Command = new int[] { 680, 681, 682, 683 };
 
-        private string[] aligner_Pick_Command = new string[] { " GP 810", " GP 811", " GP 812", " GP 813" };
-        private string[] aligner_Put_Command = new string[] { " GP 610", " GP 611", " GP 612", " GP 613" };
+        private int[] loadPort2_Pick_Command = new int[] { 980, 981, 982, 983 };
+        private int[] loadPort2_Put_Command = new int[] { 780, 781, 782, 783 };
 
-        private string[] microscope_Pick_Command = new string[] { " GP 1810", " GP 1811", " GP 1812", " GP 1813" };
-        private string[] microscope_Put_Command = new string[] { " GP 1610", " GP 1611", " GP 1612", " GP 1613" };
+        private int[] aligner_Pick_Command = new int[] { 810, 811, 812, 813 };
+        private int[] aligner_Put_Command = new int[] { 610, 611, 612, 613 };
 
-        private string[] macro_Pick_Command = new string[] { " GP 710", " GP 711", " GP 712", " GP 713" };
-        private string[] macro_Put_Command = new string[] { " GP 510", " GP 511", " GP 512", " GP 513" };
+        private int[] microscope_Pick_Command = new int[] { 1810, 1811, 1812, 1813 };
+        private int[] microscope_Put_Command = new int[] { 1610, 1611, 1612, 1613 };
+
+        private int[] macro_Pick_Command = new int[] { 710, 711, 712, 713 };
+        private int[] macro_Put_Command = new int[] { 510, 511, 512, 513 };
 
         private const string RB_NO = "001";
         private const char STX = '\x2';
@@ -149,51 +149,49 @@ namespace WLS3200Gen2.Model.Component
         {
             RobotStatus robotStatus = new RobotStatus();
             int i = 0;
-            double tolerance = 0.1;
-            await Task.Run(async () =>
+            double tolerance = moveTolerance;
+            try
             {
-                try
+                List<string> str = new List<string>();
+                str = SendGetMessage(" GP " + address + " ( 0 0 " + zShift + " 0)", CheckMessageType.Status);
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage(" GP " + address + " ( 0 0 " + zShift + " 0)", CheckMessageType.Status);
-                    foreach (var item in str)
-                    {
-                        robotStatus = TransStatus(item);
-                    }
-                    RobotPoint robotAddressPoint = new RobotPoint();
-                    RobotPoint robotNowPoint = new RobotPoint();
-                    robotAddressPoint = await GetAddressPos(address);
-                    while (true)
-                    {
-                        i++;
-                        await Task.Delay(50);
-                        robotNowPoint = await GetNowPos();
-                        if (address == 1)
-                        {
-                            if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
-                            Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance)
-                            {
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
-                            Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance &&
-                            Math.Abs(robotAddressPoint.Z - robotNowPoint.Z) <= tolerance &&
-                            Math.Abs(robotAddressPoint.W - robotNowPoint.W) <= tolerance)
-                            {
-                                break;
-                            }
-                        }
-                        if (i >= 200) throw new Exception("Robot Move Time Out");
-                    }
+                    robotStatus = TransStatus(item);
                 }
-                catch (Exception ex)
+                RobotPoint robotAddressPoint = new RobotPoint();
+                RobotPoint robotNowPoint = new RobotPoint();
+                robotAddressPoint = await GetAddressPos(address);
+                while (true)
                 {
-                    throw new Exception("MovAddress:" + ex);
+                    i++;
+                    await Task.Delay(50);
+                    robotNowPoint = await GetNowPos();
+                    if (address == 1)
+                    {
+                        if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
+                        Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
+                        Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance &&
+                        Math.Abs(robotAddressPoint.Z - robotNowPoint.Z) <= tolerance &&
+                        Math.Abs(robotAddressPoint.W - robotNowPoint.W) <= tolerance)
+                        {
+                            break;
+                        }
+                    }
+                    if (i >= 200) throw new Exception("Robot Move Time Out");
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("MovAddress:" + ex);
+            }
+
         }
         /// <summary>
         /// Robot真空 isOn = true 開啟 isOn = false 關閉
@@ -255,7 +253,7 @@ namespace WLS3200Gen2.Model.Component
             });
         }
         /// <summary>
-        /// 取得RobotInput狀態
+        /// 取得RobotInput狀態(目前只有點位0 是否有片子)
         /// </summary>
         /// <returns></returns>
         public async Task<bool> GetInput(int id)
@@ -280,7 +278,7 @@ namespace WLS3200Gen2.Model.Component
             return isOn;
         }
         /// <summary>
-        /// 取得RobotOutput狀態
+        /// 取得RobotOutput狀態(目前只有點位0 真空開啟的Outupt有沒有做動)
         /// </summary>
         /// <returns></returns>
         public async Task<bool> GetOutput(int id)
@@ -760,6 +758,17 @@ namespace WLS3200Gen2.Model.Component
         }
 
         private bool STX_flag = false, ETX_flag = false;
+
+
+        private double moveTolerance = 0;
+        public PauseTokenSource pauseToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public CancellationTokenSource cancelToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public bool IsOpen => throw new NotImplementedException();
+
+        public double MoveTolerance { get => moveTolerance; }
+        public double CassetteWaferPitch { get; set; } = 0;
+
         public List<string> GetMessage()
         {
             try
@@ -831,6 +840,510 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+
+        public async Task PickWafer_Safety(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    await MovAddress(1, 0);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWaferFromCassette_Safety:" + ex);
+            }
+        }
+
+        public async Task PickWafer_Standby(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Pick_Command[0], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Pick_Command[0], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_Standby:" + ex);
+            }
+        }
+
+        public async Task PickWafer_GoIn(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Pick_Command[1], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Pick_Command[1], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PickWafer_LiftUp(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Pick_Command[2], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Pick_Command[2], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_LiftUp:" + ex);
+            }
+        }
+
+        public async Task PickWafer_Retract(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Pick_Command[3], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Pick_Command[3], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_Retract:" + ex);
+            }
+        }
+
+        public async Task PickWafer_Standby(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Pick_Command[0], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Pick_Command[0], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Pick_Command[0], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_Retract:" + ex);
+            }
+        }
+
+        public async Task PickWafer_GoIn(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Pick_Command[1], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Pick_Command[1], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Pick_Command[1], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PickWafer_LiftUp(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Pick_Command[2], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Pick_Command[2], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Pick_Command[2], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_LiftUp:" + ex);
+            }
+        }
+
+        public async Task PickWafer_Retract(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Pick_Command[3], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Pick_Command[3], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Pick_Command[3], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_Retract:" + ex);
+            }
+        }
+
+        public async Task PutWafer_Safety(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    await MovAddress(1, 0);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PutWafer_Safety:" + ex);
+            }
+        }
+
+        public async Task PutWafer_Standby(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Put_Command[0], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Put_Command[0], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PutWafer_GoIn(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Put_Command[1], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Put_Command[1], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PutWafer_PutDown(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Put_Command[2], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Put_Command[2], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PutWafer_Retract(ArmStation armStation, int layer)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    if (layer <= 1) { layer = 1; }
+                    double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        await MovAddress(loadPort1_Put_Command[3], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        await MovAddress(loadPort2_Put_Command[3], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PutWafer_Standby(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Put_Command[0], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Put_Command[0], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Put_Command[0], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PutWafer_Standby:" + ex);
+            }
+        }
+
+        public async Task PutWafer_GoIn(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Put_Command[1], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Put_Command[1], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Put_Command[1], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PutWafer_GoIn:" + ex);
+            }
+        }
+
+        public async Task PutWafer_PutDown(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Put_Command[2], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Put_Command[2], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Put_Command[2], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PutWafer_PutDown:" + ex);
+            }
+        }
+
+        public async Task PutWafer_Retract(ArmStation armStation)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    double slot_diff_Z = 0;
+                    if (armStation == ArmStation.Align)
+                    {
+                        await MovAddress(aligner_Put_Command[3], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Macro)
+                    {
+                        await MovAddress(macro_Put_Command[3], slot_diff_Z);
+                    }
+                    else if (armStation == ArmStation.Micro)
+                    {
+                        await MovAddress(microscope_Put_Command[3], slot_diff_Z);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PutWafer_Retract:" + ex);
+            }
+        }
+
+        public void InitializeCommand()
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public async Task Home()
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    await MovAddress(1, 0);
+
+                    await MovAddress(0, 0);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot PickWaferFromCassette_Safety:" + ex);
+            }
+        }
+
+        public Task Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public RobotPoint GetPositionCommand()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GetSpeedPercent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetSpeedPercentCommand(int motionPercent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task LockWafer(bool isOn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsLockOK()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsHaveWafer()
+        {
+            throw new NotImplementedException();
+        }
+
         public class RobotItems
         {
             public int Status = -1;

@@ -13,87 +13,153 @@ namespace WLS3200Gen2.Model.Component
         public PauseTokenSource pauseToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public CancellationTokenSource cancelToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public void ArmcatchPos(ArmStation armPosition)
+        public bool IsOpen => throw new NotImplementedException();
+
+        public double MoveTolerance => throw new NotImplementedException();
+
+        public double CassetteWaferPitch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public Task Continue()
         {
             throw new NotImplementedException();
         }
 
-        public void ArmLiftup()
+        public RobotPoint GetPositionCommand()
         {
             throw new NotImplementedException();
         }
 
-        public void ArmPutdown()
+        public Task GetSpeedPercent()
         {
             throw new NotImplementedException();
         }
 
-        public void ArmToRetract(ArmStation armPosition)
+        public Task<RobotStatus> GetStatus()
         {
             throw new NotImplementedException();
         }
 
-        public void ArmToStandby()
+        public Task Home()
         {
             throw new NotImplementedException();
         }
 
-        public void Home()
-        {
-             
-        }
-
-        public void Initial()
-        {
-           
-        }
-
-        public void Load()
+        public void InitializeCommand()
         {
             throw new NotImplementedException();
         }
 
-        public void MoveToAliner()
+        public Task<bool> IsHaveWafer()
         {
             throw new NotImplementedException();
         }
 
-        public void MoveToMacro()
+        public Task<bool> IsLockOK()
         {
             throw new NotImplementedException();
         }
 
-        public void PutBackWafer(ArmStation armPosition)
+        public Task LockWafer(bool isOn)
         {
             throw new NotImplementedException();
         }
 
-        public void PutBackWaferCassette(int layer)
+        public Task PickWafer_GoIn(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void TakeWafer(ArmStation armPosition)
+        public Task PickWafer_GoIn(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void TakeWaferCassette(int layer)
+        public Task PickWafer_LiftUp(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void UnLoad()
+        public Task PickWafer_LiftUp(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void VacuumOff()
+        public Task PickWafer_Retract(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void VacuumOn()
+        public Task PickWafer_Retract(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PickWafer_Safety(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PickWafer_Standby(ArmStation armStation, int layer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PickWafer_Standby(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_GoIn(ArmStation armStation, int layer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_GoIn(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_PutDown(ArmStation armStation, int layer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_PutDown(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_Retract(ArmStation armStation, int layer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_Retract(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_Safety(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_Standby(ArmStation armStation, int layer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task PutWafer_Standby(ArmStation armStation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetSpeedPercentCommand(int motionPercent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Stop()
         {
             throw new NotImplementedException();
         }
