@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using WLS3200Gen2.Model.Component;
+using YuanliCore.Interface;
+using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
 {
@@ -107,31 +110,208 @@ namespace WLS3200Gen2.Model
         /// 回歸到關門狀態，也可以應用在UnLoad
         /// </summary>
         Task Home();
-
         /// <summary>
         /// 異常復原
         /// </summary>
         Task AlarmReset();
-
         /// <summary>
         /// 參數設定
         /// </summary>
         Task SetParam(LoadPortParam loadPortParam);
     }
+    public class RobotPoint
+    {
+        public double X;
+        public double Y;
+        public double Z;
+        public double W;
+        public RobotPoint()
+        {
+            this.X = 0;
+            this.Y = 0;
+            this.Z = 0;
+            this.W = 0;
+        }
+    }
+    public class RobotStatus
+    {
+        /// <summary>
+        /// 目前手臂的運作模式
+        /// </summary>
+        public string Mode { get; set; }
+        /// <summary>
+        /// 停止訊號
+        /// </summary>
+        public bool IsStopSignal { get; set; }
+        /// <summary>
+        /// 急停訊號
+        /// </summary>
+        public bool IsEStopSignal { get; set; }
+        /// <summary>
+        /// 指令訊號完成
+        /// </summary>
+        public bool IsCommandDoneSignal { get; set; }
+        /// <summary>
+        /// 移動完成訊號完成
+        /// </summary>
+        public bool IsMovDoneSignal { get; set; }
+        /// <summary>
+        /// 是否還在運作
+        /// </summary>
+        public bool IsRunning { get; set; }
+        /// <summary>
+        /// 發生什麼樣的異常
+        /// </summary>
+        public string ErrorCode { get; set; }
+        /// <summary>
+        /// X軸狀態 0:正常 1~3要看對應ErrorCode
+        /// </summary>
+        public int ErrorX { get; set; }
+        /// <summary>
+        /// Y軸狀態 0:正常 1~3要看對應ErrorCode
+        /// </summary>
+        public int ErrorY { get; set; }
+        /// <summary>
+        /// Z軸狀態 0:正常 1~3要看對應ErrorCode
+        /// </summary>
+        public int ErrorZ { get; set; }
+        /// <summary>
+        /// W軸狀態 0:正常 1~3要看對應ErrorCode
+        /// </summary>
+        public int ErrorW { get; set; }
+        /// <summary>
+        /// R軸狀態 0:正常 1~3要看對應ErrorCode
+        /// </summary>
+        public int ErrorR { get; set; }
+        /// <summary>
+        /// C軸狀態 0:正常 1~3要看對應ErrorCode
+        /// </summary>
+        public int ErrorC { get; set; }
+    }
     public interface IRobot
     {
-        void Initial();
-
-        void Home();
         /// <summary>
-        /// 手臂真空開
+        /// 軸卡是否正常開啟
         /// </summary>
-        void VacuumOn();
-
+        bool IsOpen { get; }
         /// <summary>
-        /// 手臂真空關
+        /// 軸資訊
         /// </summary>
-        void VacuumOff();
+        RobotAxis[] Axes { get; }
+        /// <summary>
+        /// Input點位狀態
+        /// </summary>
+        DigitalInput[] InputSignals { get; }
+        /// <summary>
+        /// Output點位狀態
+        /// </summary>
+        IEnumerable<DigitalOutput> OutputSignals { get; }
+        /// <summary>
+        /// 軸卡初始化
+        /// </summary>
+        void InitializeCommand();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        DigitalInput[] SetInputNames(IEnumerable<string> names);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="names"></param>
+        /// <returns></returns>
+        DigitalOutput[] SetOutputNames(IEnumerable<string> names);
+        /// <summary>
+        /// Output點位設定
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isOn"></param>
+        void SetOutputCommand(int id, bool isOn);
+        /// <summary>
+        /// 設定軸卡參數
+        /// </summary>
+        /// <param name="axisConfig"></param>
+        /// <returns></returns>
+        RobotAxis[] SetAxesParam(IEnumerable<AxisConfig> axisConfig);
+        /// <summary>
+        /// 設定軸開啟/關閉
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isOn"></param>
+        void SetServoCommand(int id, bool isOn);
+        /// <summary>
+        /// 軸移動相對位置
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="distance"></param>
+        void MoveCommand(int id, double distance);
+        /// <summary>
+        /// 軸移動絕對位置
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="position"></param>
+        void MoveToCommand(int id, double position);
+        /// <summary>
+        /// 軸停止
+        /// </summary>
+        /// <param name="id"></param>
+        void StopCommand(int id);
+        /// <summary>
+        /// 軸回Home
+        /// </summary>
+        /// <param name="id"></param>
+        void HomeCommand(int id);
+        /// <summary>
+        /// 取得目前軸位置
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        double GetPositionCommand(int id);
+        /// <summary>
+        /// 取得軸Sensor狀態:ORG、NEL、PEL
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        AxisSensor GetSensorCommand(int id);
+        /// <summary>
+        /// 取得軸軟體正、負極限
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="limitN"></param>
+        /// <param name="limitP"></param>
+        void GetLimitCommand(int id, out double limitN, out double limitP);
+        /// <summary>
+        /// 設定軸軟體正、負極限
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="minPos"></param>
+        /// <param name="maxPos"></param>
+        void SetLimitCommand(int id, double minPos, double maxPos);
+        /// <summary>
+        /// 取得軸速度
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        VelocityParams GetSpeedCommand(int id);
+        /// <summary>
+        /// 設定軸速度
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="motionVelocity"></param>
+        void SetSpeedCommand(int id, VelocityParams motionVelocity);
+        /// <summary>
+        /// 設定軸方向
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="direction"></param>
+        void SetAxisDirectionCommand(int id, AxisDirection direction);
+        /// <summary>
+        /// 取得軸方向
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        AxisDirection GetAxisDirectionCommand(int id);
     }
     public interface IEFEMRobot : IRobot
     {

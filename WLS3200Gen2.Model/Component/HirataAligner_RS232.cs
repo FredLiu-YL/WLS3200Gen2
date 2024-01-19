@@ -69,7 +69,7 @@ namespace WLS3200Gen2.Model.Component
             catch (Exception ex)
             {
 
-                throw ex;
+                throw new Exception("Aligner Initial:" + ex);
             }
         }
         /// <summary>
@@ -84,7 +84,7 @@ namespace WLS3200Gen2.Model.Component
             catch (Exception ex)
             {
 
-                throw ex;
+                throw new Exception("Aligner Close:" + ex);
             }
         }
         public async Task Home()
@@ -95,14 +95,15 @@ namespace WLS3200Gen2.Model.Component
                 await Task.Run(() =>
                 {
                     alignerItems = Command_MovORG();
-                    if (alignerItems.IsMovOK == true)
+                    if (alignerItems.IsMovOK != true)
                     {
+                        throw new Exception("ORG Move Error");
                     }
                 });
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Aligner Home:" + ex);
             }
         }
         public async Task Run(double degree)
@@ -120,12 +121,20 @@ namespace WLS3200Gen2.Model.Component
                         {
 
                         }
+                        else
+                        {
+                            throw new Exception("Move FindNotch Error");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Set Degree Error");
                     }
                 });
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Aligner Run:" + ex);
             }
         }
         public async Task Vaccum(bool IsOn)
@@ -138,24 +147,24 @@ namespace WLS3200Gen2.Model.Component
                     if (IsOn == true)
                     {
                         alignerItems = Command_MovVaccumON();
-                        if (alignerItems.IsMovOK == true)
+                        if (alignerItems.IsMovOK != true)
                         {
-
+                            throw new Exception("Vaccum ON Error");
                         }
                     }
                     else
                     {
                         alignerItems = Command_MovVaccumOFF();
-                        if (alignerItems.IsMovOK == true)
+                        if (alignerItems.IsMovOK != true)
                         {
-
+                            throw new Exception("Vaccum OFF Error");
                         }
                     }
                 });
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Aligner Vaccum:" + ex);
             }
         }
         public async Task AlarmReset()
@@ -166,15 +175,15 @@ namespace WLS3200Gen2.Model.Component
                 await Task.Run(() =>
                 {
                     alignerItems = Command_SetReset();
-                    if (alignerItems.IsSetOK == true)
+                    if (alignerItems.IsSetOK != true)
                     {
-
+                        throw new Exception("Set Alarm Reset Error");
                     }
                 });
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Aligner AlarmReset:" + ex);
             }
         }
         public async Task<AlignerStatus> GetStatus()
@@ -190,12 +199,16 @@ namespace WLS3200Gen2.Model.Component
                     {
                         alignerStatus = UpdateStatus(alignerItems);
                     }
+                    else
+                    {
+                        throw new Exception("Get Status Error");
+                    }
                 });
                 return alignerStatus;
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Aligner GetStatus:" + ex);
             }
         }
         /// <summary>
@@ -210,7 +223,7 @@ namespace WLS3200Gen2.Model.Component
             catch (Exception ex)
             {
 
-                throw;
+                throw new Exception("Aligner Open:" + ex);
             }
         }
 
@@ -223,31 +236,23 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                try
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems.IsMovOK = false;
+                alignerItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:ORGN;", true);
+                foreach (var item in str3)
                 {
-                    AlignerItems alignerItems = new AlignerItems();
-                    alignerItems.IsMovOK = false;
-                    alignerItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("MOV:ORGN;", true);
-                    foreach (var item in str3)
+                    if (item.Contains("MOV"))
                     {
-                        if (item.Contains("MOV"))
-                        {
-                            alignerItems.IsMovOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            alignerItems.IsDone = true;
-                        }
+                        alignerItems.IsMovOK = true;
                     }
-                    return alignerItems;
+                    if (item.Contains("INF"))
+                    {
+                        alignerItems.IsDone = true;
+                    }
                 }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
+                return alignerItems;
             }
             catch (Exception ex)
             {
@@ -771,7 +776,7 @@ namespace WLS3200Gen2.Model.Component
                         readMessage1 = GetMessage();
                         if (stopwatch.ElapsedMilliseconds > timeOut2)
                         {
-                            throw new Exception();
+                            throw new Exception("Aligner SendGetMessage Time Out");
                         }
                         if (readMessage1.Count > 0)
                         {

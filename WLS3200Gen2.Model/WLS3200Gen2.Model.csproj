@@ -103,6 +103,8 @@
     <Compile Include="Component\DummyRobot.cs" />
     <Compile Include="Component\HirataAligner_RS232.cs" />
     <Compile Include="Component\HirataLoadPort_RS232.cs" />
+    <Compile Include="Component\HirataRobot_RS232.cs" />
+    <Compile Include="Component\RobotAxis.cs" />
     <Compile Include="InterfaceTemporary.cs" />
     <Compile Include="Machine.Process.cs" />
     <Compile Include="Machine.Initial.cs" />
