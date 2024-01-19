@@ -121,17 +121,17 @@
                 </Grid>
 
                 <StackPanel Grid.Column="1">
-                    <Button Margin="3" Height="40" Content="Home" />
-                    <Button Margin="3" Height="40"  FontSize="13" Background="YellowGreen"  BorderBrush="YellowGreen" Content="Pick Wafer LoadPort To Robot" />
-                    <Button Margin="3" Height="40"  Background="YellowGreen"   BorderBrush="YellowGreen" Content="Pick Wafer Aligner To Robot  "   />
-                    <Button Margin="3" Height="40"  Background="YellowGreen"   BorderBrush="YellowGreen" Content="Pick Wafer Micro To Robot  "   />
-                    <Button Margin="3" Height="40"  Background="YellowGreen"  BorderBrush="YellowGreen" Content="Pick Wafer Macro To Robot  "   />
+                    <Button Margin="3" Height="40" Content="Home" Command="{Binding Home}"/>
+                    <Button Margin="3" Height="40" Background="YellowGreen"  BorderBrush="YellowGreen" Content="Pick Wafer From LoadPort" />
+                    <Button Margin="3" Height="40" Background="YellowGreen"   BorderBrush="YellowGreen" Content="Pick Wafer From Aligner"   />
+                    <Button Margin="3" Height="40" Background="YellowGreen"   BorderBrush="YellowGreen" Content="Pick Wafer From Micro"   />
+                    <Button Margin="3" Height="40" Background="YellowGreen"  BorderBrush="YellowGreen" Content="Pick Wafer From Macro"   />
 
 
-                    <Button Margin="3" Height="40" FontSize="13" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer Robot To LoadPort" />
-                    <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer Robot To Aligner" />
-                    <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen"  BorderBrush="LightGreen"  Content="Put Wafer Robot To Micro" />
-                    <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer Robot To Macro" />
+                    <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer To LoadPort" />
+                    <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer To Aligner" />
+                    <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen"  BorderBrush="LightGreen"  Content="Put Wafer To Micro" />
+                    <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer To Macro" />
                 </StackPanel>
             </Grid>
 

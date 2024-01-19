@@ -35,10 +35,10 @@ namespace WLS3200Gen2.Model.Component
         private const char STX = '\x2';
         private const char ETX = '\x3';
         private short RX_LRC = 3;
-
+        private bool STX_flag = false, ETX_flag = false;
 
         private List<char> RxData;
-        public HirataRobot_RS232(string comPort)
+        public HirataRobot_RS232(string comPort, double tolerance)
         {
             try
             {
@@ -49,7 +49,11 @@ namespace WLS3200Gen2.Model.Component
                 serialPort.StopBits = StopBits.One;
                 serialPort.RtsEnable = false;
 
+                MoveTolerance = tolerance;
+
                 serialPort.Open();
+
+                IsOpen = true;
             }
             catch (Exception ex)
             {
@@ -57,6 +61,12 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public PauseTokenSource pauseToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public CancellationTokenSource cancelToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsOpen { get; private set; }
+        public double MoveTolerance { get; private set; } = 0;
+        public double CassetteWaferPitch { get; set; } = 0;
+        public int SpeedPercent { get; private set; } = 10;
         /// <summary>
         /// 開啟連線
         /// </summary>
@@ -65,11 +75,12 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 serialPort.Open();
+                IsOpen = true;
             }
             catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
         /// <summary>
@@ -80,6 +91,7 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 serialPort.Close();
+                IsOpen = false;
             }
             catch (Exception ex)
             {
@@ -145,11 +157,11 @@ namespace WLS3200Gen2.Model.Component
         /// <param name="address"></param>
         /// <param name="zShift"></param>
         /// <returns></returns>
-        public async Task MovAddress(int address, double zShift)
+        private async Task MovAddress(int address, double zShift)
         {
             RobotStatus robotStatus = new RobotStatus();
             int i = 0;
-            double tolerance = moveTolerance;
+            double tolerance = MoveTolerance;
             try
             {
                 List<string> str = new List<string>();
@@ -165,7 +177,7 @@ namespace WLS3200Gen2.Model.Component
                 {
                     i++;
                     await Task.Delay(50);
-                    robotNowPoint = await GetNowPos();
+                    robotNowPoint = GetNowPos();
                     if (address == 1)
                     {
                         if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
@@ -198,33 +210,30 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="isOn"></param>
         /// <returns></returns>
-        public async Task Vacuum(bool isOn)
+        private void Vacuum(bool isOn)
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                List<string> str = new List<string>();
+                int Vacuum = 2;
+                if (isOn == true)
                 {
-                    List<string> str = new List<string>();
-                    int Vacuum = 2;
-                    if (isOn == true)
-                    {
-                        Vacuum = 1;
-                    }
-                    else
-                    {
-                        Vacuum = 2;
-                    }
-                    str = SendGetMessage(" SOD  0 " + Vacuum, CheckMessageType.Status);
-                    foreach (var item in str)
-                    {
-                        TransStatus(item);
-                    }
+                    Vacuum = 1;
                 }
-                catch (Exception ex)
+                else
                 {
-                    throw new Exception("Vacuum:" + ex);
+                    Vacuum = 2;
                 }
-            });
+                str = SendGetMessage(" SOD  0 " + Vacuum, CheckMessageType.Status);
+                foreach (var item in str)
+                {
+                    TransStatus(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Vacuum:" + ex);
+            }
         }
         /// <summary>
         /// 設定Robot的移動速度 xywSpeed:XYW的速度設定 zSpeed:Z軸的速度
@@ -232,141 +241,88 @@ namespace WLS3200Gen2.Model.Component
         /// <param name="xywSpeed"></param>
         /// <param name="zSpeed"></param>
         /// <returns></returns>
-        public async Task SetMovSpeed(int xywSpeed, int zSpeed)
+        private void SetMovSpeed(int xywSpeed, int zSpeed)
         {
-            RobotStatus robotStatus = new RobotStatus();
-            await Task.Run(async () =>
+            try
             {
-                try
+                RobotStatus robotStatus = new RobotStatus();
+                List<string> str = new List<string>();
+                str = SendGetMessage(" SP " + xywSpeed + " " + zSpeed, CheckMessageType.Status);
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage(" SP " + xywSpeed + " " + zSpeed, CheckMessageType.Status);
-                    foreach (var item in str)
-                    {
-                        robotStatus = TransStatus(item);
-                    }
+                    robotStatus = TransStatus(item);
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception("SetMovSpeed:" + ex);
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("SetMovSpeed:" + ex);
+            }
         }
         /// <summary>
         /// 取得RobotInput狀態(目前只有點位0 是否有片子)
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> GetInput(int id)
+        private bool GetInput(int id)
         {
             bool isOn = false;
-            await Task.Run(async () =>
+            try
             {
-                try
+                List<string> str = new List<string>();
+                str = SendGetMessage("LID", CheckMessageType.IO);
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("LID", CheckMessageType.IO);
-                    foreach (var item in str)
-                    {
-                        isOn = TransIO(item, id, 8);
-                    }
+                    isOn = TransIO(item, id, 8);
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception("GetInput:" + ex);
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("GetInput:" + ex);
+            }
             return isOn;
         }
         /// <summary>
         /// 取得RobotOutput狀態(目前只有點位0 真空開啟的Outupt有沒有做動)
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> GetOutput(int id)
+        private bool GetOutput(int id)
         {
             bool isOn = false;
-            await Task.Run(async () =>
+            try
             {
-                try
+                List<string> str = new List<string>();
+                str = SendGetMessage("LOD 0", CheckMessageType.IO);
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("LOD 0", CheckMessageType.IO);
-                    foreach (var item in str)
-                    {
-                        isOn = TransIO(item, id, 8);
-                    }
+                    isOn = TransIO(item, id, 8);
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception("GetOutput:" + ex);
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("GetOutput:" + ex);
+            }
             return isOn;
         }
         /// <summary>
         /// 取得Robot目前各軸位置
         /// </summary>
         /// <returns></returns>
-        public async Task<RobotPoint> GetNowPos()
+        private RobotPoint GetNowPos()
         {
-            RobotPoint robot_Point = new RobotPoint();
-            await Task.Run(async () =>
+            try
             {
-                try
+                RobotPoint robot_Point = new RobotPoint();
+                List<string> str = new List<string>();
+                str = SendGetMessage(" LR", CheckMessageType.Position);
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage(" LR", CheckMessageType.Position);
-                    foreach (var item in str)
-                    {
-                        robot_Point = TransPoint(item);
-                    }
+                    robot_Point = TransPoint(item);
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception("GetNowPos:" + ex);
-                }
-            });
-            return robot_Point;
-        }
-        public async Task EMGStop()
-        {
-            RobotStatus robotStatus = new RobotStatus();
-
-            await Task.Run(async () =>
+                return robot_Point;
+            }
+            catch (Exception ex)
             {
-                try
-                {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage(" GD ", CheckMessageType.Status);
-                    foreach (var item in str)
-                    {
-                        robotStatus = TransStatus(item);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("EMGStop:" + ex);
-                }
-            });
-        }
-        public async Task Continue()
-        {
-            RobotStatus robotStatus = new RobotStatus();
-            await Task.Run(async () =>
-            {
-                try
-                {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage(" GE ", CheckMessageType.Status);
-                    foreach (var item in str)
-                    {
-                        robotStatus = TransStatus(item);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Continue:" + ex);
-                }
-            });
+                throw new Exception("GetNowPos:" + ex);
+            }
         }
 
         private enum CheckMessageType
@@ -739,7 +695,7 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public static char ReturnLRC(string RequestMessage) //輸入STX開始到ETX結束前的資料
+        private char ReturnLRC(string RequestMessage) //輸入STX開始到ETX結束前的資料
         {
             try
             {
@@ -757,19 +713,9 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        private bool STX_flag = false, ETX_flag = false;
 
 
-        private double moveTolerance = 0;
-        public PauseTokenSource pauseToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public CancellationTokenSource cancelToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public bool IsOpen => throw new NotImplementedException();
-
-        public double MoveTolerance { get => moveTolerance; }
-        public double CassetteWaferPitch { get; set; } = 0;
-
-        public List<string> GetMessage()
+        private List<string> GetMessage()
         {
             try
             {
@@ -1309,14 +1255,62 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task Stop()
+        public async Task Stop()
         {
-            throw new NotImplementedException();
+            try
+            {
+                RobotStatus robotStatus = new RobotStatus();
+                await Task.Run(() =>
+                {
+                    List<string> str = new List<string>();
+                    str = SendGetMessage(" GD ", CheckMessageType.Status);
+                    foreach (var item in str)
+                    {
+                        robotStatus = TransStatus(item);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot Stop:" + ex);
+            }
         }
-
-        public RobotPoint GetPositionCommand()
+        public async Task Continue()
         {
-            throw new NotImplementedException();
+            try
+            {
+                RobotStatus robotStatus = new RobotStatus();
+                await Task.Run(() =>
+                {
+                    List<string> str = new List<string>();
+                    str = SendGetMessage(" GE ", CheckMessageType.Status);
+                    foreach (var item in str)
+                    {
+                        robotStatus = TransStatus(item);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot Continue:" + ex);
+            }
+        }
+        public async Task<RobotPoint> GetPositionCommand()
+        {
+            try
+            {
+                RobotPoint robot_Point = new RobotPoint();
+                await Task.Run(() =>
+                {
+                    robot_Point = GetNowPos();
+                });
+                return robot_Point;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Robot GetPositionCommand:" + ex);
+            }
         }
 
         public Task GetSpeedPercent()
@@ -1324,26 +1318,89 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task SetSpeedPercentCommand(int motionPercent)
+        public async Task SetSpeedPercentCommand(int motionPercent)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (motionPercent <= 0) { motionPercent = 0; }
+                if (motionPercent >= 100) { motionPercent = 100; }
+                await Task.Run((Action)(() =>
+                {
+                    this.SpeedPercent = motionPercent;
+                    SetMovSpeed(motionPercent, motionPercent);
+                }));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot LockWafer:" + ex);
+            }
         }
 
-        public Task LockWafer(bool isOn)
+        public async Task FixWafer()
         {
-            throw new NotImplementedException();
+            try
+            {
+                RobotPoint robot_Point = new RobotPoint();
+                await Task.Run(() =>
+                {
+                    Vacuum(true);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot LockWafer:" + ex);
+            }
+        }
+        public async Task ReleaseWafer()
+        {
+            try
+            {
+                RobotPoint robot_Point = new RobotPoint();
+                await Task.Run(() =>
+                {
+                    Vacuum(false);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot LockWafer:" + ex);
+            }
         }
 
-        public Task<bool> IsLockOK()
+        public async Task<bool> IsLockOK()
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool isLockOK = false;
+                await Task.Run(() =>
+                {
+                    ///確認一下 不然就只是GetOutput(0) 有開啟而已
+                    isLockOK = GetInput(1);
+                });
+                return isLockOK;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot LockWafer:" + ex);
+            }
         }
 
-        public Task<bool> IsHaveWafer()
+        public async Task<bool> IsHaveWafer()
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool isHaveWafer = false;
+                await Task.Run(() =>
+                {
+                    isHaveWafer = GetInput(0);
+                });
+                return isHaveWafer;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot LockWafer:" + ex);
+            }
         }
-
         public class RobotItems
         {
             public int Status = -1;

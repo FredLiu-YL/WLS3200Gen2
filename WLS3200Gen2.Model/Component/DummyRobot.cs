@@ -19,7 +19,14 @@ namespace WLS3200Gen2.Model.Component
 
         public double CassetteWaferPitch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public int SpeedPercent => throw new NotImplementedException();
+
         public Task Continue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task FixWafer()
         {
             throw new NotImplementedException();
         }
@@ -154,12 +161,22 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
+        public Task ReleaseWafer()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SetSpeedPercentCommand(int motionPercent)
         {
             throw new NotImplementedException();
         }
 
         public Task Stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<RobotPoint> IRobot.GetPositionCommand()
         {
             throw new NotImplementedException();
         }
