@@ -527,30 +527,10 @@
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="1"  Orientation="Vertical"   >
                                                 <Button Margin="5" Content="Load Map" FontSize="24" Height="50" Width="180"/>
-                                                <Button Content="MapLayout Editor" FontSize="24" Height="50" Width="240"/>
+                                           
                                                 <StackPanel Grid.Column="1">
 
-                                                    <Expander   HorizontalAlignment="Stretch"  Header="Locate Pattern">
-                                                        <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                            <Grid>
-                                                                <Grid.RowDefinitions >
-                                                                    <RowDefinition />
-                                                                    <RowDefinition />
-                                                                </Grid.RowDefinitions>
-                                                                <UserControlUC:LocateUC   MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" />
-                                                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
-                                                                    <StackPanel Orientation="Horizontal" >
-                                                                        <Button Margin="2" Content="Locate Run" />
-                                                                        <Button Margin="2" Content="Locate Run" />
-                                                                        <Button Margin="2" Content="Locate Run" />
-                                                                    </StackPanel>
-
-                                                                </Border>
-                                                            </Grid>
-
-
-                                                        </StackPanel>
-                                                    </Expander>
+                                                   
                                                     <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                                     <Expander   HorizontalAlignment="Stretch"   Header="Detection Position">
                                                         <StackPanel   Margin="24,8,24,16"   Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
