@@ -243,12 +243,12 @@ namespace WLS3200Gen2.Model.Module
 
 
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
-            await Robot.PickWafer_Standby(ArmStation.Micro, cassetteIndex);
-            await Robot.PickWafer_GoIn(ArmStation.Micro, cassetteIndex);
-            await Robot.PickWafer_LiftUp(ArmStation.Micro, cassetteIndex);
+            await Robot.PickWafer_Standby(ArmStation.Cassette1, cassetteIndex);
+            await Robot.PickWafer_GoIn(ArmStation.Cassette1, cassetteIndex);
+            await Robot.PickWafer_LiftUp(ArmStation.Cassette1, cassetteIndex);
             await Robot.LockWafer(true);
-            await Robot.PickWafer_Retract(ArmStation.Micro, cassetteIndex);
-            await Robot.PickWafer_Safety(ArmStation.Micro);
+            await Robot.PickWafer_Retract(ArmStation.Cassette1, cassetteIndex);
+            await Robot.PickWafer_Safety(ArmStation.Cassette1);
 
             //設定 Cassette內WAFER的狀態
             Cassette.Wafers[cassetteIndex].ProcessStatus = WaferProcessStatus.InProgress;
@@ -262,13 +262,13 @@ namespace WLS3200Gen2.Model.Module
         public async Task UnLoadWaferToCassette(Wafer wafer)
         {
             await RobotAxis.MoveToAsync(Setting.LoadPortPos);
-            await Robot.PutWafer_Standby(ArmStation.Cassette, wafer.CassetteIndex);
-            await Robot.PutWafer_GoIn(ArmStation.Cassette, wafer.CassetteIndex);
+            await Robot.PutWafer_Standby(ArmStation.Cassette1, wafer.CassetteIndex);
+            await Robot.PutWafer_GoIn(ArmStation.Cassette1, wafer.CassetteIndex);
             await Robot.LockWafer(false);
 
-            await Robot.PutWafer_PutDown(ArmStation.Cassette, wafer.CassetteIndex);
-            await Robot.PutWafer_Retract(ArmStation.Cassette, wafer.CassetteIndex);
-            await Robot.PutWafer_Safety(ArmStation.Cassette);
+            await Robot.PutWafer_PutDown(ArmStation.Cassette1, wafer.CassetteIndex);
+            await Robot.PutWafer_Retract(ArmStation.Cassette1, wafer.CassetteIndex);
+            await Robot.PutWafer_Safety(ArmStation.Cassette1);
 
             wafer.ProcessStatus = WaferProcessStatus.Complate;
             //設定 Cassette內WAFER的狀態
