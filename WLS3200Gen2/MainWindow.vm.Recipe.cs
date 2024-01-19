@@ -28,6 +28,8 @@ namespace WLS3200Gen2
 
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
+        private ObservableCollection<DetectionPoint> detectionPointList = new ObservableCollection<DetectionPoint>();
+        
         private BitmapSource locateSampleImage1;
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
@@ -42,7 +44,10 @@ namespace WLS3200Gen2
         private double alignOffsetX, alignOffsetY;
         private ExistStates testStates;
         private ITransform transForm; //紀錄 從設計座標轉換成對位後座標的 公式
-        private double moveIndexX, moveIndexY;
+        private double moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
+        private bool isLocate;
+
+
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
@@ -50,7 +55,8 @@ namespace WLS3200Gen2
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
         public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
         public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
-
+        public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
+        
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
         public LocateParam LocateParam2 { get => locateParam2; set => SetValue(ref locateParam2, value); }
         public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
@@ -60,14 +66,16 @@ namespace WLS3200Gen2
 
         public double AlignOffsetX { get => alignOffsetX; set => SetValue(ref alignOffsetX, value); }
         public double AlignOffsetY { get => alignOffsetY; set => SetValue(ref alignOffsetY, value); }
-
+        //判斷有沒有做過 對位，主要卡控所有的座標都要建立在對位後的 才會是對的
+        public bool IsLocate { get => isLocate; set => SetValue(ref isLocate, value); }
         public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
 
 
 
         public double MoveIndexX { get => moveIndexX; set => SetValue(ref moveIndexX, value); }
         public double MoveIndexY { get => moveIndexY; set => SetValue(ref moveIndexY, value); }
-
+        public double DetectionIndexX { get => detectionIndexX; set => SetValue(ref detectionIndexX, value); }
+        public double DetectionIndexY { get => detectionIndexY; set => SetValue(ref detectionIndexY, value); }
 
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
@@ -154,7 +162,7 @@ namespace WLS3200Gen2
 
 
         });
-        public ICommand ParamConfirmCommand => new RelayCommand(async () =>
+        public ICommand ParamConfirmCommand => new RelayCommand(() =>
         {
 
 
@@ -162,6 +170,7 @@ namespace WLS3200Gen2
 
 
         });
+
         public ICommand LocateRunCommand => new RelayCommand(async () =>
         {
             SetLocateParamToRecipe();
@@ -170,6 +179,7 @@ namespace WLS3200Gen2
 
 
         });
+
         public ICommand LocatedMoveDieCommand => new RelayCommand(async () =>
         {
             //挑選出 對應index 的Die
@@ -182,6 +192,19 @@ namespace WLS3200Gen2
             await machine.MicroDetection.TableMoveToAsync(transPos);
 
         });
+
+        public ICommand AddDetectionCommand => new RelayCommand(() =>
+        {
+
+          
+           var point = new DetectionPoint();
+            point.Describe
+            DetectionIndexX,DetectionIndexY
+            DetectionPointList.Add()
+
+
+        });
+
         private void SampleFindAction(CogMatcher matcher)
         {
             ClearShapeAction.Execute(Drawings);
