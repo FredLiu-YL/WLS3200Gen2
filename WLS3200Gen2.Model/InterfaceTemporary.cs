@@ -203,6 +203,11 @@ namespace WLS3200Gen2.Model
         /// </summary>
         double CassetteWaferPitch { get; set; }
         /// <summary>
+        /// 軸速度百分比(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
+        /// </summary>
+        /// <returns></returns>
+        int SpeedPercent { get; }
+        /// <summary>
         /// 手臂初始化
         /// </summary>
         void InitializeCommand();
@@ -222,7 +227,7 @@ namespace WLS3200Gen2.Model
         /// 取得Robot位置
         /// </summary>
         /// <returns></returns>
-        RobotPoint GetPositionCommand();
+        Task<RobotPoint> GetPositionCommand();
         /// <summary>
         /// 取wafer從LoadPort到Robot上方
         /// </summary>
@@ -237,12 +242,6 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         Task<RobotStatus> GetStatus();
         /// <summary>
-        /// 取得軸速度(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        Task GetSpeedPercent();
-        /// <summary>
         /// 設定軸速度(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
         /// </summary>
         /// <param name="id"></param>
@@ -251,9 +250,13 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 手臂固定Wafer(真空/夾持)
         /// </summary>
-        /// <param name="isOn"></param>
         /// <returns></returns>
-        Task LockWafer(bool isOn);
+        Task FixWafer();
+        /// <summary>
+        /// 手臂解開Wafer(真空/夾持)
+        /// </summary>
+        /// <returns></returns>
+        Task ReleaseWafer();
         /// <summary>
         /// 手臂是否固定住Wafer
         /// </summary>
