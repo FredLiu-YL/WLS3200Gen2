@@ -28,7 +28,7 @@ namespace WLS3200Gen2.Model.Recipe
     public class DetectionPoint : INotifyPropertyChanged
     {
         private int indexX,indexY;
-        private Vector offset;
+        private double offsetX, offsetY;
         private Point position;
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace WLS3200Gen2.Model.Recipe
         public int IndexX { get => indexX; set => SetValue(ref indexX, value); }
         public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
 
-        public Vector Offset { get => offset; set => SetValue(ref offset, value); }
-
+        public double OffsetX { get => offsetX; set => SetValue(ref offsetX, value); }
+        public double OffsetY { get => offsetY; set => SetValue(ref offsetY, value); }
 
         /// <summary>
         /// 檢測位置的座標
