@@ -28,6 +28,8 @@ namespace WLS3200Gen2
 
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
+        private ObservableCollection<DetectionPoint> detectionPointList = new ObservableCollection<DetectionPoint>();
+
         private BitmapSource locateSampleImage1;
         private BitmapSource locateSampleImage2;
         private BitmapSource locateSampleImage3;
@@ -42,15 +44,28 @@ namespace WLS3200Gen2
         private double alignOffsetX, alignOffsetY;
         private ExistStates testStates;
         private ITransform transForm; //紀錄 從設計座標轉換成對位後座標的 公式
-        private double moveIndexX, moveIndexY;
+        private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
+        private bool isLocate;
+        private int selectDetectionPointList;
+        private bool isRecipePageSelect;
 
-
+        public bool IsRecipePageSelect
+        {
+            get
+            {
+                if (isRecipePageSelect == false)
+                    UnLoadRecipePage();
+                return isRecipePageSelect;
+            }
+            set => SetValue(ref isRecipePageSelect, value);
+        }
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
         public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
         public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
-
+        public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
+        public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
         public LocateParam LocateParam2 { get => locateParam2; set => SetValue(ref locateParam2, value); }
         public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
@@ -60,14 +75,16 @@ namespace WLS3200Gen2
 
         public double AlignOffsetX { get => alignOffsetX; set => SetValue(ref alignOffsetX, value); }
         public double AlignOffsetY { get => alignOffsetY; set => SetValue(ref alignOffsetY, value); }
-
+        //判斷有沒有做過 對位，主要卡控所有的座標都要建立在對位後的 才會是對的
+        public bool IsLocate { get => isLocate; set => SetValue(ref isLocate, value); }
         public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
 
 
 
-        public double MoveIndexX { get => moveIndexX; set => SetValue(ref moveIndexX, value); }
-        public double MoveIndexY { get => moveIndexY; set => SetValue(ref moveIndexY, value); }
-
+        public int MoveIndexX { get => moveIndexX; set => SetValue(ref moveIndexX, value); }
+        public int MoveIndexY { get => moveIndexY; set => SetValue(ref moveIndexY, value); }
+        public int DetectionIndexX { get => detectionIndexX; set => SetValue(ref detectionIndexX, value); }
+        public int DetectionIndexY { get => detectionIndexY; set => SetValue(ref detectionIndexY, value); }
 
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
@@ -81,6 +98,53 @@ namespace WLS3200Gen2
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
 
         public ObservableCollection<ROIShape> MapDrawings { get => mapDrawings; set => SetValue(ref mapDrawings, value); }
+
+
+        public ICommand LoadRecipePageCommand => new RelayCommand(() =>
+        {
+            try
+            {
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
+            }
+        });
+        private void UnLoadRecipePage()
+        {
+            var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
+            var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
+            //數值都是0 是UI初始化 ， 所以不做動作 
+            if (index1.X == 0 && index1.Y == 0 && pos1.X == 0 && pos1.Y == 0) return;
+            SetLocateParamToRecipe();
+
+        }
+       
+        public ICommand TestLoadRecipePageCommand => new RelayCommand(() =>
+        {
+            try
+            {
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
+            }
+        });
+
 
         public ICommand LoadWaferCommand => new RelayCommand<string>(async key =>
         {
@@ -101,6 +165,10 @@ namespace WLS3200Gen2
 
             TestStates = ExistStates.Exist;
         });
+
+
+
+
 
         public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
         {
@@ -154,7 +222,7 @@ namespace WLS3200Gen2
 
 
         });
-        public ICommand ParamConfirmCommand => new RelayCommand(async () =>
+        public ICommand ParamConfirmCommand => new RelayCommand(() =>
         {
 
 
@@ -162,6 +230,7 @@ namespace WLS3200Gen2
 
 
         });
+
         public ICommand LocateRunCommand => new RelayCommand(async () =>
         {
             SetLocateParamToRecipe();
@@ -170,6 +239,7 @@ namespace WLS3200Gen2
 
 
         });
+
         public ICommand LocatedMoveDieCommand => new RelayCommand(async () =>
         {
             //挑選出 對應index 的Die
@@ -182,6 +252,29 @@ namespace WLS3200Gen2
             await machine.MicroDetection.TableMoveToAsync(transPos);
 
         });
+
+        public ICommand AddDetectionCommand => new RelayCommand(() =>
+        {
+
+
+            var point = new DetectionPoint();
+            point.IndexX = 3;
+            point.IndexY = 4;
+            point.OffsetX = 7100;
+            point.OffsetY = 220;
+            point.Position = new Point(400123, 200456);
+            DetectionPointList.Add(point);
+
+
+        });
+
+        public ICommand RemoveDetectionCommand => new RelayCommand(() =>
+        {
+
+
+
+        });
+
         private void SampleFindAction(CogMatcher matcher)
         {
             ClearShapeAction.Execute(Drawings);

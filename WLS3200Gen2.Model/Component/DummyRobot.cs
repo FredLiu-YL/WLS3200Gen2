@@ -48,7 +48,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task Home()
         {
-            throw new NotImplementedException();
+         return   Task.CompletedTask;
         }
 
         public void Initial()

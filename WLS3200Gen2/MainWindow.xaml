@@ -233,7 +233,17 @@
 
             </TabItem>
             <!--料號設定頁-->
-            <TabItem  Height="75"   >
+            <TabItem  Height="75" IsSelected="{Binding IsRecipePageSelect}"  >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Unloaded">
+                        <i:InvokeCommandAction Command="{Binding UnLoadRecipePageCommand}"  />
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Loaded">
+                        <i:InvokeCommandAction  Command="{Binding LoadRecipePageCommand}" />
+                    </i:EventTrigger>
+
+                   
+                </i:Interaction.Triggers>
                 <TabItem.Header>
                     <StackPanel Width="auto"   Height="auto">
                         <materialDesign:PackIcon Width="34" Height="34" HorizontalAlignment="Center"  Kind="FileDocumentEdit" />
@@ -526,59 +536,39 @@
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="1"  Orientation="Vertical"   >
-                                                <Button Margin="5" Content="Load Map" FontSize="24" Height="50" Width="180"/>
-                                                <Button Content="MapLayout Editor" FontSize="24" Height="50" Width="240"/>
+                                                <StackPanel Grid.Column="1"  Orientation="Horizontal"   >
+                                                    <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="180"  Command="{Binding AddDetectionCommand}"  />
+                                                    <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="180"  Command="{Binding RemoveDetectionCommand}"  />
+                                                </StackPanel>
+                                                  
                                                 <StackPanel Grid.Column="1">
 
-                                                    <Expander   HorizontalAlignment="Stretch"  Header="Locate Pattern">
-                                                        <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                            <Grid>
-                                                                <Grid.RowDefinitions >
-                                                                    <RowDefinition />
-                                                                    <RowDefinition />
-                                                                </Grid.RowDefinitions>
-                                                                <UserControlUC:LocateUC   MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" />
-                                                                <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
-                                                                    <StackPanel Orientation="Horizontal" >
-                                                                        <Button Margin="2" Content="Locate Run" />
-                                                                        <Button Margin="2" Content="Locate Run" />
-                                                                        <Button Margin="2" Content="Locate Run" />
-                                                                    </StackPanel>
-
-                                                                </Border>
-                                                            </Grid>
-
-
-                                                        </StackPanel>
-                                                    </Expander>
+                                                   
                                                     <Border   Style="{StaticResource HorizontalDividerBorder}" />
-                                                    <Expander   HorizontalAlignment="Stretch"   Header="Detection Position">
-                                                        <StackPanel   Margin="24,8,24,16"   Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                            <DataGrid  Grid.Row="1" ItemsSource="{Binding CombineCollection}"  CanUserSortColumns="False" IsReadOnly="True" Height="300"
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding CombineCollectionIndex}"   >
+                                                   
+                                                        <StackPanel   Margin="1"   Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                            <DataGrid Margin="-2" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" Height="300"
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}"   >
                                                                 <i:Interaction.Triggers>
                                                                     <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                                         <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
                                                                     </i:EventTrigger>
                                                                 </i:Interaction.Triggers>
-                                                                <DataGrid.Columns>
-                                                                    <DataGridTextColumn Width="60"  Header="SN" Binding="{Binding SN}" />
-                                                                    <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding Col}" />
-                                                                    <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding Row}"  />
+                                                                <DataGrid.Columns >
 
+                                                                <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding IndexX}"    />
+                                                                    <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding IndexY}"  />
+                                                                <DataGridTextColumn  Width="120"  Header="Pos"  Binding="{Binding Position}"  IsReadOnly="True" />
+                                                                <DataGridTextColumn  Width="100"  Header="OffsetX"  Binding="{Binding OffsetX}"  IsReadOnly="True"  />
+                                                                <DataGridTextColumn  Width="100"  Header="OffsetY"  Binding="{Binding OffsetY}"   IsReadOnly="True" />
                                                                 </DataGrid.Columns>
 
 
                                                             </DataGrid>
                                                         </StackPanel>
-                                                    </Expander>
+                                              
                                                     <Border   Style="{StaticResource HorizontalDividerBorder}" />
-                                                    <Expander   HorizontalAlignment="Stretch"  Header="Expander Example 2c">
-                                                        <StackPanel  Margin="24,8,24,16"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-
-
-                                                        </StackPanel>
-                                                    </Expander>
+                                                     
                                                 </StackPanel>
                                             </StackPanel>
                                             <views:VirtualCanvas Grid.Row="0"  IsShowBar="True" />
