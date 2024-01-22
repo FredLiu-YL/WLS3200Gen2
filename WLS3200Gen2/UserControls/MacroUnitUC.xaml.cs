@@ -14,25 +14,28 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Module;
+
 
 namespace WLS3200Gen2.UserControls
 {
     /// <summary>
     /// MacroUC.xaml 的互動邏輯
     /// </summary>
-    public partial class MacroUC : UserControl, INotifyPropertyChanged
+    public partial class MacroUnitUC : UserControl, INotifyPropertyChanged
     {
-        public MacroUC()
+        public static readonly DependencyProperty MacroProperty = DependencyProperty.Register(nameof(Macro), typeof(IMacro), typeof(MacroUnitUC),
+                                                                                         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public MacroUnitUC()
         {
             InitializeComponent();
         }
-        public static readonly DependencyProperty MacroDetectionProperty = DependencyProperty.Register(nameof(MacroDetection), typeof(MacroDetection), typeof(MacroUC),
-                                                                                         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public MacroDetection MacroDetection
+
+        public IMacro Macro
         {
-            get => (MacroDetection)GetValue(MacroDetectionProperty);
-            set => SetValue(MacroDetectionProperty, value);
+            get => (IMacro)GetValue(MacroProperty);
+            set => SetValue(MacroProperty, value);
         }
 
 
@@ -40,7 +43,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                await MacroDetection.HomeAllRing();
+                await Macro.HomeAllRing();
             }
             catch (Exception ex)
             {
@@ -54,14 +57,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
-                {
-                    await MacroDetection.InnerRingLiftUp();
-                }
-                else
-                {
-                    MessageBox.Show("內環 不能上升!");
-                }
+                await Macro.GoInnerRingCheckPos();
             }
             catch (Exception ex)
             {
@@ -80,22 +76,22 @@ namespace WLS3200Gen2.UserControls
                 {
 
                     case "X+":
-                        MacroDetection.InnerRingPitchX_Move(true);
+                        Macro.InnerRingPitchX_Move(true);
                         break;
                     case "X-":
-                        MacroDetection.InnerRingPitchX_Move(false);
+                        Macro.InnerRingPitchX_Move(false);
                         break;
                     case "Y+":
-                        MacroDetection.InnerRingRollY_Move(true);
+                        Macro.InnerRingRollY_Move(true);
                         break;
                     case "Y-":
-                        MacroDetection.InnerRingRollY_Move(false);
+                        Macro.InnerRingRollY_Move(false);
                         break;
                     case "T+":
-                        MacroDetection.InnerRingYawT_Move(true);
+                        Macro.InnerRingYawT_Move(true);
                         break;
                     case "T-":
-                        MacroDetection.InnerRingYawT_Move(false);
+                        Macro.InnerRingYawT_Move(false);
                         break;
                 }
             }
@@ -112,22 +108,22 @@ namespace WLS3200Gen2.UserControls
                 switch (key)
                 {
                     case "X+":
-                        MacroDetection.InnerRingPitchX_Stop();
+                        Macro.InnerRingPitchX_Stop();
                         break;
                     case "X-":
-                        MacroDetection.InnerRingPitchX_Stop();
+                        Macro.InnerRingPitchX_Stop();
                         break;
                     case "Y+":
-                        MacroDetection.InnerRingRollY_Stop();
+                        Macro.InnerRingRollY_Stop();
                         break;
                     case "Y-":
-                        MacroDetection.InnerRingRollY_Stop();
+                        Macro.InnerRingRollY_Stop();
                         break;
                     case "T+":
-                        MacroDetection.InnerRingYawT_Stop();
+                        Macro.InnerRingYawT_Stop();
                         break;
                     case "T-":
-                        MacroDetection.InnerRingYawT_Stop();
+                        Macro.InnerRingYawT_Stop();
                         break;
                 }
             }
@@ -142,14 +138,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
-                {
-                    await MacroDetection.HomeInnerRing(false);
-                }
-                else
-                {
-                    MessageBox.Show("內環 不能下降!");
-                }
+                await Macro.HomeInnerRing();
             }
             catch (Exception ex)
             {
@@ -164,14 +153,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (MacroDetection.CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || MacroDetection.CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
-                {
-                    await MacroDetection.OuterRingLiftUp();
-                }
-                else
-                {
-                    MessageBox.Show("外環 不能上升!");
-                }
+                await Macro.GoOuterRingCheckPos();
             }
             catch (Exception ex)
             {
@@ -189,10 +171,10 @@ namespace WLS3200Gen2.UserControls
                 switch (key)
                 {
                     case "Y+":
-                        MacroDetection.OuterRingRollY_Move(true);
+                        Macro.OuterRingRollY_Move(true);
                         break;
                     case "Y-":
-                        MacroDetection.OuterRingRollY_Move(false);
+                        Macro.OuterRingRollY_Move(false);
                         break;
                 }
             }
@@ -209,10 +191,10 @@ namespace WLS3200Gen2.UserControls
                 switch (key)
                 {
                     case "Y+":
-                        MacroDetection.OuterRingRollY_Stop();
+                        Macro.OuterRingRollY_Stop();
                         break;
                     case "Y-":
-                        MacroDetection.OuterRingRollY_Stop();
+                        Macro.OuterRingRollY_Stop();
                         break;
                 }
             }
@@ -225,16 +207,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (MacroDetection.CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OuterInTop)
-                {
-                    await MacroDetection.HomeOuterRing(false);
-                }
-                else
-                {
-                    MessageBox.Show("外環 不能復歸!");
-                }
-
-
+                await Macro.HomeOuterRing();
             }
             catch (Exception ex)
             {

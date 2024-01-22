@@ -51,9 +51,8 @@ namespace WLS3200Gen2.Model.Component
 
                 MoveTolerance = tolerance;
 
-                serialPort.Open();
-
-                IsOpen = true;
+                //serialPort.Open();
+                //IsOpen = true;
             }
             catch (Exception ex)
             {
@@ -1225,11 +1224,11 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void InitializeCommand()
+        public void Initial()
         {
             try
             {
-
+                Open();
             }
             catch (Exception ex)
             {
