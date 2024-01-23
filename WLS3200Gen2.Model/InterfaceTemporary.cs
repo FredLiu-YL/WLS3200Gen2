@@ -210,7 +210,7 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 手臂初始化
         /// </summary>
-        void InitializeCommand();
+        void Initial();
         /// <summary>
         /// Robot回Home
         /// </summary>
@@ -460,21 +460,86 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         Task<AlignerStatus> GetStatus();
     }
+    public enum CheckMacroCanMove
+    {
+        OK = 1,
+        InnerInOrg = 2,
+        InnerInTop = 3,
+        OuterInOrg = 4,
+        OuterInTop = 5,
+        InnerMotorError = 6,
+        OuterMotorError = 7
+    }
     public interface IMacro
     {
+        bool IsCanMoveAllHome { get; }
+        bool IsInnerCanMoveStartPos { get; }
+        bool IsInnerUsing { get; }
+        bool IsOuterCanMoveStartPos { get; }
+        bool IsOuterUsing { get; }
+        /// <summary>
+        /// 
+        /// </summary>
         void Initial();
+        /// <summary>
+        /// 鎖住Macro Wafer
+        /// </summary>
         void FixWafer();
+        /// <summary>
+        /// 解開Macro Wafer
+        /// </summary>
         void ReleaseWafer();
 
+        /// <summary>
+        /// 全部復歸
+        /// </summary>
+        /// <returns></returns>
+        Task HomeAllRing();
+        /// <summary>
+        /// 內圈復歸
+        /// </summary>
+        /// <returns></returns>
+        Task HomeInnerRing();
+        /// <summary>
+        /// 外圈復歸
+        /// </summary>
+        /// <returns></returns>
+        Task HomeOuterRing();
 
-        void Vertical(double pos);
-        void Flip(double pos);
+        /// <summary>
+        /// 內圈 到 檢查位置
+        /// </summary>
+        /// <returns></returns>
+        Task GoInnerRingCheckPos();
+        /// <summary>
+        /// 外圈 到 檢查位置
+        /// </summary>
+        /// <returns></returns>
+        Task GoOuterRingCheckPos();
 
-        void Rotate(double pos);
+        /// <summary>
+        /// 側面左右翻 isForwards = true(右翻)/false(左翻)
+        /// </summary>
+        /// <param name="isForward"></param>
+        void InnerRingPitchX_Move(bool isForward);
+        /// <summary>
+        /// 正面前後倒 isForwards = true(前傾)/false(後仰)
+        /// </summary>
+        /// <param name="isForward"></param>
+        void InnerRingRollY_Move(bool isForward);
+        /// <summary>
+        /// 平面旋轉 isForwards = true(順時針)/false(逆時針)
+        /// </summary>
+        /// <param name="isForwards"></param>
+        void InnerRingYawT_Move(bool isForwards);
 
-        void Home();
+        void OuterRingRollY_Move(bool isForwards);
 
+        void InnerRingPitchX_Stop();
+        void InnerRingRollY_Stop();
+        void InnerRingYawT_Stop();
 
+        void OuterRingRollY_Stop();
 
     }
 

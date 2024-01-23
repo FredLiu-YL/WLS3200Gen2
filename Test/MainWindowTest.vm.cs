@@ -10,6 +10,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using WLS3200Gen2;
 using WLS3200Gen2.Model;
+using WLS3200Gen2.Model.Component;
 using WLS3200Gen2.Model.Component.Adlink;
 using WLS3200Gen2.Model.Module;
 using WLS3200Gen2.UserControls;
@@ -24,14 +25,19 @@ namespace Test
         private bool isRefresh;
         private ILoadPort loadPort;
         private IAligner aligner;
+        private IEFEMRobot robot;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
         private AxisConfig tableXConfig;
-        IMotionController motionController;
+        private IMotionController motionController;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
-        private MacroDetection macroDetection1;
-        public MacroDetection MacroDetection1 { get => macroDetection1; set => SetValue(ref macroDetection1, value); }
+        //private MacroDetection macroDetection1;
+        private IMacro macro;
+
+
+        //public MacroDetection MacroDetection1 { get => macroDetection1; set => SetValue(ref macroDetection1, value); }
+
         public LoadPortUI loadPortUIShow = new LoadPortUI();
 
         public AlignerUI alignerUIShow = new AlignerUI();
@@ -40,29 +46,41 @@ namespace Test
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
         public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
 
+
+        public Feeder Feeder { get; set; }
+
+        public FeederSetting FeederSetting = new FeederSetting();
+
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
             try
             {
-                //loadPort1Wafers = new ObservableCollection<WaferUIData>();
-                //LoadPort = new HirataLoadPort_RS232("COM2");
-                //LoadPort.Initial();
+                robot = new HirataRobot_RS232("COM5", 2);
+                robot.Initial();
 
-                //Aligner = new HirataAligner_RS232("COM32");
-                //Aligner.Initial();
+                loadPort1Wafers = new ObservableCollection<WaferUIData>();
+                LoadPort = new HirataLoadPort_RS232("COM2");
+                LoadPort.Initial();
+
+                Aligner = new HirataAligner_RS232("COM32");
+                Aligner.Initial();
+
                 MotionInit();
                 if (LoadPort != null)
                 {
                     LoadPortParam loadPortParam = new LoadPortParam();
                     loadPortParam = await LoadPort.GetParam();
-                    loadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
-                    loadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
-                    loadPortUIShow.StarOffset = loadPortParam.StarOffset;
-                    loadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
-                    loadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
+                    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
+                    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
+                    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
+                    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
+                    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
                     isRefresh = true;
                 }
                 taskRefresh1 = Task.Run(RefreshStatus);
+
+
+                Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
             }
             catch (Exception ex)
             {
@@ -170,7 +188,8 @@ namespace Test
 
                 DigitalOutput[] outputs = DigitalOutputs;
 
-                MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
+                macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+                //MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
             }
             catch (Exception ex)
             {
@@ -190,16 +209,16 @@ namespace Test
                     {
                         LoadPortStatus loadPortStatus = new LoadPortStatus();
                         loadPortStatus = await LoadPort.GetStatus();
-                        loadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
-                        loadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
-                        loadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
-                        loadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
-                        loadPortUIShow.IsClamp = loadPortStatus.IsClamp;
-                        loadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
-                        loadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
-                        loadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
-                        loadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
-                        loadPortUIShow.IsDock = loadPortStatus.IsDock;
+                        LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
+                        LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
+                        LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
+                        LoadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
+                        LoadPortUIShow.IsClamp = loadPortStatus.IsClamp;
+                        LoadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
+                        LoadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
+                        LoadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
+                        LoadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
+                        LoadPortUIShow.IsDock = loadPortStatus.IsDock;
                     }
                     if (Aligner != null)
                     {
@@ -239,11 +258,11 @@ namespace Test
                     {
                         LoadPortParam loadPortParam = new LoadPortParam();
                         loadPortParam = await LoadPort.GetParam();
-                        loadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
-                        loadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
-                        loadPortUIShow.StarOffset = loadPortParam.StarOffset;
-                        loadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
-                        loadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
+                        LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
+                        LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
+                        LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
+                        LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
+                        LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
                     }
                 });
             }

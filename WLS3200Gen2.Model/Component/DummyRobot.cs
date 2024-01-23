@@ -51,6 +51,11 @@ namespace WLS3200Gen2.Model.Component
          return   Task.CompletedTask;
         }
 
+        public void Initial()
+        {
+            throw new NotImplementedException();
+        }
+
         public void InitializeCommand()
         {
             throw new NotImplementedException();

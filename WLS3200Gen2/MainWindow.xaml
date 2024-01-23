@@ -740,35 +740,119 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                      Header="Robot" Style="{StaticResource MaterialDesignGroupBox}">
                                 <Grid Margin="-5">
+                                    <Grid.Resources>
+                                        <Style x:Key="TextStyle" TargetType="Label">
+                                            <Setter Property="FontSize" Value="10" />
+                                            <!-- 需要自行參考 Style name  TextStyle -->
+                                        </Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="FontSize" Value="10" />
+                                            <!--  預設所有 TextBox -->
+                                        </Style>
+                                        <Style TargetType="Label">
+                                            <Setter Property="FontSize" Value="10" />
+                                            <!--  預設所有 TextBox -->
+                                        </Style>
+                                    </Grid.Resources>
                                     <Grid.ColumnDefinitions >
-                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="1.2*" />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Move To Load Port1" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Move To Load Port2" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Move To Aligner1" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Move To Aligner2" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Move To Macro" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Move To Micro" />
-                                        <StackPanel Grid.Column="0">
-                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Hold" />
-                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Put off" />
-                                        </StackPanel>
-                                    </StackPanel>
+                                    <Grid Grid.Column="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1.5*"/>
+                                            <ColumnDefinition  Width="0.7*" />
+                                            <ColumnDefinition/>
+
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+
+                                        <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" >
+
+                                        </Border>
+                                        <TextBlock  Text="Axis Settings" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
+                                        <Label Grid.Row="1"  Grid.Column="0" Content="Move To Load Port1"/>
+                                        <TextBox Grid.Row="1" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                        <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+
+                                        <Label Grid.Row="2"  Grid.Column="0" Content="Move To Load Port2"/>
+                                        <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                        <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+                                        <Label Grid.Row="3"  Grid.Column="0" Content="Move To Aligner1"/>
+                                        <TextBox Grid.Row="3" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
+                                        <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+
+                                        <Label Grid.Row="4"  Grid.Column="0" Content="Move To Aligner2"/>
+                                        <TextBox Grid.Row="4" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
+                                        <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+
+                                        <Label Grid.Row="5"  Grid.Column="0" Content="Move To Macro"/>
+                                        <TextBox Grid.Row="5" Text="{Binding FeederSetting.MacroPos}"  Grid.Column="1" />
+                                        <Button Grid.Row="5"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Macro"/>
+
+
+                                        <Label Grid.Row="6"  Grid.Column="0" Content="Move To Micro"/>
+                                        <TextBox Grid.Row="6" Text="{Binding FeederSetting.MicroPos}"  Grid.Column="1" />
+                                        <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
+
+                                        <TextBlock  Grid.Row="8" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
+                                        <Border Grid.Row="9" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" >
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Label Grid.Row="0" Content="8 Inch" />
+                                                <Label Grid.Row="1" Content="12 Inch" />
+                                                <Button Margin="2" Grid.Row="0" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
+                                                <Button Margin="2" Grid.Row="0"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
+                                                <Button Margin="2" Grid.Row="1" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
+                                                <Button Margin="2" Grid.Row="1"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
+                                                <usercontrols:SignalUC Grid.Row="0" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                <usercontrols:SignalUC Grid.Row="1" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="False" />
+                                            </Grid>
+                                        </Border>
+
+
+                                    </Grid>
+
                                     <StackPanel Grid.Column="1">
-                                        <Button Margin="5" Height="40" Content="Home" />
-                                        <Button Margin="5" Height="40" Content="Wafer LoadPort1 To Robot" />
-                                        <Button Margin="5" Height="40" Content="Wafer LoadPort2 To Robot" />
-                                        <Button Margin="5" Height="40" Content="Wafer Macro To Robot  "   />
-                                        <Button Margin="0,5,0,5" Height="40" Content="Wafer Micro To Robot  " />
-                                        <Label Margin="0,10,0,10"/>
+                                        <Button Margin="3" Height="40" Content="Home" Command="{Binding Home}"/>
+                                        <Button Margin="3" Height="40" Background="YellowGreen"  BorderBrush="YellowGreen" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
+                                        <Button Margin="3" Height="40" Background="YellowGreen"   BorderBrush="YellowGreen" Content="Pick Wafer From Aligner" Command="{Binding PickWaferFromAligner}"/>
+                                        <Button Margin="3" Height="40" Background="YellowGreen"   BorderBrush="YellowGreen" Content="Pick Wafer From Micro" Command="{Binding PickWaferFromMicro}"/>
+                                        <Button Margin="3" Height="40" Background="YellowGreen"  BorderBrush="YellowGreen" Content="Pick Wafer From Macro" Command="{Binding PickWaferFromMacro}"/>
 
-                                        <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort1" />
-                                        <Button Margin="5" Height="40" Content="Wafer Robot To LoadPort2" />
-                                        <Button Margin="5" Height="40" Content="Wafer Robot To Macro" />
-                                        <Button Margin="5" Height="40" Content="Wafer Robot To Micro" />
 
+                                        <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
+                                        <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer To Aligner" Command="{Binding PutWaferToAligner}"/>
+                                        <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen"  BorderBrush="LightGreen"  Content="Put Wafer To Micro" Command="{Binding PutWaferToMicro}"/>
+                                        <Button Margin="3" Height="40" Foreground="Black"  Background="LightGreen"  BorderBrush="LightGreen" Content="Put Wafer To Macro" Command="{Binding PutWaferToMacro}"/>
                                     </StackPanel>
                                 </Grid>
 
@@ -843,6 +927,49 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
+            <TabItem  Height="75" Background="White" >
+                <TabItem.Header>
+                    <StackPanel  Width="auto"  Height="auto">
+                        <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="Security" />
+                        <TextBlock  HorizontalAlignment="Center"   Text="Security" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="0.35*" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.3*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <motion:AxisMotionUC Axis="{Binding TableX}"  AxisSetConfig="{Binding TableXConfig}"   />
+                            <motion:AxisMotionUC Axis="{Binding TableY}"  AxisSetConfig="{Binding TableYConfig}"/>
+                            <motion:AxisMotionUC Axis="{Binding TableR}"  AxisSetConfig="{Binding TableRConfig}"/>
+                            <motion:AxisMotionUC Axis="{Binding RobotAxis}" AxisSetConfig="{Binding RobotAxisConfig}" />
+                            <Grid Height="480">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Header="Output" Grid.Column="0">
+                                    <UserControlUC:DigitalOutputUC Margin="-2" OutputSignals="{Binding DigitalOutputs}"   />
+                                </GroupBox>
+                                <GroupBox Header="Input" Grid.Column="1" >
+                                    <UserControlUC:DigitalInputUC Margin="-2" InputSignals="{Binding DigitalInputs}"   />
+                                </GroupBox>
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+                    <Button HorizontalAlignment="Left" Margin="284,106,0,134" Grid.Row="1" Width="75"    Command="{Binding TESTCommand}" />
+                    <Button Content="Button" HorizontalAlignment="Left" Margin="439,106,0,134" Grid.Row="1" Width="75"  Command="{Binding TEST1Command}" />
+
+                </Grid>
+            </TabItem>
 
             <TabItem  Height="75" Background="White" >
                 <TabItem.Header>
@@ -875,7 +1002,7 @@
                                     <RowDefinition Height="200*"/>
 
                                 </Grid.RowDefinitions>
-                                <wls3200controls:RobotUnitUC Grid.RowSpan="2" />
+                                <UserControlUC:RobotUnitUC Grid.RowSpan="2" />
 
 
                                 <GroupBox Grid.Row="2" Grid.Column="1" materialDesign:ColorZoneAssist.Background="DarkGray"
@@ -966,50 +1093,6 @@
                             <TextBox  Grid.Row="3"  Grid.Column="1"/>
                         </Grid>
                     </GroupBox>
-                </Grid>
-            </TabItem>
-
-            <TabItem  Height="75" Background="White" >
-                <TabItem.Header>
-                    <StackPanel  Width="auto"  Height="auto">
-                        <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="Security" />
-                        <TextBlock  HorizontalAlignment="Center"   Text="Security" />
-                    </StackPanel>
-                </TabItem.Header>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="0.35*" />
-                    </Grid.RowDefinitions>
-                    <Grid>
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="0.3*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <motion:AxisMotionUC Axis="{Binding TableX }"  AxisSetConfig="{Binding TableXConfig }"   />
-                            <motion:AxisMotionUC Axis="{Binding TableY }"  AxisSetConfig="{Binding TableYConfig }"/>
-                            <motion:AxisMotionUC Axis="{Binding TableR }"  AxisSetConfig="{Binding TableRConfig }"/>
-                            <motion:AxisMotionUC Axis="{Binding RobotAxis }" AxisSetConfig="{Binding RobotAxisConfig }" />
-                            <Grid Height="480">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <GroupBox Header="Output" Grid.Column="0">
-                                    <UserControlUC:DigitalOutputUC Margin="-2" OutputSignals="{Binding DigitalOutputs }"   />
-                                </GroupBox>
-                                <GroupBox Header="Input" Grid.Column="1" >
-                                    <UserControlUC:DigitalInputUC Margin="-2" InputSignals="{Binding DigitalInputs }"   />
-                                </GroupBox>
-                            </Grid>
-                        </StackPanel>
-
-                    </Grid>
-                    <Button HorizontalAlignment="Left" Margin="284,106,0,134" Grid.Row="1" Width="75"    Command="{Binding TESTCommand}" />
-                    <Button Content="Button" HorizontalAlignment="Left" Margin="439,106,0,134" Grid.Row="1" Width="75"  Command="{Binding TEST1Command}" />
-
                 </Grid>
             </TabItem>
 

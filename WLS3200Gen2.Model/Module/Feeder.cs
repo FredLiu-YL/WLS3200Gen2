@@ -429,10 +429,10 @@ namespace WLS3200Gen2.Model.Module
 
     public class FeederSetting
     {
-        public double LoadPortPos { get; set; }
-        public double AlignPos { get; set; }
-        public double MacroPos { get; set; }
-        public double MicroPos { get; set; }
+        public double LoadPortPos { get; set; } = 0;
+        public double AlignPos { get; set; } = 0;
+        public double MacroPos { get; set; } = 0;
+        public double MicroPos { get; set; } = 0;
 
     }
 }
