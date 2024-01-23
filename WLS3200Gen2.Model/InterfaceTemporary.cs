@@ -1,7 +1,9 @@
 ﻿using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -224,6 +226,13 @@ namespace WLS3200Gen2.Model
         /// </summary>
         Task Stop();
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="zShift"></param>
+        /// <returns></returns>
+        Task MovAddress(int address, double zShift);
+        /// <summary>
         /// 取得Robot位置
         /// </summary>
         /// <returns></returns>
@@ -266,7 +275,7 @@ namespace WLS3200Gen2.Model
         /// 手臂是否有Wafer
         /// </summary>
         /// <returns></returns>
-        Task<bool> IsHaveWafer();
+        Task<bool> IsHavePiece();
     }
     public interface IEFEMRobot : IRobot
     {

@@ -25,28 +25,144 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class RobotUnitUC : UserControl, INotifyPropertyChanged
     {
+        private bool isRobotEnabled = true;
+
+        private string address1, address2, address3, address4, address5, speed;
         public RobotUnitUC()
         {
             InitializeComponent();
         }
         public static readonly DependencyProperty RobotProperty = DependencyProperty.Register(nameof(Robot), typeof(IRobot), typeof(RobotUnitUC),
                                                                                       new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty RobotUIShowProperty = DependencyProperty.Register(nameof(RobotUIShow), typeof(RobotUI), typeof(RobotUnitUC),
+        public static readonly DependencyProperty RobotStausProperty = DependencyProperty.Register(nameof(RobotStaus), typeof(RobotUI), typeof(RobotUnitUC),
                                                                                    new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public IRobot Robot
         {
             get => (IRobot)GetValue(RobotProperty);
             set => SetValue(RobotProperty, value);
         }
-        public RobotUI RobotUIShow
+        public RobotUI RobotStaus
         {
-            get => (RobotUI)GetValue(RobotUIShowProperty);
-            set => SetValue(RobotUIShowProperty, value);
+            get => (RobotUI)GetValue(RobotStausProperty);
+            set => SetValue(RobotStausProperty, value);
+        }
+        public bool IsRobotEnabled
+        {
+            get => isRobotEnabled;
+            set => SetValue(ref isRobotEnabled, value);
+        }
+        public string Address1
+        {
+            get => address1;
+            set => SetValue(ref address1, value);
+        }
+        public string Address2
+        {
+            get => address2;
+            set => SetValue(ref address2, value);
+        }
+        public string Address3
+        {
+            get => address3;
+            set => SetValue(ref address3, value);
+        }
+        public string Address4
+        {
+            get => address4;
+            set => SetValue(ref address4, value);
+        }
+        public string Address5
+        {
+            get => address5;
+            set => SetValue(ref address5, value);
+        }
+        public string Speed
+        {
+            get => speed;
+            set => SetValue(ref speed, value);
         }
 
+        public ICommand RobotMove => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                IsRobotEnabled = false;
+                switch (key)
+                {
+                    case "0":
+                        await Robot.Home();
+                        break;
+                    case "1":
+                        await Robot.MovAddress(Convert.ToInt32(Address1), 0);
+                        break;
+                    case "2":
+                        await Robot.MovAddress(Convert.ToInt32(Address2), 0);
+                        break;
+                    case "3":
+                        await Robot.MovAddress(Convert.ToInt32(Address3), 0);
+                        break;
+                    case "4":
+                        await Robot.MovAddress(Convert.ToInt32(Address4), 0);
+                        break;
+                    case "5":
+                        await Robot.MovAddress(Convert.ToInt32(Address5), 0);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                IsRobotEnabled = true;
+            }
+        });
+        public ICommand FixRelease => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                IsRobotEnabled = false;
+                switch (key)
+                {
+                    case "0":
+                        await Robot.FixWafer();
+                        break;
+                    case "1":
+                        await Robot.ReleaseWafer();
+                        break;
 
-
-
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                IsRobotEnabled = true;
+            }
+        });
+        public ICommand RobotSet => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                IsRobotEnabled = false;
+                await Robot.SetSpeedPercentCommand(Convert.ToInt32(RobotStaus.SpeedPercent));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                IsRobotEnabled = true;
+            }
+        });
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -75,7 +191,9 @@ namespace WLS3200Gen2.UserControls
         private bool isRunning;
         private string errorCode;
         private int errorXYZWRC;
-
+        private int speedPercent;
+        private bool isHavePiece;
+        private bool isLockOK;
 
         /// <summary>
         /// 目前手臂的運作模式
@@ -141,7 +259,30 @@ namespace WLS3200Gen2.UserControls
             get => errorXYZWRC;
             set => SetValue(ref errorXYZWRC, value);
         }
-
+        /// <summary>
+        /// 軸的速度百分比
+        /// </summary>
+        public int SpeedPercent
+        {
+            get => speedPercent;
+            set => SetValue(ref speedPercent, value);
+        }
+        /// <summary>
+        /// 有無料
+        /// </summary>
+        public bool IsHavePiece
+        {
+            get => isHavePiece;
+            set => SetValue(ref isHavePiece, value);
+        }
+        /// <summary>
+        /// 有無lock住
+        /// </summary>
+        public bool IsLockOK
+        {
+            get => isLockOK;
+            set => SetValue(ref isLockOK, value);
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
