@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
@@ -21,7 +23,10 @@ namespace WLS3200Gen2.Model
         public double RobotAxisAlignTakePosition { get; set; }
         public double RobotAxisMacroTakePosition { get; set; }
         public double RobotAxisLoadPortTakePosition { get; set; }
-
+        /// <summary>
+        /// Die 判定需給定BinCode
+        /// </summary>
+        public BinCode[] BinCodes { get; set; }
 
         public RobotType RobotsType { get; set; }
         public CameraType CamerasType { get; set; }
@@ -47,6 +52,16 @@ namespace WLS3200Gen2.Model
     }
     public enum MotionControlorType
     {
+
+
+    }
+
+    public class BinCode
+    {
+        public string Code { get; set; }
+        public string Describe { get; set; }
+
+        public Brush CodeColor { get; set; } = Brushes.White;
 
 
     }

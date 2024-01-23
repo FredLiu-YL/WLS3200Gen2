@@ -135,6 +135,12 @@ namespace WLS3200Gen2
 
 
                 CameraLive();
+
+                // 讀取BMP檔案
+                BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
+
+
+                MapImage =new WriteableBitmap(bitmap);
             }
             catch (Exception ex)
             {

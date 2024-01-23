@@ -117,6 +117,7 @@ namespace WLS3200Gen2
 
             }
         });
+        //離開頁面會執行
         private void UnLoadRecipePage()
         {
             var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
@@ -125,6 +126,8 @@ namespace WLS3200Gen2
             if (index1.X == 0 && index1.Y == 0 && pos1.X == 0 && pos1.Y == 0) return;
             SetLocateParamToRecipe();
 
+            //將檢測座標存入recipe
+            mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
         }
        
         public ICommand TestLoadRecipePageCommand => new RelayCommand(() =>
