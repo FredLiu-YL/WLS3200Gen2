@@ -129,7 +129,7 @@ namespace WLS3200Gen2
             //將檢測座標存入recipe
             mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
         }
-       
+
         public ICommand TestLoadRecipePageCommand => new RelayCommand(() =>
         {
             try
@@ -176,8 +176,8 @@ namespace WLS3200Gen2
         public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
         {
 
-            mainRecipe.DetectRecipe.WaferMap = new WaferMapping();
-
+            mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+            mainRecipe.DetectRecipe.WaferMap.ReadWaferFile("");
             foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
             {
 
