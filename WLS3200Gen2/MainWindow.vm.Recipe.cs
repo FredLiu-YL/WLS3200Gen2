@@ -48,6 +48,8 @@ namespace WLS3200Gen2
         private bool isLocate;
         private int selectDetectionPointList;
         private bool isRecipePageSelect;
+        private System.Windows.Point mousePixcel;
+        private ROIShape selectShape;
 
         public bool IsRecipePageSelect
         {
@@ -89,7 +91,7 @@ namespace WLS3200Gen2
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>
-        public System.Windows.Point MousePixcel { get; set; }
+        public System.Windows.Point MousePixcel { get => mousePixcel; set => SetValue(ref mousePixcel, value); }
 
 
         /// <summary>
@@ -175,26 +177,29 @@ namespace WLS3200Gen2
 
         public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
         {
-
+            //模擬  編輯完MAP圖後 資料存回mainRecipe內
+            
             mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+            //將MAP圖資訊 轉換成顯示資訊
             mainRecipe.DetectRecipe.WaferMap.ReadWaferFile("");
             foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
             {
 
 
+
+
+
+                /* var center = new ROICross
+                 {
+                     X = item.Center.X,
+                     Y = item.Center.Y,
+                     Size = 5,
+                     StrokeThickness = 2,
+                     Stroke = System.Windows.Media.Brushes.Red,
+                     IsInteractived = false
+                 };
+                 AddShapeAction.Execute(center);*/
             }
-
-
-            /* var center = new ROICross
-             {
-                 X = item.Center.X,
-                 Y = item.Center.Y,
-                 Size = 5,
-                 StrokeThickness = 2,
-                 Stroke = System.Windows.Media.Brushes.Red,
-                 IsInteractived = false
-             };
-             AddShapeAction.Execute(center);*/
         });
 
         public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
@@ -248,27 +253,70 @@ namespace WLS3200Gen2
             //挑選出 對應index 的Die
             YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
             YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
-
+            if (die == null) throw new Exception("");
             //設計座標轉換對位後座標
             Point transPos = transForm.TransPoint(new Point(die.PosX, die.PosY));
 
             await machine.MicroDetection.TableMoveToAsync(transPos);
 
         });
+        public ICommand MappingPreviewMouseUpCommand => new RelayCommand(() =>
+        {
+            ROIShape tempselectShape = MapDrawings.Select(shape =>
+            {
+                var rectBegin = shape.LeftTop;
+                var rectEnd = shape.RightBottom;
+                var rect = new Rect(rectBegin, rectEnd);
+                if (rect.Contains(MapMousePixcel))
+                    return shape;
+                else
+                    return null;
+            }).Where(s => s != null).FirstOrDefault();
 
+
+            if (tempselectShape != null)
+            {
+                if (this.selectShape != null)
+                {
+                    this.selectShape.Stroke = System.Windows.Media.Brushes.LightGreen;
+
+                }
+
+                tempselectShape.Stroke = System.Windows.Media.Brushes.Red;
+                this.selectShape = tempselectShape;
+
+                //        AddShapeMappingAction.Execute(selectShape);
+
+                //         RemoveShapeMappingAction.Execute(selectShape);
+
+            }
+
+
+
+
+        });
         public ICommand AddDetectionCommand => new RelayCommand(() =>
         {
+            try
+            {
+               //從點選的ShapeROI  找出對應的die
+                int listIndex = MapDrawings.IndexOf(selectShape);
+                YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
 
+               var point = new DetectionPoint();
+                point.IndexX = die.IndexX;
+                point.IndexY = die.IndexY;
+                point.OffsetX = 0;
+                point.OffsetY = 0;
+                point.Position = new Point(die.PosX, die.PosY);
+                DetectionPointList.Add(point);
 
-            var point = new DetectionPoint();
-            point.IndexX = 3;
-            point.IndexY = 4;
-            point.OffsetX = 7100;
-            point.OffsetY = 220;
-            point.Position = new Point(400123, 200456);
-            DetectionPointList.Add(point);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
 
-
+            }
         });
 
         public ICommand RemoveDetectionCommand => new RelayCommand(() =>

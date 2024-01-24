@@ -28,5 +28,7 @@ namespace YuanliCore.Data
         /// Die尺寸
         /// </summary>
         public Size DieSize { get; set; }
+
+
     }
 }

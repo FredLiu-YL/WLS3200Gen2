@@ -9,6 +9,9 @@ using YuanliCore.Data;
 
 namespace WLS3200Gen2.Model.Recipe
 {
+    /// <summary>
+    /// 紀錄Map圖 的全部座標
+    /// </summary>
     public abstract class WaferMapping
     {
 

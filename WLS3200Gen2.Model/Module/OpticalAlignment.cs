@@ -35,7 +35,7 @@ namespace WLS3200Gen2.Model.Module
 
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
-
+ 
         public async Task<ITransform> Alignment(AlignmentRecipe alignmentRecipe)
         {
             List<Point> targetPos = new List<Point>();
