@@ -201,7 +201,7 @@ namespace WLS3200Gen2
             }
 
             //模擬  編輯完MAP圖後 資料存回mainRecipe內
-            mainRecipe.DetectRecipe.WaferMap = new WaferMapping();
+            mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
             mainRecipe.DetectRecipe.WaferMap.Dies = dielist.ToArray();
 
             //將MAP圖資訊 轉換成顯示資訊
