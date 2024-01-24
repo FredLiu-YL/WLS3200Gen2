@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.AffineTransform;
+using YuanliCore.Data;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
 using YuanliCore.Model;
@@ -177,26 +178,49 @@ namespace WLS3200Gen2
 
         public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
         {
+
+            MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
+            ClearMapShapeAction.Execute(MapDrawings);
+
+            List<Die> dielist = new List<Die>();
+            for (int x = 1; x <= 100; x++)
+            {
+                for (int y = 1; y <= 100; y++)
+                {
+                    var temp = new Die
+                    {
+                        IndexX = x,
+                        IndexY = y,
+                        PosX = 1000 + x * 100,
+                        PosY = 1000 + y * 100,
+                        DieSize = new Size(40, 40)
+                    };
+
+                    dielist.Add(temp);
+                }
+            }
+
             //模擬  編輯完MAP圖後 資料存回mainRecipe內
             mainRecipe.DetectRecipe.WaferMap = new WaferMapping();
+            mainRecipe.DetectRecipe.WaferMap.Dies = dielist.ToArray();
+
             //將MAP圖資訊 轉換成顯示資訊
             foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
             {
 
-
-
-
-
-                /* var center = new ROICross
-                 {
-                     X = item.Center.X,
-                     Y = item.Center.Y,
-                     Size = 5,
-                     StrokeThickness = 2,
-                     Stroke = System.Windows.Media.Brushes.Red,
-                     IsInteractived = false
-                 };
-                 AddShapeAction.Execute(center);*/
+                var center = new ROIRotatedRect
+                {
+                    X = item.PosX,
+                    Y = item.PosY,
+                    LengthX = item.DieSize.Width,
+                    LengthY = item.DieSize.Height,
+                    StrokeThickness = 2,
+                    Stroke = System.Windows.Media.Brushes.LightGreen,
+                    IsInteractived = false,
+                    ToolTip = $"X={item.IndexX} , Y={item.IndexY}",
+                    IsCenterShow=false
+                };
+                AddMapShapeAction.Execute(center);
             }
         });
 
@@ -258,7 +282,7 @@ namespace WLS3200Gen2
             await machine.MicroDetection.TableMoveToAsync(transPos);
 
         });
-        public ICommand MappingPreviewMouseUpCommand => new RelayCommand(() =>
+        public ICommand SelectMappingDieCommand => new RelayCommand(() =>
         {
             ROIShape tempselectShape = MapDrawings.Select(shape =>
             {
@@ -282,11 +306,12 @@ namespace WLS3200Gen2
 
                 tempselectShape.Stroke = System.Windows.Media.Brushes.Red;
                 this.selectShape = tempselectShape;
-
-                //        AddShapeMappingAction.Execute(selectShape);
-
-                //         RemoveShapeMappingAction.Execute(selectShape);
-
+                
+                //從點選的ShapeROI  找出對應的die
+                int listIndex = MapDrawings.IndexOf(selectShape);
+                YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
+                MoveIndexX = die.IndexX;
+                MoveIndexY = die.IndexY;
             }
 
 
@@ -297,11 +322,11 @@ namespace WLS3200Gen2
         {
             try
             {
-               //從點選的ShapeROI  找出對應的die
+                //從點選的ShapeROI  找出對應的die
                 int listIndex = MapDrawings.IndexOf(selectShape);
                 YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
 
-               var point = new DetectionPoint();
+                DetectionPoint point = new DetectionPoint();
                 point.IndexX = die.IndexX;
                 point.IndexY = die.IndexY;
                 point.OffsetX = 0;
