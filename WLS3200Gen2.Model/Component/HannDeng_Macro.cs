@@ -11,6 +11,7 @@ namespace WLS3200Gen2.Model.Component
 {
     public class HannDeng_Macro : IMacro
     {
+        private readonly object lockObj = new object();
         private bool isCanMoveAllHome = false;
         private bool isInnerCanMoveStartPos = false;
         private bool isInnerUsing = false;
@@ -203,17 +204,33 @@ namespace WLS3200Gen2.Model.Component
         }
         public void Initial()
         {
-            throw new NotImplementedException();
+
         }
 
         public void FixWafer()
         {
-            throw new NotImplementedException();
+            try
+            {
+                InnerRingVacuum.On();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Macro FixWafer:" + ex);
+            }
         }
 
         public void ReleaseWafer()
         {
-            throw new NotImplementedException();
+            try
+            {
+                InnerRingVacuum.Off();
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("Macro ReleaseWafer:" + ex);
+            }
         }
 
         public async Task HomeInnerRing()
@@ -260,7 +277,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                if ((CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK) && IsInnerCanMoveStartPos == true)
                 {
                     await InnerRingLiftUp();
                 }
@@ -279,7 +296,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
+                if ((CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK) && IsOuterCanMoveStartPos == true)
                 {
                     await OuterRingLiftUp();
                 }
@@ -303,7 +320,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
+                if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK && IsOuterUsing == true)
                 {
                     if (isForward == true)
                     {
@@ -368,7 +385,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK && IsInnerUsing == true)
                 {
                     if (isForward == true)
                     {
@@ -414,7 +431,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK && IsInnerUsing == true)
                 {
                     if (isForward == true)
                     {
@@ -462,7 +479,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK && IsInnerUsing == true)
                 {
                     if (isForward == true)
                     {
@@ -568,10 +585,7 @@ namespace WLS3200Gen2.Model.Component
                         OuterRingLiftMotorM1.Off();
                         await Task.Delay(25);
                     }
-                    if (isFirstHome == false)
-                    {
-                        IsOuterUsing = false;
-                    }
+                    IsOuterUsing = false;
                     //外環旋轉復歸
                     i = 0;
                     if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
@@ -661,10 +675,7 @@ namespace WLS3200Gen2.Model.Component
             {
                 await Task.Run(async () =>
                 {
-                    if (isFirstHome == false)
-                    {
-                        IsInnerUsing = false;
-                    }
+                    IsInnerUsing = false;
                     int i = 0;
 
                     //X、Y翻轉復歸

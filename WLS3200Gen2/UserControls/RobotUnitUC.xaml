@@ -8,7 +8,7 @@
              xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model"
              mc:Ignorable="d" 
               x:Name="RobotUnit"
-             d:DesignHeight="450" d:DesignWidth="500">
+             d:DesignHeight="450" d:DesignWidth="450">
 
     <Grid DataContext="{Binding ElementName=RobotUnit}"  Background="White" >
         <Grid.ColumnDefinitions >
@@ -30,34 +30,44 @@
             <Border Grid.Row="0" Grid.RowSpan="7" BorderBrush="Black" BorderThickness="1"/>
             <TextBlock Grid.Row="0" FontSize="18"  Text="Test"    Background="Azure" />
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button  Margin="2"  Content="Home" Width="250" Command="{Binding RobotMove}" IsEnabled="{Binding IsRobotEnabled}" />
+                <Button  Margin="2"  Content="Home" Width="250" Command="{Binding RobotMove}" CommandParameter="0" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>
             <StackPanel Grid.Row="2" Orientation="Horizontal"  HorizontalAlignment="Center"  >
                 <Label VerticalAlignment="Center" FontSize="18" Content="Address:"  Width="80" />
-                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="18105" />
-                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move1" Command="{Binding RobotMove}" IsEnabled="{Binding IsRobotEnabled}" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="{Binding Address1}" />
+                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move1" Command="{Binding RobotMove}" CommandParameter="1" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label VerticalAlignment="Center" FontSize="18" Content="Address:"  Width="80" />
-                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="18105" />
-                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move2" Command="{Binding RobotMove}" IsEnabled="{Binding IsRobotEnabled}" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="{Binding Address2}" />
+                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move2" Command="{Binding RobotMove}" CommandParameter="2" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>
             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label VerticalAlignment="Center" FontSize="18" Content="Address:"  Width="80" />
-                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="18105" />
-                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move3" Command="{Binding RobotMove}" IsEnabled="{Binding IsRobotEnabled}" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="{Binding Address3}" />
+                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move3" Command="{Binding RobotMove}" CommandParameter="3" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>
             <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label VerticalAlignment="Center" FontSize="18" Content="Address:"  Width="80" />
-                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="18105" />
-                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move4" Command="{Binding RobotMove}" IsEnabled="{Binding IsRobotEnabled}" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="{Binding Address4}" />
+                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move4" Command="{Binding RobotMove}" CommandParameter="4" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>
             <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Label VerticalAlignment="Center" FontSize="18" Content="Address:"  Width="80" />
-                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="18105" />
-                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move5" Command="{Binding RobotMove}" IsEnabled="{Binding IsRobotEnabled}" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="{Binding Address5}" />
+                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move5" Command="{Binding RobotMove}" CommandParameter="5" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>
-           
+            <Border Grid.Row="7" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="1"/>
+            <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label VerticalAlignment="Center" FontSize="15" Content="Speed:"  Width="60" />
+                <TextBox VerticalAlignment="Center" FontSize="18" Width="80" Text="{Binding RobotStaus.SpeedPercent }" />
+                <Label VerticalAlignment="Center" FontSize="13" Content="%"  Width="20" />
+                <Button  Margin="2" Background="Tan" BorderBrush="Tan" Content="Set" Width="80" Command="{Binding RobotSet}" IsEnabled="{Binding IsRobotEnabled}" />
+            </StackPanel>
+            <StackPanel Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button  Margin="10,0" Content="Fix Wafer" Width="120" Command="{Binding FixRelease}" CommandParameter="0" IsEnabled="{Binding IsRobotEnabled}" />
+                <Button  Margin="10,0" Background="Tan" BorderBrush="Tan" Content="Release Wafer" Width="120" Command="{Binding FixRelease}" CommandParameter="1" IsEnabled="{Binding IsRobotEnabled}" />
+            </StackPanel>
         </Grid>
 
         <Grid  Grid.Column="1" >
@@ -80,34 +90,44 @@
             <Border Grid.Row="0" Grid.RowSpan="12" BorderBrush="Black" BorderThickness="1"/>
 
             <TextBlock Grid.Row="0" FontSize="18"  Text="Status"    Background="Azure" />
-            <TextBlock Grid.Row="1" Text="Device Status" />
-            <TextBox Grid.Row="2" Text="{Binding RobotUIShow.Mode}"/>
+            <TextBlock Grid.Row="1" Text="Device Mode:" />
+            <TextBox Grid.Row="2" Text="{Binding RobotStaus.Mode}"/>
 
             <TextBlock  Grid.Row="3"  Text="Error Code:" />
-            <TextBox  Grid.Row="4"  Text="{Binding RobotUIShow.ErrorCode}" />
-            
-            <TextBlock  Grid.Row="5"  Text="Error Axis(XYZWRC):" />
-            <TextBox  Grid.Row="6"  Text="{Binding RobotUIShow.ErrorXYZWRC}" />
+            <TextBox  Grid.Row="4"  Text="{Binding RobotStaus.ErrorCode}" />
 
+            <TextBlock  Grid.Row="5"  Text="Error Axis(XYZWRC):" />
+            <TextBox  Grid.Row="6"  Text="{Binding RobotStaus.ErrorXYZWRC}" />
+            <Border Grid.Row="7" Grid.RowSpan="5" BorderBrush="Black" BorderThickness="1"/>
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <TextBlock   Text="停止訊號" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotUIShow.IsStopSignal}"  />
+                <usercontrols:SignalUC Margin="34,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsStopSignal}"  />
             </StackPanel>
             <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <TextBlock   Text="急停訊號" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotUIShow.IsEStopSignal}" />
+                <usercontrols:SignalUC Margin="34,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsEStopSignal}" />
             </StackPanel>
             <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <TextBlock   Text="訊號發送完成" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotUIShow.IsCommandDoneSignal}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsCommandDoneSignal}" />
             </StackPanel>
             <StackPanel Grid.Row="10" Orientation="Horizontal">
                 <TextBlock   Text="移動完成訊號" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotUIShow.IsMovDoneSignal}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsMovDoneSignal}" />
             </StackPanel>
             <StackPanel Grid.Row="11" Orientation="Horizontal">
                 <TextBlock   Text="正在運作訊號" VerticalAlignment="Center" />
-                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotUIShow.IsRunning}" />
+                <usercontrols:SignalUC Margin="10,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsRunning}" />
+            </StackPanel>
+
+            <Border Grid.Row="12" Grid.RowSpan="2" BorderBrush="Black" BorderThickness="1"/>
+            <StackPanel Grid.Row="12" Orientation="Horizontal">
+                <TextBlock   Text="有無料" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="45,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsHavePiece}" />
+            </StackPanel>
+            <StackPanel Grid.Row="13" Orientation="Horizontal">
+                <TextBlock   Text="料是否固定" VerticalAlignment="Center" />
+                <usercontrols:SignalUC Margin="21,0,0,0" Width="20" Height="20" IsSignal="{Binding RobotStaus.IsLockOK}" />
             </StackPanel>
         </Grid>
     </Grid>

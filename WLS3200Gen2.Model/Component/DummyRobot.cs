@@ -61,7 +61,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task<bool> IsHaveWafer()
+        public Task<bool> IsHavePiece()
         {
             throw new NotImplementedException();
         }
@@ -72,6 +72,11 @@ namespace WLS3200Gen2.Model.Component
         }
 
         public Task LockWafer(bool isOn)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task MovAddress(int address, double zShift)
         {
             throw new NotImplementedException();
         }

@@ -25,40 +25,51 @@ namespace Test
         private bool isRefresh;
         private ILoadPort loadPort;
         private IAligner aligner;
-        private IEFEMRobot robot;
+        private IMacro macro;
+        private IRobot robot;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
         private AxisConfig tableXConfig;
         private IMotionController motionController;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
+        private MacroStatus macroStatus = new MacroStatus();
         //private MacroDetection macroDetection1;
-        private IMacro macro;
+
 
 
         //public MacroDetection MacroDetection1 { get => macroDetection1; set => SetValue(ref macroDetection1, value); }
 
-        public LoadPortUI loadPortUIShow = new LoadPortUI();
+        private LoadPortUI loadPortUIShow = new LoadPortUI();
 
-        public AlignerUI alignerUIShow = new AlignerUI();
+        private AlignerUI alignerUIShow = new AlignerUI();
+
+        private RobotUI robotStaus = new RobotUI();
+
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
         public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
-
-
-        public Feeder Feeder { get; set; }
+        public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
+        public ILoadPort LoadPort { get => loadPort; set => SetValue(ref loadPort, value); }
+        public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
+        public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
+        public AlignerUI AlignerUIShow { get => alignerUIShow; set => SetValue(ref alignerUIShow, value); }
+        public IMacro Macro { get => macro; set => SetValue(ref macro, value); }
+        public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
 
         public FeederSetting FeederSetting = new FeederSetting();
+        public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
+        public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
             try
             {
-                robot = new HirataRobot_RS232("COM5", 2);
-                robot.Initial();
+                Robot = new HirataRobot_RS232("COM5", 10, 2);
+                Robot.Initial();
 
-                loadPort1Wafers = new ObservableCollection<WaferUIData>();
+                LoadPort1Wafers = new ObservableCollection<WaferUIData>();
                 LoadPort = new HirataLoadPort_RS232("COM2");
                 LoadPort.Initial();
 
@@ -80,7 +91,7 @@ namespace Test
                 taskRefresh1 = Task.Run(RefreshStatus);
 
 
-                Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
+                //Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
             }
             catch (Exception ex)
             {
@@ -177,8 +188,7 @@ namespace Test
                 motionController = new Adlink7856(axisConfig, doNames, diNames);
                 motionController.InitializeCommand();
 
-                DigitalOutputs = motionController.OutputSignals.ToArray();
-                DigitalInputs = motionController.InputSignals.ToArray();
+
                 TableX = motionController.Axes[0];
 
                 AxisConfig axis_TableXConfig = new AxisConfig();
@@ -186,9 +196,9 @@ namespace Test
                 axis_TableXConfig.HomeVel = motionController.Axes[0].HomeVelocity;
                 TableXConfig = axis_TableXConfig;
 
-                DigitalOutput[] outputs = DigitalOutputs;
-
-                macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+                DigitalOutputs = motionController.OutputSignals.ToArray();
+                DigitalInputs = motionController.InputSignals.ToArray();
+                Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
                 //MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
             }
             catch (Exception ex)
@@ -231,7 +241,23 @@ namespace Test
                         AlignerUIShow.IsOrg = alignerStatus.IsOrg;
                         AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
                     }
+                    if (Robot != null)
+                    {
+                        RobotStatus robotStatus = new RobotStatus();
+                        robotStatus = await Robot.GetStatus();
+                        RobotStaus.Mode = robotStatus.Mode;
+                        RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
+                        RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
+                        RobotStaus.IsCommandDoneSignal = robotStatus.IsCommandDoneSignal;
+                        RobotStaus.IsMovDoneSignal = robotStatus.IsMovDoneSignal;
+                        RobotStaus.IsRunning = robotStatus.IsRunning;
+                        RobotStaus.ErrorCode = robotStatus.ErrorCode;
+                        RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
 
+                        RobotStaus.IsHavePiece = await Robot.IsHavePiece();
+                        RobotStaus.IsLockOK = await Robot.IsLockOK();
+                        //RobotUIIShow
+                    }
 
 
 
@@ -278,13 +304,7 @@ namespace Test
 
 
 
-        public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
-        public ILoadPort LoadPort { get => loadPort; set => SetValue(ref loadPort, value); }
-        public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
 
-
-        public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
-        public AlignerUI AlignerUIShow { get => alignerUIShow; set => SetValue(ref alignerUIShow, value); }
 
 
         public ICommand OutputSwitchCommand => new RelayCommand<string>((par) =>
