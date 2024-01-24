@@ -549,8 +549,7 @@ namespace WLS3200Gen2.Model
         void InnerRingYawT_Stop();
 
         void OuterRingRollY_Stop();
-
     }
-
+  
 
 }

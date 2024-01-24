@@ -10,9 +10,6 @@ namespace YuanliCore.Data
 {
     public class Die
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public int IndexX { get; set; }
         public int IndexY { get; set; }
         /// <summary>
@@ -23,7 +20,13 @@ namespace YuanliCore.Data
         /// 機械座標Y
         /// </summary>
         public double PosY { get; set; }
-
+        /// <summary>
+        /// Die的BinCode資訊
+        /// </summary>
+        public string BinCode { get; set; }
+        /// <summary>
+        /// Die尺寸
+        /// </summary>
         public Size DieSize { get; set; }
 
 

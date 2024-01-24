@@ -205,6 +205,7 @@ namespace WLS3200Gen2
             mainRecipe.DetectRecipe.WaferMap.Dies = dielist.ToArray();
 
             //將MAP圖資訊 轉換成顯示資訊
+            mainRecipe.DetectRecipe.WaferMap.ReadWaferFile("");
             foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
             {
 
