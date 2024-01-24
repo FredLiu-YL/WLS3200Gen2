@@ -25,5 +25,7 @@ namespace YuanliCore.Data
         public double PosY { get; set; }
 
         public Size DieSize { get; set; }
+
+
     }
 }

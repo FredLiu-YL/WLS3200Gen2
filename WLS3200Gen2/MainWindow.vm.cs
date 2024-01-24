@@ -37,6 +37,7 @@ namespace WLS3200Gen2
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
+        private System.Windows.Point mapmousePixcel;
 
         private bool isRefresh;
 
@@ -70,6 +71,8 @@ namespace WLS3200Gen2
 
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public WriteableBitmap MapImage { get => mapImage; set => SetValue(ref mapImage, value); }
+
+        public System.Windows.Point MapMousePixcel { get => mapmousePixcel; set => SetValue(ref mapmousePixcel, value); }
         /// <summary>
         /// 新增 Shape
         /// </summary>
