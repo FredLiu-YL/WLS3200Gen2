@@ -195,7 +195,7 @@ namespace WLS3200Gen2.Model.Module
         public async Task<ITransform> Alignment(AlignmentRecipe recipe)
         {
 
-            ITransform transForm = await opticalAlignment.Alignment(recipe);
+            ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
             return transForm;
         }
 

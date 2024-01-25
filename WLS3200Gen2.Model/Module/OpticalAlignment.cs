@@ -36,11 +36,11 @@ namespace WLS3200Gen2.Model.Module
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
  
-        public async Task<ITransform> Alignment(AlignmentRecipe alignmentRecipe)
+        public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
         {
             List<Point> targetPos = new List<Point>();
             //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
-            foreach (LocateParam fiducial in alignmentRecipe.FiducialDatas)
+            foreach (LocateParam fiducial in fiducialDatas)
             {
 
 

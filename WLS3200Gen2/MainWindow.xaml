@@ -301,7 +301,7 @@
                             <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1" >
 
                                 <TabControl>
-                                    <TabItem  Width="180"   >
+                                    <TabItem  Width="180"  IsSelected="{Binding IsLoadwaferPageSelect}"  >
                                         <!-- 在 TabItem 的 Header 中添加一個 StackPanel，包含 TextBlock 和 Image -->
                                         <TabItem.Header >
                                             <Grid Margin="-10" Width="180"  >
@@ -461,7 +461,7 @@
                                         </Grid>
                                     </TabItem>
 
-                                    <TabItem Width="160" >
+                                    <TabItem Width="160"  IsSelected="{Binding IsLocatePageSelect}" >
                                         <TabItem.Header>
                                             <Grid Margin="-10" Width="160"  >
                                                 <Grid.ColumnDefinitions>
@@ -511,7 +511,7 @@
 
                                     </TabItem>
 
-                                    <TabItem Width="190"  >
+                                    <TabItem Width="190" IsSelected="{Binding IsDetectionPageSelect}"  >
                                         <TabItem.Header>
                                             <Grid Margin="-10" Width="190"  >
                                                 <Grid.ColumnDefinitions>

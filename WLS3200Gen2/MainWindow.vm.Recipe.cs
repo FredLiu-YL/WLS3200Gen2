@@ -48,20 +48,66 @@ namespace WLS3200Gen2
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private bool isLocate;
         private int selectDetectionPointList;
-        private bool isRecipePageSelect;
+        private bool isRecipePageSelect, isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
+        private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
-
+        /// <summary>
+        /// 切換到 Recipe 設定頁面
+        /// </summary>
         public bool IsRecipePageSelect
         {
             get
             {
-                if (isRecipePageSelect == false)
+                if (isRecipePageSelect)
+                    LoadRecipePage();
+                else if (!isRecipePageSelect)
                     UnLoadRecipePage();
                 return isRecipePageSelect;
             }
             set => SetValue(ref isRecipePageSelect, value);
         }
+        /// <summary>
+        /// 切換到 取料頁
+        /// </summary>
+        public bool IsLoadwaferPageSelect
+        {
+            get
+            {
+
+                return isLoadwaferPageSelect;
+            }
+            set => SetValue(ref isLoadwaferPageSelect, value);
+        }
+        /// <summary>
+        ///  切換到 對位頁
+        /// </summary>
+        public bool IsLocatePageSelect
+        {
+            get
+            {
+                if (isLocatePageSelect)
+                    LoadLoactePage();
+
+
+                return isLocatePageSelect;
+            }
+            set => SetValue(ref isLocatePageSelect, value);
+        }
+        /// <summary>
+        /// 切換到 新增檢測座標頁
+        /// </summary>
+        public bool IsDetectionPageSelect
+        {
+            get
+            {
+                if (isDetectionPageSelect)
+                    SetLocateParamToRecipe();
+                return isDetectionPageSelect;
+            }
+            set => SetValue(ref isDetectionPageSelect, value);
+        }
+
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
@@ -120,7 +166,14 @@ namespace WLS3200Gen2
 
             }
         });
-        //離開頁面會執行
+
+        //Recipe進入會執行
+        private void LoadRecipePage()
+        {
+            //始終會切回到第一頁 LoadWafer 頁
+            IsLoadwaferPageSelect = true;
+        }
+        //離開recipe頁面會執行
         private void UnLoadRecipePage()
         {
             var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
@@ -131,6 +184,16 @@ namespace WLS3200Gen2
 
             //將檢測座標存入recipe
             mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
+        }
+
+        //進入locate頁會執行
+        private void LoadLoactePage()
+        {
+
+            //始終會切回到第一頁 LoadWafer 頁      
+            IsLoadwaferPageSelect = true;
+            IsLocatePageSelect = false;
+
         }
 
         public ICommand TestLoadRecipePageCommand => new RelayCommand(() =>
@@ -219,7 +282,7 @@ namespace WLS3200Gen2
                     Stroke = System.Windows.Media.Brushes.LightGreen,
                     IsInteractived = false,
                     ToolTip = $"X={item.IndexX} , Y={item.IndexY}",
-                    IsCenterShow=false
+                    IsCenterShow = false
                 };
                 AddMapShapeAction.Execute(center);
             }
@@ -264,58 +327,95 @@ namespace WLS3200Gen2
 
         public ICommand LocateRunCommand => new RelayCommand(async () =>
         {
-            SetLocateParamToRecipe();
+            try
+            {
+                //經過這個方法後，會將map中所有的Die  Index座標轉換成當下樣本建立時的實際機台座標(pattern中心)
+                SetLocateParamToRecipe();
+                //將die的map座標都轉換成 實際機台座標(解決片子更換後位置不對的問題 )
+                transForm = await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
 
-            transForm = await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
+                //將所有的Die 轉換成實際片子座標(如果建立樣本時的wafer 與 LocateRun 是一起建立的  那座標會一樣 ，主要Locate目的是針對換wafer以後要重新對位
+                //如果有需要調整檢測座標 ，需要重新做對位  ，對位後會重新建立新的map全部die座標 ，為了給後續檢測座標設定使用 
+           
+                //依序轉換完對位前座標  ，轉換成對位後座標 塞回機械座標
+                foreach (Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
+                {
+                    Point pos = transForm.TransPoint(new Point(die.PosX, die.PosY));
+                    die.PosX = pos.X;
+                    die.PosY = pos.Y;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+
 
 
         });
 
         public ICommand LocatedMoveDieCommand => new RelayCommand(async () =>
         {
-            //挑選出 對應index 的Die
-            YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
-            YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
-            if (die == null) throw new Exception("");
-            //設計座標轉換對位後座標
-            Point transPos = transForm.TransPoint(new Point(die.PosX, die.PosY));
+            try
+            {
+                //挑選出 對應index 的Die
+                YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
+                YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
+                if (die == null) throw new Exception("");
+                //設計座標轉換對位後座標
+                Point transPos = transForm.TransPoint(new Point(die.PosX, die.PosY));
 
-            await machine.MicroDetection.TableMoveToAsync(transPos);
+                await machine.MicroDetection.TableMoveToAsync(transPos);
+            }
+            catch (Exception ex)
+            {
 
+                MessageBox.Show(ex.Message);
+            }
         });
         public ICommand SelectMappingDieCommand => new RelayCommand(() =>
         {
-            ROIShape tempselectShape = MapDrawings.Select(shape =>
+            try
             {
-                var rectBegin = shape.LeftTop;
-                var rectEnd = shape.RightBottom;
-                var rect = new Rect(rectBegin, rectEnd);
-                if (rect.Contains(MapMousePixcel))
-                    return shape;
-                else
-                    return null;
-            }).Where(s => s != null).FirstOrDefault();
-
-
-            if (tempselectShape != null)
-            {
-                if (this.selectShape != null)
+                ROIShape tempselectShape = MapDrawings.Select(shape =>
                 {
-                    this.selectShape.Stroke = System.Windows.Media.Brushes.LightGreen;
+                    var rectBegin = shape.LeftTop;
+                    var rectEnd = shape.RightBottom;
+                    var rect = new Rect(rectBegin, rectEnd);
+                    if (rect.Contains(MapMousePixcel))
+                        return shape;
+                    else
+                        return null;
+                }).Where(s => s != null).FirstOrDefault();
 
+
+                if (tempselectShape != null)
+                {
+                    if (this.selectShape != null)
+                    {
+                        this.selectShape.Stroke = System.Windows.Media.Brushes.LightGreen;
+
+                    }
+
+                    tempselectShape.Stroke = System.Windows.Media.Brushes.Red;
+                    this.selectShape = tempselectShape;
+
+                    //從點選的ShapeROI  找出對應的die
+                    int listIndex = MapDrawings.IndexOf(selectShape);
+                    YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
+                    MoveIndexX = die.IndexX;
+                    MoveIndexY = die.IndexY;
                 }
 
-                tempselectShape.Stroke = System.Windows.Media.Brushes.Red;
-                this.selectShape = tempselectShape;
-                
-                //從點選的ShapeROI  找出對應的die
-                int listIndex = MapDrawings.IndexOf(selectShape);
-                YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
-                MoveIndexX = die.IndexX;
-                MoveIndexY = die.IndexY;
             }
+            catch (Exception ex)
+            {
 
-
+                MessageBox.Show(ex.Message);
+            }
 
 
         });
@@ -387,9 +487,9 @@ namespace WLS3200Gen2
             var index2 = new Point(LocateParam2.IndexX, LocateParam2.IndexY);
             var index3 = new Point(LocateParam3.IndexX, LocateParam3.IndexY);
 
-            var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
-            var pos2 = new Point(LocateParam2.GrabPositionX, LocateParam2.GrabPositionY);
-            var pos3 = new Point(LocateParam3.GrabPositionX, LocateParam3.GrabPositionY);
+            var pos1 = new Point(LocateParam1.DesignPositionX, LocateParam1.DesignPositionY);
+            var pos2 = new Point(LocateParam2.DesignPositionX, LocateParam2.DesignPositionY);
+            var pos3 = new Point(LocateParam3.DesignPositionX, LocateParam3.DesignPositionY);
 
             var indexs = new Point[] { index1, index2, index3 };
             var poss = new Point[] { pos1, pos2, pos3 };

@@ -64,8 +64,9 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <ListBox x:Name="RadioButtonGroupChoiceChipPrimaryOutline" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
-                        <ListBoxItem Content="Edge"  IsSelected="{Binding ModeForUI, Converter={StaticResource BoolToEnumEdgeConverter}}" />
                         <ListBoxItem Content="Pattern" IsSelected="{Binding ModeForUI, Converter={StaticResource BoolToEnumConverter}}"  />
+                        <ListBoxItem Content="Edge"  IsSelected="{Binding ModeForUI, Converter={StaticResource BoolToEnumEdgeConverter}}" />
+               
                     </ListBox>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -115,10 +116,7 @@
                         </StackPanel>
                     </Grid>
                     <TabControl Grid.Row="2" SelectedIndex="{Binding LocateModeIndex }" >
-                        <TabItem Header="Edge" Height="10"   >
-                            <TextBlock Text="102345"/>
-
-                        </TabItem>
+                      
                         <TabItem  Header="Pattern"  Height="10" >
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -290,6 +288,10 @@
                                 </GroupBox>
 
                             </Grid>
+                        </TabItem>
+                        <TabItem Header="Edge" Height="10"   >
+                            <TextBlock Text="102345"/>
+
                         </TabItem>
                     </TabControl>
                 </Grid>

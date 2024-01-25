@@ -131,9 +131,9 @@ namespace WLS3200Gen2.UserControls
             get
             {
                 if (modeForUI == LocateMode.Edge)
-                    LocateModeIndex = 0;
-                else if (modeForUI == LocateMode.Pattern)
                     LocateModeIndex = 1;
+                else if (modeForUI == LocateMode.Pattern)
+                    LocateModeIndex = 0;
                 SelectMode = modeForUI;
                 return modeForUI;
             }
@@ -328,9 +328,9 @@ namespace WLS3200Gen2.UserControls
         {
             ModeForUI = SelectMode;
             if (modeForUI == LocateMode.Edge)
-                LocateModeIndex = 0;
-            else if (modeForUI == LocateMode.Pattern)
                 LocateModeIndex = 1;
+            else if (modeForUI == LocateMode.Pattern)
+                LocateModeIndex = 0;
           
 
 
