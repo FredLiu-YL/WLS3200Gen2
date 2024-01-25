@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight.Command;
 using WLS3200Gen2;
 using WLS3200Gen2.Model;
@@ -16,6 +18,7 @@ using WLS3200Gen2.Model.Module;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Interface;
 using YuanliCore.Motion;
+using YuanliCore.Views.CanvasShapes;
 
 namespace Test
 {
@@ -62,36 +65,60 @@ namespace Test
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 
+        //////////////////////////////////
+        private WriteableBitmap mappingImage;
+        private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
+        private Point mappingMousePixel;
+        private bool mappingIsMoveEnable;
+        private bool isEditBinGBEnable;
+        public WriteableBitmap MappingImage { get => mappingImage; set => SetValue(ref mappingImage, value); }
+        public ObservableCollection<ROIShape> MappingDrawings { get => mappingDrawings; set => SetValue(ref mappingDrawings, value); }
+        public System.Windows.Point MappingMousePixel { get => mappingMousePixel; set => SetValue(ref mappingMousePixel, value); }
+        public bool MappingIsMoveEnable
+        {
+            get => mappingIsMoveEnable;
+            set
+            {
+                IsEditBinGBEnable = !value;
+                SetValue(ref mappingIsMoveEnable, value);
+            }
+        }
+        public bool IsEditBinGBEnable { get => isEditBinGBEnable; set => SetValue(ref isEditBinGBEnable, value); }
+        public ICommand AddShapeMappingAction { get; set; }
+        public ICommand ClearShapeMappingAction { get; set; }
+        public ICommand RemoveShapeMappingAction { get; set; }
+
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
             try
             {
-                Robot = new HirataRobot_RS232("COM5", 10, 2);
-                Robot.Initial();
+                MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+                //Robot = new HirataRobot_RS232("COM5", 10, 2);
+                //Robot.Initial();
 
-                LoadPort1Wafers = new ObservableCollection<WaferUIData>();
-                LoadPort = new HirataLoadPort_RS232("COM2");
-                LoadPort.Initial();
+                //LoadPort1Wafers = new ObservableCollection<WaferUIData>();
+                //LoadPort = new HirataLoadPort_RS232("COM2");
+                //LoadPort.Initial();
 
-                Aligner = new HirataAligner_RS232("COM32");
-                Aligner.Initial();
+                //Aligner = new HirataAligner_RS232("COM32");
+                //Aligner.Initial();
 
-                MotionInit();
-                if (LoadPort != null)
-                {
-                    LoadPortParam loadPortParam = new LoadPortParam();
-                    loadPortParam = await LoadPort.GetParam();
-                    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
-                    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
-                    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
-                    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
-                    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
-                    isRefresh = true;
-                }
-                taskRefresh1 = Task.Run(RefreshStatus);
+                //MotionInit();
+                //if (LoadPort != null)
+                //{
+                //    LoadPortParam loadPortParam = new LoadPortParam();
+                //    loadPortParam = await LoadPort.GetParam();
+                //    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
+                //    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
+                //    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
+                //    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
+                //    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
+                //    isRefresh = true;
+                //}
+                //taskRefresh1 = Task.Run(RefreshStatus);
 
 
-                //Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
+                ////Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
             }
             catch (Exception ex)
             {
@@ -311,7 +338,7 @@ namespace Test
         {
             try
             {
-                motionController.SetOutputCommand(0, true);
+                //motionController.SetOutputCommand(0, true);
 
                 //if (OutputSwitchs[0] == false)
                 //{
@@ -321,6 +348,32 @@ namespace Test
                 //{
                 //    OutputSwitchs[0] = false;
                 //}
+                bool ss = true;
+                if (ss)
+                {
+                    AddShapeMappingAction.Execute(new ROICircle
+                    {
+                        Stroke = Brushes.Yellow,
+                        //StrokeThickness = this.StrokeThickness,
+                        Fill = Brushes.Transparent,//Brushes.Blue,
+                        X = 1000,
+                        Y = 1000,
+                        Radius = 1000,
+                        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
+                        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
+                        IsInteractived = true,
+                        IsMoveEnabled = false,
+                        IsResizeEnabled = false,
+                        IsRotateEnabled = false,
+                        CenterCrossLength = 0,
+                        ToolTip = "Circle"
+                    });
+                }
+                else
+                {
+                    ClearShapeMappingAction.Execute(true);
+                }
+
             }
             catch (Exception ex)
             {

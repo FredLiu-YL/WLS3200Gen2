@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
         mc:Ignorable="d"
         x:Name="MacroUnit"
-        Height="200" Width="600" Loaded="MainGrid_Loaded">
+        Height="200" Width="300" Loaded="MainGrid_Loaded">
 
     <Grid DataContext="{Binding ElementName=MacroUnit}" Background="White"  >
 
@@ -27,10 +27,10 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="0" Content="Home" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding AllHome}"/>
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="Home" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding AllHome}"/>
 
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="1" Content="內環檢測 位置" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding GoInnerRingCheckPos}"/>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="1" Content="前" Width="130" Height="30" HorizontalAlignment="Left">
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="1" Content="內環檢測" FontSize="9" Width="70" Height="30" HorizontalAlignment="Left" Command="{Binding GoInnerRingCheckPos}"/>
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="1" Content="前" Width="70" Height="30" HorizontalAlignment="Left">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y+"/>
@@ -40,7 +40,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="1" Content="後" Width="130" Height="30" HorizontalAlignment="Left" >
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="1" Content="後" Width="70" Height="30" HorizontalAlignment="Left" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y-"/>
@@ -50,8 +50,8 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="3" Grid.Row="1" Content="結束 內環檢測" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding InnerRingHome}"/>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="2" Content="左" Width="130" Height="30" HorizontalAlignment="Left">
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="3" Grid.Row="1" FontSize="9" Content="結束內環" Width="70" Height="30" HorizontalAlignment="Left" Command="{Binding InnerRingHome}"/>
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="2" Content="左" Width="70" Height="30" HorizontalAlignment="Left">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X-"/>
@@ -61,7 +61,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="2" Content="右" Width="130" Height="30" HorizontalAlignment="Left" >
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="2" Content="右" Width="70" Height="30" HorizontalAlignment="Left" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X+"/>
@@ -71,7 +71,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="3" Content="正轉" Width="130" Height="30" HorizontalAlignment="Left" >
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="3" Content="正轉" Width="70" Height="30" HorizontalAlignment="Left" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T+"/>
@@ -81,7 +81,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="3" Content="反轉" Width="130" Height="30" HorizontalAlignment="Left" >
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="3" Content="反轉" Width="70" Height="30" HorizontalAlignment="Left" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T-"/>
@@ -92,8 +92,8 @@
                 </i:Interaction.Triggers>
             </Button>
 
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="4" Content="外環檢測 位置" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding GoOuterRingCheckPos}"/>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="4" Content="正翻" Width="130" Height="30" HorizontalAlignment="Left">
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="4" FontSize="9" Content="外環檢測" Width="70" Height="30" HorizontalAlignment="Left" Command="{Binding GoOuterRingCheckPos}"/>
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="4" Content="正翻" Width="70" Height="30" HorizontalAlignment="Left">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y+"/>
@@ -103,7 +103,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="4" Content="反翻" Width="130" Height="30" HorizontalAlignment="Left">
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="4" Content="反翻" Width="70" Height="30" HorizontalAlignment="Left">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y-"/>
@@ -113,7 +113,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="3" Grid.Row="4" Content="結束 外環檢測" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding OuterRingHome}"/>
+            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="3" Grid.Row="4" FontSize="9" Content="結束外環" Width="70" Height="30" HorizontalAlignment="Left" Command="{Binding OuterRingHome}"/>
 
         </Grid>
     </Grid>

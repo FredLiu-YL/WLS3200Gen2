@@ -157,6 +157,9 @@
     <Compile Include="UserControls\RobotUnitUC.xaml.cs">
       <DependentUpon>RobotUnitUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewControl\WaferMappingCanvas.xaml.cs">
+      <DependentUpon>WaferMappingCanvas.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="App.xaml.cs">
@@ -203,6 +206,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\RobotUnitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewControl\WaferMappingCanvas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
