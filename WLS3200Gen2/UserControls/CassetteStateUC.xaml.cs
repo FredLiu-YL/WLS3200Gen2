@@ -32,9 +32,6 @@ namespace YuanliCore.Model.UserControls
 
         public static readonly DependencyProperty LoadPortWafersProperty = DependencyProperty.Register(nameof(LoadPortWafers), typeof(ObservableCollection<WaferUIData>), typeof(CassetteStateUC),
                                                                                      new FrameworkPropertyMetadata(new ObservableCollection<WaferUIData>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-
-        
         public ObservableCollection<WaferUIData> LoadPortWafers
         {
             get => (ObservableCollection<WaferUIData>)GetValue(LoadPortWafersProperty);

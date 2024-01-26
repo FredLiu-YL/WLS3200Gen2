@@ -32,10 +32,15 @@ namespace WLS3200Gen2.UserControls
                                                                                      new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty DieInsideAllCheckedProperty = DependencyProperty.Register(nameof(DieInsideAllChecked), typeof(bool), typeof(ProductionUC),
                                                                                      new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty AddButtonActionProperty = DependencyProperty.Register(nameof(AddButtonAction), typeof(ICommand), typeof(ProductionUC),
-                                                                                     new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty WorkItemsProperty = DependencyProperty.Register(nameof(WorkItems), typeof(ObservableCollection<WorkItem>), typeof(ProductionUC),
-                                                                                   new FrameworkPropertyMetadata(new ObservableCollection<WorkItem>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty LoadPortWafersProperty = DependencyProperty.Register(nameof(LoadPortWafers), typeof(ObservableCollection<WaferUIData>), typeof(ProductionUC),
+                                                                                     new FrameworkPropertyMetadata(new ObservableCollection<WaferUIData>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public ObservableCollection<WaferUIData> LoadPortWafers
+        {
+            get => (ObservableCollection<WaferUIData>)GetValue(LoadPortWafersProperty);
+            set => SetValue(LoadPortWafersProperty, value);
+        }
+        //public static readonly DependencyProperty WorkItemsProperty = DependencyProperty.Register(nameof(WorkItems), typeof(ObservableCollection<WorkItem>), typeof(ProductionUC),
+        //                                                                           new FrameworkPropertyMetadata(new ObservableCollection<WorkItem>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public ProductionUC()
         {
             InitializeComponent();
@@ -62,6 +67,7 @@ namespace WLS3200Gen2.UserControls
             //    throw;
             //}
         }
+
         private bool isLoaded = false;
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
@@ -69,18 +75,18 @@ namespace WLS3200Gen2.UserControls
             {
                 if (isLoaded == false)
                 {
-                    AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
-                    {
-                        int variable1 = key.Item1;
-                        List<int> variable2 = key.Item2;
-                        AddButton(variable1, variable2);
-                    });
-                    List<int> RowsDisable = new List<int>();
-                    for (int i = 5; i < 20; i++)
-                    {
-                        RowsDisable.Add(i);
-                    }
-                    AddButton(25, RowsDisable);
+                    //    AddButtonAction = new RelayCommand<(int, List<int>)>(key =>
+                    //    {
+                    //        int variable1 = key.Item1;
+                    //        List<int> variable2 = key.Item2;
+                    //        AddButton(variable1, variable2);
+                    //    });
+                    //    List<int> RowsDisable = new List<int>();
+                    //    for (int i = 5; i < 20; i++)
+                    //    {
+                    //        RowsDisable.Add(i);
+                    //    }
+                    //    AddButton(25, RowsDisable);
                     isLoaded = true;
                 }
             }
@@ -105,92 +111,92 @@ namespace WLS3200Gen2.UserControls
             get => (bool)GetValue(DieInsideAllCheckedProperty);
             set => SetValue(DieInsideAllCheckedProperty, value);
         }
-        public ICommand AddButtonAction
-        {
-            get => (ICommand)GetValue(AddButtonActionProperty);
-            set => SetValue(AddButtonActionProperty, value);
-        }
-        public ObservableCollection<WorkItem> WorkItems
-        {
-            get => (ObservableCollection<WorkItem>)GetValue(WorkItemsProperty);
-            set => SetValue(WorkItemsProperty, value);
-        }
+        //public ICommand AddButtonAction
+        //{
+        //    get => (ICommand)GetValue(AddButtonActionProperty);
+        //    set => SetValue(AddButtonActionProperty, value);
+        //}
+        //public ObservableCollection<WorkItem> WorkItems
+        //{
+        //    get => (ObservableCollection<WorkItem>)GetValue(WorkItemsProperty);
+        //    set => SetValue(WorkItemsProperty, value);
+        //}
 
-        public ObservableCollection<CassetteUC> CassetteUC
-        { get => cassetteUC; set => SetValue(ref cassetteUC, value); }
+        //public ObservableCollection<CassetteUC> CassetteUC
+        //{ get => cassetteUC; set => SetValue(ref cassetteUC, value); }
 
-        public ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
+        //public ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
 
-        public void AddButton(int Rows, List<int> RowsDisable)
-        {
-            try
-            {
-                CassetteUC.Clear();
-                for (int i = Rows - 1; i >= 0; i--)
-                {
-                    bool IsDisable = false;
-                    for (int j = RowsDisable.Count - 1; j >= 0; j--)
-                    {
-                        if (i == RowsDisable[j])
-                        {
-                            IsDisable = true;
-                            RowsDisable.RemoveAt(j);
-                            break;
-                        }
-                    }
+        //public void AddButton(int Rows, List<int> RowsDisable)
+        //{
+        //    try
+        //    {
+        //        CassetteUC.Clear();
+        //        for (int i = Rows - 1; i >= 0; i--)
+        //        {
+        //            bool IsDisable = false;
+        //            for (int j = RowsDisable.Count - 1; j >= 0; j--)
+        //            {
+        //                if (i == RowsDisable[j])
+        //                {
+        //                    IsDisable = true;
+        //                    RowsDisable.RemoveAt(j);
+        //                    break;
+        //                }
+        //            }
 
-                    CassetteUC add_CassetteUC;
+        //            CassetteUC add_CassetteUC;
 
-                    if (IsDisable == true)
-                    {
-                        add_CassetteUC = new CassetteUC(false, (i + 1).ToString());
-                    }
-                    else
-                    {
-                        add_CassetteUC = new CassetteUC(true, (i + 1).ToString());
-                    }
-                    add_CassetteUC.WorkItemChange += (workItem) =>
-                    {
-                        WorkItemChange(workItem);
-                    };
-                    CassetteUC.Add(add_CassetteUC);
+        //            if (IsDisable == true)
+        //            {
+        //                add_CassetteUC = new CassetteUC(false, (i + 1).ToString());
+        //            }
+        //            else
+        //            {
+        //                add_CassetteUC = new CassetteUC(true, (i + 1).ToString());
+        //            }
+        //            add_CassetteUC.WorkItemChange += (workItem) =>
+        //            {
+        //                WorkItemChange(workItem);
+        //            };
+        //            CassetteUC.Add(add_CassetteUC);
 
 
 
-                }
-                if (WorkItems == null)
-                {
-                    WorkItems = new ObservableCollection<WorkItem>();
-                }
-                WorkItems.Clear(); // 清空原有的集合
-                foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
-                {
-                    WorkItems.Add(workStatus);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //        }
+        //        if (WorkItems == null)
+        //        {
+        //            WorkItems = new ObservableCollection<WorkItem>();
+        //        }
+        //        WorkItems.Clear(); // 清空原有的集合
+        //        foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
+        //        {
+        //            WorkItems.Add(workStatus);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
-        private void WorkItemChange(WorkItem workItem)
-        {
-            try
-            {
-                WorkItems.Clear(); // 清空原有的集合
-                foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
-                {
-                    WorkItems.Add(workStatus);
-                }
+        //private void WorkItemChange(WorkItem workItem)
+        //{
+        //    try
+        //    {
+        //        WorkItems.Clear(); // 清空原有的集合
+        //        foreach (var workStatus in CassetteUC.Select(c => c.WorkStatus))
+        //        {
+        //            WorkItems.Add(workStatus);
+        //        }
 
-            }
-            catch (Exception)
-            {
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

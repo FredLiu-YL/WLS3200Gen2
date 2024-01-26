@@ -9,7 +9,6 @@
         mc:Ignorable="d"
         x:Name="MacroUnit"
         Height="200" Width="300" Loaded="MainGrid_Loaded">
-
     <Grid DataContext="{Binding ElementName=MacroUnit}" Background="White"  >
 
         <Grid>
