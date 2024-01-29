@@ -148,6 +148,9 @@
     <Compile Include="UserControls\MacroUnitUC.xaml.cs">
       <DependentUpon>MacroUnitUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ProcessMenuUC.xaml.cs">
+      <DependentUpon>ProcessMenuUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ProductionUC.xaml.cs">
       <DependentUpon>ProductionUC.xaml</DependentUpon>
     </Compile>
@@ -198,6 +201,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MacroUnitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ProcessMenuUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

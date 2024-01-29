@@ -42,13 +42,14 @@
                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
                     <Setter Property="Height" Value="1"/>
                 </Style>
-                <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
                     <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
 
-                </ResourceDictionary.MergedDictionaries>
+                </ResourceDictionary.MergedDictionaries>-->
             </ResourceDictionary>
         </Grid.Resources>
 
@@ -148,11 +149,11 @@
                         </Grid.RowDefinitions>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="6*"/>
-                                <ColumnDefinition Width="1.2*"/>
-                                <ColumnDefinition Width="1.2*"/>
-                                <ColumnDefinition Width="1.2*"/>
-                                <ColumnDefinition Width="0.4*"/>
+                                <ColumnDefinition Width="7*"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="0.7*"/>
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
                                 <Grid.ColumnDefinitions>
@@ -209,6 +210,9 @@
                                   ToolTip="MaterialDesignFloatingActionButton">
                                 <materialDesign:PackIcon  Width="40" Height="40" Kind="Stop" />
                             </Button>
+
+                            <UserControlUC:ProcessMenuUC Grid.Column="4"  />
+
 
                         </Grid>
                         <Grid Grid.Row="1" Margin="0">
