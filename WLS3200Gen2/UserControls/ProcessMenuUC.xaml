@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-              x:Name="BXFM"
-             d:DesignHeight="50" d:DesignWidth="50">
+             x:Name="BXFM"
+             d:DesignHeight="40" d:DesignWidth="40">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,28 +20,86 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid  DataContext="{Binding ElementName=BXFM}" >
-        <materialDesign:PopupBox Grid.Column="1" StaysOpen="True" HorizontalAlignment="Left">
-                    <Grid Width="200" Margin="8">
-                        <ListBox  Margin="-10" x:Name="RadioShutterChoiceChip"  Style="{StaticResource MaterialDesignChoiceChipListBox}">
-                            <ListBoxItem Margin="0,0,-10,0"  Content="Auto"  Width="70" IsSelected="True" />
-                            <ListBoxItem Margin="-1,0,-10,0"  Content="1/5"  Width="70"/>
-                            <ListBoxItem Margin="-1,0,-10,0"  Content="1/15" Width="70"/>
-                            <ListBoxItem Margin="-1,0,-10,0"  Content="1/30" Width="70" IsEnabled="True" />
-                            <ListBoxItem Margin="-1,0,-10,0"  Content="1/60" Width="70" IsEnabled="True" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/100" Width="70" />
-                            <ListBoxItem Margin="-1,0,-10,0"  Content="1/200" Width="70"  />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/500" Width="70" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/1000" Width="70"  FontSize="10" IsSelected="False" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/2000"  Width="70" FontSize="10" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/4000" Width="70" FontSize="10" IsSelected="False" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/8000" Width="70" FontSize="10" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/10000" Width="70" FontSize="10"/>
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/12000" Width="70" FontSize="10" />
-                            <ListBoxItem Margin="-1,0,-10,0"   Content="1/15000" Width="70" FontSize="10"/>
+        <materialDesign:PopupBox Grid.Column="1" StaysOpen="True" HorizontalAlignment="Center" VerticalAlignment="Center"  >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="10*"/>
+                    <RowDefinition Height="40*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*" />
+                    <ColumnDefinition Width="0.7*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="8,8,8,16" Style="{StaticResource MaterialDesignHeadline6TextBlock}" FontWeight="DemiBold"> 
+                        Work Items:
+                </TextBlock>
 
-                        </ListBox>
-                    </Grid>
-                </materialDesign:PopupBox>
+                <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="1"
+                         Margin="8,8,8,16"
+                         IsChecked="{Binding AutoSaveIsChecked}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <SolidColorBrush
+                             Color="Green" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                        <SolidColorBrush
+                             Color="Red" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                </ToggleButton>
+
+                <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="2"
+                         Margin="8,8,8,16"
+                         IsChecked="{Binding CircleIsChecked}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <SolidColorBrush
+                             Color="Green" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                        <SolidColorBrush
+                             Color="Red" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                </ToggleButton>
+
+                <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="3"
+                         Margin="8,8,8,16"
+                         IsChecked="{Binding DieInsideAllChecked}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <SolidColorBrush
+                             Color="Green" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                        <SolidColorBrush
+                             Color="Red" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                </ToggleButton>
+
+                <TextBlock Grid.Column="1" Grid.Row ="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AutoSave" FontSize="20"/>
+                <TextBlock Grid.Column="1" Grid.Row ="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Circle" FontSize="20"/>
+                <TextBlock Grid.Column="1" Grid.Row ="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="DieInsideAll" FontSize="20"/>
+
+            </Grid>
+        </materialDesign:PopupBox>
 
 
 

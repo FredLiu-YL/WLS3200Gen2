@@ -139,6 +139,9 @@
     <Compile Include="UserControls\DigitalOutputUC.xaml.cs">
       <DependentUpon>DigitalOutputUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\LightUnitUC.xaml.cs">
+      <DependentUpon>LightUnitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\LoadPortUnitUC.xaml.cs">
       <DependentUpon>LoadPortUnitUC.xaml</DependentUpon>
     </Compile>
@@ -189,6 +192,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\DigitalOutputUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\LightUnitUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

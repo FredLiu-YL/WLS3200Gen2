@@ -33,7 +33,7 @@ namespace WLS3200Gen2
         private double tablePosX, tablePosY, tablePosR;
 
         private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
-        private WriteableBitmap mainImage , mapImage;
+        private WriteableBitmap mainImage, mapImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
@@ -81,7 +81,7 @@ namespace WLS3200Gen2
         /// 清除 Shape
         /// </summary>
         public ICommand ClearShapeAction { get; set; }
-        
+
         /// <summary>
         /// 新增 Shape
         /// </summary>
@@ -117,18 +117,28 @@ namespace WLS3200Gen2
                 TableRConfig = machineSetting.TableRConfig;
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
- 
+
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
 
                 for (int i = 0; i < 5; i++)
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString() });
+                {
+                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString(), SNWidth = 20 });
+                    LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString(), SNWidth = 0 });
+                }
                 for (int i = 5; i < 10; i++)
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString() });
+                {
+                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString(), SNWidth = 20 });
+                    LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString(), SNWidth = 0 });
+                }
                 for (int i = 10; i < 25; i++)
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString() });
+                {
+                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString(), SNWidth = 20 });
+                    LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString(), SNWidth = 0 });
+                }
+
 
                 LogMessage = "Equipment Ready．．．";
                 isRefresh = true;
@@ -143,7 +153,7 @@ namespace WLS3200Gen2
                 BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
 
 
-                MapImage =new WriteableBitmap(bitmap);
+                MapImage = new WriteableBitmap(bitmap);
             }
             catch (Exception ex)
             {
