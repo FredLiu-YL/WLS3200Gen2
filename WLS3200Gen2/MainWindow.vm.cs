@@ -139,8 +139,8 @@ namespace WLS3200Gen2
                     LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString(), SNWidth = 0 });
                 }
 
-
-                LogMessage = "Equipment Ready．．．";
+                WriteLog("Equipment Ready．．．");
+            
                 isRefresh = true;
                 taskRefresh1 = Task.Run(RefreshPos);
 
@@ -165,11 +165,30 @@ namespace WLS3200Gen2
 
             }
         });
-        public ICommand WindowClosingCommand => new RelayCommand(() =>
-       {
+        public ICommand WindowClosingCommand => new RelayCommand<CancelEventArgs>(async e =>
+        {
            try
-           {
-               isRefresh = false;
+            { 
+                // 取消預設的視窗關閉行為
+                e.Cancel = true;
+                var result = MessageBox.Show("是否關閉程式?", "提示", MessageBoxButton.YesNo);
+               if (result == MessageBoxResult.No)
+                {
+                    // 如果使用者選擇 "否"，則取消視窗關閉
+                    e.Cancel = true;
+                    return;
+
+                }
+                  
+
+
+                // 如果使用者選擇 "是"，則允許視窗關閉
+                e.Cancel = false;
+               
+
+
+                isRefresh = false;
+
 
            }
            catch (Exception ex)

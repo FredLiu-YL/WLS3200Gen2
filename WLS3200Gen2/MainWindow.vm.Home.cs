@@ -52,11 +52,11 @@ namespace WLS3200Gen2
                     isRunCommand = true;
 
                     IsRunning = true;
-
+                    WriteLog("ProcessRun");
                     await machine.ProcessRunAsync(ProcessSetting);
 
-                    LogMessage = "123454";
-
+                    
+                
                     isRunCommand = false;
                 }
                 else
@@ -73,7 +73,7 @@ namespace WLS3200Gen2
             }
             finally
             {
-
+                WriteLog("Process Finish");
             }
         });
 

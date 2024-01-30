@@ -54,7 +54,7 @@ namespace WLS3200Gen2
             Account.CurrentAccount.PropertyChanged += CurrentAccountChanged;
 
             //預設為最高權限使用者
-            Account.CurrentAccount.Right = RightsModel.Visitor;
+            Account.CurrentAccount.Right = RightsModel.Administrator;
 
         }
 
@@ -76,6 +76,14 @@ namespace WLS3200Gen2
                 //        MachineInformation.SetMachineInfo($"使用者登入：{account.Name}  權限：{account.Right}");
             }
         }
+
+        private void WriteLog(string message)
+        {
+
+           
+                  LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  " ;
+        }
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

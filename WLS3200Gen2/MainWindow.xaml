@@ -10,6 +10,7 @@
     xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model"
     xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls"        
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+
     xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
@@ -24,6 +25,16 @@
         Icon= "YuanLi.ico" 
         WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"
         ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"   >
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <command:EventToCommand Command="{Binding WindowClosingCommand}" PassEventArgsToCommand="True"  />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction  Command="{Binding WindowLoadedCommand}"  />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid  Background="White">
         <Grid.RowDefinitions>
 
@@ -53,16 +64,8 @@
             </ResourceDictionary>
         </Grid.Resources>
 
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Closing">
-                <command:EventToCommand Command="{Binding WindowClosingCommand}"  />
-            </i:EventTrigger>
-            <i:EventTrigger EventName="Loaded">
-                <i:InvokeCommandAction  Command="{Binding WindowLoadedCommand}" CommandParameter="MoveX-"/>
-            </i:EventTrigger>
-
-
-        </i:Interaction.Triggers>
+       
+        
         <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
 
 
@@ -347,7 +350,7 @@
 
             </TabItem>
             <!--料號設定頁-->
-            <TabItem  Height="75" IsSelected="{Binding IsRecipePageSelect}"  >
+            <TabItem  Height="75" IsSelected="{Binding IsMainRecipePageSelect}"  >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Loaded">
                         <i:InvokeCommandAction Command="{Binding LoadRecipePageCommand}"/>
@@ -710,25 +713,28 @@
                             <microscope:BXFMUC  Margin="-5"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1"  FontSize="16"  Header="Axis Move"  >
-                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" >
-                                <Label Content="Index" Width="80" FontSize="26" />
-                                <Label Content="Col" Width="70" FontSize="26" />
-                                <TextBox Text="{Binding MoveIndexX}"    FontSize="22"   Width="70" />
-                                <Label Content="Row" Width="70" FontSize="26" />
-                                <TextBox Text="{Binding MoveIndexY}"   FontSize="26"  Width="70" />
-                                <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}"  />
-                            </StackPanel>
+                            <Grid  Grid.Column="1" Grid.Row="1" Margin="-5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.2*"/>
+                                    <RowDefinition Height="0.80*" />
+                                </Grid.RowDefinitions>
+                                <Border   Grid.Row="0" BorderBrush="Black" BorderThickness="1"  >
+                                    <StackPanel Orientation="Horizontal"  >
+                                        <Label Content="Index" Width="80" FontSize="26" />
+                                        <Label Content="Col" Width="70" FontSize="26" />
+                                        <TextBox Text="{Binding MoveIndexX}"    FontSize="22"   Width="70" />
+                                        <Label Content="Row" Width="70" FontSize="26" />
+                                        <TextBox Text="{Binding MoveIndexY}"   FontSize="26"  Width="70" />
+                                        <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}"  />
+                                    </StackPanel>
+                                </Border>
+                             
+                                <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            </Grid>
                         </GroupBox>
-                        <Grid  Grid.Column="1" Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="0.5*"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-
-                            <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                        </Grid>
-
                     </Grid>
+
+
 
                 </Grid>
             </TabItem>
@@ -994,7 +1000,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem  Height="75" Background="White" >
+            <TabItem  Height="75" Background="White"  IsSelected="{Binding IsMainSettingPageSelect}"  >
                 <TabItem.Header>
                     <StackPanel  Width="auto"  Height="auto">
                         <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="CogOutline" />

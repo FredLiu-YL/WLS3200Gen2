@@ -48,24 +48,40 @@ namespace WLS3200Gen2
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private bool isLocate;
         private int selectDetectionPointList;
-        private bool isRecipePageSelect, isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
+        private bool isMainRecipePageSelect, isMainSettingPageSelect;
+        private bool isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
         /// <summary>
-        /// 切換到 Recipe 設定頁面
+        /// 切換到 主畫面Recipe 設定頁面
         /// </summary>
-        public bool IsRecipePageSelect
+        public bool IsMainRecipePageSelect
         {
             get
             {
-                if (isRecipePageSelect)
+                if (isMainRecipePageSelect)
                     LoadRecipePage();
-                else if (!isRecipePageSelect)
+                else if (!isMainRecipePageSelect)
                     UnLoadRecipePage();
-                return isRecipePageSelect;
+                return isMainRecipePageSelect;
             }
-            set => SetValue(ref isRecipePageSelect, value);
+            set => SetValue(ref isMainRecipePageSelect, value);
+        }
+        /// <summary>
+        /// 切換到 主畫面設定頁面
+        /// </summary>
+        public bool IsMainSettingPageSelect
+        {
+            get
+            {
+                if (isMainSettingPageSelect)
+                    LoadSettingPage();
+                else if (!isMainSettingPageSelect)
+                    UnLoadSettingPage();
+                return isMainSettingPageSelect;
+            }
+            set => SetValue(ref isMainSettingPageSelect, value);
         }
         /// <summary>
         /// 切換到 取料頁
@@ -153,8 +169,8 @@ namespace WLS3200Gen2
         {
             try
             {
-
-
+             
+           
             }
             catch (Exception ex)
             {
@@ -172,6 +188,7 @@ namespace WLS3200Gen2
         {
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
+            WriteLog("Enter the RecipePage");
         }
         //離開recipe頁面會執行
         private void UnLoadRecipePage()
@@ -184,6 +201,17 @@ namespace WLS3200Gen2
 
             //將檢測座標存入recipe
             mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
+        }
+        //Recipe進入會執行
+        private void LoadSettingPage()
+        {
+           
+            WriteLog("Enter the SettingPage");
+        }
+        //離開recipe頁面會執行
+        private void UnLoadSettingPage()
+        {
+    
         }
 
         //進入locate頁會執行
