@@ -59,6 +59,7 @@ namespace WLS3200Gen2.Model.Module
         public DetectionRecipe DetectionRecipe { set; get; }
         public IObservable<(BitmapSource image, bool isAutoSave)> Observable => subject;
 
+        public event Action<string> WriteLog;
         public async Task Home()
         {
             try
@@ -95,8 +96,16 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task CatchWaferPrepare(Point tableWaferCatchPosition, PauseTokenSource pst, CancellationTokenSource ctk)
         {
+            try
+            {
+                await TableMoveToAsync(tableWaferCatchPosition);
+            }
+            catch (Exception ex)
+            {
 
-            await TableMoveToAsync(tableWaferCatchPosition);
+                throw ex;
+            }
+          
 
             //如果有lift 或夾持機構 需要做處理
 
@@ -134,16 +143,18 @@ namespace WLS3200Gen2.Model.Module
             //對位
             opticalAlignment.CancelToken = cancelToken;
             opticalAlignment.PauseToken = pauseToken;
+
+         
             //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
             ITransform transForm = await Alignment(recipe.AlignRecipe);
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
+  
             //每一個座標需要檢查的座標
             foreach (DetectionPoint point in recipe.DetectionPoints)
             {
 
-
+                WriteLog($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
                 //轉換成對位後實際座標
                 var transPosition = transForm.TransPoint(point.Position);
 
@@ -194,9 +205,14 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task<ITransform> Alignment(AlignmentRecipe recipe)
         {
-
+            opticalAlignment.WriteLog = WriteLog;
+            WriteLog("Wafer Alignment Start");
             ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
+
+            WriteLog("Wafer Alignment End");
             return transForm;
+
+
         }
 
 

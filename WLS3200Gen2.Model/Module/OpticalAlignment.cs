@@ -35,7 +35,13 @@ namespace WLS3200Gen2.Model.Module
 
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
- 
+
+        public Size PixelSize { get; set; }
+
+
+        public  Action<string> WriteLog { get; set; }
+
+
         public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
         {
             List<Point> targetPos = new List<Point>();
@@ -43,7 +49,7 @@ namespace WLS3200Gen2.Model.Module
             foreach (LocateParam fiducial in fiducialDatas)
             {
 
-
+                WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
                 await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
                 BitmapSource image = camera.GrabAsync();
 
@@ -51,12 +57,14 @@ namespace WLS3200Gen2.Model.Module
                 matcher.RunParams = fiducial.MatchParam;
                 MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
 
-                if(result.Length==0)
+                if (result.Length == 0)
                 {
-                    //沒搜尋到  要做些處置
+                    WriteLog($"Search failed ");
+                    //沒搜尋到  要做些處置(目前沒做事)
 
                     CancelToken.Token.ThrowIfCancellationRequested();
                     await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+
                     throw new Exception("搜尋失敗");
                 }
                 Point actualPos = await GetTargetPos(image, fiducial.GrabPositionX, fiducial.GrabPositionY, result[0].Center);
@@ -94,8 +102,12 @@ namespace WLS3200Gen2.Model.Module
         //Pixel轉換成實際座標
         private async Task<Point> GetTargetPos(BitmapSource image, double currentPosX, double currentPosY, Point objPixel)
         {
+            //目標-影像中心  * PixelSize   = 要移動的距離
+            var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelSize.Width;
+            var deltaY = (objPixel.Y - image.PixelHeight / 2) * PixelSize.Height;
 
-            return new Point();
+           //當前位置+要移動的距離  = 目標實際機台座標
+            return new Point(currentPosX + deltaX , currentPosY+ deltaY);
         }
 
         //因 Index 或 設計圖座標 與Table的 XY軸方向可能不一致 ，所以需要多一個轉換方法將設計座標轉換成與實際機台座標同方向
@@ -103,7 +115,7 @@ namespace WLS3200Gen2.Model.Module
         private Point[] ConvertDesignPos()
         {
 
-            Point[] designPos = alignmentRecipe.FiducialDatas.Select(f =>new Point( f.DesignPositionX, f.DesignPositionY)).ToArray();
+            Point[] designPos = alignmentRecipe.FiducialDatas.Select(f => new Point(f.DesignPositionX, f.DesignPositionY)).ToArray();
             return designPos;
         }
 

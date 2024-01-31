@@ -40,6 +40,7 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
+       
         public IEFEMRobot Robot { get; }
         public IMacro Macro { get; }
         public Axis RobotAxis { get; }
@@ -54,13 +55,15 @@ namespace WLS3200Gen2.Model.Module
 
         public Task WaitEFEMonSafe = Task.CompletedTask;
 
-
+        public event Action<string> WriteLog;
         public Action MicroFixed;
 
         public async Task Home()
         {
             try
             {
+                WriteLog("EFEM Homing Start");
+
                 WaitEFEMonSafe = Task.Run(() =>
               {
                   Robot.Home();
@@ -97,6 +100,7 @@ namespace WLS3200Gen2.Model.Module
                 await Task.WhenAll(aligner8Home, aligner12Home);
                 await Task.WhenAll(loadPort8Home, loadPort12Home, robotAxisHome);
 
+                WriteLog("EFEM Homing End");
             }
             catch (Exception ex)
             {
@@ -166,15 +170,19 @@ namespace WLS3200Gen2.Model.Module
                      if (processWafers.Count() > 0)
                      {
                          processTempPre_Wafer = processWafers.Dequeue();
-
+                         WriteLog("Wafer Preload Start");
 
                          await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
                          await RobotAxis.MoveToAsync(Setting.MacroPos);
                          await WaferStandByToMacro();
+
+                         WriteLog("Wafer Preload End");
                      }
                      if (processWafers.Count == 0)
                          isCassetteDone = true;
                  });
+
+              
             }
             catch (Exception ex)
             {
@@ -190,6 +198,7 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task LoadToMicroReadyAsync()
         {
+            WriteLog("LoadToMicroReadyPos Start");
             await RobotAxis.MoveToAsync(Setting.MacroPos);
             await WaferMacroToStandBy();
             await RobotAxis.MoveToAsync(Setting.AlignPos);
@@ -197,6 +206,7 @@ namespace WLS3200Gen2.Model.Module
             await tempAligner.Run(0);
             await RobotAxis.MoveToAsync(Setting.AlignPos);
             await WaferAlignerToStandBy();
+            WriteLog("LoadToMicroReadyPos  End");
         }
         /// <summary>
         /// wafer放進主設備
@@ -221,9 +231,11 @@ namespace WLS3200Gen2.Model.Module
 
         public async Task UnLoadAsync(Wafer wafer)
         {
+            WriteLog("UnLoad Wafer Start ");
             await RobotAxis.MoveAsync(Setting.MicroPos);
             await WaferMicroToStandBy();
             await UnLoadWaferToCassette(wafer);
+            WriteLog("UnLoad Wafer End ");
         }
         /// <summary>
         /// 從Loadport 拿一片wafer

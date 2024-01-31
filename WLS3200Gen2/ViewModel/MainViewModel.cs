@@ -44,17 +44,23 @@ namespace WLS3200Gen2
             isSimulate = true;
 
             //   machineSetting.Load();
-
+          
+          
             machineSetting = new MachineSetting();
 
-            machine = new Machine(isSimulate, machineSetting);      
-            machine.ChangeRecipe += ChangeRecipe;
+            machine = new Machine(isSimulate, machineSetting);
+        
 
             Account = UserAccount.Load();
             Account.CurrentAccount.PropertyChanged += CurrentAccountChanged;
 
             //預設為最高權限使用者
             Account.CurrentAccount.Right = RightsModel.Administrator;
+            machine.ChangeRecipe += ChangeRecipe;
+            machine.WriteLog += WriteLog;
+
+ 
+
 
         }
 
@@ -65,7 +71,7 @@ namespace WLS3200Gen2
         }
 
 
-        
+
 
         private void CurrentAccountChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -80,10 +86,9 @@ namespace WLS3200Gen2
         private void WriteLog(string message)
         {
 
-           
-                  LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  " ;
+            LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  ";
         }
-        
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
