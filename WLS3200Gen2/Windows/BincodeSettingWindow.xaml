@@ -1,0 +1,38 @@
+﻿<Window x:Class="WLS3200Gen2.BincodeSettingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WLS3200Gen2" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"  WindowStartupLocation="CenterScreen"  
+           x:Name="BincodeSetting"
+        Title="BincodeSettingWindow" Height="450" Width="280">
+    <Grid DataContext="{Binding ElementName=BincodeSetting}"  >
+        <DataGrid Margin="0" ItemsSource="{Binding BincodeList}"  CanUserSortColumns="False" Height="300"
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectList}"   >
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <DataGrid.Columns >
+                <DataGridTemplateColumn Header="Color" Width="70"  >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button  Width="30"  Height="30"  Content="Click" Click="OpenPalette_Click"  BorderBrush="{Binding Color}"  Background="{Binding Color}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn  Width="70"  Header="Code"  Binding="{Binding Code}"    />
+                <DataGridTextColumn  Width="120"  Header="Describe"  Binding="{Binding Describe}"  />
+         
+ 
+            </DataGrid.Columns>
+
+
+        </DataGrid>
+
+    </Grid>
+</Window>

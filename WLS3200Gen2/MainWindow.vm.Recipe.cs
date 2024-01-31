@@ -243,7 +243,7 @@ namespace WLS3200Gen2
         });
 
 
-        public ICommand LoadWaferCommand => new RelayCommand<string>(async key =>
+        public ICommand LoadWaferCommand => new RelayCommand(() =>
         {
 
             LoadPort2Wafers.Add(
@@ -266,10 +266,25 @@ namespace WLS3200Gen2
 
 
 
-
-        public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
+        public ICommand  MappingEditCommand => new RelayCommand(() =>
         {
+            try
+            {
+                BincodeSettingWindow settingWindow = new BincodeSettingWindow();
+                settingWindow.ShowDialog();
 
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        });
+        public ICommand LoadMappingCommand => new RelayCommand(() =>
+        {
+         
             MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
             ClearMapShapeAction.Execute(MapDrawings);
 
@@ -316,7 +331,7 @@ namespace WLS3200Gen2
             }
         });
 
-        public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
+        public ICommand EditSampleCommand => new RelayCommand(()=>
         {
             try
             {
