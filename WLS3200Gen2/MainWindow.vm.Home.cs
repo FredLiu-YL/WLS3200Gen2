@@ -52,7 +52,7 @@ namespace WLS3200Gen2
                     isRunCommand = true;
 
                     IsRunning = true;
-                    WriteLog("ProcessRun");
+                    WriteLog("Process Start");
                     await machine.ProcessRunAsync(ProcessSetting);
 
                     

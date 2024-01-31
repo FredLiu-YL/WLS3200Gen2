@@ -47,8 +47,9 @@ namespace WLS3200Gen2
 
             machineSetting = new MachineSetting();
 
-            machine = new Machine(isSimulate, machineSetting);      
+            machine = new Machine(isSimulate, machineSetting);
             machine.ChangeRecipe += ChangeRecipe;
+            machine.WriteLog += WriteLog;
 
             Account = UserAccount.Load();
             Account.CurrentAccount.PropertyChanged += CurrentAccountChanged;
@@ -65,7 +66,7 @@ namespace WLS3200Gen2
         }
 
 
-        
+
 
         private void CurrentAccountChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -80,10 +81,9 @@ namespace WLS3200Gen2
         private void WriteLog(string message)
         {
 
-           
-                  LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  " ;
+            LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  ";
         }
-        
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

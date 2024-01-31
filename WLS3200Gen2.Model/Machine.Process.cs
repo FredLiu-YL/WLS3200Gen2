@@ -18,7 +18,7 @@ namespace WLS3200Gen2.Model
 
 
 
-
+        public event Action<string> WriteLog;
         /// <summary>
         /// 需要切換Recipe的委派  
         /// </summary>
@@ -32,12 +32,16 @@ namespace WLS3200Gen2.Model
             {
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
-
+                WriteLog("ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, pts, cts);
 
+                //加入 LOG功能到各模組
+                MicroDetection.WriteLog += WriteLog;
+                Feeder.WriteLog += WriteLog;
 
                 await Task.Run(async () =>
                 {
+                    WriteLog("Process Start");
                     //先放一片在macro上
                     await Feeder.LoadToReadyAsync();
 
@@ -73,15 +77,14 @@ namespace WLS3200Gen2.Model
                         {
                             //預載一片在Macro上
                             taskLoad = Feeder.LoadToReadyAsync();
+
                         }
-
-
-
-
+ 
                         //執行主設備動作
                         await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
 
                         await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
+                        
                         //退片
                         await Feeder.UnLoadAsync(waferInside);
 
@@ -93,6 +96,7 @@ namespace WLS3200Gen2.Model
                         //等待預載完成
                         await taskLoad;
 
+                        WriteLog($"Remaining number of wafers : {waferusable.Count()} ");
                         //判斷卡匣空了
                         if (waferusable.Count()==0)
                         {
@@ -119,8 +123,9 @@ namespace WLS3200Gen2.Model
             finally
             {
                 Feeder.ProcessEnd();
-
-
+                MicroDetection.WriteLog -= WriteLog;
+                Feeder.WriteLog -= WriteLog;
+                WriteLog("Process Finish ");
             }
 
         }
