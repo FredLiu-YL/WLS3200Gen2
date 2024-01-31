@@ -23,8 +23,9 @@
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
         Background="GhostWhite"     
         Icon= "YuanLi.ico" 
-        WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"
-        ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"   >
+        WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"  
+        ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"  
+     PreviewMouseDown="Window_PreviewMouseDown">  
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
@@ -266,7 +267,43 @@
                                             <ColumnDefinition Width="0.5*"/>
                                         </Grid.ColumnDefinitions>
                                         <GroupBox Grid.Column="0" Grid.Row="0" Header="Alignment" FontSize="15">
+                                            <Grid Margin="-5">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="0.35*"/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Border BorderBrush="Black" BorderThickness="1">
+                                                        <StackPanel Orientation="Horizontal"   >
+                                                            <Label Content="X:" FontSize="32" Width="40"  />
+                                                            <TextBox Text="{Binding ManualPosX}"  Width="160" FontSize="32"  />
+                                                            <Label Content="Y:" FontSize="32" Width="40" />
+                                                            <TextBox Text="{Binding ManualPosY}"  Width="160" FontSize="32" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                  
+                                                  
+                                                </Grid>
+                                                <Grid Grid.Row="1" >
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
 
+                                                        <RowDefinition  Height="0.8*" />
+                                                        <RowDefinition Height="1.1*" />
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Orientation="Horizontal" Grid.Row="0"  >
+                                                        <Button   Height="60" Width="150" Content="Find" Command="{Binding ManualReFindCommand}"  FontSize="26" Cursor="Hand" />
+                                                        <Button  Margin="5,0,0,0" Height="60" Width="150" Command="{Binding ManualMoveCommand}" Content="Move"  FontSize="26" />
+                                                        <Button  Margin="5,0,0,0" Height="60" Width="150" Command="{Binding ManualGetPosCommand}" Content="Get Pos"  FontSize="26" />
+                                                    </StackPanel>
+
+                                                   
+                                                    <Button Margin="5" Grid.Row="3"  Height="60" Content="Confirm"  FontSize="26" />
+                                                </Grid>
+                                                
+                                            </Grid>
+                                            
+                                            
                                         </GroupBox>
                                         <GroupBox Grid.Column="1" Grid.Row="0" Header="WorkItem" FontSize="15">
                                             <Grid>

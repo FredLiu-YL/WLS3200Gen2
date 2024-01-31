@@ -39,7 +39,7 @@ namespace WLS3200Gen2.Model.Module
         public Size PixelSize { get; set; }
 
 
-        public  Action<string> WriteLog { get; set; }
+        public Action<string> WriteLog { get; set; }
 
 
         public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
@@ -55,19 +55,8 @@ namespace WLS3200Gen2.Model.Module
 
                 //Pattern match參數傳入 蒐尋器內
                 matcher.RunParams = fiducial.MatchParam;
-                MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
 
-                if (result.Length == 0)
-                {
-                    WriteLog($"Search failed ");
-                    //沒搜尋到  要做些處置(目前沒做事)
-
-                    CancelToken.Token.ThrowIfCancellationRequested();
-                    await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-
-                    throw new Exception("搜尋失敗");
-                }
-                Point actualPos = await GetTargetPos(image, fiducial.GrabPositionX, fiducial.GrabPositionY, result[0].Center);
+                var actualPos = await FindFiducial(image, fiducial.GrabPositionX, fiducial.GrabPositionY);
 
                 targetPos.Add(actualPos);
 
@@ -83,6 +72,32 @@ namespace WLS3200Gen2.Model.Module
 
             return affineTransform;
         }
+        /// <summary>
+        /// 找出定位點實際座標
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="currentPosX"></param>
+        /// <param name="currentPosY"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
+        {
+            MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
+
+            if (result.Length == 0)
+            {
+                WriteLog($"Search failed ");
+                //沒搜尋到  要做些處置(目前沒做事)
+
+                CancelToken.Token.ThrowIfCancellationRequested();
+                await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+
+                throw new Exception("搜尋失敗");
+            }
+            Point actualPos = await GetTargetPos(image, currentPosX, currentPosY, result[0].Center);
+            return actualPos;
+        }
+
         private async Task TableMoveToAsync(double posX, double posY)
         {
             try
@@ -106,8 +121,8 @@ namespace WLS3200Gen2.Model.Module
             var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelSize.Width;
             var deltaY = (objPixel.Y - image.PixelHeight / 2) * PixelSize.Height;
 
-           //當前位置+要移動的距離  = 目標實際機台座標
-            return new Point(currentPosX + deltaX , currentPosY+ deltaY);
+            //當前位置+要移動的距離  = 目標實際機台座標
+            return new Point(currentPosX + deltaX, currentPosY + deltaY);
         }
 
         //因 Index 或 設計圖座標 與Table的 XY軸方向可能不一致 ，所以需要多一個轉換方法將設計座標轉換成與實際機台座標同方向

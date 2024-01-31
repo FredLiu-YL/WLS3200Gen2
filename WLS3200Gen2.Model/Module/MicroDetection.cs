@@ -187,6 +187,7 @@ namespace WLS3200Gen2.Model.Module
                     AxisY.MoveAsync(distance.Y));
         }
 
+
         /// <summary>
         /// 檢測功能
         /// </summary>
@@ -198,6 +199,7 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
+
         /// <summary>
         /// 對位功能
         /// </summary>
@@ -215,6 +217,11 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
+        public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
+        {
+           return await  opticalAlignment.FindFiducial(image,  currentPosX,  currentPosY);
+
+        }
 
         private void ObservableDetection()
         {

@@ -54,6 +54,8 @@ namespace WLS3200Gen2
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
+        private bool isLoadwaferComplete, isLocateComplete, isDetectionComplete;
+
         /// <summary>
         /// 切換到 主畫面Recipe 設定頁面
         /// </summary>
@@ -124,6 +126,17 @@ namespace WLS3200Gen2
             }
             set => SetValue(ref isDetectionPageSelect, value);
         }
+
+        /// <summary>
+        /// Load wafer已完成 (locate頁面功能需要判斷)
+        /// </summary>
+        public bool IsLoadwaferComplete { get => isLoadwaferComplete; set => SetValue(ref isLoadwaferComplete, value); }
+        /// <summary>
+        /// locate已完成 (Detection頁面功能需要判斷)
+        /// </summary>
+        public bool IsLocateComplete { get => isLocateComplete; set => SetValue(ref isLocateComplete, value); }
+        public bool IsDetectionComplete { get => isDetectionComplete; set => SetValue(ref isDetectionComplete, value); }
+ 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }

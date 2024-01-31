@@ -29,7 +29,7 @@ namespace WLS3200Gen2
 
         private int tabControlSelectedIndex;
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
-
+        private double manualPosX, manualPosY;
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         public ObservableCollection<WorkItem> WorkItems { get => workItems; set => SetValue(ref workItems, value); }
@@ -40,7 +40,8 @@ namespace WLS3200Gen2
         public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
         public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
         public int TabControlSelectedIndex { get => tabControlSelectedIndex; set => SetValue(ref tabControlSelectedIndex, value); }
-
+        public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
+        public double ManualPosY { get => manualPosY; set => SetValue(ref manualPosY, value); }
 
 
         public ICommand RunCommand => new RelayCommand(async () =>
@@ -55,8 +56,8 @@ namespace WLS3200Gen2
                     WriteLog("Process Start");
                     await machine.ProcessRunAsync(ProcessSetting);
 
-                    
-                
+
+
                     isRunCommand = false;
                 }
                 else
@@ -177,13 +178,13 @@ namespace WLS3200Gen2
         {
             try
             {
-           
+
                 string path = $"{systemPath}\\Recipe\\";
 
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
-                   
+
                 }
 
                 FileInfoWindow win = new FileInfoWindow(true, "WLS3200Gen2", path);
@@ -192,7 +193,7 @@ namespace WLS3200Gen2
                 bool isDialogResult = (bool)win.ShowDialog();
                 if (isDialogResult)
                 {
-     
+
                     var recipename = win.FileName;
                     // machine.BonderRecipe.Save(win.FilePathName);
                     mainRecipe.RecipeSave(path, recipename);
@@ -224,6 +225,55 @@ namespace WLS3200Gen2
             {
             }
         });
+        public ICommand ManualReFindCommand => new RelayCommand(async () =>
+       {
+           try
+           {
+               await machine.MicroDetection.FindFiducial(MainImage, TablePosX, TablePosY);
+
+           }
+           catch (Exception ex)
+           {
+
+               MessageBox.Show(ex.Message);
+           }
+           finally
+           {
+           }
+       });
+        public ICommand ManualMoveCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+
+                await Task.WhenAll(TableX.MoveToAsync(ManualPosX), TableY.MoveToAsync(ManualPosY));
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand ManualGetPosCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                ManualPosX = TablePosX;
+                ManualPosY = TablePosY;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+
         public ICommand TEST1Command => new RelayCommand(async () =>
         {
             try
