@@ -102,7 +102,12 @@ namespace WLS3200Gen2
                 //
                 LogMessage = "Initial ．．．";
                 machine.Initial();
-                LogMessage = "Home ．．．";
+
+                //加入 LOG功能到各模組 一定要放在  machine.Initial()後面
+                machine.MicroDetection.WriteLog += WriteLog;
+                machine.Feeder.WriteLog += WriteLog;
+
+
                 machine.Home();
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;

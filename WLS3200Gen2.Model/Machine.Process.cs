@@ -35,9 +35,7 @@ namespace WLS3200Gen2.Model
                 WriteLog("ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, pts, cts);
 
-                //加入 LOG功能到各模組
-                MicroDetection.WriteLog += WriteLog;
-                Feeder.WriteLog += WriteLog;
+               
 
                 await Task.Run(async () =>
                 {
@@ -123,8 +121,7 @@ namespace WLS3200Gen2.Model
             finally
             {
                 Feeder.ProcessEnd();
-                MicroDetection.WriteLog -= WriteLog;
-                Feeder.WriteLog -= WriteLog;
+            
                 WriteLog("Process Finish ");
             }
 

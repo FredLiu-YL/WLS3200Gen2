@@ -44,18 +44,23 @@ namespace WLS3200Gen2
             isSimulate = true;
 
             //   machineSetting.Load();
-
+          
+          
             machineSetting = new MachineSetting();
 
             machine = new Machine(isSimulate, machineSetting);
-            machine.ChangeRecipe += ChangeRecipe;
-            machine.WriteLog += WriteLog;
+        
 
             Account = UserAccount.Load();
             Account.CurrentAccount.PropertyChanged += CurrentAccountChanged;
 
             //預設為最高權限使用者
             Account.CurrentAccount.Right = RightsModel.Administrator;
+            machine.ChangeRecipe += ChangeRecipe;
+            machine.WriteLog += WriteLog;
+
+ 
+
 
         }
 
