@@ -64,8 +64,8 @@
             </ResourceDictionary>
         </Grid.Resources>
 
-       
-        
+
+
         <!--<TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid"   Style="{StaticResource MaterialDesignNavigationRailTabControl}" TabStripPlacement="Top">-->
 
 
@@ -255,6 +255,9 @@
 
 
                         <TabControl Margin="1" Grid.Row="2"    SelectedIndex="{Binding TabControlSelectedIndex}"  >
+                            <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10">
+
+                            </TabItem>
                             <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
                                     <Grid >
@@ -276,11 +279,10 @@
                             <TabItem Header="Micro Judge" FontSize="10" Visibility="Visible"    Height="10"   >
                                 <Grid>
                                     <Grid.ColumnDefinitions >
-                                        <ColumnDefinition Width="145*" />
-                                        <ColumnDefinition Width="428*"/>
-                                        <ColumnDefinition Width="337*"/>
+                                        <ColumnDefinition Width="0.6*" />
+                                        <ColumnDefinition Width="0.4*"/>
                                     </Grid.ColumnDefinitions>
-                                    <GroupBox Grid.Column="0 " Grid.Row="0" Header="Micro Judge" Grid.ColumnSpan="2" FontSize="15">
+                                    <GroupBox Grid.Column="0 " Grid.Row="0" Header="Micro Judge" Grid.ColumnSpan="1" FontSize="15">
                                         <Grid>
                                             <Grid.RowDefinitions >
                                                 <RowDefinition Height="0.12*"/>
@@ -290,7 +292,7 @@
                                                 <Button Content="PASS" Width="150" Height="30" Margin="5,0,0,0"/>
                                                 <Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>
                                             </StackPanel>
-                                            <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Margin="-8,10,-8,-10" HorizontalAlignment="Left" Width="571"/>
+                                            <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Margin="-8,10,-16,-10" HorizontalAlignment="Left" Width="552" />
                                         </Grid>
 
                                     </GroupBox>
@@ -299,7 +301,7 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <Button Content="Grab" Width="150"/>
                                             </StackPanel>
-                                            <UserControlUC:WorkholderUC Grid.Column="2" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="-8,20,0,0"/>
+                                            <UserControlUC:WorkholderUC Grid.Column="2" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="-8,20,0,0" Height="173" Width="261"/>
                                         </StackPanel>
                                     </GroupBox>
 
@@ -401,7 +403,7 @@
                             <GroupBox Header="MAP" Grid.Row="1" Grid.Column="1"     Grid.RowSpan="4" >
                                 <StackPanel Orientation="Vertical">
                                     <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
-                                    <Button Content="MapLayout Edit" FontSize="20" Height="50" Width="200"/>
+                                    <Button Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}" />
                                 </StackPanel>
                             </GroupBox>
 
@@ -443,9 +445,8 @@
                                             <Grid Grid.Row="0">
                                                 <Grid.RowDefinitions>
 
-                                                    <RowDefinition Height="0.5*"/>
-
-                                                    <RowDefinition Height="0.5*"/>
+                                                    <RowDefinition Height="0.65*"/>
+                                                    <RowDefinition Height="0.35*"/>
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions >
                                                     <ColumnDefinition Width="0.3*"/>
@@ -728,7 +729,7 @@
                                         <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}"  />
                                     </StackPanel>
                                 </Border>
-                             
+
                                 <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" />
                             </Grid>
                         </GroupBox>

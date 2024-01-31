@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
@@ -169,8 +170,8 @@ namespace WLS3200Gen2
         {
             try
             {
-             
-           
+
+
             }
             catch (Exception ex)
             {
@@ -205,13 +206,13 @@ namespace WLS3200Gen2
         //Recipe進入會執行
         private void LoadSettingPage()
         {
-           
+
             WriteLog("Enter the SettingPage");
         }
         //離開recipe頁面會執行
         private void UnLoadSettingPage()
         {
-    
+
         }
 
         //進入locate頁會執行
@@ -269,7 +270,6 @@ namespace WLS3200Gen2
 
         public ICommand LoadMappingCommand => new RelayCommand<string>(async key =>
         {
-
             MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
             ClearMapShapeAction.Execute(MapDrawings);
 
@@ -315,6 +315,102 @@ namespace WLS3200Gen2
                 AddMapShapeAction.Execute(center);
             }
         });
+
+        public ICommand EditMappingCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                string SINF_Path = "";
+                System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+                dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+                dlg_image.InitialDirectory = SINF_Path;
+                if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    SINF_Path = dlg_image.FileName;
+                    if (SINF_Path != "")
+                    {
+                        var m_Sinf = new SinfWaferMapping("");
+                        m_Sinf.ReadWaferFile(SINF_Path);
+
+                        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+                        mainRecipe.DetectRecipe.WaferMap.Dies = m_Sinf.Dies.ToArray();
+
+                        ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+
+                    }
+                }
+                else
+                {
+                    SINF_Path = "";
+                }
+
+
+
+
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        });
+
+
+        public void ShowMappingDrawings(Die[] dies, int columnCount, int rowCount, int mappingImageDrawSize)
+        {
+            try
+            {
+                ClearMapShapeAction.Execute(true);
+                double showSize_X;
+                double showSize_Y;
+                double dieSizeX = dies[0].DieSize.Width;
+                double dieSizeY = dies[0].DieSize.Height;
+                double scale = 1;
+                scale = Math.Max((columnCount + 2.5) * dieSizeX, (rowCount + 2.5) * dieSizeY) / mappingImageDrawSize;
+                double strokeThickness = 1;
+                double crossThickness = 1;
+                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
+                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
+
+                showSize_X = (columnCount * dieSizeX) / mappingImageDrawSize;
+                showSize_Y = (rowCount * dieSizeY) / mappingImageDrawSize;
+                foreach (var item in dies)
+                {
+                    Brush drawStroke = Brushes.Black;
+                    Brush drawFill = Brushes.Gray;
+                    //判斷要用什麼顏色
+                    //foreach (var item2 in collection)
+                    //{
+
+                    //}
+                    AddMapShapeAction.Execute(new ROIRotatedRect
+                    {
+                        Stroke = drawStroke,
+                        StrokeThickness = strokeThickness,
+                        Fill = drawFill,
+                        X = (item.PosX + item.DieSize.Width * 1.5) / showSize_X,
+                        Y = (item.PosY + item.DieSize.Height * 1.5) / showSize_Y,
+                        LengthX = item.DieSize.Width / 2.5 / showSize_X,
+                        LengthY = item.DieSize.Height / 2.5 / showSize_Y,
+                        IsInteractived = true,
+                        IsMoveEnabled = false,
+                        IsResizeEnabled = false,
+                        IsRotateEnabled = false,
+                        CenterCrossLength = crossThickness,
+                        CenterCrossBrush = drawFill,
+                        ToolTip = "X:" + item.IndexX + " Y:" + item.IndexY + " X:" + item.PosX + " Y:" + item.PosY
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
         public ICommand EditSampleCommand => new RelayCommand<string>(async key =>
         {
@@ -364,7 +460,7 @@ namespace WLS3200Gen2
 
                 //將所有的Die 轉換成實際片子座標(如果建立樣本時的wafer 與 LocateRun 是一起建立的  那座標會一樣 ，主要Locate目的是針對換wafer以後要重新對位
                 //如果有需要調整檢測座標 ，需要重新做對位  ，對位後會重新建立新的map全部die座標 ，為了給後續檢測座標設定使用 
-           
+
                 //依序轉換完對位前座標  ，轉換成對位後座標 塞回機械座標
                 foreach (Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
                 {

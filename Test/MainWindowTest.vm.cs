@@ -15,6 +15,7 @@ using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Component;
 using WLS3200Gen2.Model.Component.Adlink;
 using WLS3200Gen2.Model.Module;
+using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Interface;
 using YuanliCore.Motion;
@@ -348,31 +349,57 @@ namespace Test
                 //{
                 //    OutputSwitchs[0] = false;
                 //}
-                bool ss = true;
-                if (ss)
+
+                
+                string SINF_Path = "";
+                System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+                dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+                dlg_image.InitialDirectory = SINF_Path;
+                if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    AddShapeMappingAction.Execute(new ROICircle
+                    SINF_Path = dlg_image.FileName;
+                    if (SINF_Path != "")
                     {
-                        Stroke = Brushes.Yellow,
-                        //StrokeThickness = this.StrokeThickness,
-                        Fill = Brushes.Transparent,//Brushes.Blue,
-                        X = 1000,
-                        Y = 1000,
-                        Radius = 1000,
-                        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
-                        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
-                        IsInteractived = true,
-                        IsMoveEnabled = false,
-                        IsResizeEnabled = false,
-                        IsRotateEnabled = false,
-                        CenterCrossLength = 0,
-                        ToolTip = "Circle"
-                    });
+                        var m_Sinf = new SinfWaferMapping("");
+                        m_Sinf.ReadWaferFile(SINF_Path);
+
+                    }
                 }
                 else
                 {
-                    ClearShapeMappingAction.Execute(true);
+                    SINF_Path = "";
                 }
+
+               
+
+                //cc.Dies;
+
+
+                //bool ss = true;
+                //if (ss)
+                //{
+                //    AddShapeMappingAction.Execute(new ROICircle
+                //    {
+                //        Stroke = Brushes.Yellow,
+                //        //StrokeThickness = this.StrokeThickness,
+                //        Fill = Brushes.Transparent,//Brushes.Blue,
+                //        X = 1000,
+                //        Y = 1000,
+                //        Radius = 1000,
+                //        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
+                //        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
+                //        IsInteractived = true,
+                //        IsMoveEnabled = false,
+                //        IsResizeEnabled = false,
+                //        IsRotateEnabled = false,
+                //        CenterCrossLength = 0,
+                //        ToolTip = "Circle"
+                //    });
+                //}
+                //else
+                //{
+                //    ClearShapeMappingAction.Execute(true);
+                //}
 
             }
             catch (Exception ex)
