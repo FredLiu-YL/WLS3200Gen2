@@ -166,9 +166,6 @@
     <Compile Include="UserControls\RobotUnitUC.xaml.cs">
       <DependentUpon>RobotUnitUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewControl\SINFMappingGenerate.xaml.cs">
-      <DependentUpon>SINFMappingGenerate.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewControl\WaferMappingCanvas.xaml.cs">
       <DependentUpon>WaferMappingCanvas.xaml</DependentUpon>
     </Compile>
@@ -180,6 +177,9 @@
     </Compile>
     <Compile Include="UserControls\WorkholderUC.xaml.cs">
       <DependentUpon>WorkholderUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SINFMapGenerateWindow.xaml.cs">
+      <DependentUpon>SINFMapGenerateWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Windows\BincodeSettingWindow.xaml">
       <SubType>Designer</SubType>
@@ -233,10 +233,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewControl\SINFMappingGenerate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ViewControl\WaferMappingCanvas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -246,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\ExistNotifyUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SINFMapGenerateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

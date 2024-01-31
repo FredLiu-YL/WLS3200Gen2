@@ -1,0 +1,215 @@
+﻿<Window x:Class="WLS3200Gen2.SINFMapGenerateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WLS3200Gen2"
+        xmlns:views="clr-namespace:WLS3200Gen2.Views"        
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        x:Name="SINFMapGenerate"
+        Title="SINFMapGenerateWindow" Height="1050" Width="1920">
+    <Grid DataContext="{Binding ElementName=SINFMapGenerate}">
+        <Grid Grid.ColumnSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition  Width ="0.2*"/>
+                <ColumnDefinition  Width ="0.6*"/>
+                <ColumnDefinition  Width ="0.2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="0.8*"/>
+                    <RowDefinition Height="0.2*"/>
+                </Grid.RowDefinitions>
+                <GroupBox Grid.Column="0" Grid.Row="0"  Header="Wafer Information" FontSize="20" BorderBrush="Black"  BorderThickness="2" >
+                    <Grid >
+                        <Grid.RowDefinitions  >
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions >
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Lot" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+                        <Label Content="Wafer Slot" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                        <Label Content="Recipe Name" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
+                        <Label Content="Die PitchX(um)" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center"/>
+                        <Label Content="Die PitchY(um)" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center"/>
+
+
+
+                        <Label Content="Testables" Grid.Column="0" Grid.Row="10" VerticalAlignment="Center"/>
+                        <Label Content="Inkdies" Grid.Column="0" Grid.Row="11" VerticalAlignment="Center"/>
+                        <Label Content="Wafer Size" Grid.Column="0" Grid.Row="12" VerticalAlignment="Center"/>
+
+                        <TextBox Grid.Column="1" Grid.Row="0" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Wafer_ID}"  />
+                        <TextBox Grid.Column="1" Grid.Row="1" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Wafer_Slot}" />
+
+                        <TextBox Grid.Column="1" Grid.Row="2" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Recipe_Name}" />
+                        <TextBox Grid.Column="1" Grid.Row="3" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Die_PitchX}" />
+                        <TextBox Grid.Column="1" Grid.Row="4" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Die_PitchY}" />
+
+                        <TextBox Grid.Column="1" Grid.Row="10" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Test_Count}" IsReadOnly="True"/>
+                        <TextBox Grid.Column="1" Grid.Row="11" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Ink_Count}" IsReadOnly="True"  />
+                        <ComboBox  Grid.Column="1" Grid.Row="12" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" >
+                            <ComboBoxItem Content="8" IsSelected="{Binding IsWaferSize_8}"/>
+                            <ComboBoxItem Content="12" IsSelected="{Binding IsWaferSize_12}"/>
+                        </ComboBox>
+                        <Button Content="Draw" Grid.Column="1" Grid.Row="13" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="180" Background="LightSkyBlue" Command="{Binding BtnDraw}"  />
+
+
+                        <TabControl Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4" SelectedIndex="{Binding TabControlDraw_SelectedIndex}">
+                            <TabItem Header="AutoCount">
+                                <Grid >
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition Width="183*"  />
+                                        <ColumnDefinition Width="140*"  />
+                                        <ColumnDefinition Width="42*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions >
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Label Content="RimThickness(um)" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="0,14"/>
+                                    <Label Content="CountOffset X" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Margin="0,13"/>
+                                    <Label Content="CountOffset Y" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Margin="0,13"/>
+                                    <TextBox Grid.Column="1" Grid.Row="0" Height="35" Width="180" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding RimThickness_Distance}" Grid.ColumnSpan="2" Margin="0,14" />
+                                    <TextBox Grid.Column="1" Grid.Row="1" Height="36" Width="180" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding DrawCountOffset_X}" Grid.ColumnSpan="2" Margin="0,13" />
+                                    <TextBox Grid.Column="1" Grid.Row="2" Height="36" Width="180" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding DrawCountOffset_Y}" Grid.ColumnSpan="2" Margin="0,13" />
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="ColumnRow">
+                                <Grid >
+                                    <Grid.ColumnDefinitions >
+                                        <ColumnDefinition  />
+                                        <ColumnDefinition  />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions >
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Label Content="Total X" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                                    <Label Content="Total Y" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" Grid.Row="1" Height="35" Width="180" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding DrawTotal_X}" />
+                                    <TextBox Grid.Column="1" Grid.Row="2" Height="35" Width="180" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding DrawTotal_Y}" />
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+
+
+                    </Grid>
+                </GroupBox>
+                <GroupBox Grid.Column="0" Grid.Row="1"  Header="Classification" FontSize="20" BorderBrush="Black"  BorderThickness="2" >
+                    <Grid>
+                        <Grid.RowDefinitions   >
+                            <RowDefinition Height  ="0.2*"/>
+                            <RowDefinition Height  ="0.8*"/>
+                        </Grid.RowDefinitions>
+                        <Button Content="BinDraw Select" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left"  Height="35"  VerticalAlignment="Center"  Width="150" Background="LightSkyBlue" Command="{Binding BINSelect}" />
+                        <DataGrid Grid.Row="1" IsReadOnly="True"   AutoGenerateColumns="False" CanUserReorderColumns="False"  CanUserSortColumns ="False" CanUserAddRows="False"  ItemsSource="{Binding BinCodeDrawDataGridList}" >
+                            <DataGrid.Columns >
+                                <DataGridTextColumn CanUserResize="False" Header="Bin Edit." Binding="{Binding BinType}" Width="30*"/>
+                                <DataGridTextColumn CanUserResize="False" Header="ID" Binding="{Binding Code}" Width="30*"/>
+                                <!--<DataGridTextColumn CanUserResize="False" Header="Name" Binding="{Binding Description}" Width="40*"/>-->
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+
+                </GroupBox>
+
+            </Grid>
+
+
+
+            <GroupBox Grid.Row="0" Grid.Column="1"   Header="Mapping" FontSize="20" BorderBrush="Black"  BorderThickness="2">
+                
+                <views:WaferMappingCanvas Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Width="950" Height="980" Margin="3" ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
+                            MousePixcel="{Binding MappingMousePixel}" IsMoveEnable="{Binding MappingIsMoveEnable}"   RemoveShapeAction="{Binding RemoveShapeMappingAction}"  AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
+                                     
+                        Grid.ColumnSpan="2" IsShowBar="True"     >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction Command="{Binding MappingPreviewMouseUpCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </views:WaferMappingCanvas>
+            </GroupBox>
+
+            <Grid Grid.Row="0" Grid.Column="2">
+                <Grid>
+                    <Grid.RowDefinitions >
+                        <RowDefinition Height="0.30*"/>
+                        <RowDefinition Height="0.05*"/>
+                        <RowDefinition Height="0.25*"/>
+                        <RowDefinition Height="0.40*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox   Header="Path" FontSize="20" BorderBrush="Black"   >
+                        <Grid >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions >
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBox Grid.Column="0" Grid.Row="0"  IsReadOnly="True" Height="30" Width="325"  VerticalAlignment="Center" HorizontalAlignment="Left"  Text="{Binding SinfPath}" Grid.ColumnSpan="2"/>
+                            <Button Grid.Column="1" Grid.Row="1" Content="Read" HorizontalAlignment="Left"  Height="34"  VerticalAlignment="Center"  Width="150" Command="{Binding SINFTrans}" Background="LightSkyBlue"/>
+                            <TextBox Grid.Column="0" Grid.Row="2"  IsReadOnly="True" Height="30" Width="325"  VerticalAlignment="Center" HorizontalAlignment="Left"  Text="{Binding SinfSavePath}" Grid.ColumnSpan="2"/>
+                            <Button Grid.Column="1" Grid.Row="3" Content="Save Changes" HorizontalAlignment="Left"  Height="34"  VerticalAlignment="Center" Width="150" FontSize="20" Command="{Binding SINFSave}" Background="LightSkyBlue"/>
+                        </Grid>
+
+                    </GroupBox>
+                    <CheckBox Content="MappingIsMoveEnable" Grid.Row="1" Grid.Column="0" FontSize="20" VerticalAlignment="Bottom"  IsChecked="{Binding MappingIsMoveEnable}"  />
+                    <GroupBox Grid.Row="2" Header="Bin Edit" FontSize="20" BorderBrush="Black"  BorderThickness="2" IsEnabled="{Binding IsEditBinGBEnable}" >
+                        <Grid >
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width ="0.25*"/>
+                                <ColumnDefinition Width ="0.25*"/>
+                                <ColumnDefinition Width ="0.25*"/>
+                                <ColumnDefinition Width ="0.25*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions >
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+
+                            <RadioButton  Grid.Column="0" Grid.Row="0"  Content="Test" GroupName = "MappingEditDie" IsChecked="{Binding Mapping_IsTeseted}"/>
+                            <RadioButton  Grid.Column="0" Grid.Row="1"  Content="Skip" GroupName = "MappingEditDie" IsChecked="{Binding Mapping_IsSkip}"/>
+                            <RadioButton  Grid.Column="0" Grid.Row="2"  Content="Ink" GroupName = "MappingEditDie"  IsChecked="{Binding Mapping_IsInk}"/>
+
+
+
+                            <Button Content="loadPicture" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="90" Background="LightSkyBlue" Command="{Binding BtnLoadPicture}" Visibility="Hidden"   />
+                            <Button Content="Test" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="90" Background="LightSkyBlue" Command="{Binding BtnTest}" Visibility="Hidden" />
+
+
+
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

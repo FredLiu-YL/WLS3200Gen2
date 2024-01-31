@@ -267,22 +267,22 @@ namespace WLS3200Gen2
 
 
 
-        public ICommand  MappingEditCommand => new RelayCommand(() =>
-        {
-            try
-            {
-                BincodeSettingWindow settingWindow = new BincodeSettingWindow();
-                settingWindow.ShowDialog();
+        public ICommand MappingEditCommand => new RelayCommand(() =>
+       {
+           try
+           {
+               BincodeSettingWindow settingWindow = new BincodeSettingWindow();
+               settingWindow.ShowDialog();
 
 
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+           }
+           catch (Exception ex)
+           {
+               MessageBox.Show(ex.Message);
+           }
 
-        });
+       });
         public ICommand LoadMappingCommand => new RelayCommand(() =>
         {
             MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
@@ -335,33 +335,34 @@ namespace WLS3200Gen2
         {
             try
             {
-                string SINF_Path = "";
-                System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
-                dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
-                dlg_image.InitialDirectory = SINF_Path;
-                if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    SINF_Path = dlg_image.FileName;
-                    if (SINF_Path != "")
-                    {
-                        var m_Sinf = new SinfWaferMapping("");
-                        m_Sinf.ReadWaferFile(SINF_Path);
+                //string SINF_Path = "";
+                //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+                //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+                //dlg_image.InitialDirectory = SINF_Path;
+                //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                //{
+                //    SINF_Path = dlg_image.FileName;
+                //    if (SINF_Path != "")
+                //    {
+                //        var m_Sinf = new SinfWaferMapping("");
+                //        m_Sinf.ReadWaferFile(SINF_Path);
 
-                        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
-                        mainRecipe.DetectRecipe.WaferMap.Dies = m_Sinf.Dies.ToArray();
+                //        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+                //        mainRecipe.DetectRecipe.WaferMap.Dies = m_Sinf.Dies.ToArray();
 
-                        ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                //        ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
 
-                    }
-                }
-                else
-                {
-                    SINF_Path = "";
-                }
-
-
+                //    }
+                //}
+                //else
+                //{
+                //    SINF_Path = "";
+                //}
 
 
+
+                SINFMapGenerateWindow sINFMapGenerateWindow = new SINFMapGenerateWindow();
+                sINFMapGenerateWindow.ShowDialog();
 
 
             }
@@ -382,15 +383,16 @@ namespace WLS3200Gen2
                 double showSize_Y;
                 double dieSizeX = dies[0].DieSize.Width;
                 double dieSizeY = dies[0].DieSize.Height;
+                double offsetDraw = mappingImageDrawSize / 150;
                 double scale = 1;
-                scale = Math.Max((columnCount + 2.5) * dieSizeX, (rowCount + 2.5) * dieSizeY) / mappingImageDrawSize;
+                scale = Math.Max((columnCount + 2.5) * dieSizeX, (rowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
                 double strokeThickness = 1;
                 double crossThickness = 1;
                 strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
                 crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
 
-                showSize_X = (columnCount * dieSizeX) / mappingImageDrawSize;
-                showSize_Y = (rowCount * dieSizeY) / mappingImageDrawSize;
+                showSize_X = (columnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
+                showSize_Y = (rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
                 foreach (var item in dies)
                 {
                     Brush drawStroke = Brushes.Black;
@@ -405,8 +407,8 @@ namespace WLS3200Gen2
                         Stroke = drawStroke,
                         StrokeThickness = strokeThickness,
                         Fill = drawFill,
-                        X = (item.PosX + item.DieSize.Width * 1.5) / showSize_X,
-                        Y = (item.PosY + item.DieSize.Height * 1.5) / showSize_Y,
+                        X = (item.PosX + item.DieSize.Width * 0.5) / showSize_X + offsetDraw,
+                        Y = (item.PosY + item.DieSize.Height * 0.5) / showSize_Y + offsetDraw,
                         LengthX = item.DieSize.Width / 2.5 / showSize_X,
                         LengthY = item.DieSize.Height / 2.5 / showSize_Y,
                         IsInteractived = true,
@@ -427,7 +429,7 @@ namespace WLS3200Gen2
             }
         }
 
-        public ICommand EditSampleCommand => new RelayCommand(()=>
+        public ICommand EditSampleCommand => new RelayCommand(() =>
         {
             try
             {

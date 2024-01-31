@@ -165,7 +165,7 @@ namespace WLS3200Gen2.Model.Recipe
                         }
                     }
                 }
-                SaveAS(path, Dies, startDraw_X, endDraw_X, startDraw_Y, endDraw_Y);
+                SaveAS(path, startDraw_X, endDraw_X, startDraw_Y, endDraw_Y);
             }
             catch (Exception)
             {
@@ -174,42 +174,42 @@ namespace WLS3200Gen2.Model.Recipe
             }
         }
 
-        private SinfMode Mode { get; set; }
+        public SinfMode Mode { get; set; }
         /// <summary>
         /// FNLOC(Wafer的大小)
         /// </summary>
-        private string Wafer_Size { get; set; }
-        private string Device_Name { get; set; }
-        private string Lot_ID { get; set; }
-        private int Wafer_Idx { get; set; }
-        private double Notch_Degree { get; set; }
-        private int Count_Row { get; set; }
-        private int Count_Column { get; set; }
+        public string Wafer_Size { get; set; }
+        public string Device_Name { get; set; }
+        public string Lot_ID { get; set; }
+        public int Wafer_Idx { get; set; }
+        public double Notch_Degree { get; set; }
+        public int Count_Row { get; set; }
+        public int Count_Column { get; set; }
         /// <summary>
         /// BCEQU
         /// </summary>
-        private string Bin_Codes { get; set; }
-        private double Ref_PointX { get; set; }
-        private double Ref_PointY { get; set; }
+        public string Bin_Codes { get; set; }
+        public double Ref_PointX { get; set; }
+        public double Ref_PointY { get; set; }
         /// <summary>
         /// DUTMS(單位大小)
         /// </summary>
-        private string Unit { get; set; }//DUTMS
-        private double DieSize_X { get; set; }
-        private double DieSize_Y { get; set; }
+        public string Unit { get; set; }//DUTMS
+        public double DieSize_X { get; set; }
+        public double DieSize_Y { get; set; }
 
 
-        private double Start_LeftX { get; set; }
-        private double Start_TopY { get; set; }
-        private string Direction_X { get; set; }
-        private string Direction_Y { get; set; }
-        private double Total_Die { get; set; }
+        public double Start_LeftX { get; set; }
+        public double Start_TopY { get; set; }
+        public string Direction_X { get; set; }
+        public string Direction_Y { get; set; }
+        public double Total_Die { get; set; }
 
         public DieDraw[,] Dies_result { get; set; }
 
-        private Direction posDirection;
+        public Direction posDirection;
 
-        private Point mapCenter;
+        public Point mapCenter;
 
         private void ReadSinf(string pfilePath)
         {
@@ -453,13 +453,13 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
-        public void SaveAS(string pathFile, Die[] dies, int star_X, int end_X, int star_Y, int end_Y)
+        public void SaveAS(string pathFile, int star_X, int end_X, int star_Y, int end_Y)
         {
             try
             {
                 DieDraw[] flattenedArray = Dies_result.Cast<DieDraw>().ToArray();
 
-                foreach (var item in dies)
+                foreach (var item in Dies)
                 {
                     flattenedArray.FirstOrDefault(die => die.TransIndexX == item.IndexX && die.TransIndexY == item.IndexY).DieData = item.BinCode;
                 }
@@ -534,14 +534,14 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
-        private enum SinfMode
+        public enum SinfMode
         {
             Sinf_Sample,
             Sinf_Dir,
             Sinf_Dir_Total,
             Error
         }
-        private enum Direction
+        public enum Direction
         {
             /// <summary>
             /// OrgPos->LeftTop  Degree 0

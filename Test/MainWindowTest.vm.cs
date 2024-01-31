@@ -351,24 +351,24 @@ namespace Test
                 //}
 
                 
-                string SINF_Path = "";
-                System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
-                dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
-                dlg_image.InitialDirectory = SINF_Path;
-                if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    SINF_Path = dlg_image.FileName;
-                    if (SINF_Path != "")
-                    {
-                        var m_Sinf = new SinfWaferMapping("");
-                        m_Sinf.ReadWaferFile(SINF_Path);
+                //string SINF_Path = "";
+                //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+                //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+                //dlg_image.InitialDirectory = SINF_Path;
+                //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                //{
+                //    SINF_Path = dlg_image.FileName;
+                //    if (SINF_Path != "")
+                //    {
+                //        var m_Sinf = new SinfWaferMapping("");
+                //        m_Sinf.ReadWaferFile(SINF_Path);
 
-                    }
-                }
-                else
-                {
-                    SINF_Path = "";
-                }
+                //    }
+                //}
+                //else
+                //{
+                //    SINF_Path = "";
+                //}
 
                
 
