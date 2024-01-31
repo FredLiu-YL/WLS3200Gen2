@@ -111,6 +111,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Windows\BincodeSettingWindow.xaml.cs">
+      <DependentUpon>BincodeSettingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.vm.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -178,6 +181,10 @@
     <Compile Include="UserControls\WorkholderUC.xaml.cs">
       <DependentUpon>WorkholderUC.xaml</DependentUpon>
     </Compile>
+    <Page Include="Windows\BincodeSettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

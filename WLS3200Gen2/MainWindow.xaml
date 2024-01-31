@@ -401,10 +401,23 @@
                                 </i:Interaction.Triggers>
                             </views:VirtualCanvas>
                             <GroupBox Header="MAP" Grid.Row="1" Grid.Column="1"     Grid.RowSpan="4" >
-                                <StackPanel Orientation="Vertical">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        
+                                    </Grid.RowDefinitions>
                                     <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
+                                    <Button Grid.Column="1" Content="MapLayout Edit" FontSize="20" Height="50" Width="200"   />
+                                    <Button Grid.Row="1" Grid.Column="1" Content="BIN codeEdit" FontSize="20" Height="50" Width="200"  Command="{Binding MappingEditCommand}" />
                                     <Button Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}" />
-                                </StackPanel>
+                                </Grid>
+                          
                             </GroupBox>
 
                         </Grid>
@@ -520,9 +533,9 @@
                                                     </Grid>
                                                 </GroupBox>
                                                 <GroupBox Header="Macro" Grid.Row="0" Grid.Column="1">
-                                                    <StackPanel Orientation="Vertical"  >
-                                                        <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" />
-                                                        <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" />
+                                                    <StackPanel Orientation="Vertical" Margin="-5"  >
+                                                        <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" Width="380" />
+                                                        <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" Width="380" />
                                                         <UserControlUC:MacroUnitUC Grid.Column="3" Grid.Row="2" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
                                                     </StackPanel>
                                                 </GroupBox>

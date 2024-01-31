@@ -118,6 +118,7 @@
     <Compile Include="Module\SECS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe\AlignmentRecipe.cs" />
+    <Compile Include="Recipe\BincodeList.cs" />
     <Compile Include="Recipe\Cassette.cs" />
     <Compile Include="Recipe\DetectionRecipe.cs" />
     <Compile Include="Recipe\Die.cs" />
