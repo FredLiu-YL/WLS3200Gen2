@@ -240,57 +240,60 @@ namespace Test
         {
             try
             {
-
-                while (isRefresh)
+                await Task.Run(async () =>
                 {
-                    if (LoadPort != null)
+                    while (isRefresh)
                     {
-                        LoadPortStatus loadPortStatus = new LoadPortStatus();
-                        loadPortStatus = await LoadPort.GetStatus();
-                        LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
-                        LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
-                        LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
-                        LoadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
-                        LoadPortUIShow.IsClamp = loadPortStatus.IsClamp;
-                        LoadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
-                        LoadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
-                        LoadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
-                        LoadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
-                        LoadPortUIShow.IsDock = loadPortStatus.IsDock;
+                        if (LoadPort != null)
+                        {
+                            LoadPortStatus loadPortStatus = new LoadPortStatus();
+                            loadPortStatus = LoadPort.GetStatus();
+                            LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
+                            LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
+                            LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
+                            LoadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
+                            LoadPortUIShow.IsClamp = loadPortStatus.IsClamp;
+                            LoadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
+                            LoadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
+                            LoadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
+                            LoadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
+                            LoadPortUIShow.IsDock = loadPortStatus.IsDock;
+                        }
+                        if (Aligner != null)
+                        {
+                            AlignerStatus alignerStatus = new AlignerStatus();
+                            alignerStatus = Aligner.GetStatus();
+                            AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
+                            AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
+                            AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
+                            AlignerUIShow.IsWafer = alignerStatus.IsWafer;
+                            AlignerUIShow.IsOrg = alignerStatus.IsOrg;
+                            AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
+                        }
+                        if (Robot != null)
+                        {
+                            RobotStatus robotStatus = new RobotStatus();
+                            robotStatus = Robot.GetStatus();
+                            RobotStaus.Mode = robotStatus.Mode;
+                            RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
+                            RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
+                            RobotStaus.IsCommandDoneSignal = robotStatus.IsCommandDoneSignal;
+                            RobotStaus.IsMovDoneSignal = robotStatus.IsMovDoneSignal;
+                            RobotStaus.IsRunning = robotStatus.IsRunning;
+                            RobotStaus.ErrorCode = robotStatus.ErrorCode;
+                            RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
+
+                            RobotStaus.IsHavePiece = Robot.IsHavePiece();
+                            RobotStaus.IsLockOK = Robot.IsLockOK();
+                            //RobotUIIShow
+                        }
+
+
+
+                        await Task.Delay(300);
                     }
-                    if (Aligner != null)
-                    {
-                        AlignerStatus alignerStatus = new AlignerStatus();
-                        alignerStatus = await Aligner.GetStatus();
-                        AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
-                        AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
-                        AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
-                        AlignerUIShow.IsWafer = alignerStatus.IsWafer;
-                        AlignerUIShow.IsOrg = alignerStatus.IsOrg;
-                        AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
-                    }
-                    if (Robot != null)
-                    {
-                        RobotStatus robotStatus = new RobotStatus();
-                        robotStatus = await Robot.GetStatus();
-                        RobotStaus.Mode = robotStatus.Mode;
-                        RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
-                        RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
-                        RobotStaus.IsCommandDoneSignal = robotStatus.IsCommandDoneSignal;
-                        RobotStaus.IsMovDoneSignal = robotStatus.IsMovDoneSignal;
-                        RobotStaus.IsRunning = robotStatus.IsRunning;
-                        RobotStaus.ErrorCode = robotStatus.ErrorCode;
-                        RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
+                });
 
-                        RobotStaus.IsHavePiece = await Robot.IsHavePiece();
-                        RobotStaus.IsLockOK = await Robot.IsLockOK();
-                        //RobotUIIShow
-                    }
-
-
-
-                    await Task.Delay(300);
-                }
 
             }
             catch (Exception ex)
@@ -311,7 +314,10 @@ namespace Test
                     if (LoadPort != null)
                     {
                         LoadPortParam loadPortParam = new LoadPortParam();
-                        loadPortParam = await LoadPort.GetParam();
+                        await Task.Run(() =>
+                        {
+                            loadPortParam = LoadPort.GetParam();
+                        });
                         LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
                         LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
                         LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
@@ -350,7 +356,7 @@ namespace Test
                 //    OutputSwitchs[0] = false;
                 //}
 
-                
+
                 //string SINF_Path = "";
                 //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
                 //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
@@ -370,7 +376,7 @@ namespace Test
                 //    SINF_Path = "";
                 //}
 
-               
+
 
                 //cc.Dies;
 

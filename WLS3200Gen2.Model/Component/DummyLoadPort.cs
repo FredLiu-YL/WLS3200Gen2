@@ -8,12 +8,7 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyLoadPort : ILoadPort
     {
-        private bool isMapping;
-        private bool?[] slot;
-
-        public bool IsMapping => isMapping;
-
-        public bool?[] Slot => slot;
+        public bool?[] Slot => throw new NotImplementedException();
 
         public void AlarmReset()
         {
@@ -25,68 +20,64 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public LoadPortParam GetParam()
+        public Task<LoadPortParam> GetParam()
         {
             throw new NotImplementedException();
         }
 
-        public LoadPortStatus GetStatus()
+        public Task<LoadPortStatus> GetStatus()
         {
             throw new NotImplementedException();
         }
 
-        public async Task Home()
+        public void Home()
         {
-           
+
         }
 
         public void Initial()
         {
-     
+
         }
 
-        public async Task Load()
+
+
+        public void Load()
         {
-            
-        }
 
-        public Task SetParam(LoadPortParam loadPortParam)
-        {
-            throw new NotImplementedException();
         }
-
         public void SlotMapping()
         {
-            try
-            {
+            //try
+            //{
 
 
-                List<bool?> slotList = new List<bool?>();
+            //    List<bool?> slotList = new List<bool?>();
 
-                for (int i = 0; i < 20; i++)
-                    slotList.Add(true);
+            //    for (int i = 0; i < 20; i++)
+            //        slotList.Add(true);
 
-                slot = slotList.ToArray();
-                isMapping = true;
-            }
-            catch (Exception ex)
-            {
+            //    slot = slotList.ToArray();
+            //    isMapping = true;
+            //}
+            //catch (Exception ex)
+            //{
 
-                throw ex;
-            }
+            //    throw ex;
+            //}
         }
 
-        Task ILoadPort.AlarmReset()
+        public void SetParam(LoadPortParam loadPortParam)
         {
             throw new NotImplementedException();
         }
 
-        Task<LoadPortParam> ILoadPort.GetParam()
+        LoadPortStatus ILoadPort.GetStatus()
         {
             throw new NotImplementedException();
         }
 
-        Task<LoadPortStatus> ILoadPort.GetStatus()
+        LoadPortParam ILoadPort.GetParam()
         {
             throw new NotImplementedException();
         }

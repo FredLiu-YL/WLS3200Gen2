@@ -61,7 +61,10 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.Home();
+                await Task.Run(async () =>
+                {
+                    Aligner.Home();
+                });
             }
             catch (Exception ex)
             {
@@ -77,7 +80,10 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.Vaccum(true);
+                await Task.Run(async () =>
+                {
+                    Aligner.Vaccum(true);
+                });
             }
             catch (Exception ex)
             {
@@ -93,7 +99,10 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.Vaccum(false);
+                await Task.Run(async () =>
+                {
+                    Aligner.Vaccum(false);
+                });
             }
             catch (Exception ex)
             {
@@ -109,7 +118,10 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.Run(Degree);
+                await Task.Run(async () =>
+                {
+                    Aligner.Run(Degree);
+                });
             }
             catch (Exception ex)
             {
@@ -125,7 +137,10 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.AlarmReset();
+                await Task.Run(async () =>
+                {
+                    Aligner.AlarmReset();
+                });
             }
             catch (Exception ex)
             {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using YuanliCore.Data;
 
 namespace WLS3200Gen2.Model.Recipe
@@ -70,57 +71,85 @@ namespace WLS3200Gen2.Model.Recipe
     {
         public SinfWaferMapping(string path) : base(path)
         {
+
         }
         public override (Die[] dies, Size waferSize) ReadWaferFile(string path)
         {
             try
             {
-                ReadSinf(path);
-                Dies_result = RotateMap(posDirection, Dies_result);
-                if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
-                {
-                    MapCenterPoint = new Point(mapCenter.X, mapCenter.Y);
-                }
-                else
-                {
-                    MapCenterPoint = new Point(mapCenter.Y, mapCenter.X);
-                }
+                Mode = SinfMode.Sinf_Sample;
+                Device_Name = "";
+                Lot_ID = "";
+                Wafer_Idx = 1;
+                Notch_Degree = 0;
+                Count_Row = 0;
 
-
-                Die[] die = new Die[Dies_result.GetLength(0) * Dies_result.GetLength(1)];
-                int idx = 0;
-                ColumnCount = Dies_result.GetLength(0);
-                RowCount = Dies_result.GetLength(1);
-                for (int i = 0; i < Dies_result.GetLength(0); i++)
-                {
-                    for (int j = 0; j < Dies_result.GetLength(1); j++)
-                    {
-                        double dieSizeX = 0;
-                        double dieSizeY = 0;
-                        if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
-                        {
-                            dieSizeX = Dies_result[i, j].DieSizeX;
-                            dieSizeY = Dies_result[i, j].DieSizeY;
-                        }
-                        else
-                        {
-                            dieSizeX = Dies_result[i, j].DieSizeY;
-                            dieSizeY = Dies_result[i, j].DieSizeX;
-                        }
-                        die[idx] = new Die
-                        {
-                            IndexX = Dies_result[i, j].TransIndexX,
-                            IndexY = Dies_result[i, j].TransIndexY,
-                            PosX = Dies_result[i, j].TransPositionX,
-                            PosY = Dies_result[i, j].TransPositionY,
-                            BinCode = Dies_result[i, j].TransDieData,
-                            DieSize = new Size(dieSizeX, dieSizeY)
-                        };
-                        idx++;
-                    }
-                }
+                Count_Column = 0;
+                Bin_Codes = "000";
+                Ref_PointX = 0;
+                Ref_PointY = 0;
+                Unit = "MM";
+                DieSize_X = 1;
+                DieSize_Y = 1;
+                Die[] die = new Die[1];
+                die[0] = new Die();
+                die[0].IndexX = 0;
+                die[0].IndexY = 0;
+                die[0].PosX = 0;
+                die[0].PosY = 0;
+                die[0].BinCode = "";
+                die[0].DieSize = new Size(0, 0);
                 Size waferSize = new Size();
+                if (System.IO.File.Exists(path))
+                {
+                    Dies_result = new DieDraw[0, 0];
+                    ReadSinf(path);
+                    Dies_result = RotateMap(posDirection, Dies_result);
+                    if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
+                    {
+                        MapCenterPoint = new Point(mapCenter.X, mapCenter.Y);
+                    }
+                    else
+                    {
+                        MapCenterPoint = new Point(mapCenter.Y, mapCenter.X);
+                    }
 
+
+                    die = new Die[Dies_result.GetLength(0) * Dies_result.GetLength(1)];
+                    int idx = 0;
+                    ColumnCount = Dies_result.GetLength(0);
+                    RowCount = Dies_result.GetLength(1);
+                    for (int i = 0; i < Dies_result.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < Dies_result.GetLength(1); j++)
+                        {
+                            double dieSizeX = 0;
+                            double dieSizeY = 0;
+                            if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
+                            {
+                                dieSizeX = Dies_result[i, j].DieSizeX;
+                                dieSizeY = Dies_result[i, j].DieSizeY;
+                            }
+                            else
+                            {
+                                dieSizeX = Dies_result[i, j].DieSizeY;
+                                dieSizeY = Dies_result[i, j].DieSizeX;
+                            }
+                            die[idx] = new Die
+                            {
+                                IndexX = Dies_result[i, j].TransIndexX,
+                                IndexY = Dies_result[i, j].TransIndexY,
+                                PosX = Dies_result[i, j].TransPositionX,
+                                PosY = Dies_result[i, j].TransPositionY,
+                                BinCode = Dies_result[i, j].TransDieData,
+                                DieSize = new Size(dieSizeX, dieSizeY)
+                            };
+                            idx++;
+                        }
+                    }
+
+
+                }
                 return (die, waferSize);
             }
             catch (Exception ex)
@@ -210,6 +239,7 @@ namespace WLS3200Gen2.Model.Recipe
         public Direction posDirection;
 
         public Point mapCenter;
+        public List<BinCode> BinCode_result { get; set; } = new List<BinCode>();
 
         private void ReadSinf(string pfilePath)
         {
@@ -531,6 +561,32 @@ namespace WLS3200Gen2.Model.Recipe
             catch (Exception ex)
             {
 
+                throw ex;
+            }
+        }
+        public void ReadBinCode(string pfilePath)
+        {
+            try
+            {
+                string[] lines = System.IO.File.ReadAllLines(pfilePath);
+                int count = 0;
+                BinCode_result.Clear();
+                foreach (var line in lines)
+                {
+                    string[] splitLine = line.Split(' ');
+                    Brush nowBrush = Brushes.Black;
+                    //if (colorBasic.Length > count)
+                    //{
+                    //    nowBrush = colorBasic[count];
+                    //}
+                    BinCode_result.Add(new BinCode { Code = splitLine[0], Describe = splitLine[1], CodeColor = nowBrush });
+                    count++;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }

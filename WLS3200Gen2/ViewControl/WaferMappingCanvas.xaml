@@ -101,7 +101,7 @@
                 <Grid  x:Name="ContentGrid" ClipToBounds="True" >
                     <canvas:WaferMappingViewerCanvas
                     
-                        x:Name="MainCanvas" MousePixcel="{Binding MousePixcel}" ImageSource="{Binding ImageSource}" ItemsSource="{Binding ItemsSource}" 
+                        x:Name="MainCanvas" MousePixcel="{Binding MousePixcel}" IsMoveEnable="{Binding IsMoveEnable}" ImageSource="{Binding ImageSource}" ItemsSource="{Binding ItemsSource}" 
                              ControlCenterX="{Binding ControlCenterX}" ControlCenterY="{Binding ControlCenterY}" IsRederHorizontalMirror="{Binding IsRederHorizontalMirror}" 
                              IsRederVerticalMirror="{Binding IsRederVerticalMirror}" RValue="{Binding RValue}" GValue="{Binding GValue}" BValue="{Binding BValue}"
                              Distance="{Binding Distance}" DeltaX="{Binding DeltaX}" DeltaY="{Binding DeltaY}" Theta="{Binding Theta}" RulerEnabled="{Binding RulerEnabled}" 

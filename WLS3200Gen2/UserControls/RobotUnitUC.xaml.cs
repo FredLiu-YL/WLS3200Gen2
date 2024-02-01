@@ -87,29 +87,33 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsRobotEnabled = false;
-                switch (key)
+                await Task.Run(async () =>
                 {
-                    case "0":
-                        await Robot.Home();
-                        break;
-                    case "1":
-                        await Robot.MovAddress(Convert.ToInt32(Address1), 0);
-                        break;
-                    case "2":
-                        await Robot.MovAddress(Convert.ToInt32(Address2), 0);
-                        break;
-                    case "3":
-                        await Robot.MovAddress(Convert.ToInt32(Address3), 0);
-                        break;
-                    case "4":
-                        await Robot.MovAddress(Convert.ToInt32(Address4), 0);
-                        break;
-                    case "5":
-                        await Robot.MovAddress(Convert.ToInt32(Address5), 0);
-                        break;
-                    default:
-                        break;
-                }
+                    switch (key)
+                    {
+                        case "0":
+                            Robot.Home();
+                            break;
+                        case "1":
+                            Robot.MovAddress(Convert.ToInt32(Address1), 0);
+                            break;
+                        case "2":
+                            Robot.MovAddress(Convert.ToInt32(Address2), 0);
+                            break;
+                        case "3":
+                            Robot.MovAddress(Convert.ToInt32(Address3), 0);
+                            break;
+                        case "4":
+                            Robot.MovAddress(Convert.ToInt32(Address4), 0);
+                            break;
+                        case "5":
+                            Robot.MovAddress(Convert.ToInt32(Address5), 0);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+
             }
             catch (Exception ex)
             {
@@ -119,24 +123,32 @@ namespace WLS3200Gen2.UserControls
             {
                 IsRobotEnabled = true;
             }
-        });
+        })
+        {
+
+        };
+
         public ICommand FixRelease => new RelayCommand<string>(async key =>
         {
             try
             {
                 IsRobotEnabled = false;
-                switch (key)
+                await Task.Run(async () =>
                 {
-                    case "0":
-                        await Robot.FixWafer();
-                        break;
-                    case "1":
-                        await Robot.ReleaseWafer();
-                        break;
+                    switch (key)
+                    {
+                        case "0":
+                            Robot.FixWafer();
+                            break;
+                        case "1":
+                            Robot.ReleaseWafer();
+                            break;
 
-                    default:
-                        break;
-                }
+                        default:
+                            break;
+                    }
+                });
+
             }
             catch (Exception ex)
             {
@@ -152,7 +164,10 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsRobotEnabled = false;
-                await Robot.SetSpeedPercentCommand(Convert.ToInt32(RobotStaus.SpeedPercent));
+                await Task.Run(async () =>
+                {
+                    Robot.SetSpeedPercentCommand(Convert.ToInt32(RobotStaus.SpeedPercent));
+                });
             }
             catch (Exception ex)
             {

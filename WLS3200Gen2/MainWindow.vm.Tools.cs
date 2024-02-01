@@ -16,7 +16,10 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.Robot.Home();
+                await Task.Run(async () =>
+                {
+                    machine.Feeder.Robot.Home();
+                });
             }
             catch (Exception ex)
             {
@@ -172,7 +175,10 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.Robot.FixWafer();
+                await Task.Run(async () =>
+                {
+                    machine.Feeder.Robot.FixWafer();
+                });
             }
             catch (Exception ex)
             {
@@ -186,7 +192,10 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.Robot.ReleaseWafer();
+                await Task.Run(async () =>
+                {
+                    machine.Feeder.Robot.ReleaseWafer();
+                });
             }
             catch (Exception ex)
             {

@@ -8,17 +8,12 @@ namespace WLS3200Gen2.Model.Component
 {
     public class ArtificialLoadPort : ILoadPort
     {
-        private bool isMapping = true;
         private bool?[] slot;
-
         public ArtificialLoadPort()
         {
             slot = new bool?[] { true };
 
         }
-
-        public bool IsMapping => isMapping;
-
         public bool?[] Slot => slot;
 
         public void AlarmReset()
@@ -41,7 +36,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task Home()
+        public void Home()
         {
             throw new NotImplementedException();
         }
@@ -51,17 +46,22 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task Load()
+        public void Load()
         {
             throw new NotImplementedException();
         }
 
-        public Task SetParam(LoadPortParam loadPortParam)
+        public void SetParam(LoadPortParam loadPortParam)
         {
             throw new NotImplementedException();
         }
 
-        Task ILoadPort.AlarmReset()
+        LoadPortParam ILoadPort.GetParam()
+        {
+            throw new NotImplementedException();
+        }
+
+        LoadPortStatus ILoadPort.GetStatus()
         {
             throw new NotImplementedException();
         }

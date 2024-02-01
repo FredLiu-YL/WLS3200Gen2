@@ -90,12 +90,12 @@ namespace WLS3200Gen2.Model
         /// 取得狀態
         /// </summary>
         /// <returns></returns>
-        Task<LoadPortStatus> GetStatus();
+        LoadPortStatus GetStatus();
         /// <summary>
         /// 取得設定參數
         /// </summary>
         /// <returns></returns>
-        Task<LoadPortParam> GetParam();
+        LoadPortParam GetParam();
         /// <summary>
         /// 初始化
         /// </summary>
@@ -107,19 +107,19 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 打開門，會自動SlotMapping
         /// </summary>
-        Task Load();
+        void Load();
         /// <summary>
         /// 回歸到關門狀態，也可以應用在UnLoad
         /// </summary>
-        Task Home();
+        void Home();
         /// <summary>
         /// 異常復原
         /// </summary>
-        Task AlarmReset();
+        void AlarmReset();
         /// <summary>
         /// 參數設定
         /// </summary>
-        Task SetParam(LoadPortParam loadPortParam);
+        void SetParam(LoadPortParam loadPortParam);
     }
     public class RobotPoint
     {
@@ -216,27 +216,27 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// Robot回Home
         /// </summary>
-        Task Home();
+        void Home();
         /// <summary>
         /// Robot停止動作
         /// </summary>
-        Task Continue();
+        void Continue();
         /// <summary>
         /// Robot停止動作
         /// </summary>
-        Task Stop();
+        void Stop();
         /// <summary>
         /// 
         /// </summary>
         /// <param name="address"></param>
         /// <param name="zShift"></param>
         /// <returns></returns>
-        Task MovAddress(int address, double zShift);
+        void MovAddress(int address, double zShift);
         /// <summary>
         /// 取得Robot位置
         /// </summary>
         /// <returns></returns>
-        Task<RobotPoint> GetPositionCommand();
+        RobotPoint GetPositionCommand();
         /// <summary>
         /// 取wafer從LoadPort到Robot上方
         /// </summary>
@@ -249,33 +249,33 @@ namespace WLS3200Gen2.Model
         /// 取得目前Robot狀態
         /// </summary>
         /// <returns></returns>
-        Task<RobotStatus> GetStatus();
+        RobotStatus GetStatus();
         /// <summary>
         /// 設定軸速度(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="motionVelocity"></param>
-        Task SetSpeedPercentCommand(int motionPercent);
+        void SetSpeedPercentCommand(int motionPercent);
         /// <summary>
         /// 手臂固定Wafer(真空/夾持)
         /// </summary>
         /// <returns></returns>
-        Task FixWafer();
+        void FixWafer();
         /// <summary>
         /// 手臂解開Wafer(真空/夾持)
         /// </summary>
         /// <returns></returns>
-        Task ReleaseWafer();
+        void ReleaseWafer();
         /// <summary>
         /// 手臂是否固定住Wafer
         /// </summary>
         /// <returns></returns>
-        Task<bool> IsLockOK();
+        bool IsLockOK();
         /// <summary>
         /// 手臂是否有Wafer
         /// </summary>
         /// <returns></returns>
-        Task<bool> IsHavePiece();
+        bool IsHavePiece();
     }
     public interface IEFEMRobot : IRobot
     {
@@ -288,54 +288,54 @@ namespace WLS3200Gen2.Model
         /// 取片從卡匣 手臂到安全位置
         /// </summary>
         /// <returns></returns>
-        Task PickWafer_Safety(ArmStation armStation);
+        void PickWafer_Safety(ArmStation armStation);
         /// <summary>
         /// 取片從卡匣 手臂到準備位置
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PickWafer_Standby(ArmStation armStation, int layer);
+        void PickWafer_Standby(ArmStation armStation, int layer);
         /// <summary>
         /// 取片從卡匣 手臂伸進去卡匣裡
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PickWafer_GoIn(ArmStation armStation, int layer);
+        void PickWafer_GoIn(ArmStation armStation, int layer);
         /// <summary>
         /// 取片從卡匣 手臂抬起接片
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PickWafer_LiftUp(ArmStation armStation, int layer);
+        void PickWafer_LiftUp(ArmStation armStation, int layer);
         /// <summary>
         /// 取片從卡匣 手臂縮回來
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PickWafer_Retract(ArmStation armStation, int layer);
+        void PickWafer_Retract(ArmStation armStation, int layer);
 
 
         /// <summary>
         /// 取片從Aligner 手臂到準備位置
         /// </summary>
         /// <returns></returns>
-        Task PickWafer_Standby(ArmStation armStation);
+        void PickWafer_Standby(ArmStation armStation);
         /// <summary>
         /// 取片從Aligner 手臂伸進去Aligner裡
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PickWafer_GoIn(ArmStation armStation);
+        void PickWafer_GoIn(ArmStation armStation);
         /// <summary>
         /// 取片從Aligner 手臂抬起接片
         /// </summary>
         /// <returns></returns>
-        Task PickWafer_LiftUp(ArmStation armStation);
+        void PickWafer_LiftUp(ArmStation armStation);
         /// <summary>
         /// 取片從Aligner 手臂縮回來
         /// </summary>
         /// <returns></returns>
-        Task PickWafer_Retract(ArmStation armStation);
+        void PickWafer_Retract(ArmStation armStation);
 
 
 
@@ -347,53 +347,53 @@ namespace WLS3200Gen2.Model
         /// 放片至卡匣 手臂到安全位置
         /// </summary>
         /// <returns></returns>
-        Task PutWafer_Safety(ArmStation armStation);
+        void PutWafer_Safety(ArmStation armStation);
         /// <summary>
         /// 放片至卡匣 手臂到準備位置
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PutWafer_Standby(ArmStation armStation, int layer);
+        void PutWafer_Standby(ArmStation armStation, int layer);
         /// <summary>
         /// 放片至卡匣 手臂伸進去卡匣裡
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PutWafer_GoIn(ArmStation armStation, int layer);
+        void PutWafer_GoIn(ArmStation armStation, int layer);
         /// <summary>
         /// 放片至卡匣 手臂放下片子
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PutWafer_PutDown(ArmStation armStation, int layer);
+        void PutWafer_PutDown(ArmStation armStation, int layer);
         /// <summary>
         /// 放片至卡匣 手臂縮回來
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        Task PutWafer_Retract(ArmStation armStation, int layer);
+        void PutWafer_Retract(ArmStation armStation, int layer);
 
 
         /// <summary>
         /// 放片至Aligner 手臂到準備位置
         /// </summary>
         /// <returns></returns>
-        Task PutWafer_Standby(ArmStation armStation);
+        void PutWafer_Standby(ArmStation armStation);
         /// <summary>
         /// 放片至Aligner 手臂伸進去Aligner裡
         /// </summary>
         /// <returns></returns>
-        Task PutWafer_GoIn(ArmStation armStation);
+        void PutWafer_GoIn(ArmStation armStation);
         /// <summary>
         /// 放片至Aligner 手臂放下片子
         /// </summary>
         /// <returns></returns>
-        Task PutWafer_PutDown(ArmStation armStation);
+        void PutWafer_PutDown(ArmStation armStation);
         /// <summary>
         /// 放片至Aligner 手臂縮回來
         /// </summary>
         /// <returns></returns>
-        Task PutWafer_Retract(ArmStation armStation);
+        void PutWafer_Retract(ArmStation armStation);
 
     }
     public enum ArmStation
@@ -445,29 +445,29 @@ namespace WLS3200Gen2.Model
         /// 回到原點
         /// </summary>
         /// <returns></returns>
-        Task Home();
+        void Home();
         /// <summary>
         /// 找到Notch後，偏移多少角度(degree)
         /// </summary>
         /// <param name="degree"></param>
         /// <returns></returns>
-        Task Run(double degree);
+        void Run(double degree);
         /// <summary>
         /// 真空 IsOn=true 開啟 IsOn=fals 關閉
         /// </summary>
         /// <param name="IsOn"></param>
         /// <returns></returns>
-        Task Vaccum(bool IsOn);
+        void Vaccum(bool IsOn);
         /// <summary>
         /// 異常重置
         /// </summary>
         /// <returns></returns>
-        Task AlarmReset();
+        void AlarmReset();
         /// <summary>
         /// 取得目前狀態
         /// </summary>
         /// <returns></returns>
-        Task<AlignerStatus> GetStatus();
+        AlignerStatus GetStatus();
     }
     public enum CheckMacroCanMove
     {
@@ -503,28 +503,28 @@ namespace WLS3200Gen2.Model
         /// 全部復歸
         /// </summary>
         /// <returns></returns>
-        Task HomeAllRing();
+        void HomeAllRing();
         /// <summary>
         /// 內圈復歸
         /// </summary>
         /// <returns></returns>
-        Task HomeInnerRing();
+        void HomeInnerRing();
         /// <summary>
         /// 外圈復歸
         /// </summary>
         /// <returns></returns>
-        Task HomeOuterRing();
+        void HomeOuterRing();
 
         /// <summary>
         /// 內圈 到 檢查位置
         /// </summary>
         /// <returns></returns>
-        Task GoInnerRingCheckPos();
+        void GoInnerRingCheckPos();
         /// <summary>
         /// 外圈 到 檢查位置
         /// </summary>
         /// <returns></returns>
-        Task GoOuterRingCheckPos();
+        void GoOuterRingCheckPos();
 
         /// <summary>
         /// 側面左右翻 isForwards = true(右翻)/false(左翻)
@@ -550,6 +550,6 @@ namespace WLS3200Gen2.Model
 
         void OuterRingRollY_Stop();
     }
-  
+
 
 }

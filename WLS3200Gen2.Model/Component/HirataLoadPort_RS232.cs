@@ -143,82 +143,79 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("LoadPort Close:" + ex);
             }
         }
-        public async Task Load()
+        public void Load()
         {
             try
             {
                 LoadPortItems loadPortItems = new LoadPortItems();
-                await Task.Run(() =>
+                bool LoadOK = false;
+                loadPortItems = Mov_Load();
+                if (loadPortItems.IsMovOK == true)
                 {
-                    bool LoadOK = false;
-                    loadPortItems = Mov_Load();
-                    if (loadPortItems.IsMovOK == true)
-                    {
-                        LoadOK = true;
-                    }
-                    //loadPortItems = Mov_ClampON();
-                    //if (loadPortItems.IsMovOK == true)
-                    //{
-                    //    loadPortItems = Mov_DockMoveIn();
-                    //    if (loadPortItems.IsMovOK == true)
-                    //    {
-                    //        loadPortItems = Mov_VaccumON();
-                    //        //如果真空吸的起來，代表有門
-                    //        if (loadPortItems.IsMovOK == true)
-                    //        {
-                    //            loadPortItems = Mov_LoadMapping_FromDock();
-                    //            if (loadPortItems.IsMovOK == true)
-                    //            {
-                    //LoadOK = true;
-                    //            }
-                    //        }
-                    //        else if (loadPortItems.IsError = true && loadPortItems.ErrorCode == "16")
-                    //        {
-                    //            loadPortItems = Set_Reset();
-                    //            if (loadPortItems.IsSetOK == true)
-                    //            {
-                    //                loadPortItems = Get_Status();
-                    //                TransStatusToUI(loadPortItems);
-                    //                if (loadPortItems.ErrorStatus == LoadPortErrorType.Normal)
-                    //                {
-                    //                    loadPortItems = Mov_DoorToOpenPos();
-                    //                    if (loadPortItems.IsMovOK == true)
-                    //                    {
-                    //                        loadPortItems = Mov_MappingElevator_StartPos();
-                    //                        if (loadPortItems.IsMovOK == true)
-                    //                        {
-                    //                            loadPortItems = Mov_MappingFW();
-                    //                            if (loadPortItems.IsMovOK == true)
-                    //                            {
-                    //                                loadPortItems = Mov_MappingElevator_EndPos();
-                    //                                if (loadPortItems.IsMovOK == true)
-                    //                                {
-                    //                                    loadPortItems = Mov_MappingBW();
-                    //                                    if (loadPortItems.IsMovOK == true)
-                    //                                    {
-                    //                                        loadPortItems = Mov_Elevator_LoadPos();
-                    //                                        if (loadPortItems.IsMovOK == true)
-                    //                                        {
-                    //                                               LoadOK = true;
-                    //                                        }
-                    //                                    }
-                    //                                }
-                    //                            }
-                    //                        }
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
-                    if (LoadOK == false)
-                    {
-                        throw new Exception("Load Error");
-                    }
-                    loadPortItems = Set_Type(LoadPortFOUPType.TYPE_1);
-                    loadPortItems = Get_Mapping(loadPortItems.FOUP_ParameterStatus.CassetteSlotCount);
-                    UpdateMapping(loadPortItems);
-                });
+                    LoadOK = true;
+                }
+                //loadPortItems = Mov_ClampON();
+                //if (loadPortItems.IsMovOK == true)
+                //{
+                //    loadPortItems = Mov_DockMoveIn();
+                //    if (loadPortItems.IsMovOK == true)
+                //    {
+                //        loadPortItems = Mov_VaccumON();
+                //        //如果真空吸的起來，代表有門
+                //        if (loadPortItems.IsMovOK == true)
+                //        {
+                //            loadPortItems = Mov_LoadMapping_FromDock();
+                //            if (loadPortItems.IsMovOK == true)
+                //            {
+                //LoadOK = true;
+                //            }
+                //        }
+                //        else if (loadPortItems.IsError = true && loadPortItems.ErrorCode == "16")
+                //        {
+                //            loadPortItems = Set_Reset();
+                //            if (loadPortItems.IsSetOK == true)
+                //            {
+                //                loadPortItems = Get_Status();
+                //                TransStatusToUI(loadPortItems);
+                //                if (loadPortItems.ErrorStatus == LoadPortErrorType.Normal)
+                //                {
+                //                    loadPortItems = Mov_DoorToOpenPos();
+                //                    if (loadPortItems.IsMovOK == true)
+                //                    {
+                //                        loadPortItems = Mov_MappingElevator_StartPos();
+                //                        if (loadPortItems.IsMovOK == true)
+                //                        {
+                //                            loadPortItems = Mov_MappingFW();
+                //                            if (loadPortItems.IsMovOK == true)
+                //                            {
+                //                                loadPortItems = Mov_MappingElevator_EndPos();
+                //                                if (loadPortItems.IsMovOK == true)
+                //                                {
+                //                                    loadPortItems = Mov_MappingBW();
+                //                                    if (loadPortItems.IsMovOK == true)
+                //                                    {
+                //                                        loadPortItems = Mov_Elevator_LoadPos();
+                //                                        if (loadPortItems.IsMovOK == true)
+                //                                        {
+                //                                               LoadOK = true;
+                //                                        }
+                //                                    }
+                //                                }
+                //                            }
+                //                        }
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                if (LoadOK == false)
+                {
+                    throw new Exception("Load Error");
+                }
+                loadPortItems = Set_Type(LoadPortFOUPType.TYPE_1);
+                loadPortItems = Get_Mapping(loadPortItems.FOUP_ParameterStatus.CassetteSlotCount);
+                UpdateMapping(loadPortItems);
                 isMapping = true;
             }
             catch (Exception ex)
@@ -226,21 +223,18 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("LoadPort Load:" + ex);
             }
         }
-        public async Task Home()
+        public void Home()
         {
             try
             {
                 LoadPortItems loadPortItems = new LoadPortItems();
-                await Task.Run(() =>
+                loadPortItems = Mov_UnLoad();
+                loadPortItems.MappingWaferStatus.Clear();
+                UpdateMapping(loadPortItems);
+                if (loadPortItems.IsMovOK != true)
                 {
-                    loadPortItems = Mov_UnLoad();
-                    loadPortItems.MappingWaferStatus.Clear();
-                    UpdateMapping(loadPortItems);
-                    if (loadPortItems.IsMovOK != true)
-                    {
-                        throw new Exception("Home Error");
-                    }
-                });
+                    throw new Exception("Home Error");
+                }
                 isMapping = false;
             }
             catch (Exception ex)
@@ -248,50 +242,44 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("LoadPort Home:" + ex);
             }
         }
-        public async Task AlarmReset()
+        public void AlarmReset()
         {
             try
             {
                 LoadPortItems loadPortItems = new LoadPortItems();
-                await Task.Run(() =>
+                loadPortItems = Set_Reset();
+                if (loadPortItems.IsSetOK != true)
                 {
-                    loadPortItems = Set_Reset();
-                    if (loadPortItems.IsSetOK != true)
-                    {
-                        throw new Exception("Alarm SetReset Error");
-                    }
-                    loadPortItems = Get_Status();
-                    UpdateStatus(loadPortItems);
-                    if (loadPortItems.IsGetOK != true)
-                    {
-                        throw new Exception("Get Status Error");
-                    }
-                });
+                    throw new Exception("Alarm SetReset Error");
+                }
+                loadPortItems = Get_Status();
+                UpdateStatus(loadPortItems);
+                if (loadPortItems.IsGetOK != true)
+                {
+                    throw new Exception("Get Status Error");
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception("LoadPort AlarmReset:" + ex);
             }
         }
-        public async Task SetParam(LoadPortParam loadPortParam)
+        public void SetParam(LoadPortParam loadPortParam)
         {
             try
             {
                 LoadPortItems loadPortItems = new LoadPortItems();
-                await Task.Run(() =>
+                LoadPortFOUP_Parameter fOUP_Parameter = new LoadPortFOUP_Parameter();
+                fOUP_Parameter.WaferThickness = loadPortParam.WaferThickness;
+                fOUP_Parameter.CassettePitch = loadPortParam.CassettePitch;
+                fOUP_Parameter.OffsetDistance = loadPortParam.StarOffset;
+                fOUP_Parameter.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
+                fOUP_Parameter.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
+                loadPortItems = Set_FOUPParam(fOUP_Parameter);
+                if (loadPortItems.IsSetOK != true)
                 {
-                    LoadPortFOUP_Parameter fOUP_Parameter = new LoadPortFOUP_Parameter();
-                    fOUP_Parameter.WaferThickness = loadPortParam.WaferThickness;
-                    fOUP_Parameter.CassettePitch = loadPortParam.CassettePitch;
-                    fOUP_Parameter.OffsetDistance = loadPortParam.StarOffset;
-                    fOUP_Parameter.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
-                    fOUP_Parameter.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
-                    loadPortItems = Set_FOUPParam(fOUP_Parameter);
-                    if (loadPortItems.IsSetOK != true)
-                    {
-                        throw new Exception("Set FOUPParam Error");
-                    }
-                });
+                    throw new Exception("Set FOUPParam Error");
+                }
             }
             catch (Exception ex)
             {
@@ -1732,6 +1720,15 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
+        LoadPortStatus ILoadPort.GetStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        LoadPortParam ILoadPort.GetParam()
+        {
+            throw new NotImplementedException();
+        }
     }
     public class LoadPortItems
     {

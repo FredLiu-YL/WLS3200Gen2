@@ -114,24 +114,7 @@
 
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Column="0" Grid.Row="1"  Header="Classification" FontSize="20" BorderBrush="Black"  BorderThickness="2" >
-                    <Grid>
-                        <Grid.RowDefinitions   >
-                            <RowDefinition Height  ="0.2*"/>
-                            <RowDefinition Height  ="0.8*"/>
-                        </Grid.RowDefinitions>
-                        <Button Content="BinDraw Select" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left"  Height="35"  VerticalAlignment="Center"  Width="150" Background="LightSkyBlue" Command="{Binding BINSelect}" />
-                        <DataGrid Grid.Row="1" IsReadOnly="True"   AutoGenerateColumns="False" CanUserReorderColumns="False"  CanUserSortColumns ="False" CanUserAddRows="False"  ItemsSource="{Binding BinCodeDrawDataGridList}" >
-                            <DataGrid.Columns >
-                                <DataGridTextColumn CanUserResize="False" Header="Bin Edit." Binding="{Binding BinType}" Width="30*"/>
-                                <DataGridTextColumn CanUserResize="False" Header="ID" Binding="{Binding Code}" Width="30*"/>
-                                <!--<DataGridTextColumn CanUserResize="False" Header="Name" Binding="{Binding Description}" Width="40*"/>-->
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
-
-
-                </GroupBox>
+               
 
             </Grid>
 
@@ -207,6 +190,24 @@
 
                         </Grid>
                     </GroupBox>
+                    <GroupBox Grid.Column="0" Grid.Row="3"  Header="Classification" FontSize="20" BorderBrush="Black"  BorderThickness="2" >
+                        <Grid>
+                            <Grid.RowDefinitions   >
+                                <RowDefinition Height  ="0.2*"/>
+                                <RowDefinition Height  ="0.8*"/>
+                            </Grid.RowDefinitions>
+                            <Button Content="BinDraw Select" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left"  Height="35"  VerticalAlignment="Center"  Width="150" Background="LightSkyBlue" Command="{Binding BINSelect}" />
+                            <DataGrid Grid.Row="1" IsReadOnly="True"   AutoGenerateColumns="False" CanUserReorderColumns="False"  CanUserSortColumns ="False" CanUserAddRows="False"  ItemsSource="{Binding BinCodeDrawDataGridList}" >
+                                <DataGrid.Columns >
+                                    <DataGridTextColumn CanUserResize="False" Header="Bin Edit." Binding="{Binding BinType}" Width="30*"/>
+                                    <DataGridTextColumn CanUserResize="False" Header="ID" Binding="{Binding Code}" Width="30*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+
+
+                    </GroupBox>
+
                 </Grid>
 
             </Grid>

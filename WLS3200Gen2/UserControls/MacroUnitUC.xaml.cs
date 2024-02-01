@@ -51,7 +51,10 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Macro.HomeAllRing();
+                    await Task.Run(async () =>
+                    {
+                        Macro.HomeAllRing();
+                    });
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -71,7 +74,10 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Macro.GoInnerRingCheckPos();
+                    await Task.Run(async () =>
+                    {
+                        Macro.GoInnerRingCheckPos();
+                    });
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -173,7 +179,10 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Macro.HomeInnerRing();
+                    await Task.Run(async () =>
+                    {
+                        Macro.HomeInnerRing();
+                    });
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -194,7 +203,10 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Macro.GoOuterRingCheckPos();
+                    await Task.Run(async () =>
+                    {
+                        Macro.GoOuterRingCheckPos();
+                    });
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -266,7 +278,10 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Macro.HomeOuterRing();
+                    await Task.Run(async () =>
+                    {
+                        Macro.HomeOuterRing();
+                    });
                     MacroStatus.IsProcessStop = true;
                 }
             }

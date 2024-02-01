@@ -513,18 +513,18 @@ namespace WLS3200Gen2.Views
         {
             try
             {
-                if (e.LeftButton == MouseButtonState.Pressed && IsMoveEnable == true && !(e.OriginalSource is System.Windows.Controls.Primitives.Thumb)) //&& isDragging == false
-                {
-                    isDragging = true;
-                    clickPosition = e.GetPosition(ContentGrid);
-                    scrollStartPosition = new Point(MyScrollViewer.HorizontalOffset, MyScrollViewer.VerticalOffset);
-                    ContentGrid.CaptureMouse();
-                }
+                //if (e.LeftButton == MouseButtonState.Pressed && IsMoveEnable == true && !(e.OriginalSource is System.Windows.Controls.Primitives.Thumb)) //&& isDragging == false
+                //{
+                //    isDragging = true;
+                //    clickPosition = e.GetPosition(ContentGrid);
+                //    scrollStartPosition = new Point(MyScrollViewer.HorizontalOffset, MyScrollViewer.VerticalOffset);
+                //    ContentGrid.CaptureMouse();
+                //}
 
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("ScrollViewer_PreviewMouseDown" + ex.Message);
             }
         }
 
@@ -532,21 +532,21 @@ namespace WLS3200Gen2.Views
         {
             try
             {
-                if (isDragging)
-                {
-                    double deltaX = e.GetPosition(ContentGrid).X - clickPosition.X;
-                    double deltaY = e.GetPosition(ContentGrid).Y - clickPosition.Y;
+                //if (isDragging)
+                //{
+                //    double deltaX = e.GetPosition(ContentGrid).X - clickPosition.X;
+                //    double deltaY = e.GetPosition(ContentGrid).Y - clickPosition.Y;
 
-                    MyScrollViewer.ScrollToHorizontalOffset(scrollStartPosition.X - deltaX);
-                    MyScrollViewer.ScrollToVerticalOffset(scrollStartPosition.Y - deltaY);
+                //    MyScrollViewer.ScrollToHorizontalOffset(scrollStartPosition.X - deltaX);
+                //    MyScrollViewer.ScrollToVerticalOffset(scrollStartPosition.Y - deltaY);
 
-                    //clickPosition = e.GetPosition(ContentGrid);// new Point(deltaX, deltaY);
-                }
+                //    //clickPosition = e.GetPosition(ContentGrid);// new Point(deltaX, deltaY);
+                //}
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("ScrollViewer_PreviewMouseMove" + ex.Message);
             }
         }
 
@@ -554,12 +554,12 @@ namespace WLS3200Gen2.Views
         {
             try
             {
-                ContentGrid.ReleaseMouseCapture();
-                isDragging = false;
+                //ContentGrid.ReleaseMouseCapture();
+                //isDragging = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("ScrollViewer_PreviewMouseUp" + ex.Message);
             }
         }
 
