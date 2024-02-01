@@ -238,14 +238,6 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         RobotPoint GetPositionCommand();
         /// <summary>
-        /// 取wafer從LoadPort到Robot上方
-        /// </summary>
-        /// <param name="slotIdx"></param>
-        /// <returns></returns>
-        //Task PickWaferLoadPortToRobot(int slotIdx);
-        //Task PickWaferAlignerToRobot();
-        //Task PickWaferAlignerToRobot(int slotIdx);
-        /// <summary>
         /// 取得目前Robot狀態
         /// </summary>
         /// <returns></returns>

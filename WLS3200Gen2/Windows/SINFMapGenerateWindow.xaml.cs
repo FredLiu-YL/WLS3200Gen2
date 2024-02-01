@@ -54,7 +54,7 @@ namespace WLS3200Gen2
             MappingIsMoveEnable = true;
         }
 
-        private SinfWaferMapping m_Sinf;
+        public SinfWaferMapping Sinf;
 
         private readonly string title_Ver = "Yuanli_MappingGenerate_Ver1.2";
 
@@ -316,22 +316,22 @@ namespace WLS3200Gen2
 
                 if (SINF_Path != "")
                 {
-                    if (m_Sinf == null)
+                    if (Sinf == null)
                     {
-                        m_Sinf = new SinfWaferMapping(SINF_Path);
+                        Sinf = new SinfWaferMapping(SINF_Path);
                     }
                     path = SINF_Path;
-                    m_Sinf.ReadWaferFile(path);
+                    Sinf.ReadWaferFile(path);
                     SinfPath = path;
-                    Wafer_ID = m_Sinf.Lot_ID;
-                    Wafer_Slot = m_Sinf.Wafer_Idx.ToString();
-                    Die_PitchX = m_Sinf.DieSize_X.ToString();
-                    Die_PitchY = m_Sinf.DieSize_Y.ToString();
+                    Wafer_ID = Sinf.Lot_ID;
+                    Wafer_Slot = Sinf.Wafer_Idx.ToString();
+                    Die_PitchX = Sinf.DieSize_X.ToString();
+                    Die_PitchY = Sinf.DieSize_Y.ToString();
                     System.IO.FileInfo fileInfo = new System.IO.FileInfo(path);
-                    //Wafer_Size = m_Sinf.Notch_Degree;
-                    Die_Origin = m_Sinf.Start_LeftX + "," + m_Sinf.Start_TopY;
-                    DrawTotal_X = m_Sinf.Count_Column;
-                    DrawTotal_Y = m_Sinf.Count_Row;
+                    //Wafer_Size = Sinf.Notch_Degree;
+                    Die_Origin = Sinf.Start_LeftX + "," + Sinf.Start_TopY;
+                    DrawTotal_X = Sinf.Count_Column;
+                    DrawTotal_Y = Sinf.Count_Row;
 
                     ShowMappingDrawings();
                 }
@@ -347,7 +347,7 @@ namespace WLS3200Gen2
                     Die_PitchY = "1";
                     Wafer_Size = "";
                     Die_Origin = "";
-                    //M_Sinf = null;
+                    //Sinf = null;
                 }
             }
             catch (Exception ex)
@@ -372,31 +372,31 @@ namespace WLS3200Gen2
                 int showScale = 100;
 
                 int pID = 0;
-                Wafer_ID = m_Sinf.Lot_ID;
-                Die_PitchX = m_Sinf.DieSize_X.ToString();
-                Die_PitchY = m_Sinf.DieSize_Y.ToString();
+                Wafer_ID = Sinf.Lot_ID;
+                Die_PitchX = Sinf.DieSize_X.ToString();
+                Die_PitchY = Sinf.DieSize_Y.ToString();
 
-                int mc = m_Sinf.Count_Column;
-                int mr = m_Sinf.Count_Row;
+                int mc = Sinf.Count_Column;
+                int mr = Sinf.Count_Row;
 
                 double Mainlength_X = 3000;
                 double Mainlength_Y = 3000;
                 int mappingImageDrawSize = 3000;
                 double offsetDraw = mappingImageDrawSize / 150;
                 double scale = 100;
-                scale = Math.Max(m_Sinf.Count_Column * m_Sinf.DieSize_X, m_Sinf.Count_Row * m_Sinf.DieSize_Y) / (mappingImageDrawSize - offsetDraw * 2);
+                scale = Math.Max(Sinf.Count_Column * Sinf.DieSize_X, Sinf.Count_Row * Sinf.DieSize_Y) / (mappingImageDrawSize - offsetDraw * 2);
 
-                this.StrokeThickness = Math.Min(m_Sinf.DieSize_X / 2 / scale, m_Sinf.DieSize_X / 2 / scale) / 4;
-                this.CrossThickness = Math.Min(m_Sinf.DieSize_X / 2 / scale, m_Sinf.DieSize_X / 2 / scale) / 4;
+                this.StrokeThickness = Math.Min(Sinf.DieSize_X / 2 / scale, Sinf.DieSize_X / 2 / scale) / 4;
+                this.CrossThickness = Math.Min(Sinf.DieSize_X / 2 / scale, Sinf.DieSize_X / 2 / scale) / 4;
 
-                showSize_X = m_Sinf.Count_Column * m_Sinf.DieSize_X / (mappingImageDrawSize - offsetDraw * 2);
-                showSize_Y = m_Sinf.Count_Row * m_Sinf.DieSize_Y / (mappingImageDrawSize - offsetDraw * 2);
+                showSize_X = Sinf.Count_Column * Sinf.DieSize_X / (mappingImageDrawSize - offsetDraw * 2);
+                showSize_Y = Sinf.Count_Row * Sinf.DieSize_Y / (mappingImageDrawSize - offsetDraw * 2);
                 //this.StrokeThickness = Math.Min(showSize_X, showSize_X) / 5;
 
                 int greenPoint = 0;
                 int inkPoint = 0;
 
-                foreach (var item in m_Sinf.Dies)
+                foreach (var item in Sinf.Dies)
                 {
                     Brush drawStroke = mappingDrawColor_Stroke;
                     Brush drawFill = Brushes.Gray;
@@ -420,10 +420,10 @@ namespace WLS3200Gen2
                         Stroke = drawStroke,
                         StrokeThickness = this.StrokeThickness,
                         Fill = drawFill,
-                        X = (item.PosX + m_Sinf.DieSize_X / 2) / showSize_X + offsetDraw,
-                        Y = (item.PosY + m_Sinf.DieSize_Y / 2) / showSize_Y + offsetDraw,
-                        LengthX = m_Sinf.DieSize_X / 2.5 / showSize_X,
-                        LengthY = m_Sinf.DieSize_Y / 2.5 / showSize_Y,
+                        X = (item.PosX + Sinf.DieSize_X / 2) / showSize_X + offsetDraw,
+                        Y = (item.PosY + Sinf.DieSize_Y / 2) / showSize_Y + offsetDraw,
+                        LengthX = Sinf.DieSize_X / 2.5 / showSize_X,
+                        LengthY = Sinf.DieSize_Y / 2.5 / showSize_Y,
                         IsInteractived = true,
                         IsMoveEnabled = false,
                         IsResizeEnabled = false,
@@ -480,10 +480,10 @@ namespace WLS3200Gen2
                 if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     SinfSavePath = saveFileDialog.FileName;
-                    m_Sinf.Lot_ID = Wafer_ID;
-                    m_Sinf.Wafer_Idx = Convert.ToInt32(Wafer_Slot);
+                    Sinf.Lot_ID = Wafer_ID;
+                    Sinf.Wafer_Idx = Convert.ToInt32(Wafer_Slot);
                     BinCodeDrawStartEnd binCodeDrawStartEnd = UpdateXYStartEndDraw();
-                    m_Sinf.SaveAS(saveFileDialog.FileName, binCodeDrawStartEnd.startDraw_X, binCodeDrawStartEnd.endDraw_X, binCodeDrawStartEnd.startDraw_Y, binCodeDrawStartEnd.endDraw_Y);//"D:\\晶圓檢測_AOI結果_sinf\\Test_1.txt"
+                    Sinf.SaveAS(saveFileDialog.FileName, binCodeDrawStartEnd.startDraw_X, binCodeDrawStartEnd.endDraw_X, binCodeDrawStartEnd.startDraw_Y, binCodeDrawStartEnd.endDraw_Y);//"D:\\晶圓檢測_AOI結果_sinf\\Test_1.txt"
                     if (Recipe_Name != "" && Recipe_Name != null)
                     {
                         await SaveINI(saveFileDialog.FileName);
@@ -513,7 +513,7 @@ namespace WLS3200Gen2
                     string[] pathSplit = pathFile.Split('\\');
                     List<string> lines = new List<string>();
                     lines.Add("[lot]");
-                    lines.Add("output_folder=" + m_Sinf.Lot_ID);
+                    lines.Add("output_folder=" + Sinf.Lot_ID);
                     lines.Add("recipe_name=" + Recipe_Name);
                     lines.Add("wafer_qty=1");
                     lines.Add("userid=");
@@ -566,7 +566,7 @@ namespace WLS3200Gen2
                 bool isEdit = false;
                 MappingDrawType mappingDrawType = MappingDrawType.None;
 
-                if (m_Sinf != null && m_Sinf.Dies_result.Length > 0)
+                if (Sinf != null && Sinf.Dies_result.Length > 0)
                 {
                     if (MappingIsMoveEnable == false)
                     {
@@ -626,7 +626,7 @@ namespace WLS3200Gen2
                         if (mappingDrawType != MappingDrawType.None)
                         {
                             //m_WaferMapping.DieDrawInfo[m_WaferMapping.DrawColumnCount * idxY + idxX].BinCode = mappingDrawBinCode_Tested;
-                            string nowBincode = m_Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode;
+                            string nowBincode = Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode;
                             if (mappingDrawType == MappingDrawType.Tested)
                             {
                                 selectShape.CenterCrossBrush = System.Windows.Media.Brushes.Red;
@@ -643,7 +643,7 @@ namespace WLS3200Gen2
                                         Ink_Count = (ink - 1).ToString();
                                     }
                                 }
-                                m_Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Tested;
+                                Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Tested;
                             }
                             else if (mappingDrawType == MappingDrawType.Ink)
                             {
@@ -662,7 +662,7 @@ namespace WLS3200Gen2
                                         Test_Count = (test - 1).ToString();
                                     }
                                 }
-                                m_Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Ink;
+                                Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Ink;
                             }
                             else if (mappingDrawType == MappingDrawType.Skip)
                             {
@@ -677,7 +677,7 @@ namespace WLS3200Gen2
                                     int ink = Convert.ToInt32(Ink_Count);
                                     Test_Count = (test - 1).ToString();
                                 }
-                                m_Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Skip;
+                                Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Skip;
                             }
                         }
                         else
@@ -712,46 +712,46 @@ namespace WLS3200Gen2
             {
                 DefectDataGridList.Clear();
                 int pID = 0;
-                for (int i = 0; i < m_Sinf.Count_Column; i++)
+                for (int i = 0; i < Sinf.Count_Column; i++)
                 {
-                    for (int j = 0; j < m_Sinf.Count_Row; j++)
+                    for (int j = 0; j < Sinf.Count_Row; j++)
                     {
-                        if (m_Sinf.Dies_result[i, j].TransDieData != "__" && m_Sinf.Dies_result[i, j].TransDieData != "___")
+                        if (Sinf.Dies_result[i, j].TransDieData != "__" && Sinf.Dies_result[i, j].TransDieData != "___")
                         {
                             if (Sort_Except == false)
                             {
-                                if (m_Sinf.Dies_result[i, j].TransDieData != Sort_Classification_1 && m_Sinf.Dies_result[i, j].TransDieData != Sort_Classification_2 &&
-                                m_Sinf.Dies_result[i, j].TransDieData != Sort_Classification_3 && m_Sinf.Dies_result[i, j].TransDieData != Sort_Classification_4 &&
-                                m_Sinf.Dies_result[i, j].TransDieData != Sort_Classification_5)
+                                if (Sinf.Dies_result[i, j].TransDieData != Sort_Classification_1 && Sinf.Dies_result[i, j].TransDieData != Sort_Classification_2 &&
+                                Sinf.Dies_result[i, j].TransDieData != Sort_Classification_3 && Sinf.Dies_result[i, j].TransDieData != Sort_Classification_4 &&
+                                Sinf.Dies_result[i, j].TransDieData != Sort_Classification_5)
                                 {
                                     pID += 1;
                                     Defect defect_result = new Defect
                                     {
                                         ID = pID,
-                                        Relative_X = m_Sinf.Dies_result[i, j].PositionX.ToString(),
-                                        Relative_Y = m_Sinf.Dies_result[i, j].PositionY.ToString(),
-                                        Index_X = m_Sinf.Dies_result[i, j].IndexX + 1,
-                                        Index_Y = m_Sinf.Dies_result[i, j].IndexY + 1,
-                                        Classification = m_Sinf.Dies_result[i, j].TransDieData
+                                        Relative_X = Sinf.Dies_result[i, j].PositionX.ToString(),
+                                        Relative_Y = Sinf.Dies_result[i, j].PositionY.ToString(),
+                                        Index_X = Sinf.Dies_result[i, j].IndexX + 1,
+                                        Index_Y = Sinf.Dies_result[i, j].IndexY + 1,
+                                        Classification = Sinf.Dies_result[i, j].TransDieData
                                     };
                                     DefectDataGridList.Add(defect_result);
                                 }
                             }
                             else
                             {
-                                if (m_Sinf.Dies_result[i, j].TransDieData == Sort_Classification_1 || m_Sinf.Dies_result[i, j].TransDieData == Sort_Classification_2 ||
-                                m_Sinf.Dies_result[i, j].TransDieData == Sort_Classification_3 || m_Sinf.Dies_result[i, j].TransDieData == Sort_Classification_4 ||
-                                m_Sinf.Dies_result[i, j].TransDieData == Sort_Classification_5)
+                                if (Sinf.Dies_result[i, j].TransDieData == Sort_Classification_1 || Sinf.Dies_result[i, j].TransDieData == Sort_Classification_2 ||
+                                Sinf.Dies_result[i, j].TransDieData == Sort_Classification_3 || Sinf.Dies_result[i, j].TransDieData == Sort_Classification_4 ||
+                                Sinf.Dies_result[i, j].TransDieData == Sort_Classification_5)
                                 {
                                     pID += 1;
                                     Defect defect_result = new Defect
                                     {
                                         ID = pID,
-                                        Relative_X = m_Sinf.Dies_result[i, j].PositionX.ToString(),
-                                        Relative_Y = m_Sinf.Dies_result[i, j].PositionY.ToString(),
-                                        Index_X = m_Sinf.Dies_result[i, j].IndexX + 1,
-                                        Index_Y = m_Sinf.Dies_result[i, j].IndexY + 1,
-                                        Classification = m_Sinf.Dies_result[i, j].TransDieData
+                                        Relative_X = Sinf.Dies_result[i, j].PositionX.ToString(),
+                                        Relative_Y = Sinf.Dies_result[i, j].PositionY.ToString(),
+                                        Index_X = Sinf.Dies_result[i, j].IndexX + 1,
+                                        Index_Y = Sinf.Dies_result[i, j].IndexY + 1,
+                                        Classification = Sinf.Dies_result[i, j].TransDieData
                                     };
                                     DefectDataGridList.Add(defect_result);
                                 }
@@ -780,14 +780,14 @@ namespace WLS3200Gen2
                 if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     path = dlg_image.FileName;
-                    if (m_Sinf == null)
+                    if (Sinf == null)
                     {
-                        m_Sinf = new SinfWaferMapping("");
+                        Sinf = new SinfWaferMapping("");
                     }
-                    m_Sinf.ReadBinCode(path);
+                    Sinf.ReadBinCode(path);
                     BinCodeDrawDataGridList.Clear();
                     int count = 0;
-                    foreach (var bincodeLine in m_Sinf.BinCode_result)
+                    foreach (var bincodeLine in Sinf.BinCode_result)
                     {
 
                         if (count == 0)
@@ -1038,13 +1038,13 @@ namespace WLS3200Gen2
                 binCodeDrawStartEnd.startDraw_Y = 9999999;
                 binCodeDrawStartEnd.endDraw_Y = -1;
 
-                int CountX = m_Sinf.Dies_result.GetLength(0);
-                int CountY = m_Sinf.Dies_result.GetLength(1);
+                int CountX = Sinf.Dies_result.GetLength(0);
+                int CountY = Sinf.Dies_result.GetLength(1);
                 for (int i = 0; i < CountX; i++)
                 {
                     for (int j = 0; j < CountY; j++)
                     {
-                        if (m_Sinf.Dies_result[i, j].DieData == mappingDrawBinCode_Ink || m_Sinf.Dies_result[i, j].DieData == mappingDrawBinCode_Tested)
+                        if (Sinf.Dies_result[i, j].DieData == mappingDrawBinCode_Ink || Sinf.Dies_result[i, j].DieData == mappingDrawBinCode_Tested)
                         {
                             if (binCodeDrawStartEnd.startDraw_X > i)
                             {
@@ -1149,14 +1149,14 @@ namespace WLS3200Gen2
                 //m_WaferMapping.DrawRowCount = draw_CountY;
                 //m_WaferMapping.DieDrawInfo.Clear();
 
-                m_Sinf = new SinfWaferMapping("");
-                m_Sinf.Lot_ID = Wafer_ID;
-                m_Sinf.Unit = "MM";
-                m_Sinf.DieSize_X = dieSize_X;
-                m_Sinf.DieSize_Y = dieSize_Y;
-                m_Sinf.Count_Column = draw_CountX;
-                m_Sinf.Count_Row = draw_CountY;
-                m_Sinf.Dies_result = new DieDraw[draw_CountX, draw_CountY];
+                Sinf = new SinfWaferMapping("");
+                Sinf.Lot_ID = Wafer_ID;
+                Sinf.Unit = "MM";
+                Sinf.DieSize_X = dieSize_X;
+                Sinf.DieSize_Y = dieSize_Y;
+                Sinf.Count_Column = draw_CountX;
+                Sinf.Count_Row = draw_CountY;
+                Sinf.Dies_result = new DieDraw[draw_CountX, draw_CountY];
 
 
                 //畫圖的參數
@@ -1196,54 +1196,56 @@ namespace WLS3200Gen2
                         {
                             waferMappingDrawType = IsCircleTouchingRectangle_TotalType(circleCenter, circleRadius, rectangleTopLeft, rectangleBottomRight);
                         }
-                        m_Sinf.Dies_result[x, y] = new DieDraw();
-                        m_Sinf.Dies_result[x, y].IndexX = x;
-                        m_Sinf.Dies_result[x, y].IndexY = y;
-                        m_Sinf.Dies_result[x, y].DieSizeX = dieSize_X;
-                        m_Sinf.Dies_result[x, y].DieSizeY = dieSize_Y;
-                        m_Sinf.Dies_result[x, y].PositionX = dieSize_X * (x);
-                        m_Sinf.Dies_result[x, y].PositionY = dieSize_Y * (y);
+                        Sinf.Dies_result[x, y] = new DieDraw();
+                        Sinf.Dies_result[x, y].IndexX = x;
+                        Sinf.Dies_result[x, y].IndexY = y;
+                        Sinf.Dies_result[x, y].DieSizeX = dieSize_X;
+                        Sinf.Dies_result[x, y].DieSizeY = dieSize_Y;
+                        Sinf.Dies_result[x, y].PositionX = dieSize_X * (x);
+                        Sinf.Dies_result[x, y].PositionY = dieSize_Y * (y);
 
                         if (waferMappingDrawType == MappingDrawType.Skip)
                         {
-                            m_Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Skip;
-                            m_Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Skip;
+                            Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Skip;
+                            Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Skip;
                             //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Skip, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
                         }
                         else if (waferMappingDrawType == MappingDrawType.Ink)
                         {
-                            m_Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Ink;
-                            m_Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Ink;
+                            Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Ink;
+                            Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Ink;
                             //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Ink, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
                         }
                         else
                         {
-                            m_Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Tested;
-                            m_Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Tested;
+                            Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Tested;
+                            Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Tested;
                             //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Tested, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
                         }
                     }
                 }
 
-                
 
-                m_Sinf.Dies = new Die[m_Sinf.Dies_result.GetLength(0) * m_Sinf.Dies_result.GetLength(1)];
+
+                Sinf.Dies = new Die[Sinf.Dies_result.GetLength(0) * Sinf.Dies_result.GetLength(1)];
+                Sinf.ColumnCount = Sinf.Dies_result.GetLength(0);
+                Sinf.RowCount = Sinf.Dies_result.GetLength(1);
                 int idx = 0;
-                for (int i = 0; i < m_Sinf.Dies_result.GetLength(0); i++)
+                for (int i = 0; i < Sinf.Dies_result.GetLength(0); i++)
                 {
-                    for (int j = 0; j < m_Sinf.Dies_result.GetLength(1); j++)
+                    for (int j = 0; j < Sinf.Dies_result.GetLength(1); j++)
                     {
                         double dieSizeX = 0;
                         double dieSizeY = 0;
-                        dieSizeX = m_Sinf.Dies_result[i, j].DieSizeX;
-                        dieSizeY = m_Sinf.Dies_result[i, j].DieSizeY;
-                        m_Sinf.Dies[idx] = new Die
+                        dieSizeX = Sinf.Dies_result[i, j].DieSizeX;
+                        dieSizeY = Sinf.Dies_result[i, j].DieSizeY;
+                        Sinf.Dies[idx] = new Die
                         {
-                            IndexX = m_Sinf.Dies_result[i, j].IndexX,
-                            IndexY = m_Sinf.Dies_result[i, j].IndexY,
-                            PosX = m_Sinf.Dies_result[i, j].PositionX,
-                            PosY = m_Sinf.Dies_result[i, j].PositionY,
-                            BinCode = m_Sinf.Dies_result[i, j].DieData,
+                            IndexX = Sinf.Dies_result[i, j].IndexX,
+                            IndexY = Sinf.Dies_result[i, j].IndexY,
+                            PosX = Sinf.Dies_result[i, j].PositionX,
+                            PosY = Sinf.Dies_result[i, j].PositionY,
+                            BinCode = Sinf.Dies_result[i, j].DieData,
                             DieSize = new Size(dieSizeX, dieSizeY)
                         };
                         idx++;

@@ -136,7 +136,7 @@ namespace WLS3200Gen2
         /// </summary>
         public bool IsLocateComplete { get => isLocateComplete; set => SetValue(ref isLocateComplete, value); }
         public bool IsDetectionComplete { get => isDetectionComplete; set => SetValue(ref isDetectionComplete, value); }
- 
+
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
@@ -376,6 +376,11 @@ namespace WLS3200Gen2
 
                 SINFMapGenerateWindow sINFMapGenerateWindow = new SINFMapGenerateWindow();
                 sINFMapGenerateWindow.ShowDialog();
+                if (sINFMapGenerateWindow.Sinf.Dies != null && sINFMapGenerateWindow.Sinf.Dies.Length > 0)
+                {
+                    mainRecipe.DetectRecipe.WaferMap.Dies = sINFMapGenerateWindow.Sinf.Dies.ToArray();
+                    ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                }
 
 
             }
