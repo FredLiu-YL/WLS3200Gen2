@@ -542,6 +542,99 @@ namespace WLS3200Gen2.Model
 
         void OuterRingRollY_Stop();
     }
-
+    public interface IMicroScope
+    {
+        /// <summary>
+        /// 目前Z軸位置
+        /// </summary>
+        double Z_Position { get; }
+        /// <summary>
+        /// Z軟體負極限
+        /// </summary>
+        double Z_PositionNEL { get; set; }
+        /// <summary>
+        /// Z軟體正極限
+        /// </summary>
+        double Z_PositionPEL { get; set; }
+        /// <summary>
+        /// 準焦位置
+        /// </summary>
+        double Aberration_Position { get; }
+        /// <summary>
+        /// 準焦軟體負極限
+        /// </summary>
+        double Aberration_PositionNEL { get; set; }
+        /// <summary>
+        /// 準焦軟體正極限
+        /// </summary>
+        double Aberration_PositionPEL { get; set; }
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        void Initial();
+        /// <summary>
+        /// 更換鏡頭
+        /// </summary>
+        /// <param name="idx"></param>
+        void ChangeLens(int idx);
+        /// <summary>
+        /// 更換鏡片組
+        /// </summary>
+        /// <param name="idx"></param>
+        void ChangeCube(int idx);
+        /// <summary>
+        /// 更換光圈
+        /// </summary>
+        /// <param name="idx"></param>
+        void ChangeAperture(int idx);
+        /// <summary>
+        /// 更換濾片
+        /// </summary>
+        /// <param name="idx"></param>
+        void ChangeFilter(int idx);
+        /// <summary>
+        /// 更換光的發射方式 反射、透射
+        /// </summary>
+        /// <param name="idx"></param>
+        void ChangeLightSpread(int idx);
+        /// <summary>
+        /// 一直對焦
+        /// </summary>
+        void AF_Trace();
+        /// <summary>
+        /// 對焦一次
+        /// </summary>
+        void AF_OneShot();
+        /// <summary>
+        /// 停止對焦
+        /// </summary>
+        void AF_Off();
+        /// <summary>
+        /// 設定對焦的參數 FirstZPos(Z初始對焦位置) SearchRange(搜尋對焦的範圍)
+        /// </summary>
+        /// <param name="FirstZPos"></param>
+        /// <param name="SearchRange"></param>
+        void SetSearchRange(double FirstZPos, double Range);
+        /// <summary>
+        /// 移動對焦軸相對位置
+        /// </summary>
+        /// <param name="distance"></param>
+        void ZMoveCommand(double distance);
+        /// <summary>
+        /// 移動對焦軸絕對位置
+        /// </summary>
+        /// <param name="position"></param>
+        void ZMoveToCommand(double position);
+        /// <summary>
+        /// 對焦值相對位置
+        /// </summary>
+        /// <param name="distance"></param>
+        void AberrationMoveCommand(double distance);
+        /// <summary>
+        /// 對焦值絕對位置
+        /// </summary>
+        /// <param name="position"></param>
+        void AberrationMoveToCommand(double position);
+    }
 
 }
