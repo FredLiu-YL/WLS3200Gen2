@@ -106,7 +106,7 @@
 
             </TabControl.Resources>
             <!--首頁-->
-            <TabItem Height="75" >
+            <TabItem Height="75" IsSelected="{Binding IsMainHomePageSelect}" >
                 <TabItem.Header >
 
                     <StackPanel Width="auto"  Height="auto">
@@ -390,15 +390,7 @@
             </TabItem>
             <!--料號設定頁-->
             <TabItem  Height="75" IsSelected="{Binding IsMainRecipePageSelect}"  >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Loaded">
-                        <i:InvokeCommandAction Command="{Binding LoadRecipePageCommand}"/>
-                    </i:EventTrigger>
-
-                    <i:EventTrigger EventName="Unloaded">
-                        <i:InvokeCommandAction Command="{Binding UnLoadRecipePageCommand}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+        
                 <TabItem.Header>
                     <StackPanel Width="auto"   Height="auto">
                         <materialDesign:PackIcon Width="34" Height="34" HorizontalAlignment="Center"  Kind="FileDocumentEdit" />
@@ -1006,7 +998,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem  Height="75" Background="White" >
+            <TabItem  Height="75" Background="White" IsSelected="{Binding IsMainSecurityPageSelect}"   >
                 <TabItem.Header>
                     <StackPanel  Width="auto"  Height="auto">
                         <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="Security" />
@@ -1178,11 +1170,12 @@
 
         </TabControl>
 
-        <Grid HorizontalAlignment="Left" Margin="10,453,0,0" Width="70">
+        <Grid HorizontalAlignment="Left" Margin="0,453,0,0" Width="90">
             <StackPanel Grid.Row="1"   Width="auto"  Height="auto">
-                <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="AccountLock" />
-                <TextBlock  HorizontalAlignment="Center"   Text="Account" />
-                <account:UserRightsControl  Grid.Row="1" Account="{Binding Account}"/>
+                <materialDesign:PackIcon    Width="44"   Height="44"   HorizontalAlignment="Center"  Kind="AccountLock" />
+                <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Right}" />
+                <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Name}" />
+                <account:UserRightsControl Margin="10,0,0,0" Grid.Row="1" Account="{Binding Account}"/>
             </StackPanel>
         </Grid>
 

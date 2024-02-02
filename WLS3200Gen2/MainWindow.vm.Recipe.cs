@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
+using YuanliCore.Account;
 using YuanliCore.AffineTransform;
 using YuanliCore.Data;
 using YuanliCore.ImageProcess.Match;
@@ -49,12 +50,17 @@ namespace WLS3200Gen2
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private bool isLocate;
         private int selectDetectionPointList;
-        private bool isMainRecipePageSelect, isMainSettingPageSelect;
+        private bool isMainHomePageSelect,isMainRecipePageSelect, isMainSettingPageSelect, isMainSecurityPageSelect;
         private bool isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
         private bool isLoadwaferComplete, isLocateComplete, isDetectionComplete;
+
+        /// <summary>
+        /// 切換到 主畫面 首頁頁面
+        /// </summary>
+        public bool IsMainHomePageSelect {get => isMainHomePageSelect;   set => SetValue(ref isMainHomePageSelect, value);}
 
         /// <summary>
         /// 切換到 主畫面Recipe 設定頁面
@@ -71,6 +77,7 @@ namespace WLS3200Gen2
             }
             set => SetValue(ref isMainRecipePageSelect, value);
         }
+
         /// <summary>
         /// 切換到 主畫面設定頁面
         /// </summary>
@@ -86,6 +93,23 @@ namespace WLS3200Gen2
             }
             set => SetValue(ref isMainSettingPageSelect, value);
         }
+
+        /// <summary>
+        /// 切換到 安全性操作頁面
+        /// </summary>
+        public bool IsMainSecurityPageSelect
+        {
+            get
+            {
+                if (isMainSecurityPageSelect)
+                    LoadSecurityPage();
+                else if (!isMainSecurityPageSelect)
+                    UnLoadSecurityPage();
+                return isMainSecurityPageSelect;
+            }
+            set => SetValue(ref isMainSecurityPageSelect, value);
+        }
+
         /// <summary>
         /// 切換到 取料頁
         /// </summary>
@@ -179,27 +203,17 @@ namespace WLS3200Gen2
         public ObservableCollection<ROIShape> MapDrawings { get => mapDrawings; set => SetValue(ref mapDrawings, value); }
 
 
-        public ICommand LoadRecipePageCommand => new RelayCommand(() =>
-        {
-            try
-            {
-
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-
-            }
-        });
 
         //Recipe進入會執行
         private void LoadRecipePage()
         {
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            {
+                IsMainRecipePageSelect = false;
+                IsMainHomePageSelect = true;
+                return;
+            }
+
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
             WriteLog("Enter the RecipePage");
@@ -220,10 +234,39 @@ namespace WLS3200Gen2
         private void LoadSettingPage()
         {
 
+          
+
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            {
+                IsMainSettingPageSelect = false;
+                IsMainHomePageSelect = true;
+                return;
+            }
             WriteLog("Enter the SettingPage");
         }
         //離開recipe頁面會執行
         private void UnLoadSettingPage()
+        {
+
+        }
+
+        //Security進入會執行
+        private void LoadSecurityPage()
+        {
+
+           
+
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            {
+                IsMainSecurityPageSelect = false;
+                IsMainHomePageSelect = true;
+                return;
+            }
+
+            WriteLog("Enter the SecurityPage");
+        }
+        //離開Security頁面會執行
+        private void UnLoadSecurityPage()
         {
 
         }

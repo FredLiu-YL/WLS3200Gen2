@@ -68,7 +68,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
-
+                WriteLog(ex.Message);
                 MessageBox.Show(ex.Message);
                 isRunCommand = false;
             }
