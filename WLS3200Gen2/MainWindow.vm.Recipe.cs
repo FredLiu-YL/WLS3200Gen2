@@ -50,7 +50,7 @@ namespace WLS3200Gen2
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private bool isLocate;
         private int selectDetectionPointList;
-        private bool isMainHomePageSelect,isMainRecipePageSelect, isMainSettingPageSelect, isMainSecurityPageSelect;
+        private bool isMainHomePageSelect, isMainRecipePageSelect, isMainSettingPageSelect, isMainSecurityPageSelect;
         private bool isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
@@ -60,7 +60,7 @@ namespace WLS3200Gen2
         /// <summary>
         /// 切換到 主畫面 首頁頁面
         /// </summary>
-        public bool IsMainHomePageSelect {get => isMainHomePageSelect;   set => SetValue(ref isMainHomePageSelect, value);}
+        public bool IsMainHomePageSelect { get => isMainHomePageSelect; set => SetValue(ref isMainHomePageSelect, value); }
 
         /// <summary>
         /// 切換到 主畫面Recipe 設定頁面
@@ -234,7 +234,7 @@ namespace WLS3200Gen2
         private void LoadSettingPage()
         {
 
-          
+
 
             if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
             {
@@ -254,7 +254,7 @@ namespace WLS3200Gen2
         private void LoadSecurityPage()
         {
 
-           
+
 
             if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
             {
@@ -695,6 +695,7 @@ namespace WLS3200Gen2
 
             var indexs = new Point[] { index1, index2, index3 };
             var poss = new Point[] { pos1, pos2, pos3 };
+            if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
             var transform = new CogAffineTransform(indexs, poss);
 
             //依序轉換完INDEX  塞回機械座標

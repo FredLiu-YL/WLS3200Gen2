@@ -57,6 +57,7 @@ namespace WLS3200Gen2.Model
                         cts.Token.ThrowIfCancellationRequested();
                         await pts.Token.WaitWhilePausedAsync(cts.Token); //暫停在Macro上
 
+
                         //顯微鏡站準備接WAFER
                         Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
 

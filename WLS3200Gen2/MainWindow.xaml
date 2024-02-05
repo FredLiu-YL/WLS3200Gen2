@@ -203,7 +203,7 @@
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}"
                                  Command="{Binding PauseCommand}"
-                                  ToolTip="MaterialDesignFloatingActionButton">
+                                  ToolTip="MaterialDesignFloatingActionButton" Cursor="Hand">
                                 <materialDesign:PackIcon  Width="40" Height="40" Kind="Pause" />
                             </Button>
 

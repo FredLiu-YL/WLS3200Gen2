@@ -15,5 +15,7 @@ namespace WLS3200Gen2.Model.Recipe
 
         public bool RemoteDefectPoint { get; set; }
 
+
+       
     }
 }
