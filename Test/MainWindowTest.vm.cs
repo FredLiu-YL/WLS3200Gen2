@@ -31,6 +31,7 @@ namespace Test
         private IAligner aligner;
         private IMacro macro;
         private IRobot robot;
+        private IMicroScope micro;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
         private AxisConfig tableXConfig;
@@ -60,12 +61,15 @@ namespace Test
         public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
         public AlignerUI AlignerUIShow { get => alignerUIShow; set => SetValue(ref alignerUIShow, value); }
         public IMacro Macro { get => macro; set => SetValue(ref macro, value); }
+
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
 
         public FeederSetting FeederSetting = new FeederSetting();
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 
+
+        public IMicroScope Micro { get => micro; set => SetValue(ref micro, value); }
         //////////////////////////////////
         private WriteableBitmap mappingImage;
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
@@ -94,6 +98,7 @@ namespace Test
             try
             {
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+                Micro = new BXUCB("COM1");
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
 
@@ -345,6 +350,15 @@ namespace Test
         {
             try
             {
+                //Micro.Z_PositionPEL = 851110;
+                //Micro.Z_PositionNEL = 1;
+                //Micro.Aberration_PositionPEL = 780000;
+                //Micro.Aberration_PositionNEL = 350000;
+
+                Micro.ZMoveCommand(100);
+                Micro.AberrationMoveCommand(100);
+                //Micro.AberrationMoveToCommand(550);//550~790
+
                 //motionController.SetOutputCommand(0, true);
 
                 //if (OutputSwitchs[0] == false)

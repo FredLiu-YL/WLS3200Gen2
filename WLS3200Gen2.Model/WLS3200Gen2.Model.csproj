@@ -100,6 +100,7 @@
     <Compile Include="Component\Adlink\APS168x64EX.cs" />
     <Compile Include="Component\ArtificialCamera.cs" />
     <Compile Include="Component\ArtificialLoadPort.cs" />
+    <Compile Include="Component\BXUCB.cs" />
     <Compile Include="Component\DummyAligner.cs" />
     <Compile Include="Component\DummyLoadPort.cs" />
     <Compile Include="Component\DummyMacro.cs" />
