@@ -136,9 +136,11 @@
                                 <views:VirtualCanvas Grid.Row="1" />
                             </TabItem>
                             <TabItem Header="TAB 3" Visibility="Hidden">
+                              
 
                             </TabItem>
                             <views:VirtualCanvas Height="760" />
+                            <Grid/>
                         </TabControl>
 
                         <logger:LoggerUC  Grid.Row="1"  Message="{Binding LogMessage}" />
@@ -147,35 +149,41 @@
 
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="0.07*"/>
+                            <RowDefinition Height="0.09*"/>
                             <RowDefinition Height="0.63*"/>
                             <RowDefinition Height="0.30*"/>
                         </Grid.RowDefinitions>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="7*"/>
-                                <ColumnDefinition Width="1.1*"/>
-                                <ColumnDefinition Width="1.1*"/>
-                                <ColumnDefinition Width="1.1*"/>
-                                <ColumnDefinition Width="0.7*"/>
+                                <ColumnDefinition Width="5*"/>
+                                <ColumnDefinition Width="1.0*"/>
+                                <ColumnDefinition Width="1.0*"/>
+                                <ColumnDefinition Width="1.0*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition  Width="0.8*"/>
-                                    <ColumnDefinition  Width="1.6*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text=" Recipe : " VerticalAlignment="Center" FontSize="24"  Grid.Column="2"/>
-                                <TextBlock  Text=" ABC1234567890" VerticalAlignment="Center" FontSize="24"  Grid.Column="3"/>
-                                <Button  Command="{Binding ReadRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Load"  Grid.Column="0" BorderThickness="0"  Background="#FF6D879E"  >
-                                    <materialDesign:PackIcon Kind="FileDocumentArrowRight" Height="50" Width="60" />
-                                </Button>
-                                <Button   Command="{Binding SaveRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Save" Grid.Column="1" BorderThickness="0" Background="#FF6D879E"  >
-                                    <materialDesign:PackIcon Kind="ContentSave" Height="50" Width="60"  />
-                                </Button>
-                            </Grid>
-                            <Button Grid.Column="1"
+                            <Border Grid.Column="0" Margin="1"  BorderBrush="DeepSkyBlue" BorderThickness="2">
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition/>
+
+                                        <ColumnDefinition  Width="2*" />
+                                    </Grid.ColumnDefinitions>
+                                    <GroupBox Header="Recipe Name:" FontSize="18" Grid.Column="2"   BorderBrush="Black"  BorderThickness="1" >
+                                        <TextBlock  Text="ABC123456789" Height="30" VerticalAlignment="Center" FontSize="24"  Grid.Column="3"/>
+                                    </GroupBox>
+
+                                    <Button  Command="{Binding ReadRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Load"  Grid.Column="0" BorderThickness="0"  Background="#FF6D879E"  >
+                                        <materialDesign:PackIcon Kind="FileDocumentArrowRight" Height="50" Width="60" />
+                                    </Button>
+                                    <Button   Command="{Binding SaveRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Save" Grid.Column="1" BorderThickness="0" Background="#FF6D879E"  >
+                                        <materialDesign:PackIcon Kind="ContentSave" Height="50" Width="60"  />
+                                    </Button>
+                                </Grid>
+                            </Border>
+                            <Border Grid.Column="1" Grid.ColumnSpan="4"   BorderBrush="DeepSkyBlue"  BorderThickness="2"/>
+                            <Button Grid.Column="1" Width="70" Height="70"
                                   materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding IsRunning}"
                                   materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
                                   materialDesign:ButtonProgressAssist.Value="-1"
@@ -183,7 +191,7 @@
                                   Command="{Binding RunCommand}"
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}">
-                                <materialDesign:PackIcon  Width="40" Height="40" Kind="Play" />
+                                <materialDesign:PackIcon  Width="60" Height="60" Kind="Play" />
                             </Button>
 
                             <!--<Button Grid.Column="1"
@@ -199,24 +207,27 @@
 
 
 
-                            <Button Grid.Column="2"
+                            <Button Grid.Column="2" Width="70" Height="70"
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}"
                                  Command="{Binding PauseCommand}"
                                   ToolTip="MaterialDesignFloatingActionButton" Cursor="Hand">
-                                <materialDesign:PackIcon  Width="40" Height="40" Kind="Pause" />
+                                <materialDesign:PackIcon  Width="50" Height="50" Kind="Pause" />
                             </Button>
 
-                            <Button Grid.Column="3"
+                            <Button Grid.Column="3" Width="70" Height="70"
                                   Command="{Binding StopCommand}"
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}"
                                   ToolTip="MaterialDesignFloatingActionButton">
-                                <materialDesign:PackIcon  Width="40" Height="40" Kind="Stop" />
+                                <materialDesign:PackIcon  Width="60" Height="60" Kind="Stop" />
                             </Button>
 
                             <UserControlUC:ProcessMenuUC Grid.Column="4"  />
-
+                            <Border Grid.Column="5"    BorderBrush="DeepSkyBlue"  BorderThickness="2">
+                                <UserControlUC:MachineStateUC Status="IDLE"/>
+                            </Border>
+                           
 
                         </Grid>
                         <Grid Grid.Row="1" Margin="0">
@@ -1176,6 +1187,10 @@
                 <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Right}" />
                 <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Name}" />
                 <account:UserRightsControl Margin="10,0,0,0" Grid.Row="1" Account="{Binding Account}"/>
+                <Grid Height="200">
+
+                </Grid>
+               
             </StackPanel>
         </Grid>
 

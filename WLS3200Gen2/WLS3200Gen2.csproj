@@ -111,6 +111,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UserControls\MachineStateUC.xaml.cs">
+      <DependentUpon>MachineStateUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\BincodeSettingWindow.xaml.cs">
       <DependentUpon>BincodeSettingWindow.xaml</DependentUpon>
     </Compile>
@@ -181,6 +184,10 @@
     <Compile Include="Windows\SINFMapGenerateWindow.xaml.cs">
       <DependentUpon>SINFMapGenerateWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="UserControls\MachineStateUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\BincodeSettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

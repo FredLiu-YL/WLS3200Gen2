@@ -34,9 +34,7 @@ namespace WLS3200Gen2.Model
                 cts = new CancellationTokenSource();
                 WriteLog("ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, pts, cts);
-
-
-
+            
                 await Task.Run(async () =>
                 {
                     WriteLog("Process Start");
@@ -63,15 +61,16 @@ namespace WLS3200Gen2.Model
                         //晶背檢查
                         if (processSetting.IsMacroBack)
                         {
-
+           
                             //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
                            await Feeder.TurnWafer();
-
+                           
                             //委派到ui層 去執行macro人工檢
                             MacroReady?.Invoke();
-
+                     
                             //翻回來
                             await Feeder.TurnBackWafer();
+                        
                         }
 
                         //到Align
@@ -92,7 +91,7 @@ namespace WLS3200Gen2.Model
                             //顯微鏡站準備接WAFER
                             Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
                             //到預備位置準備進片
-                            await Feeder.LoadToMicroReadyAsync();
+                            await Feeder.AlignerToStandByAsync();
                             await catchWafertask; //等待顯微鏡站準備完成
 
                             //wafer送到主設備內 
@@ -109,13 +108,21 @@ namespace WLS3200Gen2.Model
                             //執行主設備動作 
                             await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
                             await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
+                            //退片
+                            await Feeder.MicroUnLoadToStandByAsync();
+
+                        }
+                        else 
+                        {
+                            //退片
+                            await Feeder.AlignerToStandByAsync();
+
                         }
 
 
-
-
                         //退片
-                        await Feeder.UnLoadAsync(waferInside);
+                        await Feeder.UnLoadWaferToCassette(waferInside);
+
 
 
 
@@ -153,7 +160,7 @@ namespace WLS3200Gen2.Model
             finally
             {
                 Feeder.ProcessEnd();
-
+                cts.Dispose();
                 WriteLog("Process Finish ");
             }
 

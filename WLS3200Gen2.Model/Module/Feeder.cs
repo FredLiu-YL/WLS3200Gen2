@@ -232,7 +232,7 @@ namespace WLS3200Gen2.Model.Module
         /// Aligner-> StandBy位置
         /// </summary>
         /// <returns></returns>
-        public async Task LoadToMicroReadyAsync()
+        public async Task AlignerToStandByAsync()
         {
             await Task.Run(async () =>
             {
@@ -268,14 +268,18 @@ namespace WLS3200Gen2.Model.Module
         }
 
 
-        public async Task UnLoadAsync(Wafer wafer)
+        public async Task MicroUnLoadToStandByAsync()
         {
             WriteLog("UnLoad Wafer Start ");
             await RobotAxis.MoveAsync(Setting.MicroPos);
             await WaferMicroToStandBy();
-            await UnLoadWaferToCassette(wafer);
+ 
             WriteLog("UnLoad Wafer End ");
         }
+
+        
+
+
         /// <summary>
         /// 從Loadport 拿一片wafer
         /// </summary>
@@ -288,6 +292,7 @@ namespace WLS3200Gen2.Model.Module
             //設定 Cassette內WAFER的狀態
             Cassette.Wafers[cassetteIndex].ProcessStatus = WaferProcessStatus.InProgress;
         }
+        
         /// <summary>
         /// wafer放回loadport
         /// </summary>
@@ -405,7 +410,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                await Task.Run(async () =>
+                await Task.Run( () =>
                 {
                     Robot.PickWafer_Standby(ArmStation.Align);
                     Robot.PickWafer_GoIn(ArmStation.Align);
