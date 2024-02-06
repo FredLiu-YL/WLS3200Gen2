@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using YuanliCore.Interface;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
 {
-    public class MachineSetting
+    public class MachineSetting : AbstractRecipe
     {
 
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();
@@ -23,6 +24,7 @@ namespace WLS3200Gen2.Model
         public double RobotAxisAlignTakePosition { get; set; }
         public double RobotAxisMacroTakePosition { get; set; }
         public double RobotAxisLoadPortTakePosition { get; set; }
+
         /// <summary>
         /// Die 判定需給定BinCode
         /// </summary>
@@ -31,30 +33,46 @@ namespace WLS3200Gen2.Model
         public RobotType RobotsType { get; set; }
         public CameraType CamerasType { get; set; }
 
+        public LoadPortType LoadPortType { get; set; }
+        public LoadPortQuantity  LoadPortCount { get; set; }
 
 
-
-
-    }
+}
 
 
 
     public enum RobotType
     {
-
+        Hirata,
+        Tazimo
 
     }
 
     public enum CameraType
     {
-
+        ImageSource,
+        IDS
 
     }
     public enum MotionControlorType
     {
-
+        ADLink,
+        ADTech,
 
     }
+    public enum LoadPortType
+    {
+        Hirata,
+        Tazimo
+
+    }
+    public enum LoadPortQuantity
+    {
+        Single,
+        Pair
+
+    }
+
 
     public class BinCode
     {

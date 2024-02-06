@@ -15,10 +15,13 @@
                         <Setter Property="Background" Value="LawnGreen" />
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Status}" Value="IDLE">
-                        <Setter Property="Background" Value="Goldenrod" />
+                        <Setter Property="Background" Value="Yellow" />
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Status}" Value="PAUSED">
                         <Setter Property="Background" Value="Yellow" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Status}" Value="Alarm">
+                        <Setter Property="Background" Value="OrangeRed" />
                     </DataTrigger>
                     <DataTrigger Binding="{Binding Status}" Value="Emergency">
                         <Setter Property="Background" Value="Red" />

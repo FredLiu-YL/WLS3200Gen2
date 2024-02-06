@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
+using WLS3200Gen2.UserControls;
 using YuanliCore.Model.LoadPort;
 using YuanliCore.UserControls;
 
@@ -28,8 +29,11 @@ namespace WLS3200Gen2
         private Visibility informationUIVisibility, workholderUCVisibility;
 
         private int tabControlSelectedIndex;
-        private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
+  
         private double manualPosX, manualPosY;
+        private MachineStates machinestatus = MachineStates.IDLE;
+
+
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         public ObservableCollection<WorkItem> WorkItems { get => workItems; set => SetValue(ref workItems, value); }
@@ -42,20 +46,29 @@ namespace WLS3200Gen2
         public int TabControlSelectedIndex { get => tabControlSelectedIndex; set => SetValue(ref tabControlSelectedIndex, value); }
         public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
         public double ManualPosY { get => manualPosY; set => SetValue(ref manualPosY, value); }
+        public MachineStates Machinestatus { get => machinestatus; set => SetValue(ref machinestatus, value); }
+
 
 
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
             {
+                if (Machinestatus == MachineStates.Emergency)
+                {
+                    MessageBox.Show("Not available in emergencies", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 if (isRunCommand == false)
                 {
                     isRunCommand = true;
 
                     IsRunning = true;
                     WriteLog("Process Start");
+                    Machinestatus = MachineStates.RUNNING;
                     await machine.ProcessRunAsync(ProcessSetting);
-
+                    Machinestatus = MachineStates.IDLE;
 
 
                     isRunCommand = false;
@@ -71,10 +84,12 @@ namespace WLS3200Gen2
                 WriteLog(ex.Message);
                 MessageBox.Show(ex.Message);
                 isRunCommand = false;
+                Machinestatus = MachineStates.Alarm;
             }
             finally
             {
                 WriteLog("Process Finish");
+
             }
         });
 
@@ -86,6 +101,7 @@ namespace WLS3200Gen2
 
                 IsRunning = false;
                 // ProcessVisibility = Visibility.Hidden;
+                Machinestatus = MachineStates.PAUSED;
                 await machine.ProcessPause();
 
                 workItems[0].BackGroundBack = Brushes.Red;
@@ -108,6 +124,7 @@ namespace WLS3200Gen2
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
                 IsRunning = false;
+                Machinestatus = MachineStates.RUNNING;
                 await machine.ProcessResume();
                 ProcessVisibility = Visibility.Visible;
             }
@@ -128,7 +145,7 @@ namespace WLS3200Gen2
                 await machine.ProcessStop();
                 IsRunning = false;
                 ProcessVisibility = Visibility.Visible;
-
+                Machinestatus = MachineStates.IDLE;
             }
             catch (Exception ex)
             {

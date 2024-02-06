@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
+using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
 using YuanliCore.Interface;
 using YuanliCore.Model.LoadPort;
@@ -38,7 +39,8 @@ namespace WLS3200Gen2
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
         private System.Windows.Point mapmousePixcel;
-
+        //WLS3200的文件都放在這 (Recipe、 Log setting)
+        private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
         private bool isRefresh;
 
 
@@ -226,8 +228,10 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
-
-                // throw ex;
+                
+                Machinestatus = MachineStates.Emergency;
+                
+                throw ex;
             }
 
         }

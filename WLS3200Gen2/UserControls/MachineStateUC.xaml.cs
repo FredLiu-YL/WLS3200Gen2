@@ -64,6 +64,7 @@ namespace WLS3200Gen2.UserControls
         IDLE,
         RUNNING,
         PAUSED,
+        Alarm,
         Emergency  
     }
 }

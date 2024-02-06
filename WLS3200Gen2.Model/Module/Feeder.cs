@@ -17,7 +17,7 @@ namespace WLS3200Gen2.Model.Module
     {
         private bool isSotMapping;
         private bool isCassetteDone;
-        private Cassette cassette;
+        private Cassette cassette; //由 ProcessInitial 決定是哪一個Loadport
         private ILoadPort tempLoadPort;
         private IAligner tempAligner;
 
@@ -29,25 +29,40 @@ namespace WLS3200Gen2.Model.Module
         private Wafer processTempPre_Wafer;
 
 
-
-        public Feeder(IEFEMRobot robot, ILoadPort loadPort, IMacro macro, IAligner aligner, Axis axis)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="robot"> 機械手臂</param>
+        /// <param name="loadPortL">只有一支時  預設使用L </param>
+        /// <param name="loadPortR"></param>
+        /// <param name="macro">巨觀檢查機構 </param>
+        /// <param name="aligner">晶圓定位機</param>
+        /// <param name="axis">乘載機械手臂的移動軸</param>
+        public Feeder(IEFEMRobot robot, ILoadPort loadPortL, ILoadPort loadPortR, IMacro macro, IAligner aligner, Axis axis)
         {
             this.Robot = robot;
             this.Macro = macro;
-            this.Aligner12 = aligner;
+            this.AlignerL = aligner;
             this.RobotAxis = axis;
-            this.LoadPort12 = loadPort;
-
+            this.LoadPortL = loadPortL;
+            this.LoadPortR = loadPortR;
         }
 
 
         public IEFEMRobot Robot { get; }
         public IMacro Macro { get; }
         public Axis RobotAxis { get; }
-        public IAligner Aligner8 { get; }
-        public IAligner Aligner12 { get; }
-        public ILoadPort LoadPort8 { get; }
-        public ILoadPort LoadPort12 { get; }
+
+        /// <summary>
+        /// 當只有一個 Aligner  只啟用AlignerL
+        /// </summary>
+        public IAligner AlignerL { get; }
+        public IAligner AlignerR { get; }
+        /// <summary>
+        /// 當只有一個 LoadPort  只啟用LoadPortL
+        /// </summary>
+        public ILoadPort LoadPortL { get; }
+        public ILoadPort LoadPortR { get; }
         public Cassette Cassette { get => cassette; }
         public bool IsCassetteDone { get => isCassetteDone; }
         public string WaferID { get ; }
@@ -74,8 +89,8 @@ namespace WLS3200Gen2.Model.Module
 
                 Task aligner8Home = Task.Run(() =>
                 {
-                    if (Aligner8 != null)
-                        Aligner8.Home();
+                    if (AlignerL != null)
+                        AlignerL.Home();
 
                 });
                 Task robotAxisHome = RobotAxis.HomeAsync();
@@ -83,18 +98,18 @@ namespace WLS3200Gen2.Model.Module
 
                 Task aligner12Home = Task.Run(() =>
                 {
-                    Aligner12.Home();
+                    AlignerR.Home();
 
                 });
                 Task loadPort8Home = Task.Run(() =>
                 {
-                    if (LoadPort8 != null)
-                        LoadPort8.Home();
+                    if (LoadPortL != null)
+                        LoadPortL.Home();
 
                 });
                 Task loadPort12Home = Task.Run(() =>
                 {
-                    LoadPort12.Home();
+                    LoadPortR.Home();
 
                 });
                 await Task.WhenAll(aligner8Home, aligner12Home);
@@ -119,19 +134,25 @@ namespace WLS3200Gen2.Model.Module
 
             //判斷 8吋 或 12吋 啟用不同的硬體裝置
             switch (inchType)
-            {
+            {   
+                case InchType.None:
+                //    tempAligner = AlignerL;
+                    tempLoadPort = LoadPortL;
+                    break;
                 case InchType.Inch8:
-                    tempAligner = Aligner8;
-                    tempLoadPort = LoadPort8;
+                 //   tempAligner = AlignerL;
+                    tempLoadPort = LoadPortL;
                     break;
                 case InchType.Inch12:
-                    tempAligner = Aligner12;
-                    tempLoadPort = LoadPort12;
+                //    tempAligner = AlignerR;
+                    tempLoadPort = LoadPortR;
                     break;
 
                 default:
                     break;
             }
+
+            tempAligner = AlignerL; //現階段只有一台Aligner 可以共用8、12吋 ， 所以不需要區分
 
             //如果沒有做過Mapping 
             if (!isSotMapping)
@@ -141,6 +162,7 @@ namespace WLS3200Gen2.Model.Module
                 isSotMapping = true;
 
             }
+
             //判斷有WAFER的格子
             var waferuse = cassette.Wafers.Where(w => w != null);
             processWafers = new Queue<Wafer>(waferuse);
@@ -506,9 +528,13 @@ namespace WLS3200Gen2.Model.Module
         private void MoveToMacro() { }
     }
 
-
+    /// <summary>
+    /// 只在ProcessInitial 選擇啟用的 Loadport 與 Aligner  Inch8:L  Inch12:R
+    /// 如果只有一個或不需要區分 那就選none ，統一啟用左邊的
+    /// </summary>
     public enum InchType
     {
+        None,
         Inch8,
         Inch12
     }

@@ -2,6 +2,7 @@ using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
@@ -36,6 +37,8 @@ namespace WLS3200Gen2
         private MachineSetting machineSetting;
         private bool isSimulate;
         private MainRecipe mainRecipe = new MainRecipe();
+ 
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -46,8 +49,17 @@ namespace WLS3200Gen2
             //   machineSetting.Load();
           
           
-            machineSetting = new MachineSetting();
 
+            machineSetting = new MachineSetting();
+            string path = $"{systemPath}\\MachineSetting.json";
+            if (!File.Exists(path))
+            {
+                machineSetting.Save(path);
+            }
+
+            MachineSetting processSetting = AbstractRecipe.Load<MachineSetting>(path);
+         
+            
             machine = new Machine(isSimulate, machineSetting);
         
 

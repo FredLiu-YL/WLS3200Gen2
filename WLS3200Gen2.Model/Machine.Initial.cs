@@ -46,6 +46,7 @@ namespace WLS3200Gen2.Model
                 //Log?.Invoke("Macro Initial");
                 //macro.Initial();
 
+                //將初始化後的元件 傳進模組內(分配io點位 以及 軸號)
                 AssignComponent();
             }
             catch (Exception ex)
@@ -70,7 +71,7 @@ namespace WLS3200Gen2.Model
             DigitalInput[] dis = motionController.InputSignals.ToArray();
             DigitalOutput[] dos = motionController.OutputSignals.ToArray();
 
-            Feeder = new Feeder(robot, loadPort, macro, aligner, axes[4]);
+            Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4]);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
@@ -99,6 +100,7 @@ namespace WLS3200Gen2.Model
         {
             Log?.Invoke("loadPort Initial");
             ILoadPort loadPort = null;
+
             if (isSimulate)
             {
                 loadPort = new DummyLoadPort();
@@ -106,8 +108,13 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-                loadPort = new ArtificialLoadPort();
+                //只有一支LOAD PORT時
+                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                    loadPort = new ArtificialLoadPort();
+                else
+                {
 
+                }
             }
 
 
@@ -231,9 +238,9 @@ namespace WLS3200Gen2.Model
             ICamera camera = null;
             if (isSimulate)
             {
-    
+
                 camera = new SimulateCamera("9.bmp");
-              
+
             }
             else
             {
