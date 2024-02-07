@@ -8,27 +8,66 @@
              x:Name="MachineState"
              d:DesignHeight="60" d:DesignWidth="300">
     <Grid  DataContext="{Binding ElementName=MachineState}"   >
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Status}" Value="Running">
-                        <Setter Property="Background" Value="LawnGreen" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Status}" Value="IDLE">
-                        <Setter Property="Background" Value="Yellow" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Status}" Value="PAUSED">
-                        <Setter Property="Background" Value="Yellow" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Status}" Value="Alarm">
-                        <Setter Property="Background" Value="OrangeRed" />
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Status}" Value="Emergency">
-                        <Setter Property="Background" Value="Red" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
-        <TextBlock Text="{Binding Status}"  VerticalAlignment="Center"  FontSize="32" HorizontalAlignment="Center" />
+        <Rectangle   RadiusX="20" RadiusY="20" >
+            <Rectangle.Style>
+                <Style TargetType="Rectangle">
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Status}" Value="Running">
+                            <Setter Property="Fill" Value="LawnGreen" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Status}" Value="IDLE">
+                            <Setter Property="Fill" Value="Gold" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="PAUSED">
+                            <Setter Property="Fill" Value="Gold" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Status}" Value="Alarm">
+                            <Setter Property="Fill" Value="OrangeRed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="Emergency">
+                            <Setter Property="Fill" Value="Red" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+        <Rectangle Margin="3"  RadiusX="20" RadiusY="20" Fill="White" >
+
+        </Rectangle>
+        
+        <Rectangle Margin="6"  RadiusX="20" RadiusY="20">
+            <Rectangle.Style>
+                <Style TargetType="Rectangle">
+
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Status}" Value="Running">
+                            <Setter Property="Fill" Value="LawnGreen" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Status}" Value="IDLE">
+                            <Setter Property="Fill" Value="Gold" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="PAUSED">
+                            <Setter Property="Fill" Value="Gold" />
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Status}" Value="Alarm">
+                            <Setter Property="Fill" Value="OrangeRed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="Emergency">
+                            <Setter Property="Fill" Value="Red" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+        <Grid>
+            <TextBlock Text="{Binding Status}"  VerticalAlignment="Center"  FontSize="32" HorizontalAlignment="Center" />
+        </Grid>
     </Grid>
+ 
+
 </UserControl>

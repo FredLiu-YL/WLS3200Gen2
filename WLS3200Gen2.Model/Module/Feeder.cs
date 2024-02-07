@@ -98,7 +98,8 @@ namespace WLS3200Gen2.Model.Module
 
                 Task aligner12Home = Task.Run(() =>
                 {
-                    AlignerR.Home();
+                    if(AlignerR!=null)
+                        AlignerR.Home();
 
                 });
                 Task loadPort8Home = Task.Run(() =>
@@ -109,7 +110,8 @@ namespace WLS3200Gen2.Model.Module
                 });
                 Task loadPort12Home = Task.Run(() =>
                 {
-                    LoadPortR.Home();
+                    if (LoadPortR != null)
+                        LoadPortR.Home();
 
                 });
                 await Task.WhenAll(aligner8Home, aligner12Home);
