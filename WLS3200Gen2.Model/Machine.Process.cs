@@ -24,7 +24,7 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public event Func<MainRecipe> ChangeRecipe;
 
-        public event Action MacroReady;
+        public event Func<PauseTokenSource, CancellationTokenSource, Task<MacroJudge>> MacroReady;
 
         public async Task ProcessRunAsync(ProcessSetting processSetting)
         {
@@ -34,10 +34,12 @@ namespace WLS3200Gen2.Model
                 cts = new CancellationTokenSource();
                 WriteLog("ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, pts, cts);
-            
+
                 await Task.Run(async () =>
                 {
                     WriteLog("Process Start");
+ 
+
                     //先放一片在macro上
                     await Feeder.LoadToReadyAsync();
 
@@ -53,7 +55,10 @@ namespace WLS3200Gen2.Model
                         {
 
                             //委派到ui 去執行macro人工檢
-                            MacroReady?.Invoke();
+                            Task<MacroJudge> macro = MacroReady?.Invoke(pts, cts);
+                            var judgeResult = macro.Result;
+
+
 
                         }
 
@@ -61,16 +66,18 @@ namespace WLS3200Gen2.Model
                         //晶背檢查
                         if (processSetting.IsMacroBack)
                         {
-           
+
                             //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
-                           await Feeder.TurnWafer();
-                           
+                            await Feeder.TurnWafer();
+
                             //委派到ui層 去執行macro人工檢
-                            MacroReady?.Invoke();
-                     
+                            Task<MacroJudge> macro = MacroReady?.Invoke(pts, cts);
+                            var judgeResult = macro.Result;
+
+
                             //翻回來
                             await Feeder.TurnBackWafer();
-                        
+
                         }
 
                         //到Align
@@ -79,13 +86,13 @@ namespace WLS3200Gen2.Model
 
                         // ProcessPause();
                         cts.Token.ThrowIfCancellationRequested();
-                        await pts.Token.WaitWhilePausedAsync(cts.Token);  
+                        await pts.Token.WaitWhilePausedAsync(cts.Token);
 
                         Wafer waferInside = null;
                         Task taskLoad = Task.CompletedTask;
                         var waferusable = Feeder.Cassette.Wafers.Select(w => w.ProcessStatus == WaferProcessStatus.Usable);
-                    
-                        
+
+
                         if (processSetting.IsMicro)//判斷如果有需要進顯微鏡
                         {
                             //顯微鏡站準備接WAFER
@@ -97,7 +104,7 @@ namespace WLS3200Gen2.Model
                             //wafer送到主設備內 
                             Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
                             waferInside = await Feeder.LoadToMicroAsync();
-   
+
                             if (waferusable.Count() > 0)//如果還有片
                             {
                                 //預載一片在Macro上
@@ -112,7 +119,7 @@ namespace WLS3200Gen2.Model
                             await Feeder.MicroUnLoadToStandByAsync();
 
                         }
-                        else 
+                        else
                         {
                             //退片
                             await Feeder.AlignerToStandByAsync();
@@ -155,7 +162,7 @@ namespace WLS3200Gen2.Model
             catch (Exception ex)
             {
 
-
+                throw ex;
             }
             finally
             {

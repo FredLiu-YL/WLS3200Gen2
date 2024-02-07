@@ -37,7 +37,7 @@ namespace WLS3200Gen2
         private MachineSetting machineSetting;
         private bool isSimulate;
         private MainRecipe mainRecipe = new MainRecipe();
- 
+        string machineSettingPath;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -51,13 +51,13 @@ namespace WLS3200Gen2
           
 
             machineSetting = new MachineSetting();
-            string path = $"{systemPath}\\MachineSetting.json";
-            if (!File.Exists(path))
+            machineSettingPath = $"{systemPath}\\MachineSetting.json";
+            if (!File.Exists(machineSettingPath))
             {
-                machineSetting.Save(path);
+                machineSetting.Save(machineSettingPath);
             }
 
-            MachineSetting processSetting = AbstractRecipe.Load<MachineSetting>(path);
+            MachineSetting processSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
          
             
             machine = new Machine(isSimulate, machineSetting);
@@ -68,10 +68,12 @@ namespace WLS3200Gen2
 
             //預設為最高權限使用者
             Account.CurrentAccount.Right = RightsModel.Administrator;
+
+            //流程內加入委派
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
+            machine.MacroReady += MacroOperate;
 
- 
 
 
         }
@@ -101,6 +103,7 @@ namespace WLS3200Gen2
             LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  ";
         }
 
+       
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

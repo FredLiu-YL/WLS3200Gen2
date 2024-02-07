@@ -1,15 +1,18 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Model.LoadPort;
@@ -28,14 +31,18 @@ namespace WLS3200Gen2
 
         private Visibility informationUIVisibility, workholderUCVisibility;
 
-        private int tabControlSelectedIndex;
-  
+        private int tabControlSelectedIndex; // 0:Process Infomation   1:Alignment  2:Micro  3 :Macro
+        private bool isOperateUI =true;
         private double manualPosX, manualPosY;
-        private MachineStates machinestatus = MachineStates.Emergency;
-
+        private MachineStates machinestatus = MachineStates.IDLE;
+        private MacroJudge macroJudgeOperation  ;
 
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
+        /// <summary>
+        /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
+        /// </summary>
+        public bool IsOperateUI { get => isOperateUI; set => SetValue(ref isOperateUI, value); }
         public ObservableCollection<WorkItem> WorkItems { get => workItems; set => SetValue(ref workItems, value); }
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
@@ -47,7 +54,7 @@ namespace WLS3200Gen2
         public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
         public double ManualPosY { get => manualPosY; set => SetValue(ref manualPosY, value); }
         public MachineStates Machinestatus { get => machinestatus; set => SetValue(ref machinestatus, value); }
-
+   
 
 
         public ICommand RunCommand => new RelayCommand(async () =>
@@ -291,6 +298,41 @@ namespace WLS3200Gen2
             }
         });
 
+        public ICommand MacroPASSOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                macroJudgeOperation = MacroJudge.Pass;
+                await machine.ProcessResume();
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand MacroRejectOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                macroJudgeOperation = MacroJudge.Reject;
+                await machine.ProcessResume();
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+
         public ICommand TEST1Command => new RelayCommand(async () =>
         {
             try
@@ -307,6 +349,25 @@ namespace WLS3200Gen2
             {
             }
         });
+
+
+
+
+        private async Task<MacroJudge> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        {
+            machine.ProcessPause();//暫停
+            
+            //切到Macro 頁面
+            TabControlSelectedIndex = 3;
+            IsOperateUI = false;
+            cts.Token.ThrowIfCancellationRequested();
+            await pts.Token.WaitWhilePausedAsync(cts.Token);
+            //切到Infomation頁面
+            TabControlSelectedIndex = 0;
+            IsOperateUI = true;
+            return macroJudgeOperation;
+
+        }
 
     }
 }

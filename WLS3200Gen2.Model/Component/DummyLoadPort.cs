@@ -8,7 +8,9 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyLoadPort : ILoadPort
     {
-        public bool?[] Slot => throw new NotImplementedException();
+        public bool?[] Slot => new bool?[] {true, true, true, true, true, true, true, true, true, true,
+                                            true, true, true, true, true, true, true, true, true, true,
+                                            true, true, true, true, true};
 
         public void AlarmReset()
         {

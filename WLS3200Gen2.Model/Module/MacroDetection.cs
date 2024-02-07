@@ -20,7 +20,7 @@ using YuanliCore.Model.Interface;
 using YuanliCore.Motion;
 using static WLS3200Gen2.Model.Component.HannDeng_Macro;
 
-namespace WLS3200Gen2.Model.Module
+namespace WLS3200Gen2.Model
 {
     public class MacroDetection : INotifyPropertyChanged
     {
@@ -57,5 +57,13 @@ namespace WLS3200Gen2.Model.Module
         {
 
         }
+    }
+
+
+    public enum MacroJudge
+    {
+        Pass,
+        Reject
+
     }
 }
