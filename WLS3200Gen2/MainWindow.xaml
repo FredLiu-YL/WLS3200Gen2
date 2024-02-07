@@ -25,7 +25,7 @@
         Icon= "YuanLi.ico" 
         WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"  
         ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"  
-     PreviewMouseDown="Window_PreviewMouseDown">  
+     PreviewMouseDown="Window_PreviewMouseDown">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
@@ -136,7 +136,7 @@
                                 <views:VirtualCanvas Grid.Row="1" />
                             </TabItem>
                             <TabItem Header="TAB 3" Visibility="Hidden">
-                              
+
 
                             </TabItem>
                             <views:VirtualCanvas Height="760" />
@@ -227,7 +227,7 @@
                             <Border Grid.Column="5"    BorderBrush="DeepSkyBlue"  BorderThickness="2">
                                 <UserControlUC:MachineStateUC Status="{Binding Machinestatus}"/>
                             </Border>
-                           
+
 
                         </Grid>
                         <Grid Grid.Row="1" Margin="0">
@@ -268,16 +268,58 @@
 
                         <TabControl Margin="1" Grid.Row="2"    SelectedIndex="{Binding TabControlSelectedIndex}"  >
                             <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10">
+                                <GroupBox Grid.Column="0" Grid.Row="0" Header="Process Infomation" FontSize="15">
+                                    <Grid Margin="-4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.7*" />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="0.6*"/>
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Row="0" Grid.Column="0" Content="Recipe:" BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="1" Grid.Column="0" Content="Cassette ID:"  BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="2" Grid.Column="0" Content="Wafer ID:"  BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="3" Grid.Column="0" Content="Wafer Size:"  BorderBrush="Black"  BorderThickness="1" />
 
+
+                                            <Label Grid.Row="0" Grid.Column="1" BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="1" Grid.Column="1" BorderBrush="Black"  BorderThickness="1" />
+
+                                            <Label Grid.Row="0" Grid.Column="2" Content="Progress :"  BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="1" Grid.Column="2" Content="Progress :"  BorderBrush="Black"  BorderThickness="1" />
+                                            
+                                            <Label Grid.Row="0" Grid.Column="3" BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="1" Grid.Column="3" BorderBrush="Black"  BorderThickness="1" />
+
+
+
+                                        </Grid>
+                                    </Grid>
+                                </GroupBox>
                             </TabItem>
                             <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
                                     <Grid >
                                         <Grid.ColumnDefinitions >
-                                            <ColumnDefinition Width="0.5*"/>
-                                            <ColumnDefinition Width="0.5*"/>
+                                            <ColumnDefinition Width="85*"/>
+                                            <ColumnDefinition Width="371*"/>
+                                            <ColumnDefinition Width="456*"/>
                                         </Grid.ColumnDefinitions>
-                                        <GroupBox Grid.Column="0" Grid.Row="0" Header="Alignment" FontSize="15">
+                                        <GroupBox Grid.Column="0" Grid.Row="0" Header="Alignment" FontSize="15" Grid.ColumnSpan="2">
                                             <Grid Margin="-5">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="0.35*"/>
@@ -292,8 +334,8 @@
                                                             <TextBox Text="{Binding ManualPosY}"  Width="160" FontSize="32" />
                                                         </StackPanel>
                                                     </Border>
-                                                  
-                                                  
+
+
                                                 </Grid>
                                                 <Grid Grid.Row="1" >
                                                     <Grid.RowDefinitions>
@@ -308,15 +350,15 @@
                                                         <Button  Margin="5,0,0,0" Height="60" Width="150" Command="{Binding ManualGetPosCommand}" Content="Get Pos"  FontSize="26" />
                                                     </StackPanel>
 
-                                                   
+
                                                     <Button Margin="5" Grid.Row="3"  Height="60" Content="Confirm"  FontSize="26" />
                                                 </Grid>
-                                                
+
                                             </Grid>
-                                            
-                                            
+
+
                                         </GroupBox>
-                                        <GroupBox Grid.Column="1" Grid.Row="0" Header="WorkItem" FontSize="15">
+                                        <GroupBox Grid.Column="2" Grid.Row="0" Header="WorkItem" FontSize="15">
                                             <Grid>
                                                 <UserControlUC:WorkholderUC Grid.Column="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top"  />
                                             </Grid>
@@ -401,7 +443,7 @@
             </TabItem>
             <!--料號設定頁-->
             <TabItem  Height="75" IsSelected="{Binding IsMainRecipePageSelect}"  >
-        
+
                 <TabItem.Header>
                     <StackPanel Width="auto"   Height="auto">
                         <materialDesign:PackIcon Width="34" Height="34" HorizontalAlignment="Center"  Kind="FileDocumentEdit" />
@@ -450,13 +492,13 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                         <RowDefinition />
-                                        
+
                                     </Grid.RowDefinitions>
                                     <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
                                     <Button Grid.Column="1" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
                                     <Button Grid.Row="1" Grid.Column="1" Content="BIN codeEdit" FontSize="20" Height="50" Width="200"  Command="{Binding MappingEditCommand}" />
                                 </Grid>
-                          
+
                             </GroupBox>
 
                         </Grid>
@@ -1128,29 +1170,18 @@
                         </GroupBox>
 
                     </Grid>
-                    <Grid Grid.Row="1">
-
+                    <Grid Grid.Row="1" Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel>
 
-                            <Grid Height="350">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <GroupBox Header="Output" Grid.Column="0"  >
-
-
-                                </GroupBox>
-                                <GroupBox Header="Input" Grid.Column="1" >
-
-                                </GroupBox>
-                            </Grid>
-                        </StackPanel>
-
+                        <Button Grid.Row="1" Grid.Column="1" Height="60" Content="Save" FontSize="30" Command="{Binding SaveSettingCommand}"     />
                     </Grid>
                     <GroupBox Grid.Row="0" Grid.Column="4" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
@@ -1190,7 +1221,7 @@
                 <Grid Height="200">
 
                 </Grid>
-               
+
             </StackPanel>
         </Grid>
 

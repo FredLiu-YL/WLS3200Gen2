@@ -111,6 +111,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainWindow.vm.Setting.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MachineStateUC.xaml.cs">
       <DependentUpon>MachineStateUC.xaml</DependentUpon>
     </Compile>

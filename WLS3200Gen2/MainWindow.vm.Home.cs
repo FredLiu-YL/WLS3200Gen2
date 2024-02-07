@@ -31,7 +31,7 @@ namespace WLS3200Gen2
         private int tabControlSelectedIndex;
   
         private double manualPosX, manualPosY;
-        private MachineStates machinestatus = MachineStates.Emergency;
+        private MachineStates machinestatus = MachineStates.IDLE;
 
 
 
