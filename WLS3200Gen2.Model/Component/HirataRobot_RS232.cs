@@ -66,16 +66,19 @@ namespace WLS3200Gen2.Model.Component
         public double MoveTolerance { get; private set; } = 0;
         public double CassetteWaferPitch { get; set; } = 0;
         public int SpeedPercent { get; private set; } = 10;
-        public void Initial()
+        public Task Initial()
         {
             try
             {
-                Open();
-                int motionPercent = this.SpeedPercent;
-                if (motionPercent <= 0) { motionPercent = 0; }
-                if (motionPercent >= 100) { motionPercent = 100; }
-                this.SpeedPercent = motionPercent;
-                SetMovSpeed(motionPercent, motionPercent);
+                return Task.Run(() =>
+               {
+                   Open();
+                   int motionPercent = this.SpeedPercent;
+                   if (motionPercent <= 0) { motionPercent = 0; }
+                   if (motionPercent >= 100) { motionPercent = 100; }
+                   this.SpeedPercent = motionPercent;
+                   SetMovSpeed(motionPercent, motionPercent);
+               });
             }
             catch (Exception ex)
             {
@@ -89,23 +92,27 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="loadPortItems"></param>
         /// <returns></returns>
-        public RobotStatus GetStatus()
+        public Task<RobotStatus> GetStatus()
         {
-            RobotStatus robotStatus = new RobotStatus();
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("LS", CheckMessageType.Status);
-                foreach (var item in str)
-                {
-                    robotStatus = TransStatus(item);
-                }
+                return Task.Run(() =>
+               {
+                   RobotStatus robotStatus = new RobotStatus();
+                   List<string> str = new List<string>();
+                   str = SendGetMessage("LS", CheckMessageType.Status);
+                   foreach (var item in str)
+                   {
+                       robotStatus = TransStatus(item);
+                   }
+                   return robotStatus;
+               });
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return robotStatus;
+
         }
         /// <summary>
         /// 取得Robot的AddressPos address:點位
@@ -136,47 +143,50 @@ namespace WLS3200Gen2.Model.Component
         /// <param name="address"></param>
         /// <param name="zShift"></param>
         /// <returns></returns>
-        public void MovAddress(int address, double zShift)
+        public Task MovAddress(int address, double zShift)
         {
             try
             {
-                RobotStatus robotStatus = new RobotStatus();
-                int i = 0;
-                double tolerance = MoveTolerance;
-                List<string> str = new List<string>();
-                str = SendGetMessage(" GP " + address + " ( 0 0 " + zShift + " 0)", CheckMessageType.Status);
-                foreach (var item in str)
+                return Task.Run(async () =>
                 {
-                    robotStatus = TransStatus(item);
-                }
-                RobotPoint robotAddressPoint = new RobotPoint();
-                RobotPoint robotNowPoint = new RobotPoint();
-                robotAddressPoint = GetAddressPos(address);
-                while (true)
-                {
-                    i++;
-                    Thread.Sleep(50);
-                    robotNowPoint = GetNowPos();
-                    if (address == 1)
+                    RobotStatus robotStatus = new RobotStatus();
+                    int i = 0;
+                    double tolerance = MoveTolerance;
+                    List<string> str = new List<string>();
+                    str = SendGetMessage(" GP " + address + " ( 0 0 " + zShift + " 0)", CheckMessageType.Status);
+                    foreach (var item in str)
                     {
-                        if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
-                        Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance)
-                        {
-                            break;
-                        }
+                        robotStatus = TransStatus(item);
                     }
-                    else
+                    RobotPoint robotAddressPoint = new RobotPoint();
+                    RobotPoint robotNowPoint = new RobotPoint();
+                    robotAddressPoint = GetAddressPos(address);
+                    while (true)
                     {
-                        if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
-                        Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance &&
-                        Math.Abs(robotAddressPoint.Z - robotNowPoint.Z) <= tolerance &&
-                        Math.Abs(robotAddressPoint.W - robotNowPoint.W) <= tolerance)
+                        i++;
+                        await Task.Delay(50);
+                        robotNowPoint = GetNowPos();
+                        if (address == 1)
                         {
-                            break;
+                            if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
+                            Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance)
+                            {
+                                break;
+                            }
                         }
+                        else
+                        {
+                            if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
+                            Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance &&
+                            Math.Abs(robotAddressPoint.Z - robotNowPoint.Z) <= tolerance &&
+                            Math.Abs(robotAddressPoint.W - robotNowPoint.W) <= tolerance)
+                            {
+                                break;
+                            }
+                        }
+                        if (i >= 200) throw new Exception("Robot Move Time Out");
                     }
-                    if (i >= 200) throw new Exception("Robot Move Time Out");
-                }
+                });
             }
             catch (Exception ex)
             {
@@ -184,11 +194,13 @@ namespace WLS3200Gen2.Model.Component
             }
 
         }
-        public void PickWafer_Safety(ArmStation armStation)
+        public Task PickWafer_Safety(ArmStation armStation)
         {
             try
             {
-                MovAddress(1, 0);
+                Task task = Task.CompletedTask;
+                task = MovAddress(1, 0);
+                return task;
             }
             catch (Exception ex)
             {
@@ -196,20 +208,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_Standby(ArmStation armStation, int layer)
+        public Task PickWafer_Standby(ArmStation armStation, int layer)
         {
             try
             {
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
+                Task task = Task.CompletedTask;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Pick_Command[0], slot_diff_Z);
+                    task = MovAddress(loadPort1_Pick_Command[0], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Pick_Command[0], slot_diff_Z);
+                    task = MovAddress(loadPort2_Pick_Command[0], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -217,20 +231,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_GoIn(ArmStation armStation, int layer)
+        public Task PickWafer_GoIn(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Pick_Command[1], slot_diff_Z);
+                    task = MovAddress(loadPort1_Pick_Command[1], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Pick_Command[1], slot_diff_Z);
+                    task = MovAddress(loadPort2_Pick_Command[1], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -238,20 +254,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_LiftUp(ArmStation armStation, int layer)
+        public Task PickWafer_LiftUp(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Pick_Command[2], slot_diff_Z);
+                    task = MovAddress(loadPort1_Pick_Command[2], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Pick_Command[2], slot_diff_Z);
+                    task = MovAddress(loadPort2_Pick_Command[2], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -259,20 +277,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_Retract(ArmStation armStation, int layer)
+        public Task PickWafer_Retract(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Pick_Command[3], slot_diff_Z);
+                    task = MovAddress(loadPort1_Pick_Command[3], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Pick_Command[3], slot_diff_Z);
+                    task = MovAddress(loadPort2_Pick_Command[3], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -280,23 +300,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_Standby(ArmStation armStation)
+        public Task PickWafer_Standby(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Pick_Command[0], slot_diff_Z);
+                    task = MovAddress(aligner_Pick_Command[0], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Pick_Command[0], slot_diff_Z);
+                    task = MovAddress(macro_Pick_Command[0], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Pick_Command[0], slot_diff_Z);
+                    task = MovAddress(microscope_Pick_Command[0], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -304,23 +326,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_GoIn(ArmStation armStation)
+        public Task PickWafer_GoIn(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Pick_Command[1], slot_diff_Z);
+                    task = MovAddress(aligner_Pick_Command[1], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Pick_Command[1], slot_diff_Z);
+                    task = MovAddress(macro_Pick_Command[1], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Pick_Command[1], slot_diff_Z);
+                    task = MovAddress(microscope_Pick_Command[1], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -328,23 +352,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_LiftUp(ArmStation armStation)
+        public Task PickWafer_LiftUp(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Pick_Command[2], slot_diff_Z);
+                    task = MovAddress(aligner_Pick_Command[2], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Pick_Command[2], slot_diff_Z);
+                    task = MovAddress(macro_Pick_Command[2], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Pick_Command[2], slot_diff_Z);
+                    task = MovAddress(microscope_Pick_Command[2], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -352,23 +378,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PickWafer_Retract(ArmStation armStation)
+        public Task PickWafer_Retract(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Pick_Command[3], slot_diff_Z);
+                    task = MovAddress(aligner_Pick_Command[3], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Pick_Command[3], slot_diff_Z);
+                    task = MovAddress(macro_Pick_Command[3], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Pick_Command[3], slot_diff_Z);
+                    task = MovAddress(microscope_Pick_Command[3], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -376,11 +404,15 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_Safety(ArmStation armStation)
+        public Task PutWafer_Safety(ArmStation armStation)
         {
             try
             {
-                MovAddress(1, 0);
+                Task task = Task.CompletedTask;
+
+                task = MovAddress(1, 0);
+
+                return task;
             }
             catch (Exception ex)
             {
@@ -388,20 +420,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_Standby(ArmStation armStation, int layer)
+        public Task PutWafer_Standby(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Put_Command[0], slot_diff_Z);
+                    task = MovAddress(loadPort1_Put_Command[0], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Put_Command[0], slot_diff_Z);
+                    task = MovAddress(loadPort2_Put_Command[0], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -409,20 +443,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_GoIn(ArmStation armStation, int layer)
+        public Task PutWafer_GoIn(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Put_Command[1], slot_diff_Z);
+                    task = MovAddress(loadPort1_Put_Command[1], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Put_Command[1], slot_diff_Z);
+                    task = MovAddress(loadPort2_Put_Command[1], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -430,20 +466,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_PutDown(ArmStation armStation, int layer)
+        public Task PutWafer_PutDown(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Put_Command[2], slot_diff_Z);
+                    task = MovAddress(loadPort1_Put_Command[2], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Put_Command[2], slot_diff_Z);
+                    task = MovAddress(loadPort2_Put_Command[2], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -451,20 +489,22 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_Retract(ArmStation armStation, int layer)
+        public Task PutWafer_Retract(ArmStation armStation, int layer)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (layer <= 1) { layer = 1; }
                 double slot_diff_Z = (double)(layer - 1) * CassetteWaferPitch;
                 if (armStation == ArmStation.Cassette1)
                 {
-                    MovAddress(loadPort1_Put_Command[3], slot_diff_Z);
+                    task = MovAddress(loadPort1_Put_Command[3], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Cassette2)
                 {
-                    MovAddress(loadPort2_Put_Command[3], slot_diff_Z);
+                    task = MovAddress(loadPort2_Put_Command[3], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -472,23 +512,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_Standby(ArmStation armStation)
+        public Task PutWafer_Standby(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Put_Command[0], slot_diff_Z);
+                    task = MovAddress(aligner_Put_Command[0], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Put_Command[0], slot_diff_Z);
+                    task = MovAddress(macro_Put_Command[0], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Put_Command[0], slot_diff_Z);
+                    task = MovAddress(microscope_Put_Command[0], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -496,23 +538,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_GoIn(ArmStation armStation)
+        public Task PutWafer_GoIn(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Put_Command[1], slot_diff_Z);
+                    task = MovAddress(aligner_Put_Command[1], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Put_Command[1], slot_diff_Z);
+                    task = MovAddress(macro_Put_Command[1], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Put_Command[1], slot_diff_Z);
+                    task = MovAddress(microscope_Put_Command[1], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -520,23 +564,25 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_PutDown(ArmStation armStation)
+        public Task PutWafer_PutDown(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Put_Command[2], slot_diff_Z);
+                    task = MovAddress(aligner_Put_Command[2], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Put_Command[2], slot_diff_Z);
+                    task = MovAddress(macro_Put_Command[2], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Put_Command[2], slot_diff_Z);
+                    task = MovAddress(microscope_Put_Command[2], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -544,36 +590,41 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void PutWafer_Retract(ArmStation armStation)
+        public Task PutWafer_Retract(ArmStation armStation)
         {
             try
             {
+                Task task = Task.CompletedTask;
                 double slot_diff_Z = 0;
                 if (armStation == ArmStation.Align)
                 {
-                    MovAddress(aligner_Put_Command[3], slot_diff_Z);
+                    task = MovAddress(aligner_Put_Command[3], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Macro)
                 {
-                    MovAddress(macro_Put_Command[3], slot_diff_Z);
+                    task = MovAddress(macro_Put_Command[3], slot_diff_Z);
                 }
                 else if (armStation == ArmStation.Micro)
                 {
-                    MovAddress(microscope_Put_Command[3], slot_diff_Z);
+                    task = MovAddress(microscope_Put_Command[3], slot_diff_Z);
                 }
+                return task;
             }
             catch (Exception ex)
             {
                 throw new Exception("Robot PutWafer_Retract:" + ex);
             }
         }
-        public void Home()
+        public Task Home()
         {
             try
             {
-                MovAddress(1, 0);
+                return Task.Run(async () =>
+                {
+                    await MovAddress(1, 0);
 
-                MovAddress(0, 0);
+                    await MovAddress(0, 0);
+                });
             }
             catch (Exception ex)
             {
@@ -581,47 +632,57 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void Stop()
+        public Task Stop()
         {
             try
             {
-                RobotStatus robotStatus = new RobotStatus();
-                List<string> str = new List<string>();
-                str = SendGetMessage(" GD ", CheckMessageType.Status);
-                foreach (var item in str)
-                {
-                    robotStatus = TransStatus(item);
-                }
+                return Task.Run(() =>
+               {
+                   RobotStatus robotStatus = new RobotStatus();
+                   List<string> str = new List<string>();
+                   str = SendGetMessage(" GD ", CheckMessageType.Status);
+                   foreach (var item in str)
+                   {
+                       robotStatus = TransStatus(item);
+                   }
+               });
             }
             catch (Exception ex)
             {
                 throw new Exception("Robot Stop:" + ex);
             }
         }
-        public void Continue()
+        public Task Continue()
         {
             try
             {
-                RobotStatus robotStatus = new RobotStatus();
-                List<string> str = new List<string>();
-                str = SendGetMessage(" GE ", CheckMessageType.Status);
-                foreach (var item in str)
-                {
-                    robotStatus = TransStatus(item);
-                }
+                return Task.Run(() =>
+               {
+                   RobotStatus robotStatus = new RobotStatus();
+                   List<string> str = new List<string>();
+                   str = SendGetMessage(" GE ", CheckMessageType.Status);
+                   foreach (var item in str)
+                   {
+                       robotStatus = TransStatus(item);
+                   }
+               });
+
             }
             catch (Exception ex)
             {
                 throw new Exception("Robot Continue:" + ex);
             }
         }
-        public RobotPoint GetPositionCommand()
+        public Task<RobotPoint> GetPositionCommand()
         {
             try
             {
-                RobotPoint robot_Point = new RobotPoint();
-                robot_Point = GetNowPos();
-                return robot_Point;
+                return Task.Run(() =>
+               {
+                   RobotPoint robot_Point = new RobotPoint();
+                   robot_Point = GetNowPos();
+                   return robot_Point;
+               });
             }
             catch (Exception ex)
             {
@@ -629,14 +690,17 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Robot GetPositionCommand:" + ex);
             }
         }
-        public void SetSpeedPercentCommand(int motionPercent)
+        public Task SetSpeedPercentCommand(int motionPercent)
         {
             try
             {
-                if (motionPercent <= 0) { motionPercent = 0; }
-                if (motionPercent >= 100) { motionPercent = 100; }
-                this.SpeedPercent = motionPercent;
-                SetMovSpeed(motionPercent, motionPercent);
+                return Task.Run(async () =>
+                {
+                    if (motionPercent <= 0) { motionPercent = 0; }
+                    if (motionPercent >= 100) { motionPercent = 100; }
+                    this.SpeedPercent = motionPercent;
+                    SetMovSpeed(motionPercent, motionPercent);
+                });
             }
             catch (Exception ex)
             {
@@ -644,39 +708,30 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void FixWafer()
+        public Task FixWafer()
         {
             try
             {
-                RobotPoint robot_Point = new RobotPoint();
-                Vacuum(true);
+                return Task.Run(async () =>
+                {
+                    RobotPoint robot_Point = new RobotPoint();
+                    Vacuum(true);
+                });
             }
             catch (Exception ex)
             {
                 throw new Exception("Robot LockWafer:" + ex);
             }
         }
-        public void ReleaseWafer()
+        public Task ReleaseWafer()
         {
             try
             {
-                RobotPoint robot_Point = new RobotPoint();
-                Vacuum(false);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Robot LockWafer:" + ex);
-            }
-        }
-
-        public bool IsLockOK()
-        {
-            try
-            {
-                bool isLockOK = false;
-                ///確認一下 不然就只是GetOutput(0) 有開啟而已
-                isLockOK = GetInput(0);
-                return isLockOK;
+                return Task.Run(async () =>
+                {
+                    RobotPoint robot_Point = new RobotPoint();
+                    Vacuum(false);
+                });
             }
             catch (Exception ex)
             {
@@ -684,13 +739,34 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public bool IsHavePiece()
+        public Task<bool> IsLockOK()
         {
             try
             {
-                bool isHaveWafer = false;
-                isHaveWafer = GetInput(0);
-                return isHaveWafer;
+                return Task.Run(() =>
+               {
+                   bool isLockOK = false;
+                   ///確認一下 不然就只是GetOutput(0) 有開啟而已
+                   isLockOK = GetInput(0);
+                   return isLockOK;
+               });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Robot LockWafer:" + ex);
+            }
+        }
+
+        public Task<bool> IsHavePiece()
+        {
+            try
+            {
+                return Task.Run(() =>
+               {
+                   bool isHaveWafer = false;
+                   isHaveWafer = GetInput(0);
+                   return isHaveWafer;
+               });
             }
             catch (Exception ex)
             {

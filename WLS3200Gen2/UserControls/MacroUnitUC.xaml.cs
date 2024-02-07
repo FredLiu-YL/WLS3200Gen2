@@ -74,10 +74,7 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Task.Run(async () =>
-                    {
-                        Macro.GoInnerRingCheckPos();
-                    });
+                    await Macro.GoInnerRingCheckPos();
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -179,10 +176,7 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Task.Run(async () =>
-                    {
-                        Macro.HomeInnerRing();
-                    });
+                    await Macro.HomeInnerRing();
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -203,10 +197,7 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Task.Run(async () =>
-                    {
-                        Macro.GoOuterRingCheckPos();
-                    });
+                    await Macro.GoOuterRingCheckPos();
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -278,10 +269,7 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Task.Run(async () =>
-                    {
-                        Macro.HomeOuterRing();
-                    });
+                    await Macro.HomeOuterRing();
                     MacroStatus.IsProcessStop = true;
                 }
             }

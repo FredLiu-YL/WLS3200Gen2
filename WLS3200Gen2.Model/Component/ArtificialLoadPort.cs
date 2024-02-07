@@ -14,9 +14,10 @@ namespace WLS3200Gen2.Model.Component
             slot = new bool?[] { true };
 
         }
-        public bool?[] Slot => slot;
 
-        public void AlarmReset()
+        public bool?[] Slot => throw new NotImplementedException();
+
+        public Task AlarmReset()
         {
             throw new NotImplementedException();
         }
@@ -36,7 +37,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void Home()
+        public Task Home()
         {
             throw new NotImplementedException();
         }
@@ -46,22 +47,12 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void Load()
+        public Task Load()
         {
             throw new NotImplementedException();
         }
 
-        public void SetParam(LoadPortParam loadPortParam)
-        {
-            throw new NotImplementedException();
-        }
-
-        LoadPortParam ILoadPort.GetParam()
-        {
-            throw new NotImplementedException();
-        }
-
-        LoadPortStatus ILoadPort.GetStatus()
+        public Task SetParam(LoadPortParam loadPortParam)
         {
             throw new NotImplementedException();
         }

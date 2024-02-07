@@ -30,22 +30,22 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void Home()
-        {
-
-        }
 
         public void Initial()
         {
 
         }
 
-
-
-        public void Load()
+        public Task Load()
         {
-
+            throw new NotImplementedException();
         }
+
+        public Task SetParam(LoadPortParam loadPortParam)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SlotMapping()
         {
             //try
@@ -67,19 +67,15 @@ namespace WLS3200Gen2.Model.Component
             //}
         }
 
-        public void SetParam(LoadPortParam loadPortParam)
+        Task ILoadPort.AlarmReset()
         {
             throw new NotImplementedException();
         }
 
-        LoadPortStatus ILoadPort.GetStatus()
+        Task ILoadPort.Home()
         {
-            throw new NotImplementedException();
-        }
-
-        LoadPortParam ILoadPort.GetParam()
-        {
-            throw new NotImplementedException();
+            Task task = Task.CompletedTask;
+            return task;
         }
     }
 }

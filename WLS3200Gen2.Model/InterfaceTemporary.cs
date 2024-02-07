@@ -90,12 +90,12 @@ namespace WLS3200Gen2.Model
         /// 取得狀態
         /// </summary>
         /// <returns></returns>
-        LoadPortStatus GetStatus();
+        Task<LoadPortStatus> GetStatus();
         /// <summary>
         /// 取得設定參數
         /// </summary>
         /// <returns></returns>
-        LoadPortParam GetParam();
+        Task<LoadPortParam> GetParam();
         /// <summary>
         /// 初始化
         /// </summary>
@@ -107,19 +107,19 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 打開門，會自動SlotMapping
         /// </summary>
-        void Load();
+        Task Load();
         /// <summary>
         /// 回歸到關門狀態，也可以應用在UnLoad
         /// </summary>
-        void Home();
+        Task Home();
         /// <summary>
         /// 異常復原
         /// </summary>
-        void AlarmReset();
+        Task AlarmReset();
         /// <summary>
         /// 參數設定
         /// </summary>
-        void SetParam(LoadPortParam loadPortParam);
+        Task SetParam(LoadPortParam loadPortParam);
     }
     public class RobotPoint
     {
@@ -212,62 +212,62 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 手臂初始化
         /// </summary>
-        void Initial();
+        Task Initial();
         /// <summary>
         /// Robot回Home
         /// </summary>
-        void Home();
+        Task Home();
         /// <summary>
         /// Robot停止動作
         /// </summary>
-        void Continue();
+        Task Continue();
         /// <summary>
         /// Robot停止動作
         /// </summary>
-        void Stop();
+        Task Stop();
         /// <summary>
         /// 
         /// </summary>
         /// <param name="address"></param>
         /// <param name="zShift"></param>
         /// <returns></returns>
-        void MovAddress(int address, double zShift);
+        Task MovAddress(int address, double zShift);
         /// <summary>
         /// 取得Robot位置
         /// </summary>
         /// <returns></returns>
-        RobotPoint GetPositionCommand();
+        Task<RobotPoint> GetPositionCommand();
         /// <summary>
         /// 取得目前Robot狀態
         /// </summary>
         /// <returns></returns>
-        RobotStatus GetStatus();
+        Task<RobotStatus> GetStatus();
         /// <summary>
         /// 設定軸速度(Hirata 4軸可以設定兩個速度:XYW同一個速度、Z單獨一個速度)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="motionVelocity"></param>
-        void SetSpeedPercentCommand(int motionPercent);
+        Task SetSpeedPercentCommand(int motionPercent);
         /// <summary>
         /// 手臂固定Wafer(真空/夾持)
         /// </summary>
         /// <returns></returns>
-        void FixWafer();
+        Task FixWafer();
         /// <summary>
         /// 手臂解開Wafer(真空/夾持)
         /// </summary>
         /// <returns></returns>
-        void ReleaseWafer();
+        Task ReleaseWafer();
         /// <summary>
         /// 手臂是否固定住Wafer
         /// </summary>
         /// <returns></returns>
-        bool IsLockOK();
+        Task<bool> IsLockOK();
         /// <summary>
         /// 手臂是否有Wafer
         /// </summary>
         /// <returns></returns>
-        bool IsHavePiece();
+        Task<bool> IsHavePiece();
     }
     public interface IEFEMRobot : IRobot
     {
@@ -280,54 +280,54 @@ namespace WLS3200Gen2.Model
         /// 取片從卡匣 手臂到安全位置
         /// </summary>
         /// <returns></returns>
-        void PickWafer_Safety(ArmStation armStation);
+        Task PickWafer_Safety(ArmStation armStation);
         /// <summary>
         /// 取片從卡匣 手臂到準備位置
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PickWafer_Standby(ArmStation armStation, int layer);
+        Task PickWafer_Standby(ArmStation armStation, int layer);
         /// <summary>
         /// 取片從卡匣 手臂伸進去卡匣裡
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PickWafer_GoIn(ArmStation armStation, int layer);
+        Task PickWafer_GoIn(ArmStation armStation, int layer);
         /// <summary>
         /// 取片從卡匣 手臂抬起接片
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PickWafer_LiftUp(ArmStation armStation, int layer);
+        Task PickWafer_LiftUp(ArmStation armStation, int layer);
         /// <summary>
         /// 取片從卡匣 手臂縮回來
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PickWafer_Retract(ArmStation armStation, int layer);
+        Task PickWafer_Retract(ArmStation armStation, int layer);
 
 
         /// <summary>
         /// 取片從Aligner 手臂到準備位置
         /// </summary>
         /// <returns></returns>
-        void PickWafer_Standby(ArmStation armStation);
+        Task PickWafer_Standby(ArmStation armStation);
         /// <summary>
         /// 取片從Aligner 手臂伸進去Aligner裡
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PickWafer_GoIn(ArmStation armStation);
+        Task PickWafer_GoIn(ArmStation armStation);
         /// <summary>
         /// 取片從Aligner 手臂抬起接片
         /// </summary>
         /// <returns></returns>
-        void PickWafer_LiftUp(ArmStation armStation);
+        Task PickWafer_LiftUp(ArmStation armStation);
         /// <summary>
         /// 取片從Aligner 手臂縮回來
         /// </summary>
         /// <returns></returns>
-        void PickWafer_Retract(ArmStation armStation);
+        Task PickWafer_Retract(ArmStation armStation);
 
 
 
@@ -339,53 +339,53 @@ namespace WLS3200Gen2.Model
         /// 放片至卡匣 手臂到安全位置
         /// </summary>
         /// <returns></returns>
-        void PutWafer_Safety(ArmStation armStation);
+        Task PutWafer_Safety(ArmStation armStation);
         /// <summary>
         /// 放片至卡匣 手臂到準備位置
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PutWafer_Standby(ArmStation armStation, int layer);
+        Task PutWafer_Standby(ArmStation armStation, int layer);
         /// <summary>
         /// 放片至卡匣 手臂伸進去卡匣裡
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PutWafer_GoIn(ArmStation armStation, int layer);
+        Task PutWafer_GoIn(ArmStation armStation, int layer);
         /// <summary>
         /// 放片至卡匣 手臂放下片子
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PutWafer_PutDown(ArmStation armStation, int layer);
+        Task PutWafer_PutDown(ArmStation armStation, int layer);
         /// <summary>
         /// 放片至卡匣 手臂縮回來
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
-        void PutWafer_Retract(ArmStation armStation, int layer);
+        Task PutWafer_Retract(ArmStation armStation, int layer);
 
 
         /// <summary>
         /// 放片至Aligner 手臂到準備位置
         /// </summary>
         /// <returns></returns>
-        void PutWafer_Standby(ArmStation armStation);
+        Task PutWafer_Standby(ArmStation armStation);
         /// <summary>
         /// 放片至Aligner 手臂伸進去Aligner裡
         /// </summary>
         /// <returns></returns>
-        void PutWafer_GoIn(ArmStation armStation);
+        Task PutWafer_GoIn(ArmStation armStation);
         /// <summary>
         /// 放片至Aligner 手臂放下片子
         /// </summary>
         /// <returns></returns>
-        void PutWafer_PutDown(ArmStation armStation);
+        Task PutWafer_PutDown(ArmStation armStation);
         /// <summary>
         /// 放片至Aligner 手臂縮回來
         /// </summary>
         /// <returns></returns>
-        void PutWafer_Retract(ArmStation armStation);
+        Task PutWafer_Retract(ArmStation armStation);
 
     }
     public enum ArmStation
@@ -437,29 +437,29 @@ namespace WLS3200Gen2.Model
         /// 回到原點
         /// </summary>
         /// <returns></returns>
-        void Home();
+        Task Home();
         /// <summary>
         /// 找到Notch後，偏移多少角度(degree)
         /// </summary>
         /// <param name="degree"></param>
         /// <returns></returns>
-        void Run(double degree);
+        Task Run(double degree);
         /// <summary>
         /// 真空 IsOn=true 開啟 IsOn=fals 關閉
         /// </summary>
         /// <param name="IsOn"></param>
         /// <returns></returns>
-        void Vaccum(bool IsOn);
+        Task Vaccum(bool IsOn);
         /// <summary>
         /// 異常重置
         /// </summary>
         /// <returns></returns>
-        void AlarmReset();
+        Task AlarmReset();
         /// <summary>
         /// 取得目前狀態
         /// </summary>
         /// <returns></returns>
-        AlignerStatus GetStatus();
+        Task<AlignerStatus> GetStatus();
     }
     public enum CheckMacroCanMove
     {
@@ -495,29 +495,27 @@ namespace WLS3200Gen2.Model
         /// 全部復歸
         /// </summary>
         /// <returns></returns>
-        void HomeAllRing();
+        Task HomeAllRing();
         /// <summary>
         /// 內圈復歸
         /// </summary>
         /// <returns></returns>
-        void HomeInnerRing();
+        Task HomeInnerRing();
         /// <summary>
         /// 外圈復歸
         /// </summary>
         /// <returns></returns>
-        void HomeOuterRing();
-
+        Task HomeOuterRing();
         /// <summary>
         /// 內圈 到 檢查位置
         /// </summary>
         /// <returns></returns>
-        void GoInnerRingCheckPos();
+        Task GoInnerRingCheckPos();
         /// <summary>
         /// 外圈 到 檢查位置
         /// </summary>
         /// <returns></returns>
-        void GoOuterRingCheckPos();
-
+        Task GoOuterRingCheckPos();
         /// <summary>
         /// 側面左右翻 isForwards = true(右翻)/false(左翻)
         /// </summary>
@@ -547,94 +545,110 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 目前Z軸位置
         /// </summary>
-        double Z_Position { get; }
+        Task<double> GetZPosition();
         /// <summary>
         /// Z軟體負極限
         /// </summary>
-        double Z_PositionNEL { get; set; }
+        Task SetZNEL(int position);
+        /// <summary>
+        /// 取得Z軟體負極限
+        /// </summary>
+        double GetZNEL();
         /// <summary>
         /// Z軟體正極限
         /// </summary>
-        double Z_PositionPEL { get; set; }
+        Task SetZPEL(int position);
+        /// <summary>
+        /// 取得Z軟體正極限
+        /// </summary>
+        double GetZPEL();
         /// <summary>
         /// 準焦位置
         /// </summary>
-        double Aberration_Position { get; }
+        Task<double> Aberration_Position();
         /// <summary>
-        /// 準焦軟體負極限
+        /// 取得準焦軟體負極限
         /// </summary>
-        double Aberration_PositionNEL { get; set; }
+        Task<int> GetAberationNEL();
         /// <summary>
-        /// 準焦軟體正極限
+        /// 設定準焦軟體負極限
         /// </summary>
-        double Aberration_PositionPEL { get; set; }
+        Task SetAberationNEL(int position);
+        /// <summary>
+        /// 取得準焦軟體正極限
+        /// </summary>
+        Task<int> GetAberationPEL();
+        /// <summary>
+        /// 設定準焦軟體正極限
+        /// </summary>
+        Task SetAberationPEL(int position);
         /// <summary>
         /// 初始化
         /// </summary>
-        void Initial();
+        Task Initial();
         /// <summary>
         /// 更換鏡頭
         /// </summary>
         /// <param name="idx"></param>
-        void ChangeLens(int idx);
+        Task ChangeLens(int idx);
         /// <summary>
         /// 更換鏡片組
         /// </summary>
         /// <param name="idx"></param>
-        void ChangeCube(int idx);
+        Task ChangeCube(int idx);
         /// <summary>
         /// 更換光圈
         /// </summary>
         /// <param name="idx"></param>
-        void ChangeAperture(int idx);
+        Task ChangeAperture(int idx);
         /// <summary>
         /// 更換濾片
         /// </summary>
         /// <param name="idx"></param>
-        void ChangeFilter(int idx);
+        Task ChangeFilter(int idx);
         /// <summary>
         /// 更換光的發射方式 反射、透射
         /// </summary>
         /// <param name="idx"></param>
-        void ChangeLightSpread(int idx);
+        Task ChangeLightSpread(int idx);
         /// <summary>
         /// 一直對焦
         /// </summary>
-        void AF_Trace();
+        Task AF_Trace();
         /// <summary>
         /// 對焦一次
         /// </summary>
-        void AF_OneShot();
+        Task AF_OneShot();
         /// <summary>
         /// 停止對焦
         /// </summary>
-        void AF_Off();
+        Task AF_Off();
         /// <summary>
         /// 設定對焦的參數 FirstZPos(Z初始對焦位置) SearchRange(搜尋對焦的範圍)
         /// </summary>
         /// <param name="FirstZPos"></param>
         /// <param name="SearchRange"></param>
-        void SetSearchRange(double FirstZPos, double Range);
+        Task SetSearchRange(double FirstZPos, double Range);
         /// <summary>
         /// 移動對焦軸相對位置
         /// </summary>
         /// <param name="distance"></param>
-        void ZMoveCommand(double distance);
+        Task ZMoveCommand(double distance);
         /// <summary>
         /// 移動對焦軸絕對位置
         /// </summary>
         /// <param name="position"></param>
-        void ZMoveToCommand(double position);
+        Task ZMoveToCommand(double position);
         /// <summary>
         /// 對焦值相對位置
         /// </summary>
         /// <param name="distance"></param>
-        void AberrationMoveCommand(double distance);
+        Task AberrationMoveCommand(double distance);
         /// <summary>
         /// 對焦值絕對位置
         /// </summary>
         /// <param name="position"></param>
-        void AberrationMoveToCommand(double position);
+        Task AberrationMoveToCommand(double position);
     }
 
 }

@@ -63,10 +63,7 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsLoadPortEnabled = false;
-                await Task.Run(async () =>
-                {
-                    LoadPort.Load();
-                });
+                await LoadPort.Load();
                 LoadPortWafers.Clear();
                 int i = 1;
                 if (LoadPort.Slot != null)
@@ -103,10 +100,7 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsLoadPortEnabled = false;
-                await Task.Run(async () =>
-                {
-                    LoadPort.Home();
-                });
+                await LoadPort.Home();
                 LoadPortWafers.Clear();
             }
             catch (Exception ex)
@@ -123,10 +117,7 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsLoadPortEnabled = false;
-                await Task.Run(async () =>
-                {
-                    LoadPort.AlarmReset();
-                });
+                await LoadPort.AlarmReset();
             }
             catch (Exception ex)
             {
@@ -148,10 +139,7 @@ namespace WLS3200Gen2.UserControls
                 loadPortParam.StarOffset = LoadPortUIShow.StarOffset;
                 loadPortParam.WaferPitchTolerance = LoadPortUIShow.WaferPitchTolerance;
                 loadPortParam.WaferPositionTolerance = LoadPortUIShow.WaferPositionTolerance;
-                await Task.Run(async () =>
-                {
-                    LoadPort.SetParam(loadPortParam);
-                });
+                await LoadPort.SetParam(loadPortParam);
             }
             catch (Exception ex)
             {
