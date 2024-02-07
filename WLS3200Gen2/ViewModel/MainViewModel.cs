@@ -68,10 +68,12 @@ namespace WLS3200Gen2
 
             //預設為最高權限使用者
             Account.CurrentAccount.Right = RightsModel.Administrator;
+
+            //流程內加入委派
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
+            machine.MacroReady += MacroOperate;
 
- 
 
 
         }
@@ -101,6 +103,7 @@ namespace WLS3200Gen2
             LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  ";
         }
 
+       
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
