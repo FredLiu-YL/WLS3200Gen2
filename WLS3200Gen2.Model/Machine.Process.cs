@@ -38,6 +38,8 @@ namespace WLS3200Gen2.Model
                 await Task.Run(async () =>
                 {
                     WriteLog("Process Start");
+ 
+
                     //先放一片在macro上
                     await Feeder.LoadToReadyAsync();
 
@@ -160,7 +162,7 @@ namespace WLS3200Gen2.Model
             catch (Exception ex)
             {
 
-
+                throw ex;
             }
             finally
             {
