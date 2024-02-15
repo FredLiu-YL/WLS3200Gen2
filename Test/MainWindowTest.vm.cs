@@ -252,7 +252,7 @@ namespace Test
                         if (LoadPort != null)
                         {
                             LoadPortStatus loadPortStatus = new LoadPortStatus();
-                            loadPortStatus = LoadPort.GetStatus();
+                            loadPortStatus =await LoadPort.GetStatus();
                             LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
                             LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
                             LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
@@ -267,7 +267,7 @@ namespace Test
                         if (Aligner != null)
                         {
                             AlignerStatus alignerStatus = new AlignerStatus();
-                            alignerStatus = Aligner.GetStatus();
+                            alignerStatus =await Aligner.GetStatus();
                             AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
                             AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
                             AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
@@ -278,7 +278,7 @@ namespace Test
                         if (Robot != null)
                         {
                             RobotStatus robotStatus = new RobotStatus();
-                            robotStatus = Robot.GetStatus();
+                            robotStatus =await Robot.GetStatus();
                             RobotStaus.Mode = robotStatus.Mode;
                             RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
                             RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
@@ -319,9 +319,9 @@ namespace Test
                     if (LoadPort != null)
                     {
                         LoadPortParam loadPortParam = new LoadPortParam();
-                        await Task.Run(() =>
+                        await Task.Run(async () =>
                         {
-                            loadPortParam = LoadPort.GetParam();
+                            loadPortParam = await LoadPort.GetParam();
                         });
                         LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
                         LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;

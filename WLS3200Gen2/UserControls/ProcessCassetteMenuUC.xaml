@@ -6,9 +6,25 @@
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls" xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls"
              mc:Ignorable="d" 
               x:Name="CassetteMenu"
-             d:DesignHeight="200" d:DesignWidth="50">
+             d:DesignHeight="250" d:DesignWidth="50">
     <Grid  DataContext="{Binding ElementName=CassetteMenu}" >
-        <ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPortWafers}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*" />
+            <RowDefinition  Height="0.95*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition  Width="0.5*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="1"  Content="Top" />
+            <Label Grid.Column="2"  Content="Back" />
+            <Label Grid.Column="3"  Content="Micro" />
+        </Grid>
+        <ListBox Grid.Row="1"   Margin="0" ItemsSource="{Binding ProcessStation}">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Margin" Value="0"/>
@@ -17,7 +33,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <!-- 這裡放置你的 UserControl -->
-                 
+                    <local:CassetteUnitUC IsMacroTop="{Binding IsMacroTop}" IsMacroBack="{Binding IsMacroBack}"  IsMicro="{Binding IsMicro}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

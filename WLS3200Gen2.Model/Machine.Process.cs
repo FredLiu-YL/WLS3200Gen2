@@ -51,7 +51,7 @@ namespace WLS3200Gen2.Model
                         MainRecipe recipe = ChangeRecipe?.Invoke();
 
                         //晶面檢查
-                        if (processSetting.IsMacroTop)
+                        if (processSetting.ProcessStation[0].IsMacroTop)
                         {
 
                             //委派到ui 去執行macro人工檢
@@ -64,7 +64,7 @@ namespace WLS3200Gen2.Model
 
 
                         //晶背檢查
-                        if (processSetting.IsMacroBack)
+                        if (processSetting.ProcessStation[0].IsMacroBack)
                         {
 
                             //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
@@ -93,7 +93,7 @@ namespace WLS3200Gen2.Model
                         var waferusable = Feeder.Cassette.Wafers.Select(w => w.ProcessStatus == WaferProcessStatus.Usable);
 
 
-                        if (processSetting.IsMicro)//判斷如果有需要進顯微鏡
+                        if (processSetting.ProcessStation[0].IsMicro)//判斷如果有需要進顯微鏡
                         {
                             //顯微鏡站準備接WAFER
                             Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);

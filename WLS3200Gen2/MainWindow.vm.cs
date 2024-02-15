@@ -160,6 +160,11 @@ namespace WLS3200Gen2
 
 
                 MapImage = new WriteableBitmap(bitmap);
+
+                //測試用
+                ProcessStations.Add(new ProcessStationAssign());
+                ProcessStations.Add(new ProcessStationAssign());
+                ProcessStations.Add(new ProcessStationAssign());
             }
             catch (Exception ex)
             {

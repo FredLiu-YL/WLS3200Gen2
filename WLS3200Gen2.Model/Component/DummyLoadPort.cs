@@ -12,7 +12,7 @@ namespace WLS3200Gen2.Model.Component
                                             true, true, true, true, true, true, true, true, true, true,
                                             true, true, true, true, true};
 
-        public void AlarmReset()
+        public Task AlarmReset()
         {
             throw new NotImplementedException();
         }
@@ -32,6 +32,10 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
+        public Task Home()
+        {
+            return Task.CompletedTask;
+        }
 
         public void Initial()
         {
@@ -69,15 +73,8 @@ namespace WLS3200Gen2.Model.Component
             //}
         }
 
-        Task ILoadPort.AlarmReset()
-        {
-            throw new NotImplementedException();
-        }
+        
 
-        Task ILoadPort.Home()
-        {
-            Task task = Task.CompletedTask;
-            return task;
-        }
+        
     }
 }

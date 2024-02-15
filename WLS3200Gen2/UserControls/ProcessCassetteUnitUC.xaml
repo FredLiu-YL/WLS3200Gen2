@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Name="CassetteUnit"
-        mc:Ignorable="d" Height="14" Width="140" Loaded="MainGrid_Loaded"  >
+        mc:Ignorable="d" Height="14" Width="180"   >
 
     <Grid DataContext="{Binding ElementName=CassetteUnit}" >
         <Grid.ColumnDefinitions >
@@ -14,33 +14,9 @@
             <ColumnDefinition Width="0.3*"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding WaferInfo}" Grid.Column="0" FontSize="8" Width="11"/>
-        <Button
-             Grid.Column="1"
-              Background="{Binding WorkStatus.BackGroundTop }"
-              Command="{Binding Top_Command}"
-              Height="14" Width="40"
-              Content=""
-              IsEnabled="{Binding Wafer_IsEnable }"
-              Style="{StaticResource MaterialDesignFlatDarkBgButton}"
-              ToolTip="MaterialDesignFlatDarkButton" />
-        <Button
-                Grid.Column="2"
-              Background="{Binding WorkStatus.BackGroundBack}"
-              Command="{Binding Back_Command}"
-              Height="14" Width="40"
-              Content=""
-              IsEnabled="{Binding Wafer_IsEnable}"
-              Style="{StaticResource MaterialDesignFlatDarkBgButton}"
-              ToolTip="MaterialDesignFlatDarkButton" />
-        <Button
-                Grid.Column="3"
-              Background="{Binding WorkStatus.BackGroundMicro}"
-              Command="{Binding Micro_Command}"
-              Height="14" Width="40"
-              Content=""
-              IsEnabled="{Binding Wafer_IsEnable}"
-              Style="{StaticResource MaterialDesignFlatDarkBgButton}"
-              ToolTip="MaterialDesignFlatDarkButton" />
+        <Button Margin="2,0,2,0"   Grid.Column="1"  Command="{Binding Top_Command}"  Height="14"     />
+        <Button Margin="2,0,2,0"  Grid.Column="2"  Command="{Binding Back_Command}"   Height="14"    />
+        <Button Margin="2,0,2,0"   Grid.Column="3"    Command="{Binding Micro_Command}"  Height="14"  />
 
     </Grid>
 </UserControl>

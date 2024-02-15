@@ -26,101 +26,42 @@ namespace WLS3200Gen2.UserControls
     /// 
     public partial class CassetteUnitUC : UserControl, INotifyPropertyChanged
     {
-        private bool wafer_IsEnable;
-
-        private string waferInfo;
-
-        private WorkItem workStatus = new WorkItem();
-
-        private bool isFirstLoaded;
-
-        private SolidColorBrush PrimaryHueLightBrush = Application.Current.Resources["PrimaryHueLightBrush"] as SolidColorBrush;
+         
         public CassetteUnitUC()
         {
             InitializeComponent();
+
         }
 
-        public CassetteUnitUC(bool isEnable, string pwaferInfo)
+        public static readonly DependencyProperty IsMacroTopProperty = DependencyProperty.Register(nameof(IsMacroTop), typeof(bool), typeof(CassetteUnitUC),
+                                                                                 new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsMacroBackProperty = DependencyProperty.Register(nameof(IsMacroBack), typeof(bool), typeof(CassetteUnitUC),
+                                                                                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsMicroProperty = DependencyProperty.Register(nameof(IsMicro), typeof(bool), typeof(CassetteUnitUC),
+                                                                             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public bool IsMacroTop
         {
-            InitializeComponent();
-
-            isFirstLoaded = false;
-
-            Wafer_IsEnable = isEnable;
-            WaferInfo = pwaferInfo;
+            get => (bool)GetValue(IsMacroTopProperty);
+            set => SetValue(IsMacroTopProperty, value);
         }
-        private void MainGrid_Loaded(object sender, RoutedEventArgs e)
+        public bool IsMacroBack
         {
-            try
-            {
-                if (isFirstLoaded == false)
-                {
-                    WorkStatus.IsTop = false;
-                    WorkStatus.IsBack = false;
-                    WorkStatus.IsMicro = false;
-
-                    ResourceDictionary dictionary = new ResourceDictionary();
-                    dictionary.Source = new Uri("pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.bluegrey.xaml", UriKind.RelativeOrAbsolute);
-
-                    if (dictionary.Count > 0)
-                    {
-                        // 资源字典已加载
-                        object blueGreyColorResource1 = dictionary["PrimaryHueLightBrush"];
-                        if (blueGreyColorResource1 != null && blueGreyColorResource1 is SolidColorBrush)
-                        {
-                            SolidColorBrush brush = (SolidColorBrush)blueGreyColorResource1;
-                            Color blueGreyColor = brush.Color;
-                            Click_Off = brush;
-                            // 现在你可以使用 blueGreyColor
-                        }
-                        // 资源字典已加载
-                        object blueGreyColorResource2 = dictionary["PrimaryHueDarkBrush"]; //PrimaryHueDarkForegroundBrush
-                        if (blueGreyColorResource2 != null && blueGreyColorResource2 is SolidColorBrush)
-                        {
-                            SolidColorBrush brush = (SolidColorBrush)blueGreyColorResource2;
-                            Color blueGreyColor = brush.Color;
-                            Click_On = brush;
-                            // 现在你可以使用 blueGreyColor
-                        }
-                    }
-                    WorkStatus.BackGroundTop = Click_Off;
-                    WorkStatus.BackGroundBack = Click_Off;
-                    WorkStatus.BackGroundMicro = Click_Off;
-                    //AddButtonAction = new RelayCommand<int>(key => { AddButton(key); });
-                    isFirstLoaded = true;
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            get => (bool)GetValue(IsMacroBackProperty);
+            set => SetValue(IsMacroBackProperty, value);
+        }
+        public bool IsMicro
+        {
+            get => (bool)GetValue(IsMicroProperty);
+            set => SetValue(IsMicroProperty, value);
         }
 
-        public event Action<WorkItem> WorkItemChange;
-        public WorkItem WorkStatus { get => workStatus; set => SetValue(ref workStatus, value); }
-        public bool Wafer_IsEnable { get => wafer_IsEnable; set => SetValue(ref wafer_IsEnable, value); }
-        
-        public string WaferInfo { get => waferInfo; set => SetValue(ref waferInfo, value); }
 
-        public Brush Click_On;
-
-        public Brush Click_Off;
         public ICommand Top_Command => new RelayCommand(async () =>
         {
             try
             {
-                if (WorkStatus.IsTop == true)
-                {
-                    WorkStatus.IsTop = false;
-                    WorkStatus.BackGroundTop = Click_Off;
-                }
-                else
-                {
-                    WorkStatus.IsTop = true;
-                    WorkStatus.BackGroundTop = Click_On;
-                }
-
-                WorkItemChange?.Invoke(WorkStatus);
+                
             }
             catch (Exception ex)
             {
@@ -132,18 +73,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (WorkStatus.IsBack == true)
-                {
-                    WorkStatus.IsBack = false;
-                    WorkStatus.BackGroundBack = Click_Off;
-                }
-                else
-                {
-                    WorkStatus.IsBack = true;
-                    WorkStatus.BackGroundBack = Click_On;
-                }
-
-                WorkItemChange?.Invoke(WorkStatus);
+                
             }
             catch (Exception ex)
             {
@@ -155,18 +85,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (WorkStatus.IsMicro == true)
-                {
-                    WorkStatus.IsMicro = false;
-                    WorkStatus.BackGroundMicro = Click_Off;
-                }
-                else
-                {
-                    WorkStatus.IsMicro = true;
-                    WorkStatus.BackGroundMicro = Click_On;
-                }
-
-                WorkItemChange?.Invoke(WorkStatus);
+                
             }
             catch (Exception ex)
             {

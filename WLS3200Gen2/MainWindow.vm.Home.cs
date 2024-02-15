@@ -22,7 +22,7 @@ namespace WLS3200Gen2
     public partial class MainViewModel
     {
         private ObservableCollection<WorkItem> workItems = new ObservableCollection<WorkItem>();
-
+        private ObservableCollection<ProcessStationAssign> processStations = new ObservableCollection<ProcessStationAssign>();
         private string logMessage;
         private bool isRunning = false;
         private bool isRunCommand = false;
@@ -53,7 +53,7 @@ namespace WLS3200Gen2
         public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
         public double ManualPosY { get => manualPosY; set => SetValue(ref manualPosY, value); }
         public MachineStates Machinestatus { get => machinestatus; set => SetValue(ref machinestatus, value); }
-   
+        public ObservableCollection<ProcessStationAssign> ProcessStations { get => processStations; set => SetValue(ref processStations, value); }
 
 
         public ICommand RunCommand => new RelayCommand(async () =>
