@@ -142,6 +142,12 @@
     <Compile Include="UserControls\MachineStateUC.xaml.cs">
       <DependentUpon>MachineStateUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ProcessCassetteMenuUC.xaml.cs">
+      <DependentUpon>ProcessCassetteMenuUC.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProcessCassetteUnitUC.xaml.cs">
+      <DependentUpon>ProcessCassetteUnitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\BincodeSettingWindow.xaml.cs">
       <DependentUpon>BincodeSettingWindow.xaml</DependentUpon>
     </Compile>
@@ -215,6 +221,14 @@
     <Page Include="UserControls\MachineStateUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ProcessCassetteMenuUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ProcessCassetteUnitUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\BincodeSettingWindow.xaml">
       <SubType>Designer</SubType>

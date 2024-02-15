@@ -17,7 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GalaSoft.MvvmLight.CommandWpf;
 using MaterialDesignThemes.Wpf;
-using YuanliCore.Model.LoadPort;
+ 
 
 namespace WLS3200Gen2.UserControls
 {

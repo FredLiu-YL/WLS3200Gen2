@@ -14,10 +14,8 @@
     xmlns:command="http://www.galasoft.ch/mvvmlight" 
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
-    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model" 
-    xmlns:loadport="clr-namespace:YuanliCore.Model.LoadPort;assembly=YuanliCore.Model" 
-    xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model" 
-    xmlns:wls3200controls="clr-namespace:YuanliCore.Model.UserControls"
+    xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model"    
+    xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model" xmlns:usercontrols1="clr-namespace:YuanliCore.Model.UserControls"
     mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -232,8 +230,8 @@
                         </Grid>
                         <Grid Grid.Row="1" Margin="0">
                             <Grid.ColumnDefinitions >
-                                <ColumnDefinition Width="0.6*"/>
-                                <ColumnDefinition Width="0.4*"/>
+                                <ColumnDefinition Width="0.7*"/>
+                                <ColumnDefinition Width="0.3*"/>
                             </Grid.ColumnDefinitions>
                             <views:VirtualCanvas Margin="0,0,0,0" Grid.Column="0" IsShowBar="True"  ImageSource="{Binding MapImage}" ItemsSource="{Binding MapDrawings}"   
                                                                  MousePixcel="{Binding MapMousePixcel}"     AddShapeAction="{Binding AddMapShapeAction}" ClearShapeAction="{Binding ClearMapShapeAction}"  >
@@ -252,13 +250,20 @@
                                 </GroupBox.Header>
                                 <Grid >
                                     <Grid Margin="-5">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0.1*" />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
                                             <ColumnDefinition />
 
                                         </Grid.ColumnDefinitions>
-                                        <wls3200controls:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"/>
-                                        <wls3200controls:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
+                                        <RadioButton Grid.Column="0"  Height="40" Width="120" Content="Load port1" GroupName="GroupChoiceChipOutline" IsChecked="True" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
+                                        <RadioButton Grid.Column="1"  Height="40" Width="120" Content="Load port2" GroupName="GroupChoiceChipOutline" IsChecked="False" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Cursor="Hand" />
+
+                                        <usercontrols1:CassetteStateUC Grid.Column="0" Grid.Row="1" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"/>
+                                        <usercontrols1:CassetteStateUC Grid.Column="1" Grid.Row="1"  Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
                                     </Grid>
                                 </Grid>
 
@@ -559,8 +564,8 @@
                                                                 <ColumnDefinition />
 
                                                             </Grid.ColumnDefinitions>
-                                                            <wls3200controls:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"/>
-                                                            <wls3200controls:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
+                                                            <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"/>
+                                                            <usercontrols1:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>
 
 
                                                             <!--<ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
@@ -1034,7 +1039,7 @@
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <!-- 這裡放置你的 UserControl -->
-                                                    <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
+                                                    <usercontrols1:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                         </ListBox>

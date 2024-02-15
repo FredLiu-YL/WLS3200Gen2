@@ -17,7 +17,6 @@ using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
 using YuanliCore.Interface;
-using YuanliCore.Model.LoadPort;
 using YuanliCore.Model.UserControls;
 using YuanliCore.Motion;
 
@@ -33,7 +32,7 @@ namespace WLS3200Gen2
         private AxisConfig tableXConfig, tableYConfig, tableRConfig, robotAxisConfig;
         private double tablePosX, tablePosY, tablePosR;
 
-        private ObservableCollection<CassetteUC> cassetteUC = new ObservableCollection<CassetteUC>();
+        private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
         private WriteableBitmap mainImage, mapImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
@@ -44,7 +43,7 @@ namespace WLS3200Gen2
         private bool isRefresh;
 
 
-        public ObservableCollection<CassetteUC> CassetteUC
+        public ObservableCollection<CassetteUnitUC> CassetteUC
         {
             get => cassetteUC;
             set { SetValue(ref cassetteUC, value); }

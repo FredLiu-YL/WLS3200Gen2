@@ -15,7 +15,6 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
-using YuanliCore.Model.LoadPort;
 using YuanliCore.UserControls;
 
 namespace WLS3200Gen2
