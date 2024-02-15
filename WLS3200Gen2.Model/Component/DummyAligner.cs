@@ -8,7 +8,7 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyAligner : IAligner
     {
-        public void AlarmReset()
+        public Task AlarmReset()
         {
             throw new NotImplementedException();
         }
@@ -18,7 +18,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public AlignerStatus GetStatus()
+        public Task<AlignerStatus> GetStatus()
         {
             throw new NotImplementedException();
         }
@@ -31,12 +31,17 @@ namespace WLS3200Gen2.Model.Component
         {
         }
 
-        public void Run(double degree)
+        public Task Run(double degree)
         {
             throw new NotImplementedException();
         }
 
-        public void Vaccum(bool IsOn)
+        public Task Vaccum(bool IsOn)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IAligner.Home()
         {
             throw new NotImplementedException();
         }

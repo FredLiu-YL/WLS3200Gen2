@@ -21,152 +21,153 @@ namespace WLS3200Gen2.Model.Component
 
         public int SpeedPercent => throw new NotImplementedException();
 
-        public void Continue()
+        public Task Continue()
         {
             throw new NotImplementedException();
         }
 
-        public void FixWafer()
+        public Task FixWafer()
         {
             throw new NotImplementedException();
         }
 
-        public RobotPoint GetPositionCommand()
+        public Task<RobotPoint> GetPositionCommand()
         {
             throw new NotImplementedException();
         }
 
-        public RobotStatus GetStatus()
+        public Task<RobotStatus> GetStatus()
         {
             throw new NotImplementedException();
         }
 
-        public void Home()
+        public Task Home()
         {
-
+            Task task = Task.CompletedTask;
+            return task;
         }
 
-        public void Initial()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsHavePiece()
+        public Task Initial()
         {
             throw new NotImplementedException();
         }
 
-        public bool IsLockOK()
+        public Task<bool> IsHavePiece()
         {
             throw new NotImplementedException();
         }
 
-        public void MovAddress(int address, double zShift)
+        public Task<bool> IsLockOK()
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_GoIn(ArmStation armStation, int layer)
+        public Task MovAddress(int address, double zShift)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_GoIn(ArmStation armStation)
+        public Task PickWafer_GoIn(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_LiftUp(ArmStation armStation, int layer)
+        public Task PickWafer_GoIn(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_LiftUp(ArmStation armStation)
+        public Task PickWafer_LiftUp(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_Retract(ArmStation armStation, int layer)
+        public Task PickWafer_LiftUp(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_Retract(ArmStation armStation)
+        public Task PickWafer_Retract(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_Safety(ArmStation armStation)
+        public Task PickWafer_Retract(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_Standby(ArmStation armStation, int layer)
+        public Task PickWafer_Safety(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PickWafer_Standby(ArmStation armStation)
+        public Task PickWafer_Standby(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_GoIn(ArmStation armStation, int layer)
+        public Task PickWafer_Standby(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_GoIn(ArmStation armStation)
+        public Task PutWafer_GoIn(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_PutDown(ArmStation armStation, int layer)
+        public Task PutWafer_GoIn(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_PutDown(ArmStation armStation)
+        public Task PutWafer_PutDown(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_Retract(ArmStation armStation, int layer)
+        public Task PutWafer_PutDown(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_Retract(ArmStation armStation)
+        public Task PutWafer_Retract(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_Safety(ArmStation armStation)
+        public Task PutWafer_Retract(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_Standby(ArmStation armStation, int layer)
+        public Task PutWafer_Safety(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void PutWafer_Standby(ArmStation armStation)
+        public Task PutWafer_Standby(ArmStation armStation, int layer)
         {
             throw new NotImplementedException();
         }
 
-        public void ReleaseWafer()
+        public Task PutWafer_Standby(ArmStation armStation)
         {
             throw new NotImplementedException();
         }
 
-        public void SetSpeedPercentCommand(int motionPercent)
+        public Task ReleaseWafer()
         {
             throw new NotImplementedException();
         }
 
-        public void Stop()
+        public Task SetSpeedPercentCommand(int motionPercent)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Stop()
         {
             throw new NotImplementedException();
         }

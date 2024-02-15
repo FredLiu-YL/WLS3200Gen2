@@ -23,27 +23,27 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void GoInnerRingCheckPos()
+        public Task GoInnerRingCheckPos()
         {
             throw new NotImplementedException();
         }
 
-        public void GoOuterRingCheckPos()
+        public Task GoOuterRingCheckPos()
         {
             throw new NotImplementedException();
         }
 
-        public void HomeAllRing()
+        public Task HomeAllRing()
         {
             throw new NotImplementedException();
         }
 
-        public void HomeInnerRing()
+        public Task HomeInnerRing()
         {
             throw new NotImplementedException();
         }
 
-        public void HomeOuterRing()
+        public Task HomeOuterRing()
         {
             throw new NotImplementedException();
         }

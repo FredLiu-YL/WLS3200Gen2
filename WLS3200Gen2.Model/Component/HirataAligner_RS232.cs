@@ -87,109 +87,125 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Aligner Close:" + ex);
             }
         }
-        public void Home()
+        public Task Home()
         {
             try
             {
-                AlignerItems alignerItems = new AlignerItems();
-                alignerItems = Command_MovORG();
-                if (alignerItems.IsMovOK != true)
-                {
-                    throw new Exception("ORG Move Error");
-                }
+                return Task.Run(() =>
+               {
+                   AlignerItems alignerItems = new AlignerItems();
+                   alignerItems = Command_MovORG();
+                   if (alignerItems.IsMovOK != true)
+                   {
+                       throw new Exception("ORG Move Error");
+                   }
+               });
+
             }
             catch (Exception ex)
             {
                 throw new Exception("Aligner Home:" + ex);
             }
         }
-        public void Run(double degree)
+        public Task Run(double degree)
         {
             try
             {
-                AlignerItems alignerItems = new AlignerItems();
-                alignerItems = Command_SetFindNotchPos(degree);
-                if (alignerItems.IsSetOK == true)
+                return Task.Run(() =>
                 {
-                    alignerItems = Command_MovFindNotch();
-                    if (alignerItems.IsMovOK == true)
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems = Command_SetFindNotchPos(degree);
+                    if (alignerItems.IsSetOK == true)
                     {
+                        alignerItems = Command_MovFindNotch();
+                        if (alignerItems.IsMovOK == true)
+                        {
 
+                        }
+                        else
+                        {
+                            throw new Exception("Move FindNotch Error");
+                        }
                     }
                     else
                     {
-                        throw new Exception("Move FindNotch Error");
+                        throw new Exception("Set Degree Error");
                     }
-                }
-                else
-                {
-                    throw new Exception("Set Degree Error");
-                }
+                });
             }
             catch (Exception ex)
             {
                 throw new Exception("Aligner Run:" + ex);
             }
         }
-        public void Vaccum(bool IsOn)
+        public Task Vaccum(bool IsOn)
         {
             try
             {
-                AlignerItems alignerItems = new AlignerItems();
-                if (IsOn == true)
+                return Task.Run(() =>
                 {
-                    alignerItems = Command_MovVaccumON();
-                    if (alignerItems.IsMovOK != true)
+                    AlignerItems alignerItems = new AlignerItems();
+                    if (IsOn == true)
                     {
-                        throw new Exception("Vaccum ON Error");
+                        alignerItems = Command_MovVaccumON();
+                        if (alignerItems.IsMovOK != true)
+                        {
+                            throw new Exception("Vaccum ON Error");
+                        }
                     }
-                }
-                else
-                {
-                    alignerItems = Command_MovVaccumOFF();
-                    if (alignerItems.IsMovOK != true)
+                    else
                     {
-                        throw new Exception("Vaccum OFF Error");
+                        alignerItems = Command_MovVaccumOFF();
+                        if (alignerItems.IsMovOK != true)
+                        {
+                            throw new Exception("Vaccum OFF Error");
+                        }
                     }
-                }
+                });
             }
             catch (Exception ex)
             {
                 throw new Exception("Aligner Vaccum:" + ex);
             }
         }
-        public void AlarmReset()
+        public Task AlarmReset()
         {
             try
             {
-                AlignerItems alignerItems = new AlignerItems();
-                alignerItems = Command_SetReset();
-                if (alignerItems.IsSetOK != true)
+                return Task.Run(() =>
                 {
-                    throw new Exception("Set Alarm Reset Error");
-                }
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems = Command_SetReset();
+                    if (alignerItems.IsSetOK != true)
+                    {
+                        throw new Exception("Set Alarm Reset Error");
+                    }
+                });
             }
             catch (Exception ex)
             {
                 throw new Exception("Aligner AlarmReset:" + ex);
             }
         }
-        public AlignerStatus GetStatus()
+        public Task<AlignerStatus> GetStatus()
         {
             try
             {
-                AlignerStatus alignerStatus = new AlignerStatus();
-                AlignerItems alignerItems = new AlignerItems();
-                alignerItems = Command_GetStatus();
-                if (alignerItems.IsGetOK == true)
+                return Task.Run(() =>
                 {
-                    alignerStatus = UpdateStatus(alignerItems);
-                }
-                else
-                {
-                    throw new Exception("Get Status Error");
-                }
-                return alignerStatus;
+                    AlignerStatus alignerStatus = new AlignerStatus();
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems = Command_GetStatus();
+                    if (alignerItems.IsGetOK == true)
+                    {
+                        alignerStatus = UpdateStatus(alignerItems);
+                    }
+                    else
+                    {
+                        throw new Exception("Get Status Error");
+                    }
+                    return alignerStatus;
+                });
             }
             catch (Exception ex)
             {

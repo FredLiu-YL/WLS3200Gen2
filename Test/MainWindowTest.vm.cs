@@ -288,8 +288,8 @@ namespace Test
                             RobotStaus.ErrorCode = robotStatus.ErrorCode;
                             RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
 
-                            RobotStaus.IsHavePiece = Robot.IsHavePiece();
-                            RobotStaus.IsLockOK = Robot.IsLockOK();
+                            RobotStaus.IsHavePiece = await Robot.IsHavePiece();
+                            RobotStaus.IsLockOK = await Robot.IsLockOK();
                             //RobotUIIShow
                         }
 
@@ -346,7 +346,7 @@ namespace Test
 
 
 
-        public ICommand OutputSwitchCommand => new RelayCommand<string>((par) =>
+        public ICommand OutputSwitchCommand => new RelayCommand<string>(async (par) =>
         {
             try
             {
@@ -355,8 +355,8 @@ namespace Test
                 //Micro.Aberration_PositionPEL = 780000;
                 //Micro.Aberration_PositionNEL = 350000;
 
-                Micro.ZMoveCommand(100);
-                Micro.AberrationMoveCommand(100);
+                await Micro.ZMoveCommand(100);
+                await Micro.AberrationMoveCommand(100);
                 //Micro.AberrationMoveToCommand(550);//550~790
 
                 //motionController.SetOutputCommand(0, true);

@@ -164,37 +164,40 @@ namespace WLS3200Gen2.Model.Component
         public bool IsOuterCanMoveStartPos { get => isOuterCanMoveStartPos; set => SetValue(ref isOuterCanMoveStartPos, value); }
         public bool IsOuterUsing { get => isOuterUsing; set => SetValue(ref isOuterUsing, value); }
 
-        public void HomeAllRing()
+        public Task HomeAllRing()
         {
             try
             {
-                bool isFirstHome = true;
+                return Task.Run(async () =>
+                {
+                    bool isFirstHome = true;
 
-                string returnStr = "";
-                if (InnerRingLiftMotorIsOK.IsSignal != true)
-                {
-                    returnStr += " 內環抬升馬達異常";
-                }
-                if (OuterRingRollYMotorIsOK.IsSignal != true)
-                {
-                    returnStr += " 外環翻轉馬達異常";
-                }
-                if (OuterRingLiftMotorIsOK.IsSignal != true)
-                {
-                    returnStr += " 外環抬升馬達異常";
-                }
-                if (returnStr != "")
-                {
-                    throw new Exception("Macro復歸異常" + returnStr);
-                }
-                IsCanMoveAllHome = false;
-                IsInnerCanMoveStartPos = false;
-                IsOuterCanMoveStartPos = false;
-                HomeInnerRing(isFirstHome);
-                HomeOuterRing(isFirstHome);
-                IsCanMoveAllHome = true;
-                IsInnerCanMoveStartPos = true;
-                IsOuterCanMoveStartPos = true;
+                    string returnStr = "";
+                    if (InnerRingLiftMotorIsOK.IsSignal != true)
+                    {
+                        returnStr += " 內環抬升馬達異常";
+                    }
+                    if (OuterRingRollYMotorIsOK.IsSignal != true)
+                    {
+                        returnStr += " 外環翻轉馬達異常";
+                    }
+                    if (OuterRingLiftMotorIsOK.IsSignal != true)
+                    {
+                        returnStr += " 外環抬升馬達異常";
+                    }
+                    if (returnStr != "")
+                    {
+                        throw new Exception("Macro復歸異常" + returnStr);
+                    }
+                    IsCanMoveAllHome = false;
+                    IsInnerCanMoveStartPos = false;
+                    IsOuterCanMoveStartPos = false;
+                    await HomeInnerRing(isFirstHome);
+                    await HomeOuterRing(isFirstHome);
+                    IsCanMoveAllHome = true;
+                    IsInnerCanMoveStartPos = true;
+                    IsOuterCanMoveStartPos = true;
+                });
             }
             catch (Exception ex)
             {
@@ -233,18 +236,20 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void HomeInnerRing()
+        public Task HomeInnerRing()
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
                 {
-                    HomeInnerRing(false);
+                    task = HomeInnerRing(false);
                 }
                 else
                 {
                     throw new Exception("內環 不能下降!");
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -253,18 +258,20 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void HomeOuterRing()
+        public Task HomeOuterRing()
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OuterInTop)
                 {
-                    HomeOuterRing(false);
+                    task = HomeOuterRing(false);
                 }
                 else
                 {
                     throw new Exception("外環 不能復歸!");
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -273,18 +280,20 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void GoInnerRingCheckPos()
+        public Task GoInnerRingCheckPos()
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if ((CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK) && IsInnerCanMoveStartPos == true)
                 {
-                    InnerRingLiftUp();
+                    task = InnerRingLiftUp();
                 }
                 else
                 {
                     throw new Exception("內環 不能上升!");
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -292,18 +301,20 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public void GoOuterRingCheckPos()
+        public Task GoOuterRingCheckPos()
         {
             try
             {
+                Task task = Task.CompletedTask;
                 if ((CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK) && IsOuterCanMoveStartPos == true)
                 {
-                    OuterRingLiftUp();
+                    task = OuterRingLiftUp();
                 }
                 else
                 {
                     throw new Exception("外環 不能上升!");
                 }
+                return task;
             }
             catch (Exception ex)
             {
@@ -525,136 +536,139 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="isFirstHome"></param>
         /// <returns></returns>
-        private void HomeOuterRing(bool isFirstHome)
+        private Task HomeOuterRing(bool isFirstHome)
         {
             try
             {
-                int i = 0;
-
-                //外環抬升軸上來
-                if (isFirstHome == true)
+                return Task.Run(() =>
                 {
-                    i = 0;
-                    if (OuterRingLiftMotorIsORG.IsSignal != true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                    int i = 0;
+
+                    //外環抬升軸上來
+                    if (isFirstHome == true)
                     {
-                        throw new Exception($"外環 不在下方，請工程師確認!!");
+                        i = 0;
+                        if (OuterRingLiftMotorIsORG.IsSignal != true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                        {
+                            throw new Exception($"外環 不在下方，請工程師確認!!");
+                        }
+                        OuterRingLiftMotorStart.Off();
+                        OuterRingLiftMotorM0.Off();
+                        OuterRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(25);
+                        //看程式這邊有關掉真空 應該是可以不用動作，或者是要加把真空開著
+                        System.Threading.Thread.Sleep(50);
+                        OuterRingLiftMotorM1.On();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorStart.On();
+                        System.Threading.Thread.Sleep(150);
+                        //上升第一段
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"外環 馬達異常Time out");
+                        }
+                        OuterRingLiftMotorStart.Off();
+                        OuterRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"外環 馬達異常Time out");
+                        }
+                        //上升第二段
+                        OuterRingLiftMotorM0.On();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorM1.On();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorStart.On();
+                        System.Threading.Thread.Sleep(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"外環 馬達抬升異常Time out");
+                        }
+                        OuterRingLiftMotorStart.Off();
+                        OuterRingLiftMotorM0.Off();
+                        OuterRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(25);
                     }
+                    IsOuterUsing = false;
+                    //外環旋轉復歸
+                    i = 0;
+                    if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                    {
+                        throw new Exception($"外環 不在上方，請工程師確認!!");
+                    }
+                    OuterRingRollYOrg.Off();
+                    System.Threading.Thread.Sleep(25);
+                    OuterRingRollYOrg.On();
+                    System.Threading.Thread.Sleep(150);
+                    while (OuterRingRollYMotorIsOK.IsSignal != true || OuterRingRollYMotorIsORG.IsSignal != true)
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(50);
+                        if (i >= 200) throw new Exception($"外環 翻轉馬達復歸異常Time out");
+                    }
+                    OuterRingRollYOrg.Off();
+                    System.Threading.Thread.Sleep(25);
+                    //外環抬升軸下降復歸
+                    i = 0;
+                    if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                    {
+                        throw new Exception($"外環 不在上方，請工程師確認!!");
+                    }
+                    //外環下降第一段
                     OuterRingLiftMotorStart.Off();
                     OuterRingLiftMotorM0.Off();
                     OuterRingLiftMotorM1.Off();
                     System.Threading.Thread.Sleep(25);
-                    //看程式這邊有關掉真空 應該是可以不用動作，或者是要加把真空開著
-                    System.Threading.Thread.Sleep(50);
-                    OuterRingLiftMotorM1.On();
-                    System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorStart.On();
-                    System.Threading.Thread.Sleep(150);
-                    //上升第一段
-                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                    {
-                        i++;
-                        System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 馬達異常Time out");
-                    }
-                    OuterRingLiftMotorStart.Off();
-                    OuterRingLiftMotorM1.Off();
-                    System.Threading.Thread.Sleep(300);
-                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                    {
-                        i++;
-                        System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 馬達異常Time out");
-                    }
-                    //上升第二段
                     OuterRingLiftMotorM0.On();
                     System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorM1.On();
-                    System.Threading.Thread.Sleep(25);
                     OuterRingLiftMotorStart.On();
                     System.Threading.Thread.Sleep(300);
-                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
+                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
                     {
                         i++;
                         System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 馬達抬升異常Time out");
+                        if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
                     }
+                    if (isFirstHome != true)
+                    {
+                        InnerRingVacuum.On();
+                        System.Threading.Thread.Sleep(50);
+                    }
+                    //外環下降第二段
                     OuterRingLiftMotorStart.Off();
                     OuterRingLiftMotorM0.Off();
-                    OuterRingLiftMotorM1.Off();
-                    System.Threading.Thread.Sleep(25);
-                }
-                IsOuterUsing = false;
-                //外環旋轉復歸
-                i = 0;
-                if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                {
-                    throw new Exception($"外環 不在上方，請工程師確認!!");
-                }
-                OuterRingRollYOrg.Off();
-                System.Threading.Thread.Sleep(25);
-                OuterRingRollYOrg.On();
-                System.Threading.Thread.Sleep(150);
-                while (OuterRingRollYMotorIsOK.IsSignal != true || OuterRingRollYMotorIsORG.IsSignal != true)
-                {
-                    i++;
                     System.Threading.Thread.Sleep(50);
-                    if (i >= 200) throw new Exception($"外環 翻轉馬達復歸異常Time out");
-                }
-                OuterRingRollYOrg.Off();
-                System.Threading.Thread.Sleep(25);
-                //外環抬升軸下降復歸
-                i = 0;
-                if (OuterRingLiftMotorIsORG.IsSignal == true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                {
-                    throw new Exception($"外環 不在上方，請工程師確認!!");
-                }
-                //外環下降第一段
-                OuterRingLiftMotorStart.Off();
-                OuterRingLiftMotorM0.Off();
-                OuterRingLiftMotorM1.Off();
-                System.Threading.Thread.Sleep(25);
-                OuterRingLiftMotorM0.On();
-                System.Threading.Thread.Sleep(25);
-                OuterRingLiftMotorStart.On();
-                System.Threading.Thread.Sleep(300);
-                while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                {
-                    i++;
+                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(50);
+                        if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
+                    }
+                    OuterRingLiftMotorStart.On();
+                    System.Threading.Thread.Sleep(150);
+                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal != true)
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(50);
+                        if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
+                    }
+                    OuterRingLiftMotorStart.Off();
                     System.Threading.Thread.Sleep(50);
-                    if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
-                }
-                if (isFirstHome != true)
-                {
-                    InnerRingVacuum.On();
-                    System.Threading.Thread.Sleep(50);
-                }
-                //外環下降第二段
-                OuterRingLiftMotorStart.Off();
-                OuterRingLiftMotorM0.Off();
-                System.Threading.Thread.Sleep(50);
-                while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                {
-                    i++;
-                    System.Threading.Thread.Sleep(50);
-                    if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
-                }
-                OuterRingLiftMotorStart.On();
-                System.Threading.Thread.Sleep(150);
-                while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal != true)
-                {
-                    i++;
-                    System.Threading.Thread.Sleep(50);
-                    if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
-                }
-                OuterRingLiftMotorStart.Off();
-                System.Threading.Thread.Sleep(50);
 
-                if (isFirstHome == false)
-                {
-                    IsCanMoveAllHome = true;
-                    IsInnerCanMoveStartPos = true;
-                    IsOuterCanMoveStartPos = true;
-                }
+                    if (isFirstHome == false)
+                    {
+                        IsCanMoveAllHome = true;
+                        IsInnerCanMoveStartPos = true;
+                        IsOuterCanMoveStartPos = true;
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -666,59 +680,63 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="isFirstHome"></param>
         /// <returns></returns>
-        private void HomeInnerRing(bool isFirstHome)
+        private Task HomeInnerRing(bool isFirstHome)
         {
             try
             {
-                IsInnerUsing = false;
-                int i = 0;
+                return Task.Run(() =>
+                {
+                    IsInnerUsing = false;
+                    int i = 0;
 
-                //X、Y翻轉復歸
-                i = 0;
-                InnerRingPitchXOrg.Off();
-                InnerRingRollYOrg.Off();
-                System.Threading.Thread.Sleep(50);
-                InnerRingPitchXOrg.On();
-                System.Threading.Thread.Sleep(50);
-                InnerRingRollYOrg.On();
-                System.Threading.Thread.Sleep(200);
-                while (InnerRingPitchXIsORG.IsSignal != true || InnerRingRollYIsORG.IsSignal != true)
-                {
-                    i++;
+                    //X、Y翻轉復歸
+                    i = 0;
+                    InnerRingPitchXOrg.Off();
+                    InnerRingRollYOrg.Off();
                     System.Threading.Thread.Sleep(50);
-                    if (i >= 200) throw new Exception($"內環 X、Y翻轉復歸Time out");
-                }
-                InnerRingPitchXOrg.Off();
-                InnerRingRollYOrg.Off();
-                //內環下降復歸
-                i = 0;
-                System.Threading.Thread.Sleep(25);
-                InnerRingLiftMotorStart.Off();
-                InnerRingLiftMotorM0.Off();
-                InnerRingLiftMotorM1.Off();
-                System.Threading.Thread.Sleep(25);
-                InnerRingLiftMotorStart.On();
-                System.Threading.Thread.Sleep(150);
-                while (InnerRingLiftMotorIsMoveOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal != true)
-                {
-                    i++;
+                    InnerRingPitchXOrg.On();
                     System.Threading.Thread.Sleep(50);
-                    if (i >= 200) throw new Exception($"內環 下降復歸Time out");
-                }
-                InnerRingLiftMotorStart.Off();
-                //內環旋轉馬達歸零
-                i = 0;
-                System.Threading.Thread.Sleep(25);
-                InnerRingYawTOrg.Off();
-                System.Threading.Thread.Sleep(50);
-                InnerRingYawTOrg.On();
+                    InnerRingRollYOrg.On();
+                    System.Threading.Thread.Sleep(200);
+                    while (InnerRingPitchXIsORG.IsSignal != true || InnerRingRollYIsORG.IsSignal != true)
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(50);
+                        if (i >= 200) throw new Exception($"內環 X、Y翻轉復歸Time out");
+                    }
+                    InnerRingPitchXOrg.Off();
+                    InnerRingRollYOrg.Off();
+                    //內環下降復歸
+                    i = 0;
+                    System.Threading.Thread.Sleep(25);
+                    InnerRingLiftMotorStart.Off();
+                    InnerRingLiftMotorM0.Off();
+                    InnerRingLiftMotorM1.Off();
+                    System.Threading.Thread.Sleep(25);
+                    InnerRingLiftMotorStart.On();
+                    System.Threading.Thread.Sleep(150);
+                    while (InnerRingLiftMotorIsMoveOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal != true)
+                    {
+                        i++;
+                        System.Threading.Thread.Sleep(50);
+                        if (i >= 200) throw new Exception($"內環 下降復歸Time out");
+                    }
+                    InnerRingLiftMotorStart.Off();
+                    //內環旋轉馬達歸零
+                    i = 0;
+                    System.Threading.Thread.Sleep(25);
+                    InnerRingYawTOrg.Off();
+                    System.Threading.Thread.Sleep(50);
+                    InnerRingYawTOrg.On();
 
-                if (isFirstHome == false)
-                {
-                    IsCanMoveAllHome = true;
-                    IsInnerCanMoveStartPos = true;
-                    IsOuterCanMoveStartPos = true;
-                }
+                    if (isFirstHome == false)
+                    {
+                        IsCanMoveAllHome = true;
+                        IsInnerCanMoveStartPos = true;
+                        IsOuterCanMoveStartPos = true;
+                    }
+                });
+
             }
             catch (Exception ex)
             {
@@ -732,70 +750,72 @@ namespace WLS3200Gen2.Model.Component
         /// 外環上升
         /// </summary>
         /// <returns></returns>
-        private void OuterRingLiftUp()
+        private Task OuterRingLiftUp()
         {
             try
             {
-                int i = 0;
-                if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
+                return Task.Run(() =>
                 {
-                    IsCanMoveAllHome = false;
-                    IsInnerCanMoveStartPos = false;
-                    IsOuterCanMoveStartPos = false;
-
-                    //外環上升第一段
-                    System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorStart.Off();
-                    OuterRingLiftMotorM0.Off();
-                    OuterRingLiftMotorM1.Off();
-                    System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorM1.On();
-                    System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorStart.On();
-                    System.Threading.Thread.Sleep(300);
-                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                    int i = 0;
+                    if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
                     {
-                        i++;
-                        System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 上升異常");
-                    }
-                    OuterRingLiftMotorStart.Off();
-                    OuterRingLiftMotorM0.Off();
-                    OuterRingLiftMotorM1.Off();
-                    System.Threading.Thread.Sleep(50);
-                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
-                    {
-                        i++;
-                        System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 上升異常");
-                    }
-                    InnerRingVacuum.Off();
-                    System.Threading.Thread.Sleep(50);
-                    //外環上升第二段
-                    OuterRingLiftMotorM0.On();
-                    System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorM1.On();
-                    System.Threading.Thread.Sleep(25);
-                    OuterRingLiftMotorStart.On();
-                    System.Threading.Thread.Sleep(300);
-                    while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
-                    {
-                        i++;
-                        System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 上升異常");
-                    }
-                    OuterRingLiftMotorStart.Off();
-                    OuterRingLiftMotorM0.Off();
-                    OuterRingLiftMotorM1.Off();
-                    System.Threading.Thread.Sleep(50);
+                        IsCanMoveAllHome = false;
+                        IsInnerCanMoveStartPos = false;
+                        IsOuterCanMoveStartPos = false;
 
-                    IsOuterUsing = true;
-                }
-                else
-                {
-                    throw new Exception($"外環 不能上升!");
-                }
+                        //外環上升第一段
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorStart.Off();
+                        OuterRingLiftMotorM0.Off();
+                        OuterRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorM1.On();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorStart.On();
+                        System.Threading.Thread.Sleep(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"外環 上升異常");
+                        }
+                        OuterRingLiftMotorStart.Off();
+                        OuterRingLiftMotorM0.Off();
+                        OuterRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(50);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"外環 上升異常");
+                        }
+                        InnerRingVacuum.Off();
+                        System.Threading.Thread.Sleep(50);
+                        //外環上升第二段
+                        OuterRingLiftMotorM0.On();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorM1.On();
+                        System.Threading.Thread.Sleep(25);
+                        OuterRingLiftMotorStart.On();
+                        System.Threading.Thread.Sleep(300);
+                        while (OuterRingLiftMotorIsMoveOK.IsSignal != true || OuterRingLiftMotorIsORG.IsSignal == true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"外環 上升異常");
+                        }
+                        OuterRingLiftMotorStart.Off();
+                        OuterRingLiftMotorM0.Off();
+                        OuterRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(50);
 
+                        IsOuterUsing = true;
+                    }
+                    else
+                    {
+                        throw new Exception($"外環 不能上升!");
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -807,42 +827,44 @@ namespace WLS3200Gen2.Model.Component
         /// 內環上升
         /// </summary>
         /// <returns></returns>
-        private void InnerRingLiftUp()
+        private Task InnerRingLiftUp()
         {
             try
             {
-                int i = 0;
-                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                return Task.Run(() =>
                 {
-                    IsCanMoveAllHome = false;
-                    IsInnerCanMoveStartPos = false;
-                    IsOuterCanMoveStartPos = false;
-
-                    System.Threading.Thread.Sleep(25);
-                    InnerRingLiftMotorStart.Off();
-                    InnerRingLiftMotorM0.Off();
-                    InnerRingLiftMotorM1.Off();
-                    System.Threading.Thread.Sleep(25);
-                    InnerRingLiftMotorM1.On();
-                    System.Threading.Thread.Sleep(25);
-                    InnerRingLiftMotorStart.On();
-                    System.Threading.Thread.Sleep(150);
-                    while (InnerRingLiftMotorIsMoveOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal == true)
+                    int i = 0;
+                    if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
                     {
-                        i++;
-                        System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"內環 上升異常");
+                        IsCanMoveAllHome = false;
+                        IsInnerCanMoveStartPos = false;
+                        IsOuterCanMoveStartPos = false;
+
+                        System.Threading.Thread.Sleep(25);
+                        InnerRingLiftMotorStart.Off();
+                        InnerRingLiftMotorM0.Off();
+                        InnerRingLiftMotorM1.Off();
+                        System.Threading.Thread.Sleep(25);
+                        InnerRingLiftMotorM1.On();
+                        System.Threading.Thread.Sleep(25);
+                        InnerRingLiftMotorStart.On();
+                        System.Threading.Thread.Sleep(150);
+                        while (InnerRingLiftMotorIsMoveOK.IsSignal != true || InnerRingLiftMotorIsORG.IsSignal == true)
+                        {
+                            i++;
+                            System.Threading.Thread.Sleep(50);
+                            if (i >= 200) throw new Exception($"內環 上升異常");
+                        }
+                        InnerRingLiftMotorStart.Off();
+                        InnerRingLiftMotorM1.Off();
+
+                        IsInnerUsing = true;
                     }
-                    InnerRingLiftMotorStart.Off();
-                    InnerRingLiftMotorM1.Off();
-
-                    IsInnerUsing = true;
-                }
-                else
-                {
-                    throw new Exception($"內環 不能上升!");
-                }
-
+                    else
+                    {
+                        throw new Exception($"內環 不能上升!");
+                    }
+                });
             }
             catch (Exception ex)
             {
