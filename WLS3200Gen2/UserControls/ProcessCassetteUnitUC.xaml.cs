@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -17,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GalaSoft.MvvmLight.Command;
 using MaterialDesignThemes.Wpf;
+using YuanliCore.Data;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -26,42 +28,85 @@ namespace WLS3200Gen2.UserControls
     /// 
     public partial class CassetteUnitUC : UserControl, INotifyPropertyChanged
     {
-         
+
+        private Brush macroTopColor = Brushes.LightSkyBlue; //預設是藍色
+        private Brush macrobackpColor = Brushes.LightSkyBlue;
+        private Brush microColor = Brushes.LightSkyBlue;
         public CassetteUnitUC()
         {
             InitializeComponent();
 
         }
+        public static readonly DependencyProperty CassetteIndexProperty = DependencyProperty.Register(nameof(CassetteIndex), typeof(int), typeof(CassetteUnitUC),
+                                                                          new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public static readonly DependencyProperty IsMacroTopProperty = DependencyProperty.Register(nameof(IsMacroTop), typeof(bool), typeof(CassetteUnitUC),
-                                                                                 new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty IsMacroBackProperty = DependencyProperty.Register(nameof(IsMacroBack), typeof(bool), typeof(CassetteUnitUC),
-                                                                                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty IsMicroProperty = DependencyProperty.Register(nameof(IsMicro), typeof(bool), typeof(CassetteUnitUC),
-                                                                             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public bool IsMacroTop
+
+        public static readonly DependencyProperty MacroTopProperty = DependencyProperty.Register(nameof(MacroTop), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
+                                                                                 new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty MacroBackProperty = DependencyProperty.Register(nameof(MacroBack), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
+                                                                               new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty WaferIDProperty = DependencyProperty.Register(nameof(WaferID), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
+                                                                               new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty MicroProperty = DependencyProperty.Register(nameof(Micro), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
+                                                                           new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public int CassetteIndex
         {
-            get => (bool)GetValue(IsMacroTopProperty);
-            set => SetValue(IsMacroTopProperty, value);
+            get => (int)GetValue(CassetteIndexProperty);
+            set => SetValue(CassetteIndexProperty, value);
         }
-        public bool IsMacroBack
+        
+
+
+        /// <summary>
+        /// 巨觀檢查站晶面 狀態
+        /// </summary>
+        public WaferProcessStatus MacroTop
         {
-            get => (bool)GetValue(IsMacroBackProperty);
-            set => SetValue(IsMacroBackProperty, value);
+            get => (WaferProcessStatus)GetValue(MacroTopProperty);
+            set => SetValue(MacroTopProperty, value);
         }
-        public bool IsMicro
+        /// <summary>
+        /// 巨觀檢查站晶背後 狀態
+        /// </summary>
+        public WaferProcessStatus MacroBack
         {
-            get => (bool)GetValue(IsMicroProperty);
-            set => SetValue(IsMicroProperty, value);
+            get => (WaferProcessStatus)GetValue(MacroBackProperty);
+            set => SetValue(MacroBackProperty, value);
         }
+        /// <summary>
+        /// 讀取WAFERID站
+        /// </summary>
+        public WaferProcessStatus WaferID
+        {
+            get => (WaferProcessStatus)GetValue(WaferIDProperty);
+            set => SetValue(WaferIDProperty, value);
+        }
+
+        /// <summary>
+        /// 微觀檢查站
+        /// </summary>
+        public WaferProcessStatus Micro
+        {
+            get => (WaferProcessStatus)GetValue(MicroProperty);
+            set => SetValue(MicroProperty, value);
+        }
+
+
 
 
         public ICommand Top_Command => new RelayCommand(async () =>
         {
             try
             {
-                
+
+                if (MacroTop == WaferProcessStatus.Select)
+                    MacroTop = WaferProcessStatus.NotSelect;
+                else
+                    MacroTop = WaferProcessStatus.Select;
             }
             catch (Exception ex)
             {
@@ -73,7 +118,25 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                
+                if (MacroBack == WaferProcessStatus.Select)
+                    MacroBack = WaferProcessStatus.NotSelect;
+                else
+                    MacroBack = WaferProcessStatus.Select;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        });
+        public ICommand WaferIDCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                if (WaferID == WaferProcessStatus.Select)
+                    WaferID = WaferProcessStatus.NotSelect;
+                else
+                    WaferID = WaferProcessStatus.Select;
             }
             catch (Exception ex)
             {
@@ -85,7 +148,11 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                
+                if (Micro == WaferProcessStatus.Select)
+                    Micro = WaferProcessStatus.NotSelect;
+                else
+                    Micro = WaferProcessStatus.Select;
+
             }
             catch (Exception ex)
             {
@@ -109,44 +176,43 @@ namespace WLS3200Gen2.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
-    public class WorkItem : INotifyPropertyChanged
+
+
+
+
+    public class StatusToColorConverter : IValueConverter
     {
-        private bool isTop;
-
-        private bool isBack;
-
-        private bool isMicro;
-
-        private Brush backGroundTop;
-
-        private Brush backGroundBack;
-
-        private Brush backGroundMicro;
-
-        public bool IsTop { get => isTop; set => SetValue(ref isTop, value); }
-        public bool IsBack { get => isBack; set => SetValue(ref isBack, value); }
-        public bool IsMicro { get => isMicro; set => SetValue(ref isMicro, value); }
-
-        public Brush BackGroundTop { get => backGroundTop; set => SetValue(ref backGroundTop, value); }
-        public Brush BackGroundBack { get => backGroundBack; set => SetValue(ref backGroundBack, value); }
-        public Brush BackGroundMicro { get => backGroundMicro; set => SetValue(ref backGroundMicro, value); }
-
-
-        //變更顏色-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return;
-            T oldValue = field;
-            field = value;
-            OnPropertyChanged(propertyName, oldValue, value);
+            if (value is WaferProcessStatus status)
+            {
+                switch (status)
+                {
+                    case WaferProcessStatus.None:
+                        return Brushes.LightGray;
+                    case WaferProcessStatus.NotSelect:
+                        return Brushes.LightSkyBlue;
+
+                    case WaferProcessStatus.Select:
+                        return Brushes.Gold;
+
+                    case WaferProcessStatus.Pass:
+                        return Brushes.GreenYellow;
+
+                    case WaferProcessStatus.Reject:
+                        return Brushes.Red;
+
+                    case WaferProcessStatus.InProgress:
+                        return Brushes.Goldenrod;
+
+                }
+            }
+            return Brushes.Transparent;
         }
 
-        protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            throw new NotImplementedException();
         }
     }
 }

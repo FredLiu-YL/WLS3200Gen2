@@ -15,14 +15,15 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
+using YuanliCore.Data;
 using YuanliCore.UserControls;
 
 namespace WLS3200Gen2
 {
     public partial class MainViewModel
     {
-        private ObservableCollection<WorkItem> workItems = new ObservableCollection<WorkItem>();
-        private ObservableCollection<ProcessStationAssign> processStations = new ObservableCollection<ProcessStationAssign>();
+   
+        private ObservableCollection<ProcessStation> processStations = new ObservableCollection<ProcessStation>();
         private string logMessage;
         private bool isRunning = false;
         private bool isRunCommand = false;
@@ -34,15 +35,15 @@ namespace WLS3200Gen2
         private bool isOperateUI =true;
         private double manualPosX, manualPosY;
         private MachineStates machinestatus = MachineStates.IDLE;
-        private MacroJudge macroJudgeOperation  ;
-
+        private WaferProcessStatus macroJudgeOperation  ;
+        private bool isLoadport1, isLoadport2;
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
         /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
         /// </summary>
         public bool IsOperateUI { get => isOperateUI; set => SetValue(ref isOperateUI, value); }
-        public ObservableCollection<WorkItem> WorkItems { get => workItems; set => SetValue(ref workItems, value); }
+       
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
         public ProcessSetting ProcessSetting { get => processSetting; set => SetValue(ref processSetting, value); }
@@ -53,13 +54,23 @@ namespace WLS3200Gen2
         public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
         public double ManualPosY { get => manualPosY; set => SetValue(ref manualPosY, value); }
         public MachineStates Machinestatus { get => machinestatus; set => SetValue(ref machinestatus, value); }
-        public ObservableCollection<ProcessStationAssign> ProcessStations { get => processStations; set => SetValue(ref processStations, value); }
+        public ObservableCollection<ProcessStation> ProcessStations { get => processStations; set => SetValue(ref processStations, value); }
+  
+        public bool IsLoadport1 { get => isLoadport1; set => SetValue(ref isLoadport1, value); }
+        public bool IsLoadport2 { get => isLoadport2; set => SetValue(ref isLoadport2, value); }
 
 
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
             {
+                if (IsLoadport1 == IsLoadport2)
+                {
+                    MessageBox.Show("Loadport Wrong choice");
+                    return;
+
+                }
+
                 if (Machinestatus == MachineStates.Emergency)
                 {
                     MessageBox.Show("Not available in emergencies", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -70,14 +81,24 @@ namespace WLS3200Gen2
                 {
                     isRunCommand = true;
 
+               
+
+
                     IsRunning = true;
                     WriteLog("Process Start");
                     Machinestatus = MachineStates.RUNNING;
+
+                    ProcessSetting.IsLoadport1 = IsLoadport1;
+                    ProcessSetting.IsLoadport2 = IsLoadport2;
+                    //寫入每片Wafer的作業流程
+                    ProcessSetting.ProcessStation= ProcessStations.ToArray();
+
                     await machine.ProcessRunAsync(ProcessSetting);
+                  
+                    
                     Machinestatus = MachineStates.IDLE;
-
-
                     isRunCommand = false;
+                    IsRunning = false;
                 }
                 else
                 {
@@ -95,7 +116,7 @@ namespace WLS3200Gen2
             finally
             {
                 WriteLog("Process Finish");
-
+       
             }
         });
 
@@ -110,7 +131,7 @@ namespace WLS3200Gen2
                 Machinestatus = MachineStates.PAUSED;
                 await machine.ProcessPause();
 
-                workItems[0].BackGroundBack = Brushes.Red;
+           
             }
             catch (Exception ex)
             {
@@ -301,7 +322,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                macroJudgeOperation = MacroJudge.Pass;
+                macroJudgeOperation = WaferProcessStatus.Pass;
                 await machine.ProcessResume();
 
             }
@@ -318,7 +339,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                macroJudgeOperation = MacroJudge.Reject;
+                macroJudgeOperation = WaferProcessStatus.Reject;
                 await machine.ProcessResume();
 
             }
@@ -352,7 +373,7 @@ namespace WLS3200Gen2
 
 
 
-        private async Task<MacroJudge> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             machine.ProcessPause();//暫停
             

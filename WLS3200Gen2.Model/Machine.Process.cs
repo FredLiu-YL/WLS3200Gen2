@@ -24,7 +24,7 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public event Func<MainRecipe> ChangeRecipe;
 
-        public event Func<PauseTokenSource, CancellationTokenSource, Task<MacroJudge>> MacroReady;
+        public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MacroReady;
 
         public async Task ProcessRunAsync(ProcessSetting processSetting)
         {
@@ -33,15 +33,15 @@ namespace WLS3200Gen2.Model
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
                 WriteLog("ProcessInitial ");
-                Feeder.ProcessInitial(processSetting.Inch, pts, cts);
+                Feeder.ProcessInitial(processSetting.Inch,machineSetting, pts, cts);
 
                 await Task.Run(async () =>
                 {
                     WriteLog("Process Start");
- 
+
 
                     //先放一片在macro上
-                    await Feeder.LoadToReadyAsync();
+                    Wafer currentWafer =  await Feeder.LoadToReadyAsync();
 
                     while (true)
                     {
@@ -50,50 +50,38 @@ namespace WLS3200Gen2.Model
                         if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
                         MainRecipe recipe = ChangeRecipe?.Invoke();
 
+
+                        //讀取 使用的Cassette  片子數量資訊
+                        IEnumerable<Wafer> waferusable = Feeder.Cassette.Wafers.Where(w => 
+                        w.ProcessStatus.MacroTop == WaferProcessStatus.Select|| 
+                        w.ProcessStatus.MacroBack == WaferProcessStatus.Select||
+                        w.ProcessStatus.WaferID == WaferProcessStatus.Select||
+                        w.ProcessStatus.Micro == WaferProcessStatus.Select);
+
+                        //對應Cassette位置的 需要檢查站 CassetteIndex 可能要+1  或-1 才是實際位置
+                        ProcessStation processStation = processSetting.ProcessStation[currentWafer.CassetteIndex];
+
+
                         //晶面檢查
-                        if (processSetting.ProcessStation[0].IsMacroTop)
-                        {
-
-                            //委派到ui 去執行macro人工檢
-                            Task<MacroJudge> macro = MacroReady?.Invoke(pts, cts);
-                            var judgeResult = macro.Result;
-
-
-
-                        }
-
+                        await MacroTopInspection(processStation.MacroTop);
 
                         //晶背檢查
-                        if (processSetting.ProcessStation[0].IsMacroBack)
-                        {
+                        await MacroBackInspection(processStation.MacroBack);
 
-                            //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
-                            await Feeder.TurnWafer();
-
-                            //委派到ui層 去執行macro人工檢
-                            Task<MacroJudge> macro = MacroReady?.Invoke(pts, cts);
-                            var judgeResult = macro.Result;
-
-
-                            //翻回來
-                            await Feeder.TurnBackWafer();
-
-                        }
 
                         //到Align
-                        await Feeder.LoadToAlignerAsync(processSetting.IsReadWaferID);
+                        await Feeder.LoadToAlignerAsync(processStation.WaferID);
 
 
                         // ProcessPause();
                         cts.Token.ThrowIfCancellationRequested();
                         await pts.Token.WaitWhilePausedAsync(cts.Token);
 
-                        Wafer waferInside = null;
-                        Task taskLoad = Task.CompletedTask;
-                        var waferusable = Feeder.Cassette.Wafers.Select(w => w.ProcessStatus == WaferProcessStatus.Usable);
+                  
+                        Task<Wafer> taskLoad = null;
 
 
-                        if (processSetting.ProcessStation[0].IsMicro)//判斷如果有需要進顯微鏡
+                        if (processStation.Micro== WaferProcessStatus.Select)//判斷如果有需要進顯微鏡
                         {
                             //顯微鏡站準備接WAFER
                             Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
@@ -103,7 +91,7 @@ namespace WLS3200Gen2.Model
 
                             //wafer送到主設備內 
                             Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
-                            waferInside = await Feeder.LoadToMicroAsync();
+                            currentWafer = await Feeder.LoadToMicroAsync(currentWafer);
 
                             if (waferusable.Count() > 0)//如果還有片
                             {
@@ -128,7 +116,7 @@ namespace WLS3200Gen2.Model
 
 
                         //退片
-                        await Feeder.UnLoadWaferToCassette(waferInside);
+                        await Feeder.UnLoadWaferToCassette(currentWafer);
 
 
 
@@ -138,7 +126,7 @@ namespace WLS3200Gen2.Model
                         await pts.Token.WaitWhilePausedAsync(cts.Token);
 
                         //等待預載完成
-                        await taskLoad;
+                        currentWafer = await taskLoad;
 
                         WriteLog($"Remaining number of wafers : {waferusable.Count()} ");
                         //判斷卡匣空了
@@ -188,6 +176,44 @@ namespace WLS3200Gen2.Model
 
         }
 
+
+        private async Task MacroTopInspection(WaferProcessStatus station)
+        {
+
+            //晶面檢查
+            if (station== WaferProcessStatus.Select)
+            {
+
+                //委派到ui 去執行macro人工檢
+                Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
+                var judgeResult = macro.Result;
+
+
+
+            }
+
+        }
+        private async Task MacroBackInspection(WaferProcessStatus station)
+        {
+            //晶背檢查
+            if (station == WaferProcessStatus.Select)
+            {
+
+                //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
+                await Feeder.TurnWafer();
+
+                //委派到ui層 去執行macro人工檢
+                Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
+                var judgeResult = macro.Result;
+
+
+                //翻回來
+                await Feeder.TurnBackWafer();
+
+            }
+
+
+        }
         private void MicroVacuumOn()
         {
 

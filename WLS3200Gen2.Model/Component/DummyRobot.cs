@@ -23,12 +23,12 @@ namespace WLS3200Gen2.Model.Component
 
         public Task Continue()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task FixWafer()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task<RobotPoint> GetPositionCommand()
@@ -49,7 +49,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task Initial()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task<bool> IsHavePiece()
@@ -57,119 +57,119 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task<bool> IsLockOK()
+        public async Task<bool> IsLockOK()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public Task MovAddress(int address, double zShift)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_GoIn(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_GoIn(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_LiftUp(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_LiftUp(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_Retract(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_Retract(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_Safety(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_Standby(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PickWafer_Standby(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_GoIn(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_GoIn(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_PutDown(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_PutDown(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_Retract(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_Retract(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_Safety(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_Standby(ArmStation armStation, int layer)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task PutWafer_Standby(ArmStation armStation)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task ReleaseWafer()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task SetSpeedPercentCommand(int motionPercent)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task Stop()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

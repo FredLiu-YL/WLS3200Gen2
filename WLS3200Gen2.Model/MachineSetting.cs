@@ -20,10 +20,27 @@ namespace WLS3200Gen2.Model
         public AxisConfig RobotAxisConfig { get; set; } = new AxisConfig();
 
         public Point TableWaferCatchPosition { get; set; }
+        /// <summary>
+        /// Robot 橫移軸 待機位置的座標
+        /// </summary>
         public double RobotAxisStandbyPosition { get; set; }
+        /// <summary>
+        /// Robot 橫移軸Aligner位置的取放料座標
+        /// </summary>
         public double RobotAxisAlignTakePosition { get; set; }
+        /// <summary>
+        /// Robot 橫移軸Macro位置的取放料座標
+        /// </summary>
         public double RobotAxisMacroTakePosition { get; set; }
+        /// <summary>
+        /// Robot 橫移軸 LoadPort位置的取放料座標
+        /// </summary>
         public double RobotAxisLoadPortTakePosition { get; set; }
+        /// <summary>
+        /// Robot 橫移軸Micro位置的取放料座標
+        /// </summary>
+        public double RobotAxisMicroTakePosition { get; set; }
+
 
         /// <summary>
         /// Die 判定需給定BinCode
@@ -34,10 +51,10 @@ namespace WLS3200Gen2.Model
         public CameraType CamerasType { get; set; }
 
         public LoadPortType LoadPortType { get; set; }
-        public LoadPortQuantity  LoadPortCount { get; set; }
+        public LoadPortQuantity LoadPortCount { get; set; }
 
-
-}
+     
+    }
 
 
 

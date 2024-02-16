@@ -15,14 +15,16 @@
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition  Width="0.8*" />
+                <ColumnDefinition  Width="0.8*" />
                 <ColumnDefinition />
                 <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition  Width="0.5*" />
+                <ColumnDefinition  Width="0.01*" />
             </Grid.ColumnDefinitions>
             <Label Grid.Column="1"  Content="Top" />
             <Label Grid.Column="2"  Content="Back" />
-            <Label Grid.Column="3"  Content="Micro" />
+            <Label Grid.Column="3"  Content="WaferID" />
+            <Label Grid.Column="4"  Content="Micro" />
         </Grid>
         <ListBox Grid.Row="1"   Margin="0" ItemsSource="{Binding ProcessStation}">
             <ListBox.ItemContainerStyle>
@@ -33,7 +35,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <!-- 這裡放置你的 UserControl -->
-                    <local:CassetteUnitUC IsMacroTop="{Binding IsMacroTop}" IsMacroBack="{Binding IsMacroBack}"  IsMicro="{Binding IsMicro}" />
+                    <local:CassetteUnitUC CassetteIndex="{Binding CassetteIndex}"  MacroTop="{Binding MacroTop}" MacroBack="{Binding MacroBack}" WaferID="{Binding WaferID}" Micro="{Binding Micro}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

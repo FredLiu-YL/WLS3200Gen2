@@ -152,16 +152,16 @@ namespace WLS3200Gen2
                 {
 
                     case "LoadPort":
-                        await machine.Feeder.RobotAxis.MoveToAsync(machine.Feeder.Setting.LoadPortPos);
+                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPortTakePosition);
                         break;
                     case "Aligner":
-                        await machine.Feeder.RobotAxis.MoveToAsync(machine.Feeder.Setting.AlignPos);
+                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                         break;
                     case "Micro":
-                        await machine.Feeder.RobotAxis.MoveToAsync(machine.Feeder.Setting.MicroPos);
+                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
                         break;
                     case "Macro":
-                        await machine.Feeder.RobotAxis.MoveToAsync(machine.Feeder.Setting.MacroPos);
+                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                         break;
                 }
             }

@@ -64,7 +64,7 @@ namespace Test
 
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
 
-        public FeederSetting FeederSetting = new FeederSetting();
+         
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 

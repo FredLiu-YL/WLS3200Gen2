@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
+using YuanliCore.Data;
 using YuanliCore.Interface;
 using YuanliCore.Model.UserControls;
 using YuanliCore.Motion;
@@ -96,8 +98,11 @@ namespace WLS3200Gen2
         {
             try
             {
+                Assembly thisAssem = typeof(MainViewModel).Assembly;
+                AssemblyName thisAssemName = thisAssem.GetName();
 
-
+                Version ver = thisAssemName.Version;
+                Version = $"WLS3100/3200  {ver}";
                 //
                 //大部分都會在這裡初始化  有些因為寫法問題必須移動到MainViewModel.cs
                 //
@@ -162,9 +167,11 @@ namespace WLS3200Gen2
                 MapImage = new WriteableBitmap(bitmap);
 
                 //測試用
-                ProcessStations.Add(new ProcessStationAssign());
-                ProcessStations.Add(new ProcessStationAssign());
-                ProcessStations.Add(new ProcessStationAssign());
+                for (int i = 25; i > 0; i--)
+                {
+                    ProcessStations.Add(new ProcessStation(i));
+                }
+             
             }
             catch (Exception ex)
             {

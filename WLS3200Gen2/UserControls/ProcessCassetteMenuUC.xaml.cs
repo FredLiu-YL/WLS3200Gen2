@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WLS3200Gen2.Model.Recipe;
+using YuanliCore.Data;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -32,12 +33,12 @@ namespace WLS3200Gen2.UserControls
         {
             InitializeComponent();
         }
-        public static readonly DependencyProperty ProcessStationProperty = DependencyProperty.Register(nameof(ProcessStation), typeof(ObservableCollection<ProcessStationAssign>), typeof(ProcessCassetteMenuUC),
-                                                                                  new FrameworkPropertyMetadata(new ObservableCollection<ProcessStationAssign>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ProcessStationProperty = DependencyProperty.Register(nameof(ProcessStation), typeof(ObservableCollection<ProcessStation>), typeof(ProcessCassetteMenuUC),
+                                                                                  new FrameworkPropertyMetadata(new ObservableCollection<ProcessStation>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public ObservableCollection<ProcessStationAssign> ProcessStation
+        public ObservableCollection<ProcessStation> ProcessStation
         {
-            get => (ObservableCollection<ProcessStationAssign>)GetValue(ProcessStationProperty);
+            get => (ObservableCollection<ProcessStation>)GetValue(ProcessStationProperty);
             set => SetValue(ProcessStationProperty, value);
         }
 

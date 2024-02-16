@@ -8,9 +8,8 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyLoadPort : ILoadPort
     {
-        public bool?[] Slot => new bool?[] {true, true, true, true, true, true, true, true, true, true,
-                                            true, true, true, true, true, true, true, true, true, true,
-                                            true, true, true, true, true};
+        private bool?[] slot ;
+        public bool?[] Slot => slot; 
 
         public Task AlarmReset()
         {
@@ -44,7 +43,11 @@ namespace WLS3200Gen2.Model.Component
 
         public Task Load()
         {
-            throw new NotImplementedException();
+
+            slot = new bool?[] {true, true, null, null, null, null, true, true, true, true,
+                                            true, true, true, true, true, true, true, true, true, true,
+                                             null, null, null, null, true};
+            return Task.CompletedTask;
         }
 
         public Task SetParam(LoadPortParam loadPortParam)
@@ -52,29 +55,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void SlotMapping()
-        {
-            //try
-            //{
-
-
-            //    List<bool?> slotList = new List<bool?>();
-
-            //    for (int i = 0; i < 20; i++)
-            //        slotList.Add(true);
-
-            //    slot = slotList.ToArray();
-            //    isMapping = true;
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    throw ex;
-            //}
-        }
-
         
-
         
     }
 }

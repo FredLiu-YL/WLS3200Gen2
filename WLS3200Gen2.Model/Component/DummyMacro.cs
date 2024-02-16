@@ -20,82 +20,82 @@ namespace WLS3200Gen2.Model.Component
 
         public void FixWafer()
         {
-            throw new NotImplementedException();
+            
         }
 
         public Task GoInnerRingCheckPos()
         {
-            throw new NotImplementedException();
+          return  Task.CompletedTask;
         }
 
         public Task GoOuterRingCheckPos()
         {
-            throw new NotImplementedException();
+          return  Task.CompletedTask;
         }
 
         public Task HomeAllRing()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task HomeInnerRing()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task HomeOuterRing()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public void Initial()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void InnerRingPitchX_Move(bool isForward)
         {
-            throw new NotImplementedException();
+             
         }
 
         public void InnerRingPitchX_Stop()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void InnerRingRollY_Move(bool isForward)
         {
-            throw new NotImplementedException();
+             
         }
 
         public void InnerRingRollY_Stop()
         {
-            throw new NotImplementedException();
+             
         }
 
         public void InnerRingYawT_Move(bool isForwards)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void InnerRingYawT_Stop()
         {
-            throw new NotImplementedException();
+             
         }
 
         public void OuterRingRollY_Move(bool isForwards)
         {
-            throw new NotImplementedException();
+        
         }
 
         public void OuterRingRollY_Stop()
         {
-            throw new NotImplementedException();
+           
         }
 
         public void ReleaseWafer()
         {
-            throw new NotImplementedException();
+        
         }
     }
 }

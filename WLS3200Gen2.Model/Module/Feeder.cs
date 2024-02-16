@@ -23,10 +23,10 @@ namespace WLS3200Gen2.Model.Module
 
         private PauseTokenSource pauseToken = new PauseTokenSource();
         private CancellationTokenSource cancelToken = new CancellationTokenSource();
-
+        private MachineSetting machineSetting;
         private Queue<Wafer> processWafers;
         //預載暫存WAFER紀錄
-        private Wafer processTempPre_Wafer;
+        //  private Wafer processTempPre_Wafer;
 
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace WLS3200Gen2.Model.Module
         public Cassette Cassette { get => cassette; }
         public bool IsCassetteDone { get => isCassetteDone; }
         public string WaferID { get; }
-        public FeederSetting Setting;
+ 
 
         public Task WaitEFEMonSafe = Task.CompletedTask;
 
@@ -121,12 +121,12 @@ namespace WLS3200Gen2.Model.Module
             }
         }
 
-        public void ProcessInitial(InchType inchType, PauseTokenSource pauseToken, CancellationTokenSource cancellationToken)
+        public async void ProcessInitial(InchType inchType, MachineSetting machineSetting, PauseTokenSource pauseToken, CancellationTokenSource cancellationToken)
         {
 
             this.pauseToken = pauseToken;
             this.cancelToken = cancellationToken;
-
+            this.machineSetting = machineSetting;
             Robot.cancelToken = cancellationToken;
 
             //判斷 8吋 或 12吋 啟用不同的硬體裝置
@@ -154,7 +154,7 @@ namespace WLS3200Gen2.Model.Module
             //如果沒有做過Mapping 
             if (!isSotMapping)
             {
-                cassette = SlotMapping(tempLoadPort);
+                cassette = await SlotMapping(tempLoadPort);
 
                 isSotMapping = true;
 
@@ -178,21 +178,21 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         /// <param name="inchType"></param>
         /// <returns></returns>
-        public Task LoadToReadyAsync()
+        public async Task<Wafer> LoadToReadyAsync()
         {
             try
             {
-
-                return Task.Run(async () =>
+                Wafer TempPre_Wafer = null;
+                await Task.Run(async () =>
                  {
 
                      if (processWafers.Count() > 0)
                      {
-                         processTempPre_Wafer = processWafers.Dequeue();
+                         TempPre_Wafer = processWafers.Dequeue();
                          WriteLog("Wafer Preload Start");
 
-                         await LoadWaferFromCassette(processTempPre_Wafer.CassetteIndex);
-                         await RobotAxis.MoveToAsync(Setting.MacroPos);
+                         await LoadWaferFromCassette(TempPre_Wafer.CassetteIndex);
+                         await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                          await WaferStandByToMacro();
 
                          WriteLog("Wafer Preload End");
@@ -200,7 +200,7 @@ namespace WLS3200Gen2.Model.Module
                      if (processWafers.Count == 0)
                          isCassetteDone = true;
                  });
-
+                return TempPre_Wafer;
 
             }
             catch (Exception ex)
@@ -231,14 +231,14 @@ namespace WLS3200Gen2.Model.Module
         /// 從Macro->Aligner位置
         /// </summary>
         /// <returns></returns>
-        public async Task LoadToAlignerAsync(bool isReadWaferID)
+        public async Task LoadToAlignerAsync(WaferProcessStatus station)
         {
             await Task.Run(async () =>
             {
                 WriteLog("LoadToAligner Start");
-                await RobotAxis.MoveToAsync(Setting.MacroPos);
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                 await WaferMacroToStandBy();
-                await RobotAxis.MoveToAsync(Setting.AlignPos);
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                 await WaferStandByToAligner();
                 await tempAligner.Run(0);
 
@@ -257,7 +257,7 @@ namespace WLS3200Gen2.Model.Module
             {
                 WriteLog("LoadToMicroReadyPos Start");
 
-                await RobotAxis.MoveToAsync(Setting.AlignPos);
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                 await WaferAlignerToStandBy();
                 WriteLog("LoadToMicroReadyPos  End");
             });
@@ -267,12 +267,12 @@ namespace WLS3200Gen2.Model.Module
         /// wafer放進主設備
         /// </summary>
         /// <returns></returns>
-        public async Task<Wafer> LoadToMicroAsync()
+        public async Task<Wafer> LoadToMicroAsync(Wafer wafer)
         {
             //await WaferAlignerToStandBy();
             await Task.Run(async () =>
             {
-                await RobotAxis.MoveToAsync(Setting.MicroPos);
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
                 await Robot.PutWafer_Standby(ArmStation.Micro);
                 await Robot.PutWafer_GoIn(ArmStation.Micro);
                 await Robot.ReleaseWafer();
@@ -283,14 +283,14 @@ namespace WLS3200Gen2.Model.Module
             });
 
 
-            return processTempPre_Wafer;
+            return wafer;
         }
 
 
         public async Task MicroUnLoadToStandByAsync()
         {
             WriteLog("UnLoad Wafer Start ");
-            await RobotAxis.MoveAsync(Setting.MicroPos);
+            await RobotAxis.MoveAsync(machineSetting.RobotAxisMicroTakePosition);
             await WaferMicroToStandBy();
 
             WriteLog("UnLoad Wafer End ");
@@ -306,10 +306,11 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task LoadWaferFromCassette(int cassetteIndex)
         {
-            await RobotAxis.MoveToAsync(Setting.LoadPortPos);
+            await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPortTakePosition);
             await WaferLoadPortToStandBy(cassetteIndex, ArmStation.Cassette1);
-            //設定 Cassette內WAFER的狀態
-            Cassette.Wafers[cassetteIndex].ProcessStatus = WaferProcessStatus.InProgress;
+
+            //設定 Cassette內WAFER的狀態  
+            Cassette.Wafers[cassetteIndex].ProcessStatus.Totally = WaferProcessStatus.InProgress;
         }
 
         /// <summary>
@@ -319,9 +320,9 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task UnLoadWaferToCassette(Wafer wafer)
         {
-            await RobotAxis.MoveToAsync(Setting.LoadPortPos);
+            await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPortTakePosition);
             await WaferStandByToLoadPort(wafer.CassetteIndex, ArmStation.Cassette1);
-            wafer.ProcessStatus = WaferProcessStatus.Complate;
+            wafer.ProcessStatus.Totally = WaferProcessStatus.Complate;
             //設定 Cassette內WAFER的狀態
             Cassette.Wafers[wafer.CassetteIndex] = wafer;
         }
@@ -477,18 +478,20 @@ namespace WLS3200Gen2.Model.Module
 
 
 
-        public Cassette SlotMapping(ILoadPort loadPort)
+        public async Task<Cassette> SlotMapping(ILoadPort loadPort)
         {
             var cst = new Cassette();
             List<Wafer> wafers = new List<Wafer>();
+
+            await loadPort.Load();
             var slots = loadPort.Slot;
 
-            foreach (var slot in slots)
+            for (int i = 0; i < slots.Length; i++)
             {
 
-                if (slot.HasValue)
+                if (slots[i].HasValue)
                 {
-                    var wafer = new Wafer(0);
+                    var wafer = new Wafer(i + 1);
 
                     wafers.Add(wafer);
                 }
@@ -536,12 +539,5 @@ namespace WLS3200Gen2.Model.Module
         Inch12
     }
 
-    public class FeederSetting
-    {
-        public double LoadPortPos { get; set; } = 0;
-        public double AlignPos { get; set; } = 0;
-        public double MacroPos { get; set; } = 0;
-        public double MicroPos { get; set; } = 0;
-
-    }
+    
 }

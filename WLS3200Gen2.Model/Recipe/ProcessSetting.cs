@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Module;
+using YuanliCore.Data;
 using YuanliCore.Interface;
 
 namespace WLS3200Gen2.Model.Recipe
@@ -14,13 +15,23 @@ namespace WLS3200Gen2.Model.Recipe
     {
 
         public InchType Inch { get; set; }
+
+        /// <summary>
+        /// 使用 1號 Loadport
+        /// </summary>
+        public bool IsLoadport1 { get; set; }
+        /// <summary>
+        /// 使用 2號 Loadport
+        /// </summary>
+        public bool IsLoadport2 { get; set; }
         public bool AutoSave { get; set; }
 
         public bool RemoteDefectPoint { get; set; }
+
         /// <summary>
         /// 晶圓檢查站點
         /// </summary>
-        public ProcessStationAssign[] ProcessStation { get; set; }
+        public ProcessStation[] ProcessStation { get; set; }
 
         /// <summary>
         ///  讀取WAFER ID
@@ -32,7 +43,7 @@ namespace WLS3200Gen2.Model.Recipe
     }
 
 
-    public class ProcessStationAssign : INotifyPropertyChanged
+   /* public class ProcessStationAssign : INotifyPropertyChanged
     {
 
         private bool isMacroBack;
@@ -69,5 +80,5 @@ namespace WLS3200Gen2.Model.Recipe
         }
 
 
-    }
+    }*/
 }

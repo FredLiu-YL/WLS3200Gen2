@@ -60,10 +60,5 @@ namespace WLS3200Gen2.Model
     }
 
 
-    public enum MacroJudge
-    {
-        Pass,
-        Reject
-
-    }
+   
 }
