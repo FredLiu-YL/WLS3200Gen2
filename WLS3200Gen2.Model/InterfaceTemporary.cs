@@ -565,47 +565,54 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 準焦位置
         /// </summary>
-        Task<double> Aberration_Position();
+        Task<double> GetAberationPosition();
         /// <summary>
         /// 取得準焦軟體負極限
         /// </summary>
-        Task<int> GetAberationNEL();
+        Task<int> GetAFNEL();
         /// <summary>
         /// 設定準焦軟體負極限
         /// </summary>
-        Task SetAberationNEL(int position);
+        Task SetAFNEL(int position);
         /// <summary>
         /// 取得準焦軟體正極限
         /// </summary>
-        Task<int> GetAberationPEL();
+        Task<int> GetAFPEL();
         /// <summary>
         /// 設定準焦軟體正極限
         /// </summary>
-        Task SetAberationPEL(int position);
+        Task SetAFPEL(int position);
         /// <summary>
         /// 初始化
         /// </summary>
-        Task Initial();
+        void Initial();
         /// <summary>
-        /// 更換鏡頭
+        /// 更換鏡頭 idx=1~6(有5、6孔)
         /// </summary>
         /// <param name="idx"></param>
         Task ChangeLens(int idx);
         /// <summary>
-        /// 更換鏡片組
+        /// 更換鏡片組BF DF Other
         /// </summary>
         /// <param name="idx"></param>
         Task ChangeCube(int idx);
         /// <summary>
-        /// 更換光圈
+        /// 更換光圈 ApertureValue=0~3113
         /// </summary>
-        /// <param name="idx"></param>
-        Task ChangeAperture(int idx);
+        /// <param name="ApertureValue"></param>
+        /// <returns></returns>
+        Task ChangeAperture(int ApertureValue);
         /// <summary>
         /// 更換濾片
         /// </summary>
         /// <param name="idx"></param>
         Task ChangeFilter(int idx);
+        /// <summary>
+        /// 更換光亮度 LigntValue=0~120
+        /// </summary>
+        /// <param name="LigntValue"></param>
+        /// <returns></returns>
+        Task ChangeLight(int LigntValue);
         /// <summary>
         /// 更換光的發射方式 反射、透射
         /// </summary>

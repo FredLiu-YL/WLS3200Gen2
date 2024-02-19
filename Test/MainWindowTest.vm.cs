@@ -98,7 +98,9 @@ namespace Test
             try
             {
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                Micro = new BXUCB("COM1");
+                Micro = new BXUCB("COM24");
+                Micro.Initial();
+                MotionInit();
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
 
@@ -108,8 +110,6 @@ namespace Test
 
                 //Aligner = new HirataAligner_RS232("COM32");
                 //Aligner.Initial();
-
-                //MotionInit();
                 //if (LoadPort != null)
                 //{
                 //    LoadPortParam loadPortParam = new LoadPortParam();
@@ -168,8 +168,9 @@ namespace Test
                             AxisConfig axisXConfig = new AxisConfig();
                             axisXConfig.AxisName = "AxisX";
                             axisXConfig.AxisID = 0;
-                            axisXConfig.MoveVel = new VelocityParams(1000000, 0.5);
-                            axisXConfig.HomeVel = new VelocityParams(100000, 0.8);
+                            axisXConfig.Ratio = 10;
+                            axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
+                            axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
                             axisXConfig.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisXConfig);
                             break;
@@ -231,7 +232,8 @@ namespace Test
 
                 DigitalOutputs = motionController.OutputSignals.ToArray();
                 DigitalInputs = motionController.InputSignals.ToArray();
-                Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+
+                //Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
                 //MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
             }
             catch (Exception ex)
@@ -252,7 +254,7 @@ namespace Test
                         if (LoadPort != null)
                         {
                             LoadPortStatus loadPortStatus = new LoadPortStatus();
-                            loadPortStatus = LoadPort.GetStatus();
+                            loadPortStatus = await LoadPort.GetStatus();
                             LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
                             LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
                             LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
@@ -267,7 +269,7 @@ namespace Test
                         if (Aligner != null)
                         {
                             AlignerStatus alignerStatus = new AlignerStatus();
-                            alignerStatus = Aligner.GetStatus();
+                            alignerStatus = await Aligner.GetStatus();
                             AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
                             AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
                             AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
@@ -278,7 +280,7 @@ namespace Test
                         if (Robot != null)
                         {
                             RobotStatus robotStatus = new RobotStatus();
-                            robotStatus = Robot.GetStatus();
+                            robotStatus = await Robot.GetStatus();
                             RobotStaus.Mode = robotStatus.Mode;
                             RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
                             RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
@@ -319,10 +321,7 @@ namespace Test
                     if (LoadPort != null)
                     {
                         LoadPortParam loadPortParam = new LoadPortParam();
-                        await Task.Run(() =>
-                        {
-                            loadPortParam = LoadPort.GetParam();
-                        });
+                        loadPortParam = await LoadPort.GetParam();
                         LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
                         LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
                         LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
@@ -355,8 +354,24 @@ namespace Test
                 //Micro.Aberration_PositionPEL = 780000;
                 //Micro.Aberration_PositionNEL = 350000;
 
-                await Micro.ZMoveCommand(100);
-                await Micro.AberrationMoveCommand(100);
+
+                await Micro.ChangeLens(1);
+
+                await Micro.ChangeLight(65);
+
+                await Micro.ChangeAperture(500);
+
+                double zNow = await Micro.GetZPosition();
+
+                double aberationNow = await Micro.GetAFNEL();
+
+
+
+                aberationNow = 0;
+                //await Micro.ZMoveCommand(100);
+                //await Micro.AberrationMoveCommand(100);
+
+
                 //Micro.AberrationMoveToCommand(550);//550~790
 
                 //motionController.SetOutputCommand(0, true);

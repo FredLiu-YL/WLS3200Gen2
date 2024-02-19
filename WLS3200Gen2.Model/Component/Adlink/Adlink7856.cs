@@ -124,6 +124,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                     axeslimitN.Add(axisInfosArray[i].LimitNEL);
                     axeslimitP.Add(axisInfosArray[i].LimitPEL);
 
+                    axes[i].Ratio = axisInfosArray[i].Ratio;
                     axes[i].HomeVelocity = axisInfosArray[i].HomeVel;
                     axes[i].HomeMode = axisInfosArray[i].HomeMode;
                     axes[i].HomeDirection = axisInfosArray[i].HomeDirection;

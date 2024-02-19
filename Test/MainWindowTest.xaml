@@ -58,9 +58,9 @@
             <!--<Button    Command="{Binding OpenCCommand}"    />-->
             <UserControlUC:LoadPortUnitUC Grid.Column="0" Grid.Row="1"  LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" />
             <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
-            <!--<GroupBox Header="Output" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1">
+            <GroupBox Header="Output" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1">
                 <UserControlUC:DigitalOutputUC OutputSignals="{Binding DigitalOutputs }"  />
-            </GroupBox>-->
+            </GroupBox>
             <UserControlUC:RobotUnitUC Width="450" Height="450" Grid.Column="3" Grid.Row="1" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }"   />
             <!--<GroupBox Header="Input" Grid.Column="3" Grid.Row="1" >
                 -->
@@ -71,7 +71,7 @@
             <CheckBox IsChecked="{Binding OutputSwitchs[0]}"  Grid.Column="1"  Grid.Row="3" />
             <Button Grid.Column="1"  Command="{Binding OutputSwitchCommand}"  Grid.Row="1"/>
 
-            <ViewControlUC:WaferMappingCanvas  Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top"  HorizontalAlignment="Left"   Width="650" Height="650"  ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
+            <!--<ViewControlUC:WaferMappingCanvas  Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top"  HorizontalAlignment="Left"   Width="650" Height="650"  ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
                             MousePixcel="{Binding MappingMousePixel}"    RemoveShapeAction="{Binding RemoveShapeMappingAction}"  AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
                                      
                          IsShowBar="True"     >
@@ -80,7 +80,7 @@
                         <i:InvokeCommandAction Command="{Binding MappingPreviewMouseUpCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-            </ViewControlUC:WaferMappingCanvas>
+            </ViewControlUC:WaferMappingCanvas>-->
             
             <UserControlUC:MacroUnitUC Grid.Column="3" Grid.Row="2" Margin="0,0,0,0" VerticalAlignment="Top" Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
 
