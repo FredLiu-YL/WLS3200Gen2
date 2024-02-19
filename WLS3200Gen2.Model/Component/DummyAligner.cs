@@ -23,8 +23,9 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public void Home()
+        public Task Home()
         {
+            return Task.CompletedTask;
         }
 
         public void Initial()
@@ -41,9 +42,6 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        Task IAligner.Home()
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

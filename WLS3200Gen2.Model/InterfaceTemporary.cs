@@ -82,6 +82,7 @@ namespace WLS3200Gen2.Model
     }
     public interface ILoadPort
     {
+
         /// <summary>
         /// null:沒片子 true:有片子 false:片子異常
         /// </summary>
@@ -96,6 +97,8 @@ namespace WLS3200Gen2.Model
         /// </summary>
         /// <returns></returns>
         Task<LoadPortParam> GetParam();
+
+
         /// <summary>
         /// 初始化
         /// </summary>

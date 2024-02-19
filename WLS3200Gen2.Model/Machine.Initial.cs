@@ -82,7 +82,7 @@ namespace WLS3200Gen2.Model
         {
             try
             {
-                Task feedHome = Feeder.Home();
+               Task feedHome = Feeder.Home();
                 await Task.Delay(500); //先暫停500ms 避免判定還沒出現就過了 WaitEFEMonSafe
                 await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
                 Task microHome = MicroDetection.Home();
