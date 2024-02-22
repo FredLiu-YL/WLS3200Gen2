@@ -69,7 +69,20 @@
             </GroupBox>-->
             <motion:AxisMotionUC Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="0" Axis="{Binding TableX }"  AxisSetConfig="{Binding TableXConfig }" Margin="0,0,0,0" Grid.RowSpan="1"     />
             <CheckBox IsChecked="{Binding OutputSwitchs[0]}"  Grid.Column="1"  Grid.Row="3" />
-            <Button Grid.Column="1"  Command="{Binding OutputSwitchCommand}"  Grid.Row="1"/>
+
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.RowDefinitions >
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Content="Test" Command="{Binding OutputSwitchCommand}" CommandParameter="btn0" IsEnabled="{Binding IsOutputSwitchEnable}"/>
+                <TextBox Grid.Row="1" VerticalAlignment="Center" FontSize="25" Width="150" Text="{Binding NowPos}" IsEnabled="{Binding IsOutputSwitchEnable}"/>
+                <Button Grid.Row="2" Content="Up" Command="{Binding OutputSwitchCommand}" CommandParameter="btn1" IsEnabled="{Binding IsOutputSwitchEnable}"/>
+                <Button Grid.Row="3" Content="Down" Command="{Binding OutputSwitchCommand}" CommandParameter="btn2" IsEnabled="{Binding IsOutputSwitchEnable}"/>
+            </Grid>
+
 
             <!--<ViewControlUC:WaferMappingCanvas  Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top"  HorizontalAlignment="Left"   Width="650" Height="650"  ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
                             MousePixcel="{Binding MappingMousePixel}"    RemoveShapeAction="{Binding RemoveShapeMappingAction}"  AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
@@ -81,7 +94,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ViewControlUC:WaferMappingCanvas>-->
-            
+
             <UserControlUC:MacroUnitUC Grid.Column="3" Grid.Row="2" Margin="0,0,0,0" VerticalAlignment="Top" Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
 
         </Grid>

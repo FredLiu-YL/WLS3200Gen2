@@ -46,9 +46,10 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        private double z_PositionNEL = 0;
+        //private double z_PositionNEL = 0;
 
-        private double z_PositionPEL = 0;
+        //private double z_PositionPEL = 0;
+
         //public double Z_PositionNEL
         //{
         //    get => z_PositionNEL;
@@ -77,11 +78,11 @@ namespace WLS3200Gen2.Model.Component
                     List<string> str = new List<string>();
                     if (distance > 0)
                     {
-                        str = SendGetMessage("2AMOV N," + distance, "AMOV");
+                        str = SendGetMessage("2AMOV N," + Math.Abs(distance), "AMOV");
                     }
                     else
                     {
-                        str = SendGetMessage("2AMOV F," + distance, "AMOV");
+                        str = SendGetMessage("2AMOV F," + Math.Abs(distance), "AMOV");
                     }
                     bool isOK = false;
                     string errorStr = "";
@@ -124,11 +125,11 @@ namespace WLS3200Gen2.Model.Component
                     List<string> str = new List<string>();
                     if (distance > 0)
                     {
-                        str = SendGetMessage("2AMOV N," + distance, "AMOV");
+                        str = SendGetMessage("2AMOV N," + Math.Abs(distance), "AMOV");
                     }
                     else
                     {
-                        str = SendGetMessage("2AMOV F," + distance, "AMOV");
+                        str = SendGetMessage("2AMOV F," + Math.Abs(distance), "AMOV");
                     }
                     bool isOK = false;
                     string errorStr = "";
@@ -225,7 +226,7 @@ namespace WLS3200Gen2.Model.Component
                     }
                     if (isOK == false)
                     {
-                        throw new Exception("BXUCB AF_Off Error:" + errorStr);
+                        throw new Exception("BXUCB AF_OneShot Error:" + errorStr);
                     }
                 });
             }
@@ -263,7 +264,7 @@ namespace WLS3200Gen2.Model.Component
                     }
                     if (isOK == false)
                     {
-                        throw new Exception("BXUCB AF_Off Error:" + errorStr);
+                        throw new Exception("BXUCB AF_Trace Error:" + errorStr);
                     }
                 });
             }
@@ -542,6 +543,8 @@ namespace WLS3200Gen2.Model.Component
                     await AF_Off();
                     List<string> str = new List<string>();
                     double setZPEL = FirstZPos + Range;
+                    double z_PositionPEL = await GetZPEL();
+                    double z_PositionNEL = await GetZNEL();
                     if (FirstZPos + Range >= z_PositionPEL)
                     {
                         setZPEL = z_PositionPEL;
@@ -551,8 +554,8 @@ namespace WLS3200Gen2.Model.Component
                     {
                         setZNEL = z_PositionNEL;
                     }
-                    await SetAFPEL(Convert.ToInt32(setZPEL));
-                    await SetAFNEL(Convert.ToInt32(setZNEL));
+                    await SetAFPEL(Convert.ToInt32(setZPEL));//710000
+                    await SetAFNEL(Convert.ToInt32(setZNEL));//350000
                 });
             }
             catch (Exception ex)
@@ -570,11 +573,11 @@ namespace WLS3200Gen2.Model.Component
                    List<string> str = new List<string>();
                    if (distance > 0)
                    {
-                       str = SendGetMessage("2MOV N," + distance, "MOV");
+                       str = SendGetMessage("2MOV N," + Math.Abs(distance), "MOV");
                    }
                    else
                    {
-                       str = SendGetMessage("2MOV F," + distance, "MOV");
+                       str = SendGetMessage("2MOV F," + Math.Abs(distance), "MOV");
                    }
                    bool isOK = false;
                    string errorStr = "";
@@ -612,16 +615,16 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                 {
-                    double nowPos = await GetAberationPosition();
+                    double nowPos = await GetZPosition();
                     double distance = position - nowPos;
                     List<string> str = new List<string>();
                     if (distance > 0)
                     {
-                        str = SendGetMessage("2MOV N," + distance, "MOV");
+                        str = SendGetMessage("2MOV N," + Math.Abs(distance), "MOV");
                     }
                     else
                     {
-                        str = SendGetMessage("2MOV F," + distance, "MOV");
+                        str = SendGetMessage("2MOV F," + Math.Abs(distance), "MOV");
                     }
                     bool isOK = false;
                     string errorStr = "";
@@ -732,11 +735,39 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public double GetZNEL()
+        public Task<double> GetZNEL()
         {
             try
             {
-                return z_PositionNEL;
+                return Task.Run(() =>
+                {
+                    List<string> str = new List<string>();
+                    str = SendGetMessage("2FARLMT?", "FARLMT");
+                    bool isOK = false;
+                    string errorStr = "";
+                    double nowPos = 0;
+                    foreach (var item in str)
+                    {
+                        if (item.Contains("2FARLMT"))
+                        {
+                            if (item.Contains("!"))
+                            {
+                                errorStr = item.Replace("2FARLMT !,", "");
+                                break;
+                            }
+                            else
+                            {
+                                isOK = true;
+                                nowPos = Convert.ToDouble(item.Replace("2FARLMT ", ""));
+                            }
+                        }
+                    }
+                    if (isOK == false)
+                    {
+                        throw new Exception("BXUCB GetZNEL Error:" + errorStr);
+                    }
+                    return nowPos;
+                });
             }
             catch (Exception ex)
             {
@@ -752,7 +783,7 @@ namespace WLS3200Gen2.Model.Component
                {
                    List<string> str = new List<string>();
                    str = SendGetMessage("2FARLMT " + position, "FARLMT");
-                   z_PositionNEL = position;
+                   //z_PositionNEL = position;
                    bool isOK = false;
                    string errorStr = "";
                    foreach (var item in str)
@@ -783,11 +814,39 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public double GetZPEL()
+        public Task<double> GetZPEL()
         {
             try
             {
-                return z_PositionPEL;
+                return Task.Run(() =>
+                {
+                    List<string> str = new List<string>();
+                    str = SendGetMessage("2NEARLMT?", "NEARLMT");
+                    bool isOK = false;
+                    string errorStr = "";
+                    double nowPos = 0;
+                    foreach (var item in str)
+                    {
+                        if (item.Contains("2NEARLMT"))
+                        {
+                            if (item.Contains("!"))
+                            {
+                                errorStr = item.Replace("2NEARLMT !,", "");
+                                break;
+                            }
+                            else
+                            {
+                                isOK = true;
+                                nowPos = Convert.ToDouble(item.Replace("2NEARLMT ", ""));
+                            }
+                        }
+                    }
+                    if (isOK == false)
+                    {
+                        throw new Exception("BXUCB GetZPEL Error:" + errorStr);
+                    }
+                    return nowPos;
+                });
             }
             catch (Exception ex)
             {
@@ -803,7 +862,7 @@ namespace WLS3200Gen2.Model.Component
                {
                    List<string> str = new List<string>();
                    str = SendGetMessage("2NEARLMT " + position, "NEARLMT");
-                   z_PositionPEL = position;
+                   //z_PositionPEL = position;
                    bool isOK = false;
                    string errorStr = "";
                    foreach (var item in str)
@@ -865,12 +924,12 @@ namespace WLS3200Gen2.Model.Component
                 return Task.Run(() =>
                {
                    List<string> str = new List<string>();
-                   str = SendGetMessage("2AFNLMT " + position, "AFNLMT");
+                   str = SendGetMessage("2AFFLMT " + position, "AFFLMT");
                    bool isOK = false;
                    string errorStr = "";
                    foreach (var item in str)
                    {
-                       if (item.Contains("AFNLMT"))
+                       if (item.Contains("AFFLMT"))
                        {
                            if (item.Contains("+"))
                            {
@@ -878,7 +937,7 @@ namespace WLS3200Gen2.Model.Component
                            }
                            if (item.Contains("!"))
                            {
-                               errorStr = item.Replace("2AFNLMT !,", "");
+                               errorStr = item.Replace("2AFFLMT !,", "");
                                break;
                            }
                        }

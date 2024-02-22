@@ -556,7 +556,7 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 取得Z軟體負極限
         /// </summary>
-        double GetZNEL();
+        Task<double> GetZNEL();
         /// <summary>
         /// Z軟體正極限
         /// </summary>
@@ -564,7 +564,7 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// 取得Z軟體正極限
         /// </summary>
-        double GetZPEL();
+        Task<double> GetZPEL();
         /// <summary>
         /// 準焦位置
         /// </summary>

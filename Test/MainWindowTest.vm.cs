@@ -64,7 +64,7 @@ namespace Test
 
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
 
-         
+
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 
@@ -93,6 +93,12 @@ namespace Test
         public ICommand ClearShapeMappingAction { get; set; }
         public ICommand RemoveShapeMappingAction { get; set; }
 
+        private double nowPos;
+        public double NowPos { get => nowPos; set => SetValue(ref nowPos, value); }
+
+        private bool isOutputSwitchEnable = true;
+        public bool IsOutputSwitchEnable { get => isOutputSwitchEnable; set => SetValue(ref isOutputSwitchEnable, value); }
+
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
             try
@@ -100,7 +106,7 @@ namespace Test
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 Micro = new BXUCB("COM24");
                 Micro.Initial();
-                MotionInit();
+                //MotionInit();
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
 
@@ -121,8 +127,8 @@ namespace Test
                 //    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
                 //    isRefresh = true;
                 //}
-                //taskRefresh1 = Task.Run(RefreshStatus);
-
+                taskRefresh1 = Task.Run(RefreshStatus);
+                isRefresh = true;
 
                 ////Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
             }
@@ -295,7 +301,10 @@ namespace Test
                             //RobotUIIShow
                         }
 
-
+                        if (Micro != null)
+                        {
+                            NowPos = await Micro.GetZPosition();
+                        }
 
                         await Task.Delay(300);
                     }
@@ -344,97 +353,116 @@ namespace Test
 
 
 
-
-        public ICommand OutputSwitchCommand => new RelayCommand<string>(async (par) =>
+        private bool isFirst = true;
+        public ICommand OutputSwitchCommand => new RelayCommand<string>(async key =>
         {
             try
             {
-                //Micro.Z_PositionPEL = 851110;
-                //Micro.Z_PositionNEL = 1;
-                //Micro.Aberration_PositionPEL = 780000;
-                //Micro.Aberration_PositionNEL = 350000;
+                IsOutputSwitchEnable = false;
+                switch (key)
+                {
+                    case "btn1":
+                        await Micro.ZMoveCommand(1000);
+                        break;
+                    case "btn2":
+                        await Micro.ZMoveToCommand(10);
+                        break;
+                    case "btn0":
+                        double aberationNow = 0;
+                        if (isFirst)
+                        {
+                            await Micro.ChangeLight(65);
+
+                            await Micro.ChangeAperture(500);
+
+                            double zNow = await Micro.GetAFPEL();
+
+                            aberationNow = await Micro.GetAFNEL();
+
+                            await Micro.SetSearchRange(585827, 5000);
+                            isFirst = false;
+                        }
 
 
-                await Micro.ChangeLens(1);
-
-                await Micro.ChangeLight(65);
-
-                await Micro.ChangeAperture(500);
-
-                double zNow = await Micro.GetZPosition();
-
-                double aberationNow = await Micro.GetAFNEL();
+                        await Micro.AF_OneShot();
 
 
-
-                aberationNow = 0;
-                //await Micro.ZMoveCommand(100);
-                //await Micro.AberrationMoveCommand(100);
-
-
-                //Micro.AberrationMoveToCommand(550);//550~790
-
-                //motionController.SetOutputCommand(0, true);
-
-                //if (OutputSwitchs[0] == false)
-                //{
-                //    OutputSwitchs[0] = true;
-                //}
-                //else
-                //{
-                //    OutputSwitchs[0] = false;
-                //}
+                        //Micro.Z_PositionPEL = 851110;
+                        //Micro.Z_PositionNEL = 1;
+                        //Micro.Aberration_PositionPEL = 780000;
+                        //Micro.Aberration_PositionNEL = 350000;
+                        //await Micro.ZMoveCommand(100);
+                        //await Micro.AberrationMoveCommand(100);
 
 
-                //string SINF_Path = "";
-                //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
-                //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
-                //dlg_image.InitialDirectory = SINF_Path;
-                //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                //{
-                //    SINF_Path = dlg_image.FileName;
-                //    if (SINF_Path != "")
-                //    {
-                //        var m_Sinf = new SinfWaferMapping("");
-                //        m_Sinf.ReadWaferFile(SINF_Path);
+                        //Micro.AberrationMoveToCommand(550);//550~790
 
-                //    }
-                //}
-                //else
-                //{
-                //    SINF_Path = "";
-                //}
+                        //motionController.SetOutputCommand(0, true);
+
+                        //if (OutputSwitchs[0] == false)
+                        //{
+                        //    OutputSwitchs[0] = true;
+                        //}
+                        //else
+                        //{
+                        //    OutputSwitchs[0] = false;
+                        //}
+
+
+                        //string SINF_Path = "";
+                        //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+                        //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+                        //dlg_image.InitialDirectory = SINF_Path;
+                        //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        //{
+                        //    SINF_Path = dlg_image.FileName;
+                        //    if (SINF_Path != "")
+                        //    {
+                        //        var m_Sinf = new SinfWaferMapping("");
+                        //        m_Sinf.ReadWaferFile(SINF_Path);
+
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    SINF_Path = "";
+                        //}
 
 
 
-                //cc.Dies;
+                        //cc.Dies;
 
 
-                //bool ss = true;
-                //if (ss)
-                //{
-                //    AddShapeMappingAction.Execute(new ROICircle
-                //    {
-                //        Stroke = Brushes.Yellow,
-                //        //StrokeThickness = this.StrokeThickness,
-                //        Fill = Brushes.Transparent,//Brushes.Blue,
-                //        X = 1000,
-                //        Y = 1000,
-                //        Radius = 1000,
-                //        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
-                //        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
-                //        IsInteractived = true,
-                //        IsMoveEnabled = false,
-                //        IsResizeEnabled = false,
-                //        IsRotateEnabled = false,
-                //        CenterCrossLength = 0,
-                //        ToolTip = "Circle"
-                //    });
-                //}
-                //else
-                //{
-                //    ClearShapeMappingAction.Execute(true);
-                //}
+                        //bool ss = true;
+                        //if (ss)
+                        //{
+                        //    AddShapeMappingAction.Execute(new ROICircle
+                        //    {
+                        //        Stroke = Brushes.Yellow,
+                        //        //StrokeThickness = this.StrokeThickness,
+                        //        Fill = Brushes.Transparent,//Brushes.Blue,
+                        //        X = 1000,
+                        //        Y = 1000,
+                        //        Radius = 1000,
+                        //        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
+                        //        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
+                        //        IsInteractived = true,
+                        //        IsMoveEnabled = false,
+                        //        IsResizeEnabled = false,
+                        //        IsRotateEnabled = false,
+                        //        CenterCrossLength = 0,
+                        //        ToolTip = "Circle"
+                        //    });
+                        //}
+                        //else
+                        //{
+                        //    ClearShapeMappingAction.Execute(true);
+                        //}
+                        break;
+                    default:
+                        break;
+                }
+
 
             }
             catch (Exception ex)
@@ -444,6 +472,7 @@ namespace Test
             }
             finally
             {
+                IsOutputSwitchEnable = true;
             }
         });
 
