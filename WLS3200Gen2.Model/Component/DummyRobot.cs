@@ -171,5 +171,10 @@ namespace WLS3200Gen2.Model.Component
         {
             return Task.CompletedTask;
         }
+
+        void IRobot.Initial()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

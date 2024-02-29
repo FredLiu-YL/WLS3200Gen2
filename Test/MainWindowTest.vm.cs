@@ -18,6 +18,8 @@ using WLS3200Gen2.Model.Module;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Interface;
+using YuanliCore.Model.Interface;
+using YuanliCore.Model.Microscope;
 using YuanliCore.Motion;
 using YuanliCore.Views.CanvasShapes;
 
@@ -31,7 +33,7 @@ namespace Test
         private IAligner aligner;
         private IMacro macro;
         private IRobot robot;
-        private IMicroScope micro;
+        private IMicroscope micro;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
         private AxisConfig tableXConfig;
@@ -51,6 +53,8 @@ namespace Test
 
         private RobotUI robotStaus = new RobotUI();
 
+        private BXFMUI bXFMUIShow = new BXFMUI();
+
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
@@ -69,7 +73,9 @@ namespace Test
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 
 
-        public IMicroScope Micro { get => micro; set => SetValue(ref micro, value); }
+        public IMicroscope Micro { get => micro; set => SetValue(ref micro, value); }
+
+        public BXFMUI BXFMUIShow { get => bXFMUIShow; set => SetValue(ref bXFMUIShow, value); }
         //////////////////////////////////
         private WriteableBitmap mappingImage;
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
@@ -106,7 +112,8 @@ namespace Test
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 Micro = new BXUCB("COM24");
                 Micro.Initial();
-                //MotionInit();
+
+                MotionInit();
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
 
@@ -173,7 +180,7 @@ namespace Test
                         case 0:
                             AxisConfig axisXConfig = new AxisConfig();
                             axisXConfig.AxisName = "AxisX";
-                            axisXConfig.AxisID = 0;
+                            axisXConfig.AxisID = 1500;
                             axisXConfig.Ratio = 10;
                             axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
                             axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
@@ -183,16 +190,18 @@ namespace Test
                         case 1:
                             AxisConfig axisYConfig = new AxisConfig();
                             axisYConfig.AxisName = "AxisY";
-                            axisYConfig.AxisID = 1;
-                            axisYConfig.MoveVel = new VelocityParams(1000000, 0.5);
-                            axisYConfig.HomeVel = new VelocityParams(100000, 0.5);
+                            axisYConfig.AxisID = 1501;
+                            axisYConfig.Ratio = 10;
+                            axisYConfig.MoveVel = new VelocityParams(100000, 0.5);
+                            axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
                             axisYConfig.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisYConfig);
                             break;
                         case 2:
                             AxisConfig axisZInfo = new AxisConfig();
                             axisZInfo.AxisName = "AxisZ";
-                            axisZInfo.AxisID = 2;
+                            axisZInfo.AxisID = 1502;
+                            axisZInfo.Ratio = 1;
                             axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
                             axisZInfo.HomeVel = new VelocityParams(50000, 0.5);
                             axisZInfo.HomeMode = HomeModes.EL;
@@ -202,7 +211,7 @@ namespace Test
                         case 3:
                             AxisConfig axisRInfo = new AxisConfig();
                             axisRInfo.AxisName = "AxisR";
-                            axisRInfo.AxisID = 3;
+                            axisRInfo.AxisID = 1503;
                             axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
                             axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
                             axisRInfo.HomeMode = HomeModes.ORG;
@@ -212,9 +221,10 @@ namespace Test
                         case 4:
                             AxisConfig axisRobotInfo = new AxisConfig();
                             axisRobotInfo.AxisName = "RobotAxis";
-                            axisRobotInfo.AxisID = 4;
-                            axisRobotInfo.MoveVel = new VelocityParams(3000000, 0.2);
-                            axisRobotInfo.HomeVel = new VelocityParams(300000, 0.2);
+                            axisRobotInfo.AxisID = 1504;
+                            axisRobotInfo.Ratio = 10;
+                            axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
+                            axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);
                             axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisRobotInfo);
                             break;
@@ -304,6 +314,9 @@ namespace Test
                         if (Micro != null)
                         {
                             NowPos = await Micro.GetZPosition();
+                            BXFMUIShow.FocusZ = Convert.ToInt32(nowPos);
+                            BXFMUIShow.ApertureValue = Micro.ApertureValue;
+                            BXFMUIShow.LightValue = Micro.LightValue;
                         }
 
                         await Task.Delay(300);

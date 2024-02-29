@@ -66,19 +66,16 @@ namespace WLS3200Gen2.Model.Component
         public double MoveTolerance { get; private set; } = 0;
         public double CassetteWaferPitch { get; set; } = 0;
         public int SpeedPercent { get; private set; } = 10;
-        public Task Initial()
+        public void Initial()
         {
             try
             {
-                return Task.Run(() =>
-               {
-                   Open();
-                   int motionPercent = this.SpeedPercent;
-                   if (motionPercent <= 0) { motionPercent = 0; }
-                   if (motionPercent >= 100) { motionPercent = 100; }
-                   this.SpeedPercent = motionPercent;
-                   SetMovSpeed(motionPercent, motionPercent);
-               });
+                Open();
+                int motionPercent = this.SpeedPercent;
+                if (motionPercent <= 0) { motionPercent = 0; }
+                if (motionPercent >= 100) { motionPercent = 100; }
+                this.SpeedPercent = motionPercent;
+                SetMovSpeed(motionPercent, motionPercent);
             }
             catch (Exception ex)
             {

@@ -45,7 +45,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
         /// <summary>
         /// 各自軸實際動作編號
         /// </summary>
-        private int[] axisRealID;
+        //private int[] axisRealID;
 
         /// <summary>
         /// 各自軸卡的Input點位
@@ -80,16 +80,16 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 axeslimitP = new List<double>();
                 totalAxis = new int[2];
                 startAxis = new int[2];
-                axisRealID = new int[5];
+                //axisRealID = new int[5];
                 totalAxis[0] = 4;
                 totalAxis[1] = 4;
                 startAxis[0] = 1500;
                 startAxis[1] = 1504;
-                axisRealID[0] = 1500;
-                axisRealID[1] = 1501;
-                axisRealID[2] = 1502;
-                axisRealID[3] = 1503;
-                axisRealID[4] = 1504;
+                //axisRealID[0] = 1500;
+                //axisRealID[1] = 1501;
+                //axisRealID[2] = 1502;
+                //axisRealID[3] = 1503;
+                //axisRealID[4] = 1504;
 
                 totalInput = new int[2];
                 totalInput[0] = 16;
@@ -265,7 +265,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             {
                 ChkAxisStop(id, 180);
                 //int pos = (int)(Axes[id].Position + distance * Axes[id].Ratio);
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 int ret = APS168Lib.APS_relative_move(axisID, (int)(distance * Axes[id].Ratio), (int)(Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio));
                 if (ret == 0)
                 {
@@ -285,7 +285,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             try
             {
                 ChkAxisStop(id, 180);
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 int ret = APS168Lib.APS_absolute_move(axisID, (int)(position * Axes[id].Ratio), (int)(Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio));
                 if (ret == 0)
                 {
@@ -307,7 +307,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 double decTime = Axes[id].AxisVelocity.DecelerationTime;
                 double maxVelocity = Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio;
                 int dec = (int)(maxVelocity / decTime);
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 ret = APS168Lib.APS_set_axis_param(axisID, (int)APS_Define.PRA_STP_DEC, dec);
                 ret = APS168Lib.APS_stop_move(axisID);
                 if (ret == eRR_NoError)
@@ -344,7 +344,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             {
                 int ret;
                 double enr = 0;
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 ret = APS168Lib.APS_get_position_f(axisID, ref enr);
                 if (ret == eRR_NoError)
                 {
@@ -364,7 +364,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             {
                 AxisSensor axisSensor = new AxisSensor();
                 AxisInfo axisInfo = new AxisInfo();
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 axisInfo = ChkAxisStatus(id);
                 if (axisInfo.IO.OriginSwitch == enumMotionFlag.eHigh)
                 {
@@ -405,7 +405,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 int homeDir = 0;
                 int homeEz = 0;
                 bool homeOk = false;
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 if (Axes[id].HomeMode == HomeModes.ORG)
                 {
                     homeMode = 9;
@@ -509,7 +509,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 double maxVelocity = Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio;
                 int dec = (int)(maxVelocity / Axes[id].AxisVelocity.DecelerationTime);
                 int acc = (int)(maxVelocity / Axes[id].AxisVelocity.AccelerationTime);
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 ret = APS168Lib.APS_set_axis_param(axisID, (int)APS_Define.PRA_ACC, dec);
                 ret = APS168Lib.APS_set_axis_param(axisID, (int)APS_Define.PRA_DEC, dec);
                 ret = APS168Lib.APS_set_axis_param(axisID, (int)APS_Define.PRA_VS, 0);
@@ -857,7 +857,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 int IOState;
 
                 AxisInfo axisInfo = new AxisInfo(); //= m_Axis[AxisID];
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 axisInfo.AxisID = axisID;
                 axisInfo.ErrMessage = "";
                 IOState = APS168Lib.APS_motion_io_status(axisInfo.AxisID);
@@ -1018,7 +1018,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             try
             {
                 int ret = 0;
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 ret = APS168Lib.APS_set_command_f(axisID, offset * Axes[id].Ratio);
                 ret = APS168Lib.APS_set_position_f(axisID, offset * Axes[id].Ratio);
                 ret = APS168Lib.APS_set_command_f(axisID, offset * Axes[id].Ratio);
@@ -1041,7 +1041,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             {
                 int ret = 0;
                 int servoOn = 1;
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 ret = APS168Lib.APS_set_servo_on(axisID, servoOn);
                 if (ret == 0)
                 {
@@ -1064,7 +1064,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
             {
                 int ret = 0;
                 int servoOff = 0;
-                int axisID = axisRealID[Axes[id].AxisID];
+                int axisID = Axes[id].AxisID;
                 ret = APS168Lib.APS_set_servo_on(axisID, servoOff);
                 if (ret == 0)
                 {
@@ -1128,6 +1128,10 @@ namespace WLS3200Gen2.Model.Component.Adlink
 
         }
 
+        public void ResetAlarmCommand()
+        {
+            throw new NotImplementedException();
+        }
 
         private class AxisInfo
         {

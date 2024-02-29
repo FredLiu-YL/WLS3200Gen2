@@ -57,7 +57,7 @@ namespace WLS3200Gen2
                 machineSetting.Save(machineSettingPath);
             }
 
-            MachineSetting processSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
+            MachineSetting processSetting = AbstractRecipe.Load< MachineSetting>(machineSettingPath);
          
             
             machine = new Machine(isSimulate, machineSetting);

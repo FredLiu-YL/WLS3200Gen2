@@ -21,7 +21,7 @@ namespace WLS3200Gen2.Model.Module
 {
     public class MicroDetection
     {
- 
+
         private PauseTokenSource pauseToken;
         private CancellationTokenSource cancelToken;
         private Subject<(BitmapSource, bool)> subject = new Subject<(BitmapSource, bool)>();
@@ -29,11 +29,11 @@ namespace WLS3200Gen2.Model.Module
 
 
         private OpticalAlignment opticalAlignment;
-       
+
 
         public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs)
         {
-        
+
             this.Microscope = microscope;
             AxisX = axes[0];
             AxisY = axes[1];
@@ -77,7 +77,9 @@ namespace WLS3200Gen2.Model.Module
 
                 Task axisRHome = AxisR.HomeAsync();
 
-                await Task.WhenAll(axisXHome, axisYHome, axisRHome);
+                Task microscopeHome1 = Microscope.Home();
+
+                await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
             }
             catch (Exception ex)
             {
@@ -105,7 +107,7 @@ namespace WLS3200Gen2.Model.Module
 
                 throw ex;
             }
-          
+
 
             //如果有lift 或夾持機構 需要做處理
 
@@ -144,12 +146,12 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment.CancelToken = cancelToken;
             opticalAlignment.PauseToken = pauseToken;
 
-         
+
             //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
             ITransform transForm = await Alignment(recipe.AlignRecipe);
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-  
+
             //每一個座標需要檢查的座標
             foreach (DetectionPoint point in recipe.DetectionPoints)
             {
@@ -219,7 +221,7 @@ namespace WLS3200Gen2.Model.Module
 
         public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
         {
-           return await  opticalAlignment.FindFiducial(image,  currentPosX,  currentPosY);
+            return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY);
 
         }
 

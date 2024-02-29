@@ -33,7 +33,7 @@ namespace WLS3200Gen2.Model.Component
           return  Task.CompletedTask;
         }
 
-        public Task HomeAllRing()
+        public Task Home()
         {
             return Task.CompletedTask;
         }

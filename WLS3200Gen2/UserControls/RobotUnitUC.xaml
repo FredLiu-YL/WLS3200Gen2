@@ -28,7 +28,7 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.RowSpan="7" BorderBrush="Black" BorderThickness="1"/>
-            <TextBlock Grid.Row="0" FontSize="18"  Text="Test"    Background="Azure" />
+            <TextBlock Grid.Row="0" FontSize="18"  Text="Test" Background="Azure" />
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button  Margin="2"  Content="Home" Width="250" Command="{Binding RobotMove}" CommandParameter="0" IsEnabled="{Binding IsRobotEnabled}" />
             </StackPanel>

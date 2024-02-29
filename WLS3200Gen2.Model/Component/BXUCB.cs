@@ -6,14 +6,24 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using YuanliCore.Model.Interface;
 
 namespace WLS3200Gen2.Model.Component
 {
-    public class BXUCB : IMicroScope
+    public class BXUCB : IMicroscope
     {
         private readonly object lockObj = new object();
         private SerialPort serialPort = new SerialPort();
         private string Microscope_Terminator;
+        private int apertureValue = -1;
+        private double cubeIdx = -1;
+        private int[] filterWheelIdx = new int[] { -1, -1, -1 };
+        private int lens = -1;
+        private int lightValue = -1;
+        private int lightSpreadIdx = -1;
+
+        public int LightValue { get => lightValue; set => ChangeLight(value).Wait(); }
+        public int ApertureValue { get => apertureValue; set => ChangeAperture(value).Wait(); }
         public BXUCB(string comPort)
         {
             try
@@ -46,6 +56,42 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public Task Home()
+        {
+            try
+            {
+                return Task.Run(async () =>
+               {
+                   await ZMoveToCommand(1);
+                   await ChangeLens(1);
+                   await ChangeAperture(0);
+                   await ChangeLight(0);
+                   await ChangeFilter(1, 1);
+                   await ChangeFilter(2, 1);
+               });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+        //public double ApertureValue
+        //{
+        //    get => apertureValue;
+        //    set
+        //    {
+        //        if (apertureValue != value)
+        //        {
+        //            await ChangeAperture(value);
+        //        }
+        //        apertureValue = value;
+        //    }
+        //}
+
+
         //private double z_PositionNEL = 0;
 
         //private double z_PositionPEL = 0;
@@ -281,28 +327,32 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("1EAS " + ApertureValue, "EAS");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    if (apertureValue != ApertureValue)
                     {
-                        if (item.Contains("EAS"))
+                        apertureValue = ApertureValue;
+                        List<string> str = new List<string>();
+                        str = SendGetMessage("1EAS " + ApertureValue, "EAS");
+                        bool isOK = false;
+                        string errorStr = "";
+                        foreach (var item in str)
                         {
-                            if (item.Contains("+"))
+                            if (item.Contains("EAS"))
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("1EAS !,", "");
-                                break;
+                                if (item.Contains("+"))
+                                {
+                                    isOK = true;
+                                }
+                                if (item.Contains("!"))
+                                {
+                                    errorStr = item.Replace("1EAS !,", "");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ChangeAperture Error:" + errorStr);
+                        if (isOK == false)
+                        {
+                            throw new Exception("BXUCB ChangeAperture Error:" + errorStr);
+                        }
                     }
                 });
             }
@@ -319,18 +369,22 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    if (idx == 0)
+                    if (cubeIdx != idx)
                     {
-                        str = SendGetMessage("1CUBE 1" + idx, "CUBE");
-                    }
-                    else if (idx == 1)
-                    {
-                        str = SendGetMessage("1CUBE 2" + idx, "1CUBE");
-                    }
-                    else if (idx == 2)
-                    {
-                        str = SendGetMessage("1CUBE 3" + idx, "1CUBE");
+                        cubeIdx = idx;
+                        List<string> str = new List<string>();
+                        if (idx == 0)
+                        {
+                            str = SendGetMessage("1CUBE 1" + idx, "CUBE");
+                        }
+                        else if (idx == 1)
+                        {
+                            str = SendGetMessage("1CUBE 2" + idx, "1CUBE");
+                        }
+                        else if (idx == 2)
+                        {
+                            str = SendGetMessage("1CUBE 3" + idx, "1CUBE");
+                        }
                     }
                 });
             }
@@ -341,34 +395,38 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ChangeFilter(int idx)
+        public Task ChangeFilter(int wheelIdx, int idx)
         {
             try
             {
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("1FW " + idx, "FW");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    if (filterWheelIdx[wheelIdx] != idx)
                     {
-                        if (item.Contains("FW"))
+                        filterWheelIdx[wheelIdx] = idx;
+                        List<string> str = new List<string>();
+                        str = SendGetMessage("1FW" + wheelIdx + " " + idx, "FW");
+                        bool isOK = false;
+                        string errorStr = "";
+                        foreach (var item in str)
                         {
-                            if (item.Contains("+"))
+                            if (item.Contains("FW"))
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("1FW !,", "");
-                                break;
+                                if (item.Contains("+"))
+                                {
+                                    isOK = true;
+                                }
+                                if (item.Contains("!"))
+                                {
+                                    errorStr = item.Replace("1FW" + wheelIdx + " !,", "");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ChangeFilter Error:" + errorStr);
+                        if (isOK == false)
+                        {
+                            throw new Exception("BXUCB ChangeFilter Error:" + errorStr);
+                        }
                     }
                 });
             }
@@ -384,59 +442,63 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    bool isOK = false;
-                    string errorStr = "";
+                    if (lightValue != LigntValue)
+                    {
+                        lightValue = LigntValue;
+                        List<string> str = new List<string>();
+                        bool isOK = false;
+                        string errorStr = "";
 
-                    if (LigntValue <= 0)
-                    {
-                        str = SendGetMessage("1LMPSW OFF", "LMPSW");
-                    }
-                    else
-                    {
-                        str = SendGetMessage("1LMPSW ON", "LMPSW");
-                    }
-                    foreach (var item in str)
-                    {
-                        if (item.Contains("LMPSW"))
+                        if (LigntValue <= 0)
                         {
-                            if (item.Contains("+"))
+                            str = SendGetMessage("1LMPSW OFF", "LMPSW");
+                        }
+                        else
+                        {
+                            str = SendGetMessage("1LMPSW ON", "LMPSW");
+                        }
+                        foreach (var item in str)
+                        {
+                            if (item.Contains("LMPSW"))
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("1LMPSW !,", "");
-                                break;
+                                if (item.Contains("+"))
+                                {
+                                    isOK = true;
+                                }
+                                if (item.Contains("!"))
+                                {
+                                    errorStr = item.Replace("1LMPSW !,", "");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ChangeLight Error:" + errorStr);
-                    }
-
-                    isOK = false;
-                    errorStr = "";
-                    str = SendGetMessage("1LMP " + LigntValue, "LMP");
-                    foreach (var item in str)
-                    {
-                        if (item.Contains("LMP"))
+                        if (isOK == false)
                         {
-                            if (item.Contains("+"))
+                            throw new Exception("BXUCB ChangeLight Error:" + errorStr);
+                        }
+
+                        isOK = false;
+                        errorStr = "";
+                        str = SendGetMessage("1LMP " + LigntValue, "LMP");
+                        foreach (var item in str)
+                        {
+                            if (item.Contains("LMP"))
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("1LMP !,", "");
-                                break;
+                                if (item.Contains("+"))
+                                {
+                                    isOK = true;
+                                }
+                                if (item.Contains("!"))
+                                {
+                                    errorStr = item.Replace("1LMP !,", "");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ChangeLight Error:" + errorStr);
+                        if (isOK == false)
+                        {
+                            throw new Exception("BXUCB ChangeLight Error:" + errorStr);
+                        }
                     }
                 });
             }
@@ -452,35 +514,39 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    if (idx == 0)
+                    if (lightSpreadIdx != idx)
                     {
-                        str = SendGetMessage("1LMPSEL DIA" + idx, "LMPSEL");
-                    }
-                    else if (idx == 1)
-                    {
-                        str = SendGetMessage("1LMPSEL EPI" + idx, "LMPSEL");
-                    }
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
-                    {
-                        if (item.Contains("LMPSEL"))
+                        lightSpreadIdx = idx;
+                        List<string> str = new List<string>();
+                        if (idx == 0)
                         {
-                            if (item.Contains("+"))
+                            str = SendGetMessage("1LMPSEL DIA" + idx, "LMPSEL");
+                        }
+                        else if (idx == 1)
+                        {
+                            str = SendGetMessage("1LMPSEL EPI" + idx, "LMPSEL");
+                        }
+                        bool isOK = false;
+                        string errorStr = "";
+                        foreach (var item in str)
+                        {
+                            if (item.Contains("LMPSEL"))
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("1LMPSEL !,", "");
-                                break;
+                                if (item.Contains("+"))
+                                {
+                                    isOK = true;
+                                }
+                                if (item.Contains("!"))
+                                {
+                                    errorStr = item.Replace("1LMPSEL !,", "");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ChangeLightSpread Error:" + errorStr);
+                        if (isOK == false)
+                        {
+                            throw new Exception("BXUCB ChangeLightSpread Error:" + errorStr);
+                        }
                     }
                 });
             }
@@ -497,29 +563,33 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                 {
-                    List<string> str = new List<string>();
-                    await AF_Off();
-                    str = SendGetMessage("1OB " + idx, "OB");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    if (lens != idx)
                     {
-                        if (item.Contains("OB"))
+                        lens = idx;
+                        List<string> str = new List<string>();
+                        await AF_Off();
+                        str = SendGetMessage("1OB " + idx, "OB");
+                        bool isOK = false;
+                        string errorStr = "";
+                        foreach (var item in str)
                         {
-                            if (item.Contains("+"))
+                            if (item.Contains("OB"))
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("1OB !,", "");
-                                break;
+                                if (item.Contains("+"))
+                                {
+                                    isOK = true;
+                                }
+                                if (item.Contains("!"))
+                                {
+                                    errorStr = item.Replace("1OB !,", "");
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ChangeLens Error:" + errorStr);
+                        if (isOK == false)
+                        {
+                            throw new Exception("BXUCB ChangeLens Error:" + errorStr);
+                        }
                     }
                 });
             }
@@ -1114,7 +1184,7 @@ namespace WLS3200Gen2.Model.Component
             {
                 lock (lockObj)
                 {
-                    int delayTime = 200;
+                    int delayTime = 50;
                     int timeOut1 = 10 * 1000;
                     int timeOut2 = 600 * 1000;
                     Stopwatch stopwatch = new Stopwatch();
@@ -1124,6 +1194,7 @@ namespace WLS3200Gen2.Model.Component
                     serialPort.Write(message + Microscope_Terminator);
                     List<string> returnMessage1 = new List<string>();
                     List<string> readMessage1 = new List<string>();
+                    Thread.Sleep(delayTime);
                     stopwatch.Restart();
                     bool isSendOK = false;
                     do

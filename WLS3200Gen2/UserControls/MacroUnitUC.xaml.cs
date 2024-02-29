@@ -51,10 +51,7 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Task.Run(async () =>
-                    {
-                        Macro.HomeAllRing();
-                    });
+                    await Macro.Home();
                     MacroStatus.IsProcessStop = true;
                 }
             }

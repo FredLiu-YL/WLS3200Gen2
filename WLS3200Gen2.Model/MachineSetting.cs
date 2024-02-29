@@ -48,12 +48,14 @@ namespace WLS3200Gen2.Model
         public BinCode[] BinCodes { get; set; }
 
         public RobotType RobotsType { get; set; }
+        public string RobotsCOM { get; set; }
         public CameraType CamerasType { get; set; }
-
         public LoadPortType LoadPortType { get; set; }
         public LoadPortQuantity LoadPortCount { get; set; }
-
-     
+        public string LoadPortCOM { get; set; }
+        public string AlignerCOM { get; set; }
+        public string MicroscopeCOM { get; set; }
+        public string DicCOM { get; set; }
     }
 
 

@@ -8,6 +8,7 @@
         xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model"
         xmlns:UserControlUC="clr-namespace:WLS3200Gen2.UserControls;assembly=WLS3200Gen2"
         xmlns:ViewControlUC="clr-namespace:WLS3200Gen2.Views;assembly=WLS3200Gen2"
+        xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
         mc:Ignorable="d"
          DataContext="{Binding Main, Source={StaticResource Locator}}"   
         Title="MainWindow" Height="800" Width="1920">
@@ -58,9 +59,12 @@
             <!--<Button    Command="{Binding OpenCCommand}"    />-->
             <UserControlUC:LoadPortUnitUC Grid.Column="0" Grid.Row="1"  LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" />
             <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
-            <GroupBox Header="Output" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1">
+            <!--<GroupBox Header="Output" Grid.Column="2" Grid.ColumnSpan="1" Grid.Row="1">
                 <UserControlUC:DigitalOutputUC OutputSignals="{Binding DigitalOutputs }"  />
-            </GroupBox>
+            </GroupBox>-->
+
+            <microscope:BXFMUC Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" Height="240" Width="600" Microscope="{Binding Micro }" BXFMUIShow="{Binding BXFMUIShow}" />
+            
             <UserControlUC:RobotUnitUC Width="450" Height="450" Grid.Column="3" Grid.Row="1" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }"   />
             <!--<GroupBox Header="Input" Grid.Column="3" Grid.Row="1" >
                 -->

@@ -8,6 +8,7 @@ using WLS3200Gen2.Model.Component.Adlink;
 using WLS3200Gen2.Model.Module;
 using YuanliCore.CameraLib;
 using YuanliCore.Interface;
+using YuanliCore.Model.Interface;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
@@ -21,13 +22,14 @@ namespace WLS3200Gen2.Model
 
             try
             {
+                motionController = ControlEntity(isSimulate);
                 loadPort = LoadPortEntity(isSimulate);
-
                 robot = RobotEntity(machineSetting.RobotsType);
                 aligner = AlignerEntity(isSimulate);
-                motionController = ControlEntity(isSimulate);
                 camera = CameraEntity(machineSetting.CamerasType);
                 macro = MacrotEntity(isSimulate);
+                microscope = MicroEntity(isSimulate);
+
 
 
 
@@ -82,11 +84,12 @@ namespace WLS3200Gen2.Model
         {
             try
             {
-               Task feedHome = Feeder.Home();
+                Task feedHome = Feeder.Home();
                 await Task.Delay(500); //先暫停500ms 避免判定還沒出現就過了 WaitEFEMonSafe
                 await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
                 Task microHome = MicroDetection.Home();
-                await Task.WhenAll(feedHome, microHome);
+                Task macroHome = macro.Home();
+                await Task.WhenAll(feedHome, microHome, macroHome);
             }
             catch (Exception ex)
             {
@@ -110,7 +113,11 @@ namespace WLS3200Gen2.Model
             {
                 //只有一支LOAD PORT時
                 if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                {
                     loadPort = new ArtificialLoadPort();
+                    //loadPort = new HirataLoadPort_RS232("COM2");
+                    //loadPort.Initial();
+                }
                 else
                 {
 
@@ -179,12 +186,14 @@ namespace WLS3200Gen2.Model
                 {
                     switch (i)
                     {
-                        case 0:
+                       case 0:
                             AxisConfig axisXConfig = new AxisConfig();
                             axisXConfig.AxisName = "AxisX";
                             axisXConfig.AxisID = 1500;
-                            axisXConfig.MoveVel = new VelocityParams(1000000, 0.5);
-                            axisXConfig.HomeVel = new VelocityParams(100000, 0.5);
+                            axisXConfig.Ratio = 10;
+                            axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
+                            axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
+                            axisXConfig.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisXConfig);
                             break;
                         case 1:
@@ -193,6 +202,7 @@ namespace WLS3200Gen2.Model
                             axisYConfig.AxisID = 1501;
                             axisYConfig.MoveVel = new VelocityParams(1000000, 0.5);
                             axisYConfig.HomeVel = new VelocityParams(100000, 0.5);
+                            axisYConfig.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisYConfig);
                             break;
                         case 2:
@@ -200,7 +210,9 @@ namespace WLS3200Gen2.Model
                             axisZInfo.AxisName = "AxisZ";
                             axisZInfo.AxisID = 1502;
                             axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
-                            axisZInfo.HomeVel = new VelocityParams(5000, 0.2);
+                            axisZInfo.HomeVel = new VelocityParams(50000, 0.5);
+                            axisZInfo.HomeMode = HomeModes.EL;
+                            axisZInfo.HomeDirection = HomeDirection.Backward;
                             axisConfig.Add(axisZInfo);
                             break;
                         case 3:
@@ -209,6 +221,7 @@ namespace WLS3200Gen2.Model
                             axisRInfo.AxisID = 1503;
                             axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
                             axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
+                            axisRInfo.HomeMode = HomeModes.ORG;
                             axisConfig.Add(axisRInfo);
 
                             break;
@@ -218,6 +231,7 @@ namespace WLS3200Gen2.Model
                             axisRobotInfo.AxisID = 1504;
                             axisRobotInfo.MoveVel = new VelocityParams(3000000, 0.2);
                             axisRobotInfo.HomeVel = new VelocityParams(300000, 0.2);
+                            axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisRobotInfo);
                             break;
                     }
@@ -255,13 +269,12 @@ namespace WLS3200Gen2.Model
             IAligner aligner = null;
             if (isSimulate)
             {
-
                 aligner = new DummyAligner();
             }
             else
             {
-
-
+                aligner = new HirataAligner_RS232("COM32");
+                aligner.Initial();
             }
 
             return aligner;
@@ -277,12 +290,27 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-
-
+                macro = new HannDeng_Macro(motionController.OutputSignals.ToArray(), motionController.InputSignals.ToArray());
+                macro.Initial();
             }
 
             return macro;
 
+        }
+        private IMicroscope MicroEntity(bool isSimulate)
+        {
+            IMicroscope microscope = null;
+            if (isSimulate)
+            {
+
+
+            }
+            else
+            {
+                microscope = new BXUCB("COM24");
+                microscope.Initial();
+            }
+            return microscope;
         }
         private IEFEMRobot RobotEntity(RobotType robotType)
         {
@@ -294,8 +322,12 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-
-
+                if (robotType == RobotType.Hirata)
+                {
+                    //LoadPortCOM machineSetting.LoadPortCOM
+                    robot = new HirataRobot_RS232("COM5", 10, 2);
+                    robot.Initial();
+                }
             }
 
             return robot;
