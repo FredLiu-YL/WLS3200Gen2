@@ -82,9 +82,8 @@ namespace WLS3200Gen2.Model
     }
     public interface ILoadPort
     {
-
         /// <summary>
-        /// null:沒片子 true:有片子 false:片子異常
+        /// null:沒片子 true:有片子 false:片子異常 (陣列0是最上面那片)
         /// </summary>
         bool?[] Slot { get; }
         /// <summary>

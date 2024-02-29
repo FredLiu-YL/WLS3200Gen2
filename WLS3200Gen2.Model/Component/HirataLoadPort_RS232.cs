@@ -1584,7 +1584,7 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 slot = new bool?[loadPortItems.MappingWaferStatus.Count];
-                int idx = 0;
+                int idx = slot.Length - 1;
                 foreach (var item in loadPortItems.MappingWaferStatus)
                 {
                     if (item == LoadPortMapping_Result.WaferExists)
@@ -1599,7 +1599,7 @@ namespace WLS3200Gen2.Model.Component
                     {
                         slot[idx] = false;
                     }
-                    idx++;
+                    idx--;
                 }
             }
             catch (Exception ex)

@@ -68,7 +68,7 @@ namespace WLS3200Gen2.UserControls
                 int i = 1;
                 if (LoadPort.Slot != null)
                 {
-                    foreach (var item in LoadPort.Slot.Reverse())
+                    foreach (var item in LoadPort.Slot)
                     {
                         if (item == null)
                         {
