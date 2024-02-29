@@ -47,6 +47,10 @@ namespace YuanliCore.Data
         public ProcessStation(int cassetteIndex)
         {
             CassetteIndex = cassetteIndex;
+            MacroTop = WaferProcessStatus.NotSelect;
+            MacroBack = WaferProcessStatus.NotSelect;
+            WaferID = WaferProcessStatus.NotSelect;
+            Micro = WaferProcessStatus.NotSelect;
         }
         private int cassetteIndex;
 

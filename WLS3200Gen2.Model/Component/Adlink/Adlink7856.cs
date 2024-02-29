@@ -1127,6 +1127,10 @@ namespace WLS3200Gen2.Model.Component.Adlink
 
         }
 
+        public void ResetAlarmCommand()
+        {
+            throw new NotImplementedException();
+        }
 
         private class AxisInfo
         {
