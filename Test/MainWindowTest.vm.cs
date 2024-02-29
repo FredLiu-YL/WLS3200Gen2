@@ -64,7 +64,7 @@ namespace Test
 
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
 
-         
+
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
 
@@ -93,12 +93,20 @@ namespace Test
         public ICommand ClearShapeMappingAction { get; set; }
         public ICommand RemoveShapeMappingAction { get; set; }
 
+        private double nowPos;
+        public double NowPos { get => nowPos; set => SetValue(ref nowPos, value); }
+
+        private bool isOutputSwitchEnable = true;
+        public bool IsOutputSwitchEnable { get => isOutputSwitchEnable; set => SetValue(ref isOutputSwitchEnable, value); }
+
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
             try
             {
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                Micro = new BXUCB("COM1");
+                Micro = new BXUCB("COM24");
+                Micro.Initial();
+                //MotionInit();
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
 
@@ -108,8 +116,6 @@ namespace Test
 
                 //Aligner = new HirataAligner_RS232("COM32");
                 //Aligner.Initial();
-
-                //MotionInit();
                 //if (LoadPort != null)
                 //{
                 //    LoadPortParam loadPortParam = new LoadPortParam();
@@ -121,8 +127,8 @@ namespace Test
                 //    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
                 //    isRefresh = true;
                 //}
-                //taskRefresh1 = Task.Run(RefreshStatus);
-
+                taskRefresh1 = Task.Run(RefreshStatus);
+                isRefresh = true;
 
                 ////Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
             }
@@ -168,8 +174,9 @@ namespace Test
                             AxisConfig axisXConfig = new AxisConfig();
                             axisXConfig.AxisName = "AxisX";
                             axisXConfig.AxisID = 0;
-                            axisXConfig.MoveVel = new VelocityParams(1000000, 0.5);
-                            axisXConfig.HomeVel = new VelocityParams(100000, 0.8);
+                            axisXConfig.Ratio = 10;
+                            axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
+                            axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
                             axisXConfig.HomeMode = HomeModes.ORGAndIndex;
                             axisConfig.Add(axisXConfig);
                             break;
@@ -231,7 +238,8 @@ namespace Test
 
                 DigitalOutputs = motionController.OutputSignals.ToArray();
                 DigitalInputs = motionController.InputSignals.ToArray();
-                Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+
+                //Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
                 //MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
             }
             catch (Exception ex)
@@ -252,7 +260,7 @@ namespace Test
                         if (LoadPort != null)
                         {
                             LoadPortStatus loadPortStatus = new LoadPortStatus();
-                            loadPortStatus =await LoadPort.GetStatus();
+                            loadPortStatus = await LoadPort.GetStatus();
                             LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
                             LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
                             LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
@@ -267,7 +275,7 @@ namespace Test
                         if (Aligner != null)
                         {
                             AlignerStatus alignerStatus = new AlignerStatus();
-                            alignerStatus =await Aligner.GetStatus();
+                            alignerStatus = await Aligner.GetStatus();
                             AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
                             AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
                             AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
@@ -278,7 +286,7 @@ namespace Test
                         if (Robot != null)
                         {
                             RobotStatus robotStatus = new RobotStatus();
-                            robotStatus =await Robot.GetStatus();
+                            robotStatus = await Robot.GetStatus();
                             RobotStaus.Mode = robotStatus.Mode;
                             RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
                             RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
@@ -293,7 +301,10 @@ namespace Test
                             //RobotUIIShow
                         }
 
-
+                        if (Micro != null)
+                        {
+                            NowPos = await Micro.GetZPosition();
+                        }
 
                         await Task.Delay(300);
                     }
@@ -319,10 +330,7 @@ namespace Test
                     if (LoadPort != null)
                     {
                         LoadPortParam loadPortParam = new LoadPortParam();
-                        await Task.Run(async () =>
-                        {
-                            loadPortParam = await LoadPort.GetParam();
-                        });
+                        loadPortParam = await LoadPort.GetParam();
                         LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
                         LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
                         LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
@@ -345,81 +353,116 @@ namespace Test
 
 
 
-
-        public ICommand OutputSwitchCommand => new RelayCommand<string>(async (par) =>
+        private bool isFirst = true;
+        public ICommand OutputSwitchCommand => new RelayCommand<string>(async key =>
         {
             try
             {
-                //Micro.Z_PositionPEL = 851110;
-                //Micro.Z_PositionNEL = 1;
-                //Micro.Aberration_PositionPEL = 780000;
-                //Micro.Aberration_PositionNEL = 350000;
+                IsOutputSwitchEnable = false;
+                switch (key)
+                {
+                    case "btn1":
+                        await Micro.ZMoveCommand(1000);
+                        break;
+                    case "btn2":
+                        await Micro.ZMoveToCommand(10);
+                        break;
+                    case "btn0":
+                        double aberationNow = 0;
+                        if (isFirst)
+                        {
+                            await Micro.ChangeLight(65);
 
-                await Micro.ZMoveCommand(100);
-                await Micro.AberrationMoveCommand(100);
-                //Micro.AberrationMoveToCommand(550);//550~790
+                            await Micro.ChangeAperture(500);
 
-                //motionController.SetOutputCommand(0, true);
+                            double zNow = await Micro.GetAFPEL();
 
-                //if (OutputSwitchs[0] == false)
-                //{
-                //    OutputSwitchs[0] = true;
-                //}
-                //else
-                //{
-                //    OutputSwitchs[0] = false;
-                //}
+                            aberationNow = await Micro.GetAFNEL();
 
-
-                //string SINF_Path = "";
-                //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
-                //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
-                //dlg_image.InitialDirectory = SINF_Path;
-                //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                //{
-                //    SINF_Path = dlg_image.FileName;
-                //    if (SINF_Path != "")
-                //    {
-                //        var m_Sinf = new SinfWaferMapping("");
-                //        m_Sinf.ReadWaferFile(SINF_Path);
-
-                //    }
-                //}
-                //else
-                //{
-                //    SINF_Path = "";
-                //}
+                            await Micro.SetSearchRange(585827, 5000);
+                            isFirst = false;
+                        }
 
 
+                        await Micro.AF_OneShot();
 
-                //cc.Dies;
+
+                        //Micro.Z_PositionPEL = 851110;
+                        //Micro.Z_PositionNEL = 1;
+                        //Micro.Aberration_PositionPEL = 780000;
+                        //Micro.Aberration_PositionNEL = 350000;
+                        //await Micro.ZMoveCommand(100);
+                        //await Micro.AberrationMoveCommand(100);
 
 
-                //bool ss = true;
-                //if (ss)
-                //{
-                //    AddShapeMappingAction.Execute(new ROICircle
-                //    {
-                //        Stroke = Brushes.Yellow,
-                //        //StrokeThickness = this.StrokeThickness,
-                //        Fill = Brushes.Transparent,//Brushes.Blue,
-                //        X = 1000,
-                //        Y = 1000,
-                //        Radius = 1000,
-                //        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
-                //        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
-                //        IsInteractived = true,
-                //        IsMoveEnabled = false,
-                //        IsResizeEnabled = false,
-                //        IsRotateEnabled = false,
-                //        CenterCrossLength = 0,
-                //        ToolTip = "Circle"
-                //    });
-                //}
-                //else
-                //{
-                //    ClearShapeMappingAction.Execute(true);
-                //}
+                        //Micro.AberrationMoveToCommand(550);//550~790
+
+                        //motionController.SetOutputCommand(0, true);
+
+                        //if (OutputSwitchs[0] == false)
+                        //{
+                        //    OutputSwitchs[0] = true;
+                        //}
+                        //else
+                        //{
+                        //    OutputSwitchs[0] = false;
+                        //}
+
+
+                        //string SINF_Path = "";
+                        //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+                        //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+                        //dlg_image.InitialDirectory = SINF_Path;
+                        //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        //{
+                        //    SINF_Path = dlg_image.FileName;
+                        //    if (SINF_Path != "")
+                        //    {
+                        //        var m_Sinf = new SinfWaferMapping("");
+                        //        m_Sinf.ReadWaferFile(SINF_Path);
+
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    SINF_Path = "";
+                        //}
+
+
+
+                        //cc.Dies;
+
+
+                        //bool ss = true;
+                        //if (ss)
+                        //{
+                        //    AddShapeMappingAction.Execute(new ROICircle
+                        //    {
+                        //        Stroke = Brushes.Yellow,
+                        //        //StrokeThickness = this.StrokeThickness,
+                        //        Fill = Brushes.Transparent,//Brushes.Blue,
+                        //        X = 1000,
+                        //        Y = 1000,
+                        //        Radius = 1000,
+                        //        //LengthX = showSize_X / 3,//(dieSize.Width / 3) / showScale,
+                        //        //LengthY = showSize_Y / 3,//(dieSize.Height / 2) / showScale,
+                        //        IsInteractived = true,
+                        //        IsMoveEnabled = false,
+                        //        IsResizeEnabled = false,
+                        //        IsRotateEnabled = false,
+                        //        CenterCrossLength = 0,
+                        //        ToolTip = "Circle"
+                        //    });
+                        //}
+                        //else
+                        //{
+                        //    ClearShapeMappingAction.Execute(true);
+                        //}
+                        break;
+                    default:
+                        break;
+                }
+
 
             }
             catch (Exception ex)
@@ -429,6 +472,7 @@ namespace Test
             }
             finally
             {
+                IsOutputSwitchEnable = true;
             }
         });
 
