@@ -250,26 +250,7 @@ namespace WLS3200Gen2
 
         }
 
-        //Security進入會執行
-        private void LoadSecurityPage()
-        {
-
-
-
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
-            {
-                IsMainSecurityPageSelect = false;
-                IsMainHomePageSelect = true;
-                return;
-            }
-
-            WriteLog("Enter the SecurityPage");
-        }
-        //離開Security頁面會執行
-        private void UnLoadSecurityPage()
-        {
-
-        }
+        
 
         //進入locate頁會執行
         private void LoadLoactePage()

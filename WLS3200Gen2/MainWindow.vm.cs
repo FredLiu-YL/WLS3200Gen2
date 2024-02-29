@@ -42,7 +42,7 @@ namespace WLS3200Gen2
         private System.Windows.Point mapmousePixcel;
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
-        private bool isRefresh;
+        private bool isRefresh, isInitialComple;
 
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
@@ -167,11 +167,11 @@ namespace WLS3200Gen2
                 MapImage = new WriteableBitmap(bitmap);
 
                 //測試用
-                for (int i = 25; i > 0; i--)
+                for (int i = 0; i <25; i++)
                 {
-                    ProcessStations.Add(new ProcessStation(i));
+                    ProcessStations.Insert(0,new ProcessStation(i+1));
                 }
-             
+                isInitialComple = true;
             }
             catch (Exception ex)
             {
@@ -219,6 +219,33 @@ namespace WLS3200Gen2
 
            }
        });
+
+        //Security進入會執行
+        private void LoadSecurityPage()
+        {
+
+
+
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            {
+                IsMainSecurityPageSelect = false;
+                IsMainHomePageSelect = true;
+                return;
+            }
+
+            WriteLog("Enter the SecurityPage");
+        }
+        //離開Security頁面會執行
+        private void UnLoadSecurityPage()
+        {
+            if(isInitialComple)
+            {
+                //軸 修改參數存檔
+                machineSetting.Save(machineSettingPath);
+            }
+          
+        }
+
         private async Task RefreshPos()
         {
             try

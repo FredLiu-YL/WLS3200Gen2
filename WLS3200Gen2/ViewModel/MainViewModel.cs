@@ -47,21 +47,21 @@ namespace WLS3200Gen2
             isSimulate = true;
 
             //   machineSetting.Load();
-          
-          
+
+
 
             machineSetting = new MachineSetting();
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
             if (!File.Exists(machineSettingPath))
-            {
                 machineSetting.Save(machineSettingPath);
-            }
+            else
+                machineSetting = MachineSetting.Load<MachineSetting>(machineSettingPath);
 
-            MachineSetting processSetting = AbstractRecipe.Load< MachineSetting>(machineSettingPath);
-         
-            
+            MachineSetting processSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
+
+
             machine = new Machine(isSimulate, machineSetting);
-        
+
 
             Account = UserAccount.Load();
             Account.CurrentAccount.PropertyChanged += CurrentAccountChanged;
@@ -103,7 +103,7 @@ namespace WLS3200Gen2
             LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  ";
         }
 
-       
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

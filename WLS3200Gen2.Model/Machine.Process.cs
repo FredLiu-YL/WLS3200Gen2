@@ -114,11 +114,8 @@ namespace WLS3200Gen2.Model
 
                         }
 
-
                         //退片
                         await Feeder.UnLoadWaferToCassette(currentWafer);
-
-
 
 
                         await Task.Delay(300);
