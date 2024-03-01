@@ -104,6 +104,7 @@
     <Compile Include="Component\DummyAligner.cs" />
     <Compile Include="Component\DummyLoadPort.cs" />
     <Compile Include="Component\DummyMacro.cs" />
+    <Compile Include="Component\DummyMicroscope.cs" />
     <Compile Include="Component\DummyRobot.cs" />
     <Compile Include="Component\HannDeng_Macro.cs" />
     <Compile Include="Component\HirataAligner_RS232.cs" />

@@ -275,10 +275,11 @@ namespace WLS3200Gen2
 
 
                 ProcessStations.Clear();
-                for (int i = 0; i < wafers.Length; i++)
+                //陣列第一個位置是第25片 ， cassette最上面是第25片 ， 所以要從上往下排
+                for (int i = 0; i < wafers.Length; i++)//陣列位置由第0個開始
                 {
 
-                    var temp = new ProcessStation(i);
+                    var temp = new ProcessStation(wafers.Length-i); //但陣列第一個位置 是 cassette第25片  所以 index反過來給
                     if (!wafers[i].HasValue)
                     {
                         temp.MacroTop = WaferProcessStatus.None;
@@ -288,7 +289,7 @@ namespace WLS3200Gen2
 
 
                     }
-                    ProcessStations.Insert(0, temp);
+                    ProcessStations.Add(temp);
                 
                 }
 

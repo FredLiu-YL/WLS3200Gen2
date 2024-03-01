@@ -301,13 +301,14 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
 
-
+                microscope = new DummyMicroscope();
             }
             else
             {
                 microscope = new BXUCB("COM24");
-                microscope.Initial();
+               
             }
+            microscope.Initial();
             return microscope;
         }
         private IEFEMRobot RobotEntity(RobotType robotType)
@@ -324,10 +325,10 @@ namespace WLS3200Gen2.Model
                 {
                     //LoadPortCOM machineSetting.LoadPortCOM
                     robot = new HirataRobot_RS232("COM5", 10, 2);
-                    robot.Initial();
+                   
                 }
             }
-
+            robot.Initial();
             return robot;
         }
 

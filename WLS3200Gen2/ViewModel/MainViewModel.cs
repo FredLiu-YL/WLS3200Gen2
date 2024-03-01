@@ -53,7 +53,10 @@ namespace WLS3200Gen2
             machineSetting = new MachineSetting();
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
             if (!File.Exists(machineSettingPath))
+            {
+              //  machineSetting.LoadPortCount = LoadPortQuantity.Single; //¥þ´¼¬O³æPort
                 machineSetting.Save(machineSettingPath);
+            }             
             else
                 machineSetting = MachineSetting.Load<MachineSetting>(machineSettingPath);
 

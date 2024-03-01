@@ -47,9 +47,9 @@ namespace WLS3200Gen2.Model.Component
             return task;
         }
 
-        public Task Initial()
+        public void Initial()
         {
-            return Task.CompletedTask;
+          
         }
 
         public Task<bool> IsHavePiece()
@@ -172,9 +172,6 @@ namespace WLS3200Gen2.Model.Component
             return Task.CompletedTask;
         }
 
-        void IRobot.Initial()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

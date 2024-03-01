@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -11,6 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
@@ -43,7 +45,7 @@ namespace WLS3200Gen2
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
         private bool isRefresh, isInitialComple;
-
+        private LoadPortQuantity loadportQuantity;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
         {
@@ -76,6 +78,10 @@ namespace WLS3200Gen2
         public WriteableBitmap MapImage { get => mapImage; set => SetValue(ref mapImage, value); }
 
         public System.Windows.Point MapMousePixcel { get => mapmousePixcel; set => SetValue(ref mapmousePixcel, value); }
+
+        public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
+
+
         /// <summary>
         /// 新增 Shape
         /// </summary>
@@ -105,6 +111,7 @@ namespace WLS3200Gen2
                 Version = $"WLS3100/3200  {ver}";
                 //
                 //大部分都會在這裡初始化  有些因為寫法問題必須移動到MainViewModel.cs
+                //machineSetting 的讀取放在MainViewModel.cs
                 //
                 LogMessage = "Initial ．．．";
                 machine.Initial();
@@ -172,6 +179,10 @@ namespace WLS3200Gen2
                     ProcessStations.Insert(0,new ProcessStation(i+1));
                 }
                 isInitialComple = true;
+
+                //載入機台設定LoadPort 數量  給UI作卡控
+                LoadportQuantity = machineSetting.LoadPortCount;
+
             }
             catch (Exception ex)
             {
@@ -306,4 +317,39 @@ namespace WLS3200Gen2
             }
         }
     }
+
+
+    /// <summary>
+    /// 如果是雙Port 就把loadport有關功能打開
+    /// </summary>
+    public class IsLoadPortEnableConver : IValueConverter
+    {
+        //当值从绑定源传播给绑定目标时，调用方法Convert
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            switch ((LoadPortQuantity)value)
+            {
+                case LoadPortQuantity.Single:
+                    return false;
+
+                case LoadPortQuantity.Pair:
+                    return true;
+
+                default:
+                    return false;
+
+            }
+
+
+
+        }
+
+        //当值从绑定目标传播给绑定源时，调用此方法ConvertBack
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
 }
