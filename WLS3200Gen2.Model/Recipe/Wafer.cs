@@ -13,10 +13,10 @@ namespace YuanliCore.Data
         /// <summary>
         /// 流程中使用 傳遞Wafer資訊
         /// </summary>
-        /// <param name="index"></param>
-        public Wafer(int index)
+        /// <param name="cassetteIndex"></param>
+        public Wafer(int cassetteIndex)
         {
-            CassetteIndex = index;
+            CassetteIndex = cassetteIndex;
             ProcessStatus = new ProcessStation(CassetteIndex);
         }
 

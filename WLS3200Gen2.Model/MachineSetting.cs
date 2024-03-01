@@ -35,7 +35,11 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// Robot 橫移軸 LoadPort位置的取放料座標
         /// </summary>
-        public double RobotAxisLoadPortTakePosition { get; set; }
+        public double RobotAxisLoadPort1TakePosition { get; set; }
+        /// <summary>
+        /// Robot 橫移軸 LoadPort位置的取放料座標
+        /// </summary>
+        public double RobotAxisLoadPort2TakePosition { get; set; }
         /// <summary>
         /// Robot 橫移軸Micro位置的取放料座標
         /// </summary>

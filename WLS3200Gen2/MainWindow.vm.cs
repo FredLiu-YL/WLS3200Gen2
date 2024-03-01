@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -167,11 +168,6 @@ namespace WLS3200Gen2
 
                 CameraLive();
 
-                // 讀取BMP檔案
-                BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
-
-
-                MapImage = new WriteableBitmap(bitmap);
 
                 //測試用
                 for (int i = 0; i <25; i++)
@@ -182,6 +178,16 @@ namespace WLS3200Gen2
 
                 //載入機台設定LoadPort 數量  給UI作卡控
                 LoadportQuantity = machineSetting.LoadPortCount;
+
+
+
+
+
+                if (!File.Exists("MAP1.bmp")) throw new Exception("模擬情境下需要放一張圖片到執行檔資料夾 取名MAP1.bmp");
+                // 讀取BMP檔案
+                BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
+
+                MapImage = new WriteableBitmap(bitmap);
 
             }
             catch (Exception ex)

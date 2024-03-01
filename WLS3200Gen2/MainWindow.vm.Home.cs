@@ -27,7 +27,7 @@ namespace WLS3200Gen2
         private string logMessage;
         private bool isRunning = false;
         private bool isRunCommand = false;
-        private ProcessSetting processSetting = new ProcessSetting();
+        private ProcessSetting processSetting ;
 
         private Visibility informationUIVisibility, workholderUCVisibility;
 
@@ -88,11 +88,13 @@ namespace WLS3200Gen2
                     WriteLog("Process Start");
                     Machinestatus = MachineStates.RUNNING;
 
+                    //判斷是使用loadport1 還是 2
                     ProcessSetting.IsLoadport1 = IsLoadport1;
-                    ProcessSetting.IsLoadport2 = IsLoadport2;
+                    ProcessSetting.IsLoadport2 = IsLoadport2;//暫時沒用到 都用IsLoadport1 判斷
                     //寫入每片Wafer的作業流程
                     ProcessSetting.ProcessStation = ProcessStations.ToArray();
-
+               
+                    ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
                     await machine.ProcessRunAsync(ProcessSetting);
 
 
@@ -208,8 +210,9 @@ namespace WLS3200Gen2
                     var recipename = win.FileName;
                     mainRecipe.Load(path, recipename);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
-                }
 
+                    WriteLog("Load Recipe :"+recipename);
+                }
 
             }
             catch (Exception ex)
@@ -241,6 +244,8 @@ namespace WLS3200Gen2
                     var recipename = win.FileName;
                     // machine.BonderRecipe.Save(win.FilePathName);
                     mainRecipe.RecipeSave(path, recipename);
+
+                    WriteLog("Save Recipe :" + recipename);
                 }
             }
             catch (Exception ex)

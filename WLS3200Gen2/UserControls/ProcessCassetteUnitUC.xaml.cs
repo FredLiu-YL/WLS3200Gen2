@@ -58,7 +58,7 @@ namespace WLS3200Gen2.UserControls
             get => (int)GetValue(CassetteIndexProperty);
             set => SetValue(CassetteIndexProperty, value);
         }
-        
+
 
 
         /// <summary>
@@ -118,9 +118,10 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
+
                 if (MacroBack == WaferProcessStatus.Select)
                     MacroBack = WaferProcessStatus.NotSelect;
-                else
+                else if (MacroBack == WaferProcessStatus.NotSelect)
                     MacroBack = WaferProcessStatus.Select;
             }
             catch (Exception ex)
@@ -135,7 +136,7 @@ namespace WLS3200Gen2.UserControls
             {
                 if (WaferID == WaferProcessStatus.Select)
                     WaferID = WaferProcessStatus.NotSelect;
-                else
+                else if (WaferID == WaferProcessStatus.NotSelect)
                     WaferID = WaferProcessStatus.Select;
             }
             catch (Exception ex)
@@ -150,7 +151,7 @@ namespace WLS3200Gen2.UserControls
             {
                 if (Micro == WaferProcessStatus.Select)
                     Micro = WaferProcessStatus.NotSelect;
-                else
+                else if (Micro == WaferProcessStatus.NotSelect)
                     Micro = WaferProcessStatus.Select;
 
             }
@@ -190,6 +191,7 @@ namespace WLS3200Gen2.UserControls
                 {
                     case WaferProcessStatus.None:
                         return Brushes.LightGray;
+
                     case WaferProcessStatus.NotSelect:
                         return Brushes.LightSkyBlue;
 
@@ -204,6 +206,9 @@ namespace WLS3200Gen2.UserControls
 
                     case WaferProcessStatus.InProgress:
                         return Brushes.Goldenrod;
+
+                    case WaferProcessStatus.Complate:
+                        return Brushes.Lime;
 
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace WLS3200Gen2.Model
             DigitalInput[] dis = motionController.InputSignals.ToArray();
             DigitalOutput[] dos = motionController.OutputSignals.ToArray();
 
-            Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4]);
+            Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4],machineSetting);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
 
         }
@@ -247,20 +248,29 @@ namespace WLS3200Gen2.Model
         }
         private ICamera CameraEntity(CameraType cameraType)
         {
-            ICamera camera = null;
-            if (isSimulate)
+            try
+            {
+                ICamera camera = null;
+                if (isSimulate)
+                {
+                    if (!File.Exists("9.bmp")) throw new Exception("模擬情境下需要放一張圖片到執行檔資料夾 取名9.bmp");
+                        camera = new SimulateCamera("9.bmp");
+
+                }
+                else
+                {
+
+                    camera = new ArtificialCamera();
+                }
+
+                return camera;
+            }
+            catch (Exception ex)
             {
 
-                camera = new SimulateCamera("9.bmp");
-
+                throw ex;
             }
-            else
-            {
-
-                camera = new ArtificialCamera();
-            }
-
-            return camera;
+            
         }
         private IAligner AlignerEntity(bool isSimulate)
         {

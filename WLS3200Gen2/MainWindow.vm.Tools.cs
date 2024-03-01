@@ -152,7 +152,8 @@ namespace WLS3200Gen2
                 {
 
                     case "LoadPort":
-                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPortTakePosition);
+                        if (processSetting.IsLoadport1)
+                            await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
                         break;
                     case "Aligner":
                         await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
@@ -11,6 +12,7 @@ using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Account;
 using YuanliCore.CameraLib;
+using YuanliCore.Data;
 using YuanliCore.Interface;
 
 namespace WLS3200Gen2
@@ -37,7 +39,7 @@ namespace WLS3200Gen2
         private MachineSetting machineSetting;
         private bool isSimulate;
         private MainRecipe mainRecipe = new MainRecipe();
-        string machineSettingPath;
+        private string machineSettingPath , processSettingPath;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -50,17 +52,28 @@ namespace WLS3200Gen2
 
 
 
-            machineSetting = new MachineSetting();
+         
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
+          
             if (!File.Exists(machineSettingPath))
             {
-              //  machineSetting.LoadPortCount = LoadPortQuantity.Single; //全智是單Port
+                machineSetting = new MachineSetting();
+                //  machineSetting.LoadPortCount = LoadPortQuantity.Single; //全智是單Port
                 machineSetting.Save(machineSettingPath);
             }             
             else
-                machineSetting = MachineSetting.Load<MachineSetting>(machineSettingPath);
+                machineSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
 
-            MachineSetting processSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
+            processSettingPath = $"{systemPath}\\ProcessSettingPath.json";
+            if (!File.Exists(processSettingPath))
+            {
+                processSetting = new ProcessSetting();
+                processSetting.Save(processSettingPath);
+            }
+            else
+                processSetting = AbstractRecipe.Load<ProcessSetting>(processSettingPath);
+
+
 
 
             machine = new Machine(isSimulate, machineSetting);
@@ -76,8 +89,7 @@ namespace WLS3200Gen2
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
             machine.MacroReady += MacroOperate;
-
-
+            machine.SetWaferStatus += UpdateCassetteUI;
 
         }
 
@@ -87,6 +99,14 @@ namespace WLS3200Gen2
             return new MainRecipe();
         }
 
+        private void UpdateCassetteUI(Wafer wafer)
+        {
+
+
+           var processStation =  ProcessStations.Where(p=>p.CassetteIndex == wafer.CassetteIndex).FirstOrDefault();
+            processStation = wafer.ProcessStatus;
+
+        }
 
 
 

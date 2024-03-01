@@ -11,7 +11,7 @@ using YuanliCore.Interface;
 
 namespace WLS3200Gen2.Model.Recipe
 {
-    public class ProcessSetting
+    public class ProcessSetting : AbstractRecipe
     {
 
         public InchType Inch { get; set; }
@@ -29,7 +29,7 @@ namespace WLS3200Gen2.Model.Recipe
         public bool RemoteDefectPoint { get; set; }
 
         /// <summary>
-        /// 晶圓檢查站點
+        /// 晶圓檢查站點 //陣列0  是第25片 放在cassette最上面
         /// </summary>
         public ProcessStation[] ProcessStation { get; set; }
 
