@@ -114,7 +114,7 @@ namespace WLS3200Gen2
                 machine.Feeder.WriteLog += WriteLog;
 
 
-                machine.Home();
+                await machine.Home();
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
@@ -151,7 +151,7 @@ namespace WLS3200Gen2
                 }
 
                 WriteLog("Equipment Ready．．．");
-            
+
                 isRefresh = true;
                 taskRefresh1 = Task.Run(RefreshPos);
 
@@ -167,9 +167,9 @@ namespace WLS3200Gen2
                 MapImage = new WriteableBitmap(bitmap);
 
                 //測試用
-                for (int i = 0; i <25; i++)
+                for (int i = 0; i < 25; i++)
                 {
-                    ProcessStations.Insert(0,new ProcessStation(i+1));
+                    ProcessStations.Insert(0, new ProcessStation(i + 1));
                 }
                 isInitialComple = true;
             }
@@ -185,40 +185,40 @@ namespace WLS3200Gen2
         });
         public ICommand WindowClosingCommand => new RelayCommand<CancelEventArgs>(async e =>
         {
-           try
-            { 
+            try
+            {
                 // 取消預設的視窗關閉行為
                 e.Cancel = true;
                 var result = MessageBox.Show("是否關閉程式?", "提示", MessageBoxButton.YesNo);
-               if (result == MessageBoxResult.No)
+                if (result == MessageBoxResult.No)
                 {
                     // 如果使用者選擇 "否"，則取消視窗關閉
                     e.Cancel = true;
                     return;
 
                 }
-                  
+
 
 
                 // 如果使用者選擇 "是"，則允許視窗關閉
                 e.Cancel = false;
-               
+
 
 
                 isRefresh = false;
 
 
-           }
-           catch (Exception ex)
-           {
+            }
+            catch (Exception ex)
+            {
 
-               MessageBox.Show(ex.Message);
-           }
-           finally
-           {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
 
-           }
-       });
+            }
+        });
 
         //Security進入會執行
         private void LoadSecurityPage()
@@ -238,12 +238,12 @@ namespace WLS3200Gen2
         //離開Security頁面會執行
         private void UnLoadSecurityPage()
         {
-            if(isInitialComple)
+            if (isInitialComple)
             {
                 //軸 修改參數存檔
                 machineSetting.Save(machineSettingPath);
             }
-          
+
         }
 
         private async Task RefreshPos()
@@ -266,9 +266,9 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
-                
+
                 Machinestatus = MachineStates.Emergency;
-                
+
                 throw ex;
             }
 

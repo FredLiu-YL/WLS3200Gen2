@@ -36,6 +36,10 @@ namespace Test
         private IMicroscope micro;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
+        private Axis tableY;
+        private Axis tableR;
+        private Axis tableZ;
+        private Axis robotAxis;
         private AxisConfig tableXConfig;
         private IMotionController motionController;
         private DigitalInput[] digitalInputs;
@@ -56,6 +60,10 @@ namespace Test
         private BXFMUI bXFMUIShow = new BXFMUI();
 
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
+        public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
+        public Axis TableR { get => tableR; set => SetValue(ref tableR, value); }
+        public Axis TableZ { get => tableZ; set => SetValue(ref tableZ, value); }
+        public Axis RobotAxis { get => robotAxis; set => SetValue(ref robotAxis, value); }
         public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
         public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
@@ -109,20 +117,45 @@ namespace Test
         {
             try
             {
+
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 Micro = new BXUCB("COM24");
                 Micro.Initial();
 
-                MotionInit();
-                //Robot = new HirataRobot_RS232("COM5", 10, 2);
-                //Robot.Initial();
+                bool IsMotionInitOK = false;
+                IsMotionInitOK = MotionInit();
 
-                //LoadPort1Wafers = new ObservableCollection<WaferUIData>();
-                //LoadPort = new HirataLoadPort_RS232("COM2");
-                //LoadPort.Initial();
+                if (IsMotionInitOK == true)
+                {
+                    TableX = motionController.Axes[0];
+                    TableY = motionController.Axes[1];
+                    TableZ = motionController.Axes[2];
+                    TableY = motionController.Axes[3];
+                    RobotAxis = motionController.Axes[4];
 
-                //Aligner = new HirataAligner_RS232("COM32");
-                //Aligner.Initial();
+                    AxisConfig axis_TableXConfig = new AxisConfig();
+                    axis_TableXConfig.MoveVel = motionController.Axes[0].AxisVelocity;
+                    axis_TableXConfig.HomeVel = motionController.Axes[0].HomeVelocity;
+                    TableXConfig = axis_TableXConfig;
+
+                    DigitalOutputs = motionController.OutputSignals.ToArray();
+                    DigitalInputs = motionController.InputSignals.ToArray();
+
+                    Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+                }
+
+
+                Robot = new HirataRobot_RS232("COM5", 10, 2);
+                Robot.Initial();
+
+
+                Aligner = new HirataAligner_RS232("COM32");
+                Aligner.Initial();
+
+
+                LoadPort1Wafers = new ObservableCollection<WaferUIData>();
+                LoadPort = new HirataLoadPort_RS232("COM2");
+                LoadPort.Initial();
                 //if (LoadPort != null)
                 //{
                 //    LoadPortParam loadPortParam = new LoadPortParam();
@@ -134,10 +167,37 @@ namespace Test
                 //    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
                 //    isRefresh = true;
                 //}
+
+
+                
+                //先個軸測試完成復歸再來側這些 X Y Z W R
+
+                //await Robot.Home();
+                //await loadPort.Home();
+                //await Aligner.Home();
+
+
+                //Task robotAxisHome = RobotAxis.HomeAsync();
+                //await Task.WhenAll(robotAxisHome);
+
+
+                //await TableZ.HomeAsync();
+
+                //Task axisXHome = TableX.HomeAsync();
+
+                //Task axisYHome = TableY.HomeAsync();
+
+                //Task axisRHome = TableR.HomeAsync();
+
+                //Task microscopeHome1 = Micro.Home();
+
+                //await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
+
+
+
+
                 taskRefresh1 = Task.Run(RefreshStatus);
                 isRefresh = true;
-
-                ////Feeder = new Feeder(robot, loadPort, macro, aligner, motionController.Axes[4]);
             }
             catch (Exception ex)
             {
@@ -148,7 +208,7 @@ namespace Test
         {
             try
             {
-                LoadPort.Close();
+                //LoadPort.Close();
             }
             catch (Exception ex)
             {
@@ -161,7 +221,7 @@ namespace Test
             }
         });
 
-        public void MotionInit()
+        public bool MotionInit()
         {
             try
             {
@@ -237,25 +297,13 @@ namespace Test
 
                 motionController = new Adlink7856(axisConfig, doNames, diNames);
                 motionController.InitializeCommand();
-
-
-                TableX = motionController.Axes[0];
-
-                AxisConfig axis_TableXConfig = new AxisConfig();
-                axis_TableXConfig.MoveVel = motionController.Axes[0].AxisVelocity;
-                axis_TableXConfig.HomeVel = motionController.Axes[0].HomeVelocity;
-                TableXConfig = axis_TableXConfig;
-
-                DigitalOutputs = motionController.OutputSignals.ToArray();
-                DigitalInputs = motionController.InputSignals.ToArray();
-
-                //Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
-                //MacroDetection1 = new MacroDetection(DigitalOutputs, DigitalInputs);
+                return true;
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.Message);
+                return false;
             }
         }
 

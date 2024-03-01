@@ -71,11 +71,7 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 Open();
-                int motionPercent = this.SpeedPercent;
-                if (motionPercent <= 0) { motionPercent = 0; }
-                if (motionPercent >= 100) { motionPercent = 100; }
-                this.SpeedPercent = motionPercent;
-                SetMovSpeed(motionPercent, motionPercent);
+
             }
             catch (Exception ex)
             {
@@ -618,6 +614,12 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                 {
+                    int motionPercent = this.SpeedPercent;
+                    if (motionPercent <= 0) { motionPercent = 0; }
+                    if (motionPercent >= 100) { motionPercent = 100; }
+                    this.SpeedPercent = motionPercent;
+                    SetMovSpeed(motionPercent, motionPercent);
+
                     await MovAddress(1, 0);
 
                     await MovAddress(0, 0);

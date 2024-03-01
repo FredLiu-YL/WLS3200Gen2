@@ -1116,6 +1116,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                             inputIdx++;
                         }
                     }
+                    //Delay時間會影響IO變化的，判斷時機
                     await Task.Delay(50);
                 }
             }
