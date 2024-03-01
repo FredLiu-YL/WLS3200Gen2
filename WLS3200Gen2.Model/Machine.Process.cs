@@ -91,16 +91,16 @@ namespace WLS3200Gen2.Model
 
 
                         //晶面檢查
-                        await MacroTopInspection(currentWafer.ProcessStatus.MacroTop);                
+                        await MacroTopInspection(currentWafer.ProcessStatus.MacroTop, recipe.EFEMRecipe);                
                         SetWaferStatusToUI(currentWafer);
 
                         //晶背檢查
-                        await MacroBackInspection(currentWafer.ProcessStatus.MacroBack);                     
+                        await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe.MacroBackStartPos);                     
                         SetWaferStatusToUI(currentWafer);
 
 
                         //到Align
-                        await Feeder.LoadToAlignerAsync(currentWafer.ProcessStatus.WaferID);
+                        await Feeder.LoadToAlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
 
 
                         // ProcessPause();

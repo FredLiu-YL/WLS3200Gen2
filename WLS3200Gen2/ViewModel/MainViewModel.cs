@@ -50,9 +50,6 @@ namespace WLS3200Gen2
 
             //   machineSetting.Load();
 
-
-
-         
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
           
             if (!File.Exists(machineSettingPath))
@@ -72,10 +69,7 @@ namespace WLS3200Gen2
             }
             else
                 processSetting = AbstractRecipe.Load<ProcessSetting>(processSettingPath);
-            }
-
-
-
+       
 
             machine = new Machine(isSimulate, machineSetting);
 
