@@ -385,7 +385,7 @@
                                                 <Button Content="PASS" Width="150" Height="30" Margin="5,0,0,0"/>
                                                 <Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>
                                             </StackPanel>
-                                            <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Margin="-8,10,-16,-10" HorizontalAlignment="Left" Width="552" />
+                                            <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}" Margin="-8,10,-16,-10" HorizontalAlignment="Left" Width="552" />
                                         </Grid>
 
                                     </GroupBox>
@@ -602,13 +602,13 @@
                                                                 <RowDefinition />
                                                             </Grid.RowDefinitions>
                                                             <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition/>
-                                                                <ColumnDefinition/>
-                                                                <ColumnDefinition/>
+                                                                <ColumnDefinition Width="0.4*"/>
+                                                                <ColumnDefinition Width="0.3*"/>
+                                                                <ColumnDefinition Width="0.3*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox  Grid.Row="0"  Grid.Column="1"  />
-                                                            <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox  Grid.Row="1"  Grid.Column="1"  />
                                                         </Grid>
                                                     </Grid>
@@ -805,7 +805,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <GroupBox  FontSize="16"  Header="BXFM"  >
-                            <microscope:BXFMUC  Margin="-5"/>
+                            <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1"  FontSize="16"  Header="Axis Move"  >
                             <Grid  Grid.Column="1" Grid.Row="1" Margin="-5">
@@ -1021,8 +1021,6 @@
                                         <StackPanel Grid.Column="0">
                                             <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 1" />
                                             <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 2" />
-                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 1" />
-                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Open Door 2" />
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1">
@@ -1088,7 +1086,7 @@
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2">
-                                    <UserControlUC:RobotUnitUC Margin="-5" />
+                                    <UserControlUC:RobotUnitUC Margin="-5" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }" />
                                 </GroupBox>
                                 <GroupBox Grid.Row="2" Grid.Column="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
@@ -1103,14 +1101,14 @@
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                    <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1Wafers}" LoadPortWafers="{Binding LoadPort1Wafers}"/>
+                                    <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}"/>
 
                                 </GroupBox>
                                 <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" 
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                    <UserControlUC:LoadPortUnitUC Margin="-5" />
+                                    <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}"/>
 
                                 </GroupBox>
                             </Grid>

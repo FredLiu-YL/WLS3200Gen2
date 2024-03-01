@@ -16,6 +16,8 @@ using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Data;
+using YuanliCore.Model.Interface;
+using YuanliCore.Model.Microscope;
 using YuanliCore.UserControls;
 
 namespace WLS3200Gen2
@@ -37,6 +39,10 @@ namespace WLS3200Gen2
         private MachineStates machinestatus = MachineStates.IDLE;
         private WaferProcessStatus macroJudgeOperation;
         private bool isLoadport1, isLoadport2;
+        private IMicroscope microscope;
+        private BXFMUI bXFMUIShow = new BXFMUI();
+        private IMacro macro;
+        private MacroStatus macroStatus = new MacroStatus();
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
@@ -58,8 +64,10 @@ namespace WLS3200Gen2
 
         public bool IsLoadport1 { get => isLoadport1; set => SetValue(ref isLoadport1, value); }
         public bool IsLoadport2 { get => isLoadport2; set => SetValue(ref isLoadport2, value); }
-
-
+        public IMicroscope Microscope { get => microscope; set => SetValue(ref microscope, value); }
+        public BXFMUI BXFMUIShow { get => bXFMUIShow; set => SetValue(ref bXFMUIShow, value); }
+        public IMacro Macro { get => macro; set => SetValue(ref macro, value); }
+        public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -279,7 +287,7 @@ namespace WLS3200Gen2
                 for (int i = 0; i < wafers.Length; i++)//陣列位置由第0個開始
                 {
 
-                    var temp = new ProcessStation(wafers.Length-i); //但陣列第一個位置 是 cassette第25片  所以 index反過來給
+                    var temp = new ProcessStation(wafers.Length - i); //但陣列第一個位置 是 cassette第25片  所以 index反過來給
                     if (!wafers[i].HasValue)
                     {
                         temp.MacroTop = WaferProcessStatus.None;
@@ -290,7 +298,7 @@ namespace WLS3200Gen2
 
                     }
                     ProcessStations.Add(temp);
-                
+
                 }
 
 

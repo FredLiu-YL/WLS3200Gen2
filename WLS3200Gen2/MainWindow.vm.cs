@@ -21,6 +21,7 @@ using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
 using YuanliCore.Data;
 using YuanliCore.Interface;
+using YuanliCore.Model.Interface;
 using YuanliCore.Model.UserControls;
 using YuanliCore.Motion;
 
@@ -81,7 +82,7 @@ namespace WLS3200Gen2
 
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
-
+       
         /// <summary>
         /// 新增 Shape
         /// </summary>
@@ -126,6 +127,8 @@ namespace WLS3200Gen2
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
                 RobotAxis = machine.Feeder.RobotAxis;
+
+                Microscope = machine.MicroDetection.Microscope;
 
                 DigitalInputs = machine.GetInputs();
                 DigitalOutputs = machine.GetOutputs();
@@ -310,7 +313,7 @@ namespace WLS3200Gen2
                              });
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
 
