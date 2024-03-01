@@ -72,6 +72,7 @@ namespace WLS3200Gen2
             }
             else
                 processSetting = AbstractRecipe.Load<ProcessSetting>(processSettingPath);
+            }
 
 
 

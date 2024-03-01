@@ -15,6 +15,7 @@ namespace WLS3200Gen2.Model.Recipe
 
         public DetectionRecipe DetectRecipe { get; set; } = new DetectionRecipe();
 
+        public EFEMtionRecipe EFEMRecipe { get; set; } = new EFEMtionRecipe();
 
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace WLS3200Gen2.Model.Recipe
             //因序列化少了COGNEX ，要手動重新塞 ，所以屬性讀回要分成兩段來做
             //先讀取可以序列化的部分
             DetectRecipe = mRecipe.DetectRecipe;
-
+            EFEMRecipe = mRecipe.EFEMRecipe;
 
 
             // 讀取pattern 資料

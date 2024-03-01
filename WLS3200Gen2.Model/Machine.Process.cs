@@ -206,16 +206,17 @@ namespace WLS3200Gen2.Model
         }
 
 
-        private async Task MacroTopInspection(WaferProcessStatus station)
+        private async Task MacroTopInspection(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
 
             //晶面檢查
             if (station == WaferProcessStatus.Select)
             {
-
+                await Feeder.TurnWafer(eFEMtionRecipe);
                 //委派到ui 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
                 var judgeResult = macro.Result;
+                await Feeder.Macro.HomeInnerRing();
 
 
                 station = WaferProcessStatus.Complate;
@@ -223,22 +224,20 @@ namespace WLS3200Gen2.Model
             }
 
         }
-        private async Task MacroBackInspection(WaferProcessStatus station)
+        private async Task MacroBackInspection(WaferProcessStatus station, int MacroBackStartPos)
         {
             //晶背檢查
             if (station == WaferProcessStatus.Select)
             {
-
                 //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
-                await Feeder.TurnWafer();
-
+                await Feeder.TurnBackWafer(MacroBackStartPos);
                 //委派到ui層 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
                 var judgeResult = macro.Result;
 
-
                 //翻回來
-                await Feeder.TurnBackWafer();
+                await Feeder.Macro.HomeOuterRing();
+          
                 station= WaferProcessStatus.Complate;
             }
 

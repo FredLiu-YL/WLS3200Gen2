@@ -1,6 +1,7 @@
 ﻿using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -196,7 +197,6 @@ namespace WLS3200Gen2.Model.Module
                          await LoadWaferFromCassette(cassetteIndex, isLoadport1);
                          await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                          await WaferStandByToMacro();
-
                          WriteLog("Wafer Preload End");
                      }
                      //   if (processWafers.Count == 0)
@@ -213,19 +213,122 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
-        public async Task TurnWafer()
+        public async Task TurnWafer(EFEMtionRecipe eFEMtionRecipe)
         {
+            await Macro.GoInnerRingCheckPos();
 
+            Stopwatch stopwatchPitchX = new Stopwatch();
+            stopwatchPitchX.Start();
+            Task startPitchX = Task.Run(() =>
+            {
+                if (Math.Abs(eFEMtionRecipe.MacroTopStartPitchX) > 0)
+                {
+                    if (eFEMtionRecipe.MacroTopStartPitchX > 0)
+                    {
+                        Macro.InnerRingPitchX_Move(true);
+                    }
+                    else
+                    {
+                        Macro.InnerRingPitchX_Move(false);
+                    }
+                    stopwatchPitchX.Restart();
+                    while (true)
+                    {
+                        if (stopwatchPitchX.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartPitchX)
+                        {
+                            Macro.InnerRingPitchX_Stop();
+                            break;
+                        }
+                    }
+                    stopwatchPitchX.Stop();
+                }
+            });
 
+            Stopwatch stopwatchRollY = new Stopwatch();
+            stopwatchRollY.Start();
+            Task startRollY = Task.Run(() =>
+            {
+                if (Math.Abs(eFEMtionRecipe.MacroTopStartRollY) > 0)
+                {
+                    if (eFEMtionRecipe.MacroTopStartRollY > 0)
+                    {
+                        Macro.InnerRingRollY_Move(true);
+                    }
+                    else
+                    {
+                        Macro.InnerRingRollY_Move(false);
+                    }
+                    stopwatchRollY.Restart();
+                    while (true)
+                    {
+                        if (stopwatchRollY.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartRollY)
+                        {
+                            Macro.InnerRingRollY_Stop();
+                            break;
+                        }
+                    }
+                    stopwatchRollY.Stop();
+                }
+            });
 
+            Stopwatch stopwatchYawT = new Stopwatch();
+            stopwatchYawT.Start();
+            Task startYawT = Task.Run(async () =>
+            {
+                if (Math.Abs(eFEMtionRecipe.MacroTopStartYawT) > 0)
+                {
+                    if (eFEMtionRecipe.MacroTopStartYawT > 0)
+                    {
+                        Macro.InnerRingYawT_Move(true);
+                    }
+                    else
+                    {
+                        Macro.InnerRingYawT_Move(false);
+                    }
+                    stopwatchYawT.Restart();
+                    while (true)
+                    {
+                        if (stopwatchYawT.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartYawT)
+                        {
+                            Macro.InnerRingYawT_Stop();
+                            break;
+                        }
+                    }
+                    stopwatchYawT.Stop();
+                }
+            });
 
+            await Task.WhenAll(startPitchX, startRollY, startYawT);
         }
-        public async Task TurnBackWafer()
+        public async Task TurnBackWafer(int MacroBackStartPos)
         {
-
-
-
-
+            await Macro.GoOuterRingCheckPos();
+            Stopwatch stopwatchRollY = new Stopwatch();
+            stopwatchRollY.Start();
+            await Task.Run(() =>
+           {
+               if (Math.Abs(MacroBackStartPos) > 0)
+               {
+                   if (MacroBackStartPos > 0)
+                   {
+                       Macro.OuterRingRollY_Move(true);
+                   }
+                   else
+                   {
+                       Macro.OuterRingRollY_Move(false);
+                   }
+                   stopwatchRollY.Restart();
+                   while (true)
+                   {
+                       if (stopwatchRollY.ElapsedMilliseconds > MacroBackStartPos)
+                       {
+                           Macro.OuterRingRollY_Stop();
+                           break;
+                       }
+                   }
+                   stopwatchRollY.Stop();
+               }
+           });
         }
 
 
@@ -233,18 +336,31 @@ namespace WLS3200Gen2.Model.Module
         /// 從Macro->Aligner位置
         /// </summary>
         /// <returns></returns>
-        public async Task LoadToAlignerAsync(WaferProcessStatus station)
+        public async Task LoadToAlignerAsync(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
             await Task.Run(async () =>
             {
                 WriteLog("LoadToAligner Start");
+                Task alignerHome = tempAligner.Home();
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                 await WaferMacroToStandBy();
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
+                await alignerHome;
+                await tempAligner.Vaccum(true);
                 await WaferStandByToAligner();
                 await tempAligner.Run(0);
                 station= WaferProcessStatus.Complate;
                 WriteLog("LoadToAligner  End");
+                if (station == WaferProcessStatus.Select)
+                {
+                    await tempAligner.Run(eFEMtionRecipe.AlignerWaferIDAngle);
+                    //WaferID讀取
+                    await tempAligner.Run(eFEMtionRecipe.AlignerMicroAngle);
+                }
+                else
+                {
+                    await tempAligner.Run(eFEMtionRecipe.AlignerMicroAngle);
+                }
             });
 
         }
@@ -365,7 +481,10 @@ namespace WLS3200Gen2.Model.Module
             });
 
         }
-
+        /// <summary>
+        /// Robot放片置Macro
+        /// </summary>
+        /// <returns></returns>
         public async Task WaferStandByToMacro()
         {
             try
@@ -390,6 +509,10 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
+        /// <summary>
+        /// Robor從Macro取片
+        /// </summary>
+        /// <returns></returns>
         public async Task WaferMacroToStandBy()
         {
             try
@@ -413,7 +536,10 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
-
+        /// <summary>
+        /// Robor放片置Aligner
+        /// </summary>
+        /// <returns></returns>
         public async Task WaferStandByToAligner()
         {
             try

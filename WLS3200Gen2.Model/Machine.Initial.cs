@@ -18,7 +18,7 @@ namespace WLS3200Gen2.Model
     {
         public event Action<string> Log;
 
-        public async void Initial()
+        public void Initial()
         {
 
             try
@@ -79,7 +79,7 @@ namespace WLS3200Gen2.Model
 
 
 
-        public async void Home()
+        public async Task Home()
         {
             try
             {
@@ -185,7 +185,7 @@ namespace WLS3200Gen2.Model
                 {
                     switch (i)
                     {
-                       case 0:
+                        case 0:
                             AxisConfig axisXConfig = new AxisConfig();
                             axisXConfig.AxisName = "AxisX";
                             axisXConfig.AxisID = 1500;

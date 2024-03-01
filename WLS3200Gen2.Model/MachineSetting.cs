@@ -18,7 +18,9 @@ namespace WLS3200Gen2.Model
         public AxisConfig TableYConfig { get; set; } = new AxisConfig();
         public AxisConfig TableRConfig { get; set; } = new AxisConfig();
         public AxisConfig RobotAxisConfig { get; set; } = new AxisConfig();
-
+        /// <summary>
+        /// 平台Robot取放料位置
+        /// </summary>
         public Point TableWaferCatchPosition { get; set; }
         /// <summary>
         /// Robot 橫移軸 待機位置的座標
@@ -56,9 +58,21 @@ namespace WLS3200Gen2.Model
         public CameraType CamerasType { get; set; }
         public LoadPortType LoadPortType { get; set; }
         public LoadPortQuantity LoadPortCount { get; set; }
+        /// <summary>
+        /// LoadPortRS232的COM
+        /// </summary>
         public string LoadPortCOM { get; set; }
+        /// <summary>
+        /// AlignerRS232的COM
+        /// </summary>
         public string AlignerCOM { get; set; }
+        /// <summary>
+        /// MicroscopeRS232的COM
+        /// </summary>
         public string MicroscopeCOM { get; set; }
+        /// <summary>
+        /// DicRS232的COM
+        /// </summary>
         public string DicCOM { get; set; }
     }
 
