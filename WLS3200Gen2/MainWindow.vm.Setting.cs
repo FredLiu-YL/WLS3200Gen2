@@ -35,7 +35,8 @@ namespace WLS3200Gen2
             try
             {
                 machineSetting.Save(machineSettingPath);
-
+                Customers.Clear();
+     
             }
             catch (Exception ex)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ namespace WLS3200Gen2.Model
 {
     public class MachineSetting : AbstractRecipe
     {
-
+      
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();
         public AxisConfig TableYConfig { get; set; } = new AxisConfig();
         public AxisConfig TableRConfig { get; set; } = new AxisConfig();
@@ -120,4 +119,11 @@ namespace WLS3200Gen2.Model
 
 
     }
+
+    public class RobotAddress
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+    }
+
 }
