@@ -84,7 +84,8 @@ namespace WLS3200Gen2
 
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
-
+        private ObservableCollection<RobotAddress> customers = new ObservableCollection<RobotAddress>();
+        public ObservableCollection<RobotAddress> Customers { get => customers; set => SetValue(ref customers, value); }
         /// <summary>
         /// 新增 Shape
         /// </summary>
@@ -193,6 +194,22 @@ namespace WLS3200Gen2
 
                 MapImage = new WriteableBitmap(bitmap);
 
+                Customers = new ObservableCollection<RobotAddress>()
+            {
+                new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" },
+                new RobotAddress() { Name = "LoadPort1 Step2", Address = "111" },
+                new RobotAddress() { Name = "LoadPort1 Step3", Address = "112" },
+                new RobotAddress() { Name = "LoadPort1 Step4", Address = "113" },
+                new RobotAddress() { Name = "LoadPort1 Step5", Address = "114" },
+                new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" },
+                new RobotAddress() { Name = "LoadPort1 Step2", Address = "111" },
+                new RobotAddress() { Name = "LoadPort1 Step3", Address = "112" },
+                new RobotAddress() { Name = "LoadPort1 Step4", Address = "113" },
+                new RobotAddress() { Name = "LoadPort1 Step5", Address = "114" },
+            };
+
+
+                Customers.Add(new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" });
             }
             catch (Exception ex)
             {

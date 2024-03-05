@@ -313,6 +313,9 @@
                                     </Grid>
                                 </GroupBox>
                             </TabItem>
+                            <TabItem Height="10">
+
+                            </TabItem>
                             <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
                                     <Grid >
@@ -372,10 +375,11 @@
                             <TabItem Header="Micro Judge" FontSize="10" Visibility="Visible"    Height="10"   >
                                 <Grid>
                                     <Grid.ColumnDefinitions >
-                                        <ColumnDefinition Width="0.6*" />
-                                        <ColumnDefinition Width="0.4*"/>
+                                        <ColumnDefinition Width="409*" />
+                                        <ColumnDefinition Width="138*"/>
+                                        <ColumnDefinition Width="364*"/>
                                     </Grid.ColumnDefinitions>
-                                    <GroupBox Grid.Column="0 " Grid.Row="0" Header="Micro Judge" Grid.ColumnSpan="1" FontSize="15">
+                                    <GroupBox Grid.Column="0 " Grid.Row="0" Header="Micro Judge" Grid.ColumnSpan="2" FontSize="15">
                                         <Grid>
                                             <Grid.RowDefinitions >
                                                 <RowDefinition Height="0.12*"/>
@@ -406,11 +410,12 @@
 
                                         <Grid.ColumnDefinitions>
 
-                                            <ColumnDefinition Width="0.8*"/>
-                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="202*"/>
+                                            <ColumnDefinition Width="73*"/>
+                                            <ColumnDefinition Width="179*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <GroupBox Grid.Column="0" Grid.RowSpan="2" Header="Macro Judge"  FontSize="15" >
+                                        <GroupBox Grid.Column="0" Header="Macro Judge"  FontSize="15" >
                                             <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="-8,0,-8,0">
 
                                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Height="60">
@@ -424,7 +429,7 @@
 
                                             </StackPanel>
                                         </GroupBox>
-                                        <GroupBox Grid.Column="2" Grid.RowSpan="2" Header="WorkItem" FontSize="15" >
+                                        <GroupBox Grid.Column="1" Header="WorkItem" FontSize="15" Grid.ColumnSpan="2" >
 
                                             <StackPanel Orientation="Vertical"  >
                                                 <Button Grid.Column="1" Grid.Row="1" Width="140" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Grab" Margin="5,0,0,0" />
@@ -608,8 +613,11 @@
                                                             </Grid.ColumnDefinitions>
                                                             <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox  Grid.Row="0"  Grid.Column="1"  />
-                                                            <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox  Grid.Row="1"  Grid.Column="1"  />
+                                                            <Button Grid.Row="0"  Grid.Column="2" Content="Run"/>
+
+                                                            <TextBlock Grid.Row="2"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBox  Grid.Row="2"  Grid.Column="1"  />
+                                                            <Button Grid.Row="2"  Grid.Column="2" Content="Run"/>
                                                         </Grid>
                                                     </Grid>
                                                 </GroupBox>
@@ -1055,67 +1063,432 @@
                 <TabItem.Header>
                     <StackPanel  Width="auto"  Height="auto">
                         <materialDesign:PackIcon    Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="CogOutline" />
-                        <TextBlock  HorizontalAlignment="Center"   Text="Setting" />
+                        <TextBlock  HorizontalAlignment="Center"   Text="Settings" />
                     </StackPanel>
                 </TabItem.Header>
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition />
+                        <RowDefinition Height="0.75*"/>
                         <RowDefinition Height="0.25*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="0.5*"/>
+                        <ColumnDefinition Width="0.3*"/>
+                        <ColumnDefinition Width="0.3*"/>
+                        <ColumnDefinition Width="0.4*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid Grid.Row="0"  Grid.ColumnSpan="2">
-                        <GroupBox Grid.Column="0" Header="EFEM" FontSize="24"  >
-                            <Grid >
+                    <GroupBox Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                     Header="Axis Settings" Style="{StaticResource MaterialDesignGroupBox}">
+                        <Grid Margin="-5">
+                            <Grid.Resources>
+                                <Style x:Key="TextStyle" TargetType="Label">
+                                    <Setter Property="FontSize" Value="10" />
+                                    <!-- 需要自行參考 Style name  TextStyle -->
+                                </Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="FontSize" Value="10" />
+                                    <!--  預設所有 TextBox -->
+                                </Style>
+                                <Style TargetType="Label">
+                                    <Setter Property="FontSize" Value="10" />
+                                    <!--  預設所有 TextBox -->
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="0.5*" />
+                                <ColumnDefinition Width="0.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0.9*" />
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <ColumnDefinition Width="0.3*"/>
+                                    <ColumnDefinition Width="0.3*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="150*"/>
-                                    <RowDefinition Height="300*"/>
-                                    <RowDefinition Height="200*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="47"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="47*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" >
+
+                                </Border>
+                                <TextBlock  Text="Robot Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
+
+                                <Label Grid.Row="1"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Load Port1"/>
+                                <TextBox Grid.Row="1" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+
+                                <Label Grid.Row="2"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Load Port2"/>
+                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+                                <Label Grid.Row="3"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Aligner1"/>
+                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
+                                <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+
+                                <Label Grid.Row="4"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Aligner2"/>
+                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
+                                <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+
+                                <Label Grid.Row="5"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Macro"/>
+                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.MacroPos}"  Grid.Column="1" />
+                                <Button Grid.Row="5"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Macro"/>
+
+
+                                <Label Grid.Row="6"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Micro"/>
+                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.MicroPos}"  Grid.Column="1" />
+                                <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
+
+                                <TextBlock  Grid.Row="8" Grid.ColumnSpan="3"  Text="Micro Vacuum" FontWeight="Bold" Foreground="Teal" />
+                                <Border Grid.Row="9" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" >
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label Grid.Row="0" Content="8 Inch" />
+                                        <Label Grid.Row="1" Content="12 Inch" />
+                                        <Button Margin="2" Grid.Row="0" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
+                                        <Button Margin="2" Grid.Row="0"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
+                                        <Button Margin="2" Grid.Row="1" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
+                                        <Button Margin="2" Grid.Row="1"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
+                                        <usercontrols:SignalUC Grid.Row="0" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="False" />
+                                        <usercontrols:SignalUC Grid.Row="1" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="False" />
+                                    </Grid>
+                                </Border>
+
+
+                            </Grid>
+
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.35*"/>
+                                    <ColumnDefinition Width="0.35*"/>
+                                    <ColumnDefinition Width="0.3*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="47"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="47*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="46*"/>
+                                    <RowDefinition Height="47*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock  Text="Wafer Pick/Put Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+
+                                <Label Grid.Row="1"  Grid.Column="0" Content="Axis X:" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="1" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+                                <Label Grid.Row="2"  Grid.Column="0" Content="Axis Y:" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+                                <Label Grid.Row="3"  Grid.Column="0" Content="Axis Z:" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+
+                                <Label Grid.Row="4"  Grid.Column="0" Content="Axis T:" FontSize="15" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                            </Grid>
+                        </Grid>
+
+                    </GroupBox>
+                    <GroupBox Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                     Header="Microscope Settings" Style="{StaticResource MaterialDesignGroupBox}" >
+                        <Grid Margin="-5">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.2*"/>
+                                <ColumnDefinition Width="0.4*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.3*"/>
+                                    <ColumnDefinition Width="0.7*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock  Text="Lens Ratio" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+
+                                <Label Grid.Row="1"  Grid.Column="0" Content="Lens" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="1" Content="um/pixal" FontSize="15" VerticalAlignment="Bottom" />
+
+                                <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+
+                                <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+
+                                <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+
+                                <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+
+                                <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.2*"/>
+                                    <ColumnDefinition Width="0.35*"/>
+                                    <ColumnDefinition Width="0.1*"/>
+                                    <ColumnDefinition Width="0.35*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock  Text="AF Default" Grid.ColumnSpan="4" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+
+
+
+                                <Label Grid.Row="1"  Grid.Column="0" Content="Lens" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="1" Content="Z Pos" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="3" Content="Aberation Value" FontSize="15" VerticalAlignment="Bottom"/>
+
+                                <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                <TextBox Grid.Row="2" Text="123456"  Grid.Column="1"  VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+
+                                <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+
+                                <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+
+                                <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+
+                                <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+
+                                <Border   Grid.Row="9" Grid.Column ="0" Grid.ColumnSpan="4" Grid.RowSpan="3" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock Grid.Row="8"  Text="AF Limit" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+
+                                <Label Grid.Row="9"  Grid.Column="1" Content="Positive Limit" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="9"  Grid.Column="3" Content="Negative Limit" FontSize="15" VerticalAlignment="Bottom"/>
+
+                                <Label Grid.Row="10"  Grid.Column="0" Content="Z:" FontSize="15" VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="10" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="10" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="0" Grid.Column="2" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                     Header="Robot Address Settings" Style="{StaticResource MaterialDesignGroupBox}" >
+                        <Grid Margin="-5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="0.25*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <ColumnDefinition Width="0.6*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="6" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock  Text="LoadPort1 Pick" Grid.ColumnSpan="3" FontSize="14" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                <Label Grid.Row="1"  Grid.Column="0" Content="Step" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="1" Content="Address" FontSize="15" VerticalAlignment="Bottom" />
+
+                                <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="2" Text="110"  Grid.Column="1" VerticalAlignment="Center"  />
+
+                                <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="3" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="4" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="5" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="6" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+
+                                <Border Grid.Row="8" Grid.ColumnSpan="3" Grid.RowSpan="6" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock Grid.Row="7"  Text="LoadPort1 Place" Grid.ColumnSpan="3" FontSize="14" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                <Label Grid.Row="8"  Grid.Column="0" Content="Step" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="8"  Grid.Column="1" Content="Address" FontSize="15" VerticalAlignment="Bottom" />
+
+                                <Label Grid.Row="9"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="9" Text="110"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="10"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="10" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="11"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="11" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="12"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="12" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="13"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="13" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <ColumnDefinition Width="0.6*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
 
                                 </Grid.RowDefinitions>
-                                <GroupBox Header="Robot" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2">
-                                    <UserControlUC:RobotUnitUC Margin="-5" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }" />
-                                </GroupBox>
-                                <GroupBox Grid.Row="2" Grid.Column="0" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                     Header="Aligner" Style="{StaticResource MaterialDesignGroupBox}">
-                                    <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Margin="-5" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
-                                </GroupBox>
+                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="6" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock  Text="LoadPort2 Pick" Grid.ColumnSpan="3" FontSize="14" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                <Label Grid.Row="1"  Grid.Column="0" Content="Step" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="1" Content="Address" FontSize="15" VerticalAlignment="Bottom" />
+
+                                <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="2" Text="110"  Grid.Column="1" VerticalAlignment="Center"  />
+
+                                <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="3" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="4" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="5" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="6" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
 
 
+                                <Border Grid.Row="8" Grid.ColumnSpan="3" Grid.RowSpan="6" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock Grid.Row="7"  Text="LoadPort2 Place" Grid.ColumnSpan="3" FontSize="14" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                <Label Grid.Row="8"  Grid.Column="0" Content="Step" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="8"  Grid.Column="1" Content="Address" FontSize="15" VerticalAlignment="Bottom" />
 
-                                <GroupBox Grid.Column="1" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                    <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}"/>
+                                <Label Grid.Row="9"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="9" Text="110"  Grid.Column="1" VerticalAlignment="Center" />
 
-                                </GroupBox>
-                                <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" 
-                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                    <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}"/>
+                                <Label Grid.Row="10"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="10" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
 
-                                </GroupBox>
+                                <Label Grid.Row="11"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="11" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="12"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="12" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
+
+                                <Label Grid.Row="13"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Center" />
+                                <TextBox Grid.Row="13" Text="111"  Grid.Column="1" VerticalAlignment="Center" />
                             </Grid>
-                        </GroupBox>
-
-                    </Grid>
-                    <Grid Grid.Row="1" Grid.Column="2">
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+                    <Grid Grid.Row="1" Grid.Column="3">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
@@ -1128,29 +1501,7 @@
 
                         <Button Grid.Row="1" Grid.Column="1" Height="60" Content="Save" FontSize="30" Command="{Binding SaveSettingCommand}"     />
                     </Grid>
-                    <GroupBox Grid.Row="0" Grid.Column="4" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                     Header="Macro" Style="{StaticResource MaterialDesignGroupBox}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-
-
-                            <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
-
-                            <TextBox  Grid.Row="2"  Grid.Column="1"/>
-                            <TextBox  Grid.Row="3"  Grid.Column="1"/>
-                        </Grid>
-                    </GroupBox>
+                   
                 </Grid>
             </TabItem>
 
@@ -1158,44 +1509,129 @@
                 <TabItem.Header>
                     <StackPanel  Width="auto"  Height="auto">
                         <materialDesign:PackIcon  Margin="0,0,0,0"   Width="34"   Height="34"   HorizontalAlignment="Center"  Kind="Security" />
-                        <TextBlock  HorizontalAlignment="Center"   Text="Security" />
+                        <TextBlock  HorizontalAlignment="Center"   Text="Unit Test" />
                     </StackPanel>
                 </TabItem.Header>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="0.35*" />
-                    </Grid.RowDefinitions>
-                    <Grid>
+                <TabControl >
+                    <TabItem >
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock Text="Motion、IO" Grid.Column="1"  Margin="-10,0,0,0" FontSize="22" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="0.35*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="0.3*"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <motion:AxisMotionUC Axis="{Binding TableX}"  AxisSetConfig="{Binding TableXConfig}"   />
-                            <motion:AxisMotionUC Axis="{Binding TableY}"  AxisSetConfig="{Binding TableYConfig}"/>
-                            <motion:AxisMotionUC Axis="{Binding TableR}"  AxisSetConfig="{Binding TableRConfig}"/>
-                            <motion:AxisMotionUC Axis="{Binding RobotAxis}" AxisSetConfig="{Binding RobotAxisConfig}" />
-                            <Grid Height="480">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="0.3*"/>
                                 </Grid.ColumnDefinitions>
-                                <GroupBox Header="Output" Grid.Column="0">
-                                    <UserControlUC:DigitalOutputUC Margin="-2" OutputSignals="{Binding DigitalOutputs}"   />
-                                </GroupBox>
-                                <GroupBox Header="Input" Grid.Column="1" >
-                                    <UserControlUC:DigitalInputUC Margin="-2" InputSignals="{Binding DigitalInputs}"   />
-                                </GroupBox>
+                                <StackPanel>
+                                    <motion:AxisMotionUC Axis="{Binding TableX}"  AxisSetConfig="{Binding TableXConfig}"   />
+                                    <motion:AxisMotionUC Axis="{Binding TableY}"  AxisSetConfig="{Binding TableYConfig}"/>
+                                    <motion:AxisMotionUC Axis="{Binding TableR}"  AxisSetConfig="{Binding TableRConfig}"/>
+                                    <motion:AxisMotionUC Axis="{Binding RobotAxis}" AxisSetConfig="{Binding RobotAxisConfig}" />
+                                    <Grid Height="480">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <GroupBox Header="Output" Grid.Column="0">
+                                            <UserControlUC:DigitalOutputUC Margin="-2" OutputSignals="{Binding DigitalOutputs}"   />
+                                        </GroupBox>
+                                        <GroupBox Header="Input" Grid.Column="1" >
+                                            <UserControlUC:DigitalInputUC Margin="-2" InputSignals="{Binding DigitalInputs}"   />
+                                        </GroupBox>
+                                    </Grid>
+                                </StackPanel>
+
                             </Grid>
-                        </StackPanel>
+                            <Button HorizontalAlignment="Left" Margin="284,106,0,134" Grid.Row="1" Width="75"    Command="{Binding TESTCommand}" />
+                            <Button Content="Button" HorizontalAlignment="Left" Margin="439,106,0,134" Grid.Row="1" Width="75"  Command="{Binding TEST1Command}" />
 
-                    </Grid>
-                    <Button HorizontalAlignment="Left" Margin="284,106,0,134" Grid.Row="1" Width="75"    Command="{Binding TESTCommand}" />
-                    <Button Content="Button" HorizontalAlignment="Left" Margin="439,106,0,134" Grid.Row="1" Width="75"  Command="{Binding TEST1Command}" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem >
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock Text="Microscope" Grid.Column="1"  Margin="-10,0,0,0" FontSize="22" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="299*"/>
+                                <ColumnDefinition Width="613*"/>
+                                <ColumnDefinition Width="912*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions >
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <GroupBox  FontSize="16"  Header="BXFM" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+                                <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
+                            </GroupBox>
+                            <UserControlUC:AFAberationUnitUC Grid.Column="2" Margin="356,92"/>
 
-                </Grid>
+                        </Grid>
+
+                    </TabItem>
+                    <TabItem >
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal" >
+                                <TextBlock Text="Robot、LoadPort、Aligner" Grid.Column="1"  Margin="-10,0,0,0" FontSize="22" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.9*" />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="150*"/>
+                                <RowDefinition Height="300*"/>
+                                <RowDefinition Height="200*"/>
+
+                            </Grid.RowDefinitions>
+                            <GroupBox Header="Robot" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2">
+                                <UserControlUC:RobotUnitUC Margin="-5" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }" />
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Grid.Column="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                     Header="Aligner" Style="{StaticResource MaterialDesignGroupBox}">
+                                <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Margin="-5" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
+                            </GroupBox>
+
+
+
+                            <GroupBox Grid.Column="1" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}"/>
+
+                            </GroupBox>
+                            <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" 
+                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}"/>
+
+                            </GroupBox>
+                        </Grid>
+                    </TabItem>
+
+                </TabControl>
+
             </TabItem>
 
         </TabControl>
@@ -1208,15 +1644,15 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Height="80">
-                    <Button Width="80" Height="80" Background="{DynamicResource MaterialDesignTextFieldBoxBackground}"
+            <Grid Grid.Row="0" Height="80">
+                <Button Width="80" Height="80" Background="{DynamicResource MaterialDesignTextFieldBoxBackground}"
                     IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                     Style="{StaticResource MaterialDesignIconButton}"  Command="{Binding VolumeOffCommand}"  ToolTip="Mute" Foreground="#FF010910">
 
-                        <materialDesign:PackIcon Width="70" Height="70" Kind="VolumeOff"  />
-                    </Button>
-                </Grid>
-                <Grid Grid.Row="2" Height="120">
+                    <materialDesign:PackIcon Width="70" Height="70" Kind="VolumeOff"  />
+                </Button>
+            </Grid>
+            <Grid Grid.Row="2" Height="120">
                 <StackPanel>
                     <materialDesign:PackIcon    Width="44"   Height="44"   HorizontalAlignment="Center"  Kind="AccountLock" />
                     <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Right}" />
@@ -1229,11 +1665,11 @@
                     <Button Width="80" Height="80" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                         Style="{StaticResource MaterialDesignIconForegroundButton}"  Command="{Binding ShowInfoCommand}"  ToolTip="Information"  >
 
-                        <materialDesign:PackIcon Width="70" Height="70" Kind="InformationOutline"  />
-                    </Button>
-                </Grid>
+                    <materialDesign:PackIcon Width="70" Height="70" Kind="InformationOutline"  />
+                </Button>
+            </Grid>
 
-         
+
         </Grid>
 
     </Grid>

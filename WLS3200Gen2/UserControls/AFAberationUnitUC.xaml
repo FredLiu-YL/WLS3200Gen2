@@ -7,36 +7,34 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         x:Name="AFAberationUnit"
-        Height="150" Width="200">
+        Height="100" Width="200">
 
     <Grid DataContext="{Binding ElementName=AFAberationUnit}" Background="White">
-        <GroupBox Header="Aberation">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.5*"/>
-                    <ColumnDefinition Width="0.2*"/>
-                    <ColumnDefinition Width="0.3*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions >
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.RowSpan="2"  Grid.Column="0" Text="{Binding AFAberationUIShow.AberationValue}" FontSize="12"  />
-                <!--{Binding BXFMUIShow.FocusZ}-->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.3*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions >
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.RowSpan="2"  Grid.Column="0" Text="{Binding AFAberationUIShow.AberationValue}" FontSize="12"  />
+            <!--{Binding BXFMUIShow.FocusZ}-->
 
-                <Button  Grid.Column="1" Grid.Row="0" Width="15" Style="{StaticResource MaterialDesignPaperButton}" Command="{Binding AberationMove}" CommandParameter="Up" IsEnabled="{Binding IsAberationMove}">
-                    <materialDesign:PackIcon Margin="-22,0,0,0"  Width="26" Height="26"  Kind="ArrowUpBox" />
-                </Button>
+            <Button  Grid.Column="1" Grid.Row="0" Width="15" Style="{StaticResource MaterialDesignPaperButton}" Command="{Binding AberationMove}" CommandParameter="Up" IsEnabled="{Binding IsAberationMove}">
+                <materialDesign:PackIcon Margin="-22,0,0,0"  Width="26" Height="26"  Kind="ArrowUpBox" />
+            </Button>
 
-                <Button  Grid.Column="1" Grid.Row="1" Width="15" Style="{StaticResource MaterialDesignPaperButton}" Command="{Binding AberationMove}" CommandParameter="Down" IsEnabled="{Binding IsAberationMove}">
-                    <materialDesign:PackIcon Margin="-22,0,0,0" Width="26" Height="26"  Kind="ArrowDownBox" />
-                </Button>
+            <Button  Grid.Column="1" Grid.Row="1" Width="15" Style="{StaticResource MaterialDesignPaperButton}" Command="{Binding AberationMove}" CommandParameter="Down" IsEnabled="{Binding IsAberationMove}">
+                <materialDesign:PackIcon Margin="-22,0,0,0" Width="26" Height="26"  Kind="ArrowDownBox" />
+            </Button>
 
-                <StackPanel Orientation="Vertical" Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Center" >
-                    <TextBox Width="35" Text="{Binding DistanceAberation}" HorizontalAlignment="Right" />
-                    <Label Content="(um)" FontSize="12" Grid.Column="2" HorizontalAlignment="Right" />
-                </StackPanel>
-            </Grid>
-        </GroupBox>
+            <StackPanel Orientation="Vertical" Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Center" >
+                <TextBox Width="35" Text="{Binding DistanceAberation}" HorizontalAlignment="Right" />
+                <Label Content="(um)" FontSize="12" Grid.Column="2" HorizontalAlignment="Right" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
