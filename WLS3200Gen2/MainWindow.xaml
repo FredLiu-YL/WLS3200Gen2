@@ -1647,7 +1647,7 @@
             <Grid Grid.Row="0" Height="80">
                 <Button Width="80" Height="80" Background="{DynamicResource MaterialDesignTextFieldBoxBackground}"
                     IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
-                    Style="{StaticResource MaterialDesignIconButton}"  ToolTip="Mute" Foreground="#FF010910">
+                    Style="{StaticResource MaterialDesignIconButton}"  Command="{Binding VolumeOffCommand}"  ToolTip="Mute" Foreground="#FF010910">
 
                     <materialDesign:PackIcon Width="70" Height="70" Kind="VolumeOff"  />
                 </Button>
@@ -1659,11 +1659,11 @@
                     <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Name}" />
                     <account:UserRightsControl Margin="10,0,0,0" Grid.Row="1" Account="{Binding Account}"/>
                 </StackPanel>
-            </Grid>
-
-            <Grid Grid.Row="4" Height="80" Width="90">
-                <Button Width="80" Height="80" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
-                        Style="{StaticResource MaterialDesignIconForegroundButton}"  ToolTip="Information"  >
+                </Grid>
+               
+                <Grid Grid.Row="4" Height="80" Width="90">
+                    <Button Width="80" Height="80" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                        Style="{StaticResource MaterialDesignIconForegroundButton}"  Command="{Binding ShowInfoCommand}"  ToolTip="Information"  >
 
                     <materialDesign:PackIcon Width="70" Height="70" Kind="InformationOutline"  />
                 </Button>

@@ -16,6 +16,7 @@ using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Data;
+using YuanliCore.Machine.Base;
 using YuanliCore.Model.Interface;
 using YuanliCore.Model.Microscope;
 using YuanliCore.UserControls;
@@ -35,6 +36,7 @@ namespace WLS3200Gen2
 
         private int tabControlSelectedIndex; // 0:Process Infomation   1:Alignment  2:Micro  3 :Macro
         private bool isOperateUI = true;
+    
         private double manualPosX, manualPosY;
         private MachineStates machinestatus = MachineStates.IDLE;
         private WaferProcessStatus macroJudgeOperation;
@@ -43,6 +45,7 @@ namespace WLS3200Gen2
         private BXFMUI bXFMUIShow = new BXFMUI();
         private IMacro macro;
         private MacroStatus macroStatus = new MacroStatus();
+
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
@@ -417,7 +420,38 @@ namespace WLS3200Gen2
             {
             }
         });
+        public ICommand VolumeOffCommand => new RelayCommand(async () =>
+        {
+            try
+            {
 
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand ShowInfoCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
         public ICommand TEST1Command => new RelayCommand(async () =>
         {
             try
@@ -434,7 +468,6 @@ namespace WLS3200Gen2
             {
             }
         });
-
 
 
 

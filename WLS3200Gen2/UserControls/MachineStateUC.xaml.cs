@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
- 
+using YuanliCore.Machine.Base;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -59,12 +59,5 @@ namespace WLS3200Gen2.UserControls
    
 
 
-    public enum MachineStates
-    {
-        IDLE,
-        RUNNING,
-        PAUSED,//對位異常
-        Alarm,//(紅色 紅燈)真空異常、資料上傳等...
-        Emergency//(紅色 紅燈)緊急停止、軸卡掛掉、不能往下做(一定要重開)
-    }
+   
 }

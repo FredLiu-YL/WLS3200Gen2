@@ -121,6 +121,7 @@
     <Compile Include="Module\OpticalAlignment.cs" />
     <Compile Include="Module\ProcessDataOutput.cs" />
     <Compile Include="Module\SECS.cs" />
+    <Compile Include="Module\StackLight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recipe\AlignmentRecipe.cs" />
     <Compile Include="Recipe\BincodeList.cs" />

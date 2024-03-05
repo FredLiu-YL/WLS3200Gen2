@@ -22,6 +22,7 @@ using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
 using YuanliCore.Data;
 using YuanliCore.Interface;
+using YuanliCore.Machine.Base;
 using YuanliCore.Model.Interface;
 using YuanliCore.Model.UserControls;
 using YuanliCore.Motion;
@@ -46,7 +47,7 @@ namespace WLS3200Gen2
         private System.Windows.Point mapmousePixcel;
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
-        private bool isRefresh, isInitialComple;
+        private bool isRefresh, isInitialComplete;
         private LoadPortQuantity loadportQuantity;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
@@ -179,7 +180,7 @@ namespace WLS3200Gen2
                 {
                     ProcessStations.Insert(0, new ProcessStation(i + 1));
                 }
-                isInitialComple = true;
+                isInitialComplete = true;
 
                 //載入機台設定LoadPort 數量  給UI作卡控
                 LoadportQuantity = machineSetting.LoadPortCount;
@@ -258,6 +259,11 @@ namespace WLS3200Gen2
             }
         });
 
+        private void SwitchStates(MachineStates states)
+        {
+
+        }
+
         //Security進入會執行
         private void LoadSecurityPage()
         {
@@ -273,10 +279,12 @@ namespace WLS3200Gen2
 
             WriteLog("Enter the SecurityPage");
         }
+
+
         //離開Security頁面會執行
         private void UnLoadSecurityPage()
         {
-            if (isInitialComple)
+            if (isInitialComplete)
             {
                 //軸 修改參數存檔
                 machineSetting.Save(machineSettingPath);
