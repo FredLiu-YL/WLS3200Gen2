@@ -35,7 +35,7 @@ namespace WLS3200Gen2
         private string version;
         private Axis tableX, tableY, tableR;
         private Axis robotAxis;
-        private AxisConfig tableXConfig, tableYConfig, tableRConfig, robotAxisConfig;
+        private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
         private double tablePosX, tablePosY, tablePosR;
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
@@ -62,6 +62,7 @@ namespace WLS3200Gen2
         public Axis RobotAxis { get => robotAxis; set => SetValue(ref robotAxis, value); }
         public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
         public AxisConfig TableYConfig { get => tableYConfig; set => SetValue(ref tableYConfig, value); }
+        public AxisConfig TableZConfig { get => tableZConfig; set => SetValue(ref tableZConfig, value); }
         public AxisConfig TableRConfig { get => tableRConfig; set => SetValue(ref tableRConfig, value); }
         public AxisConfig RobotAxisConfig { get => robotAxisConfig; set => SetValue(ref robotAxisConfig, value); }
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
@@ -122,8 +123,7 @@ namespace WLS3200Gen2
                 //加入 LOG功能到各模組 一定要放在  machine.Initial()後面
                 machine.MicroDetection.WriteLog += WriteLog;
                 machine.Feeder.WriteLog += WriteLog;
-
-
+                await Task.Delay(10);//顯示UI 
                 await machine.Home();
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
@@ -137,6 +137,7 @@ namespace WLS3200Gen2
 
                 TableXConfig = machineSetting.TableXConfig;
                 TableYConfig = machineSetting.TableYConfig;
+                TableZConfig = machineSetting.TableZConfig;
                 TableRConfig = machineSetting.TableRConfig;
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
@@ -297,6 +298,60 @@ namespace WLS3200Gen2
                     TablePosR = machine.MicroDetection.AxisR.Position;
                     //if (atfMachine.AFModule.AFSystem != null)
                     //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
+
+                    if (machine.Feeder.LoadPortL != null)
+                    {
+                        LoadPortStatus loadPortStatus = new LoadPortStatus();
+                        loadPortStatus = await machine.Feeder.LoadPortL.GetStatus();
+                        LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
+                        LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
+                        LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
+                        LoadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
+                        LoadPortUIShow.IsClamp = loadPortStatus.IsClamp;
+                        LoadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
+                        LoadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
+                        LoadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
+                        LoadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
+                        LoadPortUIShow.IsDock = loadPortStatus.IsDock;
+                    }
+                    if (machine.Feeder.AlignerL != null)
+                    {
+                        AlignerStatus alignerStatus = new AlignerStatus();
+                        alignerStatus = await machine.Feeder.AlignerL.GetStatus();
+                        AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
+                        AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
+                        AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
+                        AlignerUIShow.IsWafer = alignerStatus.IsWafer;
+                        AlignerUIShow.IsOrg = alignerStatus.IsOrg;
+                        AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
+                    }
+                    if (machine.Feeder.Robot != null)
+                    {
+                        RobotStatus robotStatus = new RobotStatus();
+                        robotStatus = await machine.Feeder.Robot.GetStatus();
+                        RobotStaus.Mode = robotStatus.Mode;
+                        RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
+                        RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
+                        RobotStaus.IsCommandDoneSignal = robotStatus.IsCommandDoneSignal;
+                        RobotStaus.IsMovDoneSignal = robotStatus.IsMovDoneSignal;
+                        RobotStaus.IsRunning = robotStatus.IsRunning;
+                        RobotStaus.ErrorCode = robotStatus.ErrorCode;
+                        RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
+
+                        RobotStaus.IsHavePiece = await machine.Feeder.Robot.IsHavePiece();
+                        RobotStaus.IsLockOK = await machine.Feeder.Robot.IsLockOK();
+                        //RobotUIIShow
+                    }
+
+                    if (machine.MicroDetection.Microscope != null)
+                    {
+                        double nowPos = 0;
+                        nowPos = await machine.MicroDetection.Microscope.GetZPosition();
+                        BXFMUIShow.FocusZ = Convert.ToInt32(nowPos);
+                        BXFMUIShow.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
+                        BXFMUIShow.LightValue = machine.MicroDetection.Microscope.LightValue;
+                    }
+
                     await Task.Delay(300);
                 }
 

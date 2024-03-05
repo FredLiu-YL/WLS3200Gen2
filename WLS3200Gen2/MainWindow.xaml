@@ -313,10 +313,10 @@
                                     </Grid>
                                 </GroupBox>
                             </TabItem>
-                            <TabItem Height="10">
+                            <TabItem Header="WaferID" Height="10">
 
                             </TabItem>
-                            <TabItem Header="Information"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
+                            <TabItem Header="Alignment"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
                                     <Grid >
                                         <Grid.ColumnDefinitions >
