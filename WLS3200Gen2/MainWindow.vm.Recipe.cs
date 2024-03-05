@@ -69,7 +69,7 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComple) return isMainRecipePageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!isInitialComplete) return isMainRecipePageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
 
                 if (isMainRecipePageSelect)
                     LoadRecipePage();
@@ -87,7 +87,7 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComple) return isMainSettingPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!isInitialComplete) return isMainSettingPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
 
                 if (isMainSettingPageSelect)
                     LoadSettingPage();
@@ -105,7 +105,7 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComple) return isMainSecurityPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!isInitialComplete) return isMainSecurityPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
                 if (isMainSecurityPageSelect)
                     LoadSecurityPage();
                 else if (!isMainSecurityPageSelect)

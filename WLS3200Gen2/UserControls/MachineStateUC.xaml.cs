@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
- 
+using YuanliCore.Machine.Base;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -59,12 +59,5 @@ namespace WLS3200Gen2.UserControls
    
 
 
-    public enum MachineStates
-    {
-        IDLE,
-        RUNNING,
-        PAUSED,
-        Alarm,
-        Emergency  
-    }
+   
 }
