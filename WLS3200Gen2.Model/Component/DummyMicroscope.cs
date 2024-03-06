@@ -79,22 +79,22 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<int> GetAFPEL()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<int>(0);
         }
 
         public Task<double> GetZNEL()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<double>(0);
         }
 
         public Task<double> GetZPEL()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<double>(0);
         }
 
         public Task<double> GetZPosition()
         {
-            throw new NotImplementedException();
+            return Task.FromResult<double>(0); 
         }
 
         public Task Home()

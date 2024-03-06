@@ -265,7 +265,8 @@ namespace WLS3200Gen2
         private void SwitchStates(MachineStates states)
         {
             Machinestatus = states;
-            stackLight.SwitchStates(states);
+            if(stackLight!=null)
+                stackLight.SwitchStates(states);
         }
 
         //Security進入會執行

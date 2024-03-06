@@ -23,10 +23,10 @@ namespace WLS3200Gen2.Module
 
 
             isVolume = true;
-            this.ledRed = outputs[10];
-            this.ledGreen = outputs[11];
-            this.ledYellow = outputs[12];
-            this.buzzer = outputs[13];
+            this.ledRed = outputs[6];
+            this.ledGreen = outputs[7];
+            this.ledYellow = outputs[8];
+            this.buzzer = outputs[8];
             SwitchStates(MachineStates.IDLE);
             isReflash = true;
             reflashTask = Task.Run(Reflash);

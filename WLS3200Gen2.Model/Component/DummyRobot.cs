@@ -38,7 +38,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<RobotStatus> GetStatus()
         {
-            throw new NotImplementedException();
+            return Task.Run(()=> new RobotStatus());
         }
 
         public Task Home()
@@ -54,7 +54,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<bool> IsHavePiece()
         {
-            throw new NotImplementedException();
+            return Task.Run(() => false);
         }
 
         public async Task<bool> IsLockOK()
