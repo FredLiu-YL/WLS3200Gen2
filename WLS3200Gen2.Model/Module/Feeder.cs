@@ -354,19 +354,14 @@ namespace WLS3200Gen2.Model.Module
                 await alignerHome;
                 await tempAligner.Vaccum(true);
                 await WaferStandByToAligner();
-                await tempAligner.Run(0);
                 station = WaferProcessStatus.Complate;
                 WriteLog?.Invoke("LoadToAligner  End");
                 if (station == WaferProcessStatus.Select)
                 {
                     await tempAligner.Run(eFEMtionRecipe.AlignerWaferIDAngle);
-                    //WaferID讀取
-                    await tempAligner.Run(eFEMtionRecipe.AlignerMicroAngle);
+                    //WaferID讀取   
                 }
-                else
-                {
-                    await tempAligner.Run(eFEMtionRecipe.AlignerMicroAngle);
-                }
+                await tempAligner.Run(eFEMtionRecipe.AlignerMicroAngle);
             });
 
         }

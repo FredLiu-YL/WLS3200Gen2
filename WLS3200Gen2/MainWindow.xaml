@@ -314,7 +314,9 @@
                                 </GroupBox>
                             </TabItem>
                             <TabItem Header="WaferID" Height="10">
-
+                                <GroupBox Header="WaferID" FontSize="15">
+                                    
+                                </GroupBox>
                             </TabItem>
                             <TabItem Header="Alignment"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
@@ -375,32 +377,90 @@
                             <TabItem Header="Micro Judge" FontSize="10" Visibility="Visible"    Height="10"   >
                                 <Grid>
                                     <Grid.ColumnDefinitions >
-                                        <ColumnDefinition Width="409*" />
-                                        <ColumnDefinition Width="138*"/>
-                                        <ColumnDefinition Width="364*"/>
+                                        <ColumnDefinition Width="0.19*" />
+                                        <ColumnDefinition Width="0.19*" />
+                                        <ColumnDefinition Width="0.62*"/>
                                     </Grid.ColumnDefinitions>
-                                    <GroupBox Grid.Column="0 " Grid.Row="0" Header="Micro Judge" Grid.ColumnSpan="2" FontSize="15">
-                                        <Grid>
-                                            <Grid.RowDefinitions >
-                                                <RowDefinition Height="0.12*"/>
-                                                <RowDefinition Height="0.88*"/>
-                                            </Grid.RowDefinitions>
-                                            <StackPanel Orientation="Horizontal" Grid.Row="0">
-                                                <Button Content="PASS" Width="150" Height="30" Margin="5,0,0,0"/>
-                                                <Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>
+                                    <Grid Grid.Column="0" Grid.ColumnSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions >
+                                            <RowDefinition Height="0.2*"/>
+                                            <RowDefinition Height="0.8*"/>
+                                        </Grid.RowDefinitions>
+                                        <GroupBox  Grid.Column="0" Grid.ColumnSpan="2" Header="Now Idx" FontSize="12">
+                                           
+                                            <StackPanel Orientation="Horizontal" Margin=" 0,-10,0,-5"  >
+                                                <Label Content="Col:" Width="50" VerticalAlignment="Center" FontSize="15" />
+                                                <TextBox Text="{Binding NowIndexX}"  VerticalAlignment="Center"  FontSize="15"   Width="70" />
+                                                <Label Content="Row:" Width="50" VerticalAlignment="Center" FontSize="15" />
+                                                <TextBox Text="{Binding NowIndexY}"  VerticalAlignment="Center"  FontSize="15"  Width="70" />
                                             </StackPanel>
-                                            <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}" Margin="-8,10,-16,-10" HorizontalAlignment="Left" Width="552" />
-                                        </Grid>
+                                        </GroupBox>
+                                        <Grid Grid.Column="0" Grid.ColumnSpan="2">
 
-                                    </GroupBox>
-                                    <GroupBox Grid.Column="2" Grid.Row="0" Header="WorkItem" FontSize="15" >
-                                        <StackPanel Orientation="Vertical" >
-                                            <StackPanel Orientation="Horizontal">
-                                                <Button Content="Grab" Width="150"/>
+
+
+                                        </Grid>
+                                        <GroupBox Grid.Column="0 " Grid.Row="1" Header="Defect List" Grid.ColumnSpan="1" FontSize="12">
+                                            <DataGrid Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
+                                                      FontSize="8"
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}"   >
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                                        <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                                <DataGrid.Columns >
+                                                    <DataGridTextColumn    Header="Col"  Binding="{Binding IndexX}" IsReadOnly="True" />
+                                                    <DataGridTextColumn    Header="Row"  Binding="{Binding IndexY}" IsReadOnly="True" />
+                                                    <DataGridTextColumn    Header="Pos"  Binding="{Binding Position}" IsReadOnly="True" />
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </GroupBox>
+                                        <GroupBox Grid.Column="1 " Grid.Row="1" Header="Bin Code List" Grid.ColumnSpan="1" FontSize="12">
+
+                                        </GroupBox>
+                                    </Grid>
+
+
+                                    <TabControl Grid.Column="2" >
+                                        <TabItem  Height="40">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <TextBlock Text="Microscope" Grid.Column="1"  Margin="0,-5,0,0" FontSize="15" />
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <Grid>
+                                                <Grid.RowDefinitions >
+                                                    <RowDefinition Height="0.12*"/>
+                                                    <RowDefinition Height="0.88*"/>
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,0">
+                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>
+                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
+                                                    <!--<Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>-->
+                                                </StackPanel>
+                                                <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}" Margin="0,5,0,0" HorizontalAlignment="Left" Width="552" />
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Height="40">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <TextBlock Text="WorkItem" Grid.Column="1"  Margin="0,-5,0,0" FontSize="15" />
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <StackPanel Orientation="Vertical" >
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button Content="Grab" Width="150"/>
+                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
+                                                </StackPanel>
+                                                <UserControlUC:WorkholderUC Grid.Column="2" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,20,0,0" Height="190" Width="320"/>
                                             </StackPanel>
-                                            <UserControlUC:WorkholderUC Grid.Column="2" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="-8,20,0,0" Height="173" Width="261"/>
-                                        </StackPanel>
-                                    </GroupBox>
+                                        </TabItem>
+                                    </TabControl>
 
                                 </Grid>
                             </TabItem>
@@ -1501,7 +1561,7 @@
 
                         <Button Grid.Row="1" Grid.Column="1" Height="60" Content="Save" FontSize="30" Command="{Binding SaveSettingCommand}"     />
                     </Grid>
-                   
+
                 </Grid>
             </TabItem>
 
@@ -1572,7 +1632,7 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <GroupBox  FontSize="16"  Header="BXFM" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+                            <GroupBox  FontSize="16"  Header="Microscope" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
                                 <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
                             </GroupBox>
                             <UserControlUC:AFAberationUnitUC Grid.Column="2" Margin="356,92"/>
@@ -1659,10 +1719,10 @@
                     <TextBlock  HorizontalAlignment="Center"   Text="{Binding Account.CurrentAccount.Name}" />
                     <account:UserRightsControl Margin="10,0,0,0" Grid.Row="1" Account="{Binding Account}"/>
                 </StackPanel>
-                </Grid>
-               
-                <Grid Grid.Row="4" Height="80" Width="90">
-                    <Button Width="80" Height="80" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+            </Grid>
+
+            <Grid Grid.Row="4" Height="80" Width="90">
+                <Button Width="80" Height="80" IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                         Style="{StaticResource MaterialDesignIconForegroundButton}"  Command="{Binding ShowInfoCommand}"  ToolTip="Information"  >
 
                     <materialDesign:PackIcon Width="70" Height="70" Kind="InformationOutline"  />

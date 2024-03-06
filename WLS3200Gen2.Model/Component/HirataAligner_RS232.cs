@@ -981,6 +981,60 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
+        public Task<bool> IsLockOK()
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    AlignerStatus alignerStatus = new AlignerStatus();
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems = Command_GetStatus();
+
+                    if (alignerItems.IsGetOK == true)
+                    {
+                        alignerStatus = UpdateStatus(alignerItems);
+                    }
+                    else
+                    {
+                        throw new Exception("Get Status Error");
+                    }
+                    return alignerStatus.IsVaccum;
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Aligner GetStatus:" + ex);
+            }
+        }
+
+        public Task<bool> IsHavePiece()
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    AlignerStatus alignerStatus = new AlignerStatus();
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems = Command_GetStatus();
+
+                    if (alignerItems.IsGetOK == true)
+                    {
+                        alignerStatus = UpdateStatus(alignerItems);
+                    }
+                    else
+                    {
+                        throw new Exception("Get Status Error");
+                    }
+                    return alignerStatus.IsWafer;
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Aligner GetStatus:" + ex);
+            }
+        }
+
         public class CheckSumAdd
         {
             public char CSh;

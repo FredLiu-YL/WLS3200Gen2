@@ -28,14 +28,12 @@ namespace WLS3200Gen2.Model
 
         public Machine(bool isSimulate, MachineSetting machineSetting)
         {
-            
+
             this.machineSetting = machineSetting;
             this.isSimulate = isSimulate;
 
         }
         public Feeder Feeder { get; private set; }
         public MicroDetection MicroDetection { get; private set; }
-
-
     }
 }
