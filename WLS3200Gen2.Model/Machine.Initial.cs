@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WLS3200Gen2.Model.Component;
 using WLS3200Gen2.Model.Component.Adlink;
 using WLS3200Gen2.Model.Module;
+using WLS3200Gen2.Module;
 using YuanliCore.CameraLib;
 using YuanliCore.Interface;
 using YuanliCore.Model.Interface;
@@ -74,7 +75,8 @@ namespace WLS3200Gen2.Model
 
             Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4],machineSetting);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
-
+            StackLight = new StackLight(dos);
+        
         }
 
 

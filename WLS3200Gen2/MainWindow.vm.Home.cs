@@ -97,8 +97,8 @@ namespace WLS3200Gen2
 
                     IsRunning = true;
                     WriteLog("Process Start");
-                    Machinestatus = MachineStates.RUNNING;
-
+          
+                    SwitchStates(MachineStates.RUNNING);
                     //判斷是使用loadport1 還是 2
                     ProcessSetting.IsLoadport1 = IsLoadport1;
                     ProcessSetting.IsLoadport2 = IsLoadport2;//暫時沒用到 都用IsLoadport1 判斷
@@ -108,8 +108,8 @@ namespace WLS3200Gen2
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
                     await machine.ProcessRunAsync(ProcessSetting);
 
-
-                    Machinestatus = MachineStates.IDLE;
+                    SwitchStates(MachineStates.IDLE);
+                    
                     isRunCommand = false;
                     IsRunning = false;
                 }
@@ -124,7 +124,8 @@ namespace WLS3200Gen2
                 WriteLog(ex.Message);
                 MessageBox.Show(ex.Message);
                 isRunCommand = false;
-                Machinestatus = MachineStates.Alarm;
+          
+                SwitchStates(MachineStates.Alarm);
             }
             finally
             {
@@ -141,7 +142,8 @@ namespace WLS3200Gen2
 
                 IsRunning = false;
                 // ProcessVisibility = Visibility.Hidden;
-                Machinestatus = MachineStates.PAUSED;
+               
+                SwitchStates(MachineStates.PAUSED);
                 await machine.ProcessPause();
 
 
@@ -164,7 +166,8 @@ namespace WLS3200Gen2
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
                 IsRunning = false;
-                Machinestatus = MachineStates.RUNNING;
+ 
+                SwitchStates(MachineStates.RUNNING);
                 await machine.ProcessResume();
                 ProcessVisibility = Visibility.Visible;
             }
@@ -185,7 +188,8 @@ namespace WLS3200Gen2
                 await machine.ProcessStop();
                 IsRunning = false;
                 ProcessVisibility = Visibility.Visible;
-                Machinestatus = MachineStates.IDLE;
+                SwitchStates(MachineStates.IDLE);
+                
             }
             catch (Exception ex)
             {
