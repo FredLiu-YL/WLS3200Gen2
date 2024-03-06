@@ -872,7 +872,7 @@
                             <ColumnDefinition  Width="1.3*"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <GroupBox  FontSize="16"  Header="BXFM"  >
+                        <GroupBox  FontSize="16"  Header="Microscope"  >
                             <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1"  FontSize="16"  Header="Axis Move"  >

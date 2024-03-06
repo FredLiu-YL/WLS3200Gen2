@@ -10,17 +10,17 @@ namespace WLS3200Gen2.Model.Component
     {
         public Task AlarmReset()
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public void Close()
         {
-            throw new NotImplementedException();
+
         }
 
         public Task<AlignerStatus> GetStatus()
         {
-            throw new NotImplementedException();
+            return Task.Run(() => new AlignerStatus());
         }
 
         public Task Home()
@@ -44,14 +44,14 @@ namespace WLS3200Gen2.Model.Component
 
         public Task Run(double degree)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task Vaccum(bool IsOn)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
-       
+
     }
 }

@@ -18,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
+using WLS3200Gen2.Module;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
 using YuanliCore.Data;
@@ -38,6 +39,8 @@ namespace WLS3200Gen2
         private Axis robotAxis;
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
         private double tablePosX, tablePosY, tablePosR;
+        private StackLight stackLight;
+
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
         private WriteableBitmap mainImage, mapImage;
@@ -278,7 +281,9 @@ namespace WLS3200Gen2
 
         private void SwitchStates(MachineStates states)
         {
-
+            Machinestatus = states;
+            if(stackLight!=null)
+                stackLight.SwitchStates(states);
         }
 
         //Security進入會執行
@@ -384,8 +389,8 @@ namespace WLS3200Gen2
             catch (Exception ex)
             {
 
-                Machinestatus = MachineStates.Emergency;
-
+           
+                SwitchStates(MachineStates.Emergency);
                 throw ex;
             }
 

@@ -58,112 +58,109 @@ namespace WLS3200Gen2.Model
                     Wafer currentWafer = null;
 
 
-                    //第一次執行 避免第一片就沒有要做 所以會搜尋到需要做的WAFER為止
-                    while (true)
+                    //第一次執行 避免第一片就沒有要做 所以會搜尋到需要做的WAFER為止             
+                    currentWafer = SearchLoadWafer(processWafers);
+                    if (currentWafer != null)
                     {
+                        await Feeder.LoadToReadyAsync(currentWafer.CassetteIndex, processSetting.IsLoadport1);
 
-                        currentWafer = processWafers.Dequeue();
-                        if (currentWafer.ProcessStatus.WaferID == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select
-                        || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select || currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)
+                        while (true)
                         {
-                            await Feeder.LoadToReadyAsync(currentWafer.CassetteIndex, processSetting.IsLoadport1);
-                            break;
-                        }
 
-                    }
-
+                            //避免未來會先讀MES的資訊 才決定要用哪個Recipe  ，預留擴充的機會
+                            if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
+                            MainRecipe recipe = ChangeRecipe.Invoke();
 
 
-                    while (true)
-                    {
+                       
 
 
-                        if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
-                        MainRecipe recipe = ChangeRecipe?.Invoke();
+                            //晶面檢查
+                            await MacroTopInspection(currentWafer.ProcessStatus.MacroTop, recipe.EFEMRecipe);
+                            SetWaferStatusToUI(currentWafer);
+
+                            //晶背檢查
+                            await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe.MacroBackStartPos);
+                            SetWaferStatusToUI(currentWafer);
 
 
-                        //讀取 使用的Cassette  還剩下片子數量資訊 ， 只要任何一站要做就要算
-                        int waferusableCount = processWafers.Where(w =>
-                        w.ProcessStatus.MacroTop == WaferProcessStatus.Select ||
-                        w.ProcessStatus.MacroBack == WaferProcessStatus.Select ||
-                        w.ProcessStatus.WaferID == WaferProcessStatus.Select ||
-                        w.ProcessStatus.Micro == WaferProcessStatus.Select).Count();
+                            //到Align
+                            await Feeder.LoadToAlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
 
 
-                        //晶面檢查
-                        await MacroTopInspection(currentWafer.ProcessStatus.MacroTop, recipe.EFEMRecipe);                
-                        SetWaferStatusToUI(currentWafer);
-
-                        //晶背檢查
-                        await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe.MacroBackStartPos);                     
-                        SetWaferStatusToUI(currentWafer);
+                            // ProcessPause();
+                            cts.Token.ThrowIfCancellationRequested();
+                            await pts.Token.WaitWhilePausedAsync(cts.Token);
 
 
-                        //到Align
-                        await Feeder.LoadToAlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
+                            Task taskLoad = Task.CompletedTask;
 
 
-                        // ProcessPause();
-                        cts.Token.ThrowIfCancellationRequested();
-                        await pts.Token.WaitWhilePausedAsync(cts.Token);
-
-
-                        Task taskLoad = Task.CompletedTask;
-
-
-                        if (currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)//判斷如果有需要進顯微鏡
-                        {
-                            //顯微鏡站準備接WAFER
-                            Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
-                            //到預備位置準備進片
-                            await Feeder.AlignerToStandByAsync();
-                            await catchWafertask; //等待顯微鏡站準備完成
-
-                            //wafer送到主設備內 
-                            Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
-                            currentWafer = await Feeder.LoadToMicroAsync(currentWafer);
-
-                            if (waferusableCount > 0)//如果還有片
+                            if (currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)//判斷如果有需要進顯微鏡
                             {
-                                nextWafer = processWafers.Dequeue();
+                                //顯微鏡站準備接WAFER
+                                Task catchWafertask = MicroDetection.CatchWaferPrepare(machineSetting.TableWaferCatchPosition, pts, cts);
+                                //到預備位置準備進片
+                                await Feeder.AlignerToStandByAsync();
+                                await catchWafertask; //等待顯微鏡站準備完成
+
+                                //wafer送到主設備內 
+                                Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
+                                currentWafer = await Feeder.LoadToMicroAsync(currentWafer);
+
+
+                                nextWafer = SearchLoadWafer(processWafers);
+                                // nextWafer = processWafers.Dequeue();
+                                
                                 //預載一片在Macro上
-                                taskLoad = Feeder.LoadToReadyAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
+                                if (nextWafer != null)
+                                    taskLoad = Feeder.LoadToReadyAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
+
+
+
+                                //執行主設備動作 
+                                await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
+                                await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
+                                //退片
+                                await Feeder.MicroUnLoadToStandByAsync();
+
+                            }
+                            else
+                            {
+                                //退片
+                                await Feeder.AlignerToStandByAsync();
 
                             }
 
-                            //執行主設備動作 
-                            await MicroDetection.Run(recipe.DetectRecipe, processSetting.AutoSave, pts, cts);
-                            await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
                             //退片
-                            await Feeder.MicroUnLoadToStandByAsync();
+                            await Feeder.UnLoadWaferToCassette(currentWafer, processSetting.IsLoadport1);
 
+
+                            await Task.Delay(300);
+                            cts.Token.ThrowIfCancellationRequested();
+                            await pts.Token.WaitWhilePausedAsync(cts.Token);
+
+                            //等待預載完成
+                            await taskLoad;
+
+
+                            //讀取 使用的Cassette  還剩下片子數量資訊 ， 只要任何一站要做就要算
+                            int waferusableCount = processWafers.Where(w =>
+                            w.ProcessStatus.MacroTop == WaferProcessStatus.Select ||
+                            w.ProcessStatus.MacroBack == WaferProcessStatus.Select ||
+                            w.ProcessStatus.WaferID == WaferProcessStatus.Select ||
+                            w.ProcessStatus.Micro == WaferProcessStatus.Select).Count();
+
+                            WriteLog?.Invoke($"Remaining number of wafers : {waferusableCount} ");
+                            //判斷卡匣空了
+                            if (nextWafer == null)
+                            {
+                                break;
+                            }
+                            currentWafer = nextWafer; //將下一片的資料轉成當前WAFER資料
                         }
-                        else
-                        {
-                            //退片
-                            await Feeder.AlignerToStandByAsync();
-
-                        }
-
-                        //退片
-                        await Feeder.UnLoadWaferToCassette(currentWafer, processSetting.IsLoadport1);
 
 
-                        await Task.Delay(300);
-                        cts.Token.ThrowIfCancellationRequested();
-                        await pts.Token.WaitWhilePausedAsync(cts.Token);
-
-                        //等待預載完成
-                        await taskLoad;
-
-
-                        WriteLog?.Invoke($"Remaining number of wafers : {waferusableCount} ");
-                        //判斷卡匣空了
-                        if (waferusableCount == 0)
-                        {
-                            break;
-                        }
-                        currentWafer = nextWafer; //將下一片的資料轉成當前WAFER資料
                     }
 
 
@@ -205,7 +202,22 @@ namespace WLS3200Gen2.Model
 
         }
 
+        private Wafer SearchLoadWafer(Queue<Wafer> processWafers)
+        {
+            //避免沒有要做 所以會搜尋到需要做的WAFER為止
+            while (true)
+            {
+                if (processWafers.Count == 0) return null;
 
+                var currentWafer = processWafers.Dequeue();
+                if (currentWafer.ProcessStatus.WaferID == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select
+                || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select || currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)
+                {
+                    return currentWafer;
+                }
+
+            }
+        }
         private async Task MacroTopInspection(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
 
@@ -237,8 +249,8 @@ namespace WLS3200Gen2.Model
 
                 //翻回來
                 await Feeder.Macro.HomeOuterRing();
-          
-                station= WaferProcessStatus.Complate;
+
+                station = WaferProcessStatus.Complate;
             }
 
 

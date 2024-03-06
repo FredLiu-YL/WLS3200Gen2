@@ -621,6 +621,9 @@ namespace WLS3200Gen2
                 point.OffsetX = 0;
                 point.OffsetY = 0;
                 point.Position = new Point(die.PosX, die.PosY);
+
+                point.ApertureValue = Microscope.ApertureValue;
+
                 DetectionPointList.Add(point);
 
             }

@@ -23,12 +23,13 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<LoadPortParam> GetParam()
         {
-            throw new NotImplementedException();
-        }
+            return Task.Run(() => new LoadPortParam());
+  
+        } 
 
         public Task<LoadPortStatus> GetStatus()
         {
-            throw new NotImplementedException();
+            return Task.Run(() => new LoadPortStatus());
         }
 
         public Task Home()

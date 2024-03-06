@@ -94,7 +94,7 @@ namespace WLS3200Gen2
         private MainRecipe ChangeRecipe()
         {
 
-            return new MainRecipe();
+            return mainRecipe;
         }
 
         private void UpdateCassetteUI(Wafer wafer)
