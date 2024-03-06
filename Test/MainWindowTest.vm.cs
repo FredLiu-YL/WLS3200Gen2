@@ -127,15 +127,16 @@ namespace Test
 
                 if (IsMotionInitOK == true)
                 {
-                    TableX = motionController.Axes[0];
-                    TableY = motionController.Axes[1];
-                    TableZ = motionController.Axes[2];
-                    TableY = motionController.Axes[3];
-                    RobotAxis = motionController.Axes[4];
+                    int idx = 4;
+                    TableX = motionController.Axes[idx];
+                    //TableY = motionController.Axes[1];
+                    //TableZ = motionController.Axes[2];
+                    //TableW = motionController.Axes[3];
+                    //RobotAxis = motionController.Axes[4];
 
                     AxisConfig axis_TableXConfig = new AxisConfig();
-                    axis_TableXConfig.MoveVel = motionController.Axes[0].AxisVelocity;
-                    axis_TableXConfig.HomeVel = motionController.Axes[0].HomeVelocity;
+                    axis_TableXConfig.MoveVel = motionController.Axes[idx].AxisVelocity;
+                    axis_TableXConfig.HomeVel = motionController.Axes[idx].HomeVelocity;
                     TableXConfig = axis_TableXConfig;
 
                     DigitalOutputs = motionController.OutputSignals.ToArray();
@@ -156,26 +157,26 @@ namespace Test
                 LoadPort1Wafers = new ObservableCollection<WaferUIData>();
                 LoadPort = new HirataLoadPort_RS232("COM2");
                 LoadPort.Initial();
-                //if (LoadPort != null)
-                //{
-                //    LoadPortParam loadPortParam = new LoadPortParam();
-                //    loadPortParam = await LoadPort.GetParam();
-                //    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
-                //    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
-                //    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
-                //    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
-                //    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
-                //    isRefresh = true;
-                //}
+                if (LoadPort != null)
+                {
+                    LoadPortParam loadPortParam = new LoadPortParam();
+                    loadPortParam = await LoadPort.GetParam();
+                    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
+                    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
+                    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
+                    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
+                    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
+                    isRefresh = true;
+                }
 
 
-                
-                //先個軸測試完成復歸再來側這些 X Y Z W R
+
+                //先個軸測試完成( X Y Z W R)復歸再來測試以下這些
 
                 //await Robot.Home();
                 //await loadPort.Home();
                 //await Aligner.Home();
-
+                //await Macro.Home();
 
                 //Task robotAxisHome = RobotAxis.HomeAsync();
                 //await Task.WhenAll(robotAxisHome);
@@ -189,7 +190,7 @@ namespace Test
 
                 //Task axisRHome = TableR.HomeAsync();
 
-                //Task microscopeHome1 = Micro.Home();
+                await Micro.Home();//Task microscopeHome1 =
 
                 //await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
 
@@ -240,7 +241,7 @@ namespace Test
                         case 0:
                             AxisConfig axisXConfig = new AxisConfig();
                             axisXConfig.AxisName = "AxisX";
-                            axisXConfig.AxisID = 1500;
+                            axisXConfig.AxisID = 0;
                             axisXConfig.Ratio = 10;
                             axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
                             axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
@@ -250,7 +251,7 @@ namespace Test
                         case 1:
                             AxisConfig axisYConfig = new AxisConfig();
                             axisYConfig.AxisName = "AxisY";
-                            axisYConfig.AxisID = 1501;
+                            axisYConfig.AxisID = 1;
                             axisYConfig.Ratio = 10;
                             axisYConfig.MoveVel = new VelocityParams(100000, 0.5);
                             axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
@@ -260,7 +261,7 @@ namespace Test
                         case 2:
                             AxisConfig axisZInfo = new AxisConfig();
                             axisZInfo.AxisName = "AxisZ";
-                            axisZInfo.AxisID = 1502;
+                            axisZInfo.AxisID = 2;
                             axisZInfo.Ratio = 1;
                             axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
                             axisZInfo.HomeVel = new VelocityParams(50000, 0.5);
@@ -271,7 +272,7 @@ namespace Test
                         case 3:
                             AxisConfig axisRInfo = new AxisConfig();
                             axisRInfo.AxisName = "AxisR";
-                            axisRInfo.AxisID = 1503;
+                            axisRInfo.AxisID = 3;
                             axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
                             axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
                             axisRInfo.HomeMode = HomeModes.ORG;
@@ -281,7 +282,7 @@ namespace Test
                         case 4:
                             AxisConfig axisRobotInfo = new AxisConfig();
                             axisRobotInfo.AxisName = "RobotAxis";
-                            axisRobotInfo.AxisID = 1504;
+                            axisRobotInfo.AxisID = 4;
                             axisRobotInfo.Ratio = 10;
                             axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
                             axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);

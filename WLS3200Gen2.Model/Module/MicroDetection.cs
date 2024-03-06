@@ -69,7 +69,11 @@ namespace WLS3200Gen2.Model.Module
                 //    await AxisZ.HomeAsync();
                 //});
                 //await Task.Run(() => { });
+                WriteLog?.Invoke("Micro Homing Start");
+
                 await AxisZ.HomeAsync();
+
+                WriteLog?.Invoke("AxisZ Homing End");
 
                 Task axisXHome = AxisX.HomeAsync();
 
@@ -80,6 +84,8 @@ namespace WLS3200Gen2.Model.Module
                 Task microscopeHome1 = Microscope.Home();
 
                 await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
+
+                WriteLog?.Invoke("Micro Homing End");
             }
             catch (Exception ex)
             {
@@ -156,7 +162,7 @@ namespace WLS3200Gen2.Model.Module
             foreach (DetectionPoint point in recipe.DetectionPoints)
             {
 
-                WriteLog($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
+                WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
                 //轉換成對位後實際座標
                 var transPosition = transForm.TransPoint(point.Position);
 
@@ -210,10 +216,10 @@ namespace WLS3200Gen2.Model.Module
         public async Task<ITransform> Alignment(AlignmentRecipe recipe)
         {
             opticalAlignment.WriteLog = WriteLog;
-            WriteLog("Wafer Alignment Start");
+            WriteLog?.Invoke("Wafer Alignment Start");
             ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
 
-            WriteLog("Wafer Alignment End");
+            WriteLog?.Invoke("Wafer Alignment End");
             return transForm;
 
 

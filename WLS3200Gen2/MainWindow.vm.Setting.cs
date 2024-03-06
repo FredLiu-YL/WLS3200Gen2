@@ -8,35 +8,67 @@ using System.Windows;
 using System.Windows.Input;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.UserControls;
+using YuanliCore.Motion;
 
 namespace WLS3200Gen2
 {
-    public partial class MainViewModel 
+    public partial class MainViewModel
     {
-        private IRobot robot;
         private RobotUI robotStaus = new RobotUI();
-        private ILoadPort loadPort;
         private LoadPortUI loadPortUIShow = new LoadPortUI();
-        private ILoadPort loadPort2;
         private LoadPortUI loadPort2UIShow = new LoadPortUI();
-        private IAligner aligner;
         private AlignerUI alignerUIShow = new AlignerUI();
-        public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
+        //public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
-        public ILoadPort LoadPort { get => loadPort; set => SetValue(ref loadPort, value); }
         public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
-        public ILoadPort LoadPort2 { get => loadPort2; set => SetValue(ref loadPort2, value); }
         public LoadPortUI LoadPort2UIShow { get => loadPort2UIShow; set => SetValue(ref loadPort2UIShow, value); }
-        public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
         public AlignerUI AlignerUIShow { get => alignerUIShow; set => SetValue(ref alignerUIShow, value); }
 
         public ICommand SaveSettingCommand => new RelayCommand(() =>
         {
             try
             {
+                //machineSetting.TableXConfig.AxisName = "AxisX";
+                //machineSetting.TableXConfig.AxisID = 0;
+                //machineSetting.TableXConfig.Ratio = 10;
+                //machineSetting.TableXConfig.MoveVel = new VelocityParams(100000, 0.5);
+                //machineSetting.TableXConfig.HomeVel = new VelocityParams(10000, 0.8);
+                //machineSetting.TableXConfig.HomeMode = HomeModes.ORGAndIndex;
+
+                //machineSetting.TableYConfig.AxisName = "AxisY";
+                //machineSetting.TableYConfig.AxisID = 1;
+                //machineSetting.TableYConfig.Ratio = 10;
+                //machineSetting.TableYConfig.MoveVel = new VelocityParams(100000, 0.5);
+                //machineSetting.TableYConfig.HomeVel = new VelocityParams(10000, 0.5);
+                //machineSetting.TableYConfig.HomeMode = HomeModes.ORGAndIndex;
+
+                //machineSetting.TableZConfig = new AxisConfig();
+
+                //machineSetting.TableZConfig.AxisName = "AxisZ";
+                //machineSetting.TableZConfig.AxisID = 2;
+                //machineSetting.TableZConfig.Ratio = 1;
+                //machineSetting.TableZConfig.MoveVel = new VelocityParams(50000, 0.2);
+                //machineSetting.TableZConfig.HomeVel = new VelocityParams(50000, 0.5);
+                //machineSetting.TableZConfig.HomeMode = HomeModes.EL;
+
+                //machineSetting.TableRConfig.AxisName = "AxisR";
+                //machineSetting.TableRConfig.AxisID = 3;
+                //machineSetting.TableRConfig.Ratio = 1;
+                //machineSetting.TableRConfig.MoveVel = new VelocityParams(45000, 0.2);
+                //machineSetting.TableRConfig.HomeVel = new VelocityParams(4500, 0.2);
+                //machineSetting.TableRConfig.HomeMode = HomeModes.ORG;
+
+                //machineSetting.RobotAxisConfig.AxisName = "RobotAxis";
+                //machineSetting.RobotAxisConfig.AxisID = 4;
+                //machineSetting.RobotAxisConfig.Ratio = 10;
+                //machineSetting.RobotAxisConfig.MoveVel = new VelocityParams(300000, 0.2);
+                //machineSetting.RobotAxisConfig.HomeVel = new VelocityParams(30000, 0.2);
+                //machineSetting.RobotAxisConfig.HomeMode = HomeModes.ORGAndIndex;
+
+
                 machineSetting.Save(machineSettingPath);
                 Customers.Clear();
-     
+
             }
             catch (Exception ex)
             {

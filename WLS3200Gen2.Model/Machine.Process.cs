@@ -32,7 +32,7 @@ namespace WLS3200Gen2.Model
             {
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
-                WriteLog("ProcessInitial ");
+                WriteLog?.Invoke("ProcessInitial ");
 
                 Feeder.ProcessInitial(processSetting.Inch, machineSetting, pts, cts);
 
@@ -52,7 +52,7 @@ namespace WLS3200Gen2.Model
 
                 await Task.Run(async () =>
                 {
-                    WriteLog("Process Start");
+                    WriteLog?.Invoke("Process Start");
 
                     Wafer nextWafer = null;
                     Wafer currentWafer = null;
@@ -157,7 +157,7 @@ namespace WLS3200Gen2.Model
                         await taskLoad;
 
 
-                        WriteLog($"Remaining number of wafers : {waferusableCount} ");
+                        WriteLog?.Invoke($"Remaining number of wafers : {waferusableCount} ");
                         //判斷卡匣空了
                         if (waferusableCount == 0)
                         {
@@ -185,7 +185,7 @@ namespace WLS3200Gen2.Model
             {
                 Feeder.ProcessEnd();
                 cts.Dispose();
-                WriteLog("Process Finish ");
+                WriteLog?.Invoke("Process Finish ");
             }
 
         }

@@ -15,6 +15,7 @@ namespace WLS3200Gen2.Model
       
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();
         public AxisConfig TableYConfig { get; set; } = new AxisConfig();
+        public AxisConfig TableZConfig { get; set; } = new AxisConfig();
         public AxisConfig TableRConfig { get; set; } = new AxisConfig();
         public AxisConfig RobotAxisConfig { get; set; } = new AxisConfig();
         /// <summary>

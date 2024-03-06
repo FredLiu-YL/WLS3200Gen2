@@ -39,7 +39,7 @@ namespace WLS3200Gen2
         private MachineSetting machineSetting;
         private bool isSimulate;
         private MainRecipe mainRecipe = new MainRecipe();
-        private string machineSettingPath , processSettingPath;
+        private string machineSettingPath, processSettingPath;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -51,15 +51,17 @@ namespace WLS3200Gen2
             //   machineSetting.Load();
 
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
-          
+
             if (!File.Exists(machineSettingPath))
             {
                 machineSetting = new MachineSetting();
                 //  machineSetting.LoadPortCount = LoadPortQuantity.Single; //¥þ´¼¬O³æPort
                 machineSetting.Save(machineSettingPath);
-            }             
+            }
             else
+            {
                 machineSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
+            }
 
             processSettingPath = $"{systemPath}\\ProcessSettingPath.json";
             if (!File.Exists(processSettingPath))
@@ -68,8 +70,9 @@ namespace WLS3200Gen2
                 processSetting.Save(processSettingPath);
             }
             else
+            {
                 processSetting = AbstractRecipe.Load<ProcessSetting>(processSettingPath);
-       
+            }
 
             machine = new Machine(isSimulate, machineSetting);
 
@@ -98,7 +101,7 @@ namespace WLS3200Gen2
         {
 
 
-           var processStation =  ProcessStations.Where(p=>p.CassetteIndex == wafer.CassetteIndex).FirstOrDefault();
+            var processStation = ProcessStations.Where(p => p.CassetteIndex == wafer.CassetteIndex).FirstOrDefault();
             processStation = wafer.ProcessStatus;
 
         }

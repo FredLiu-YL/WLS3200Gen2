@@ -81,11 +81,13 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                WriteLog("EFEM Homing Start");
+                WriteLog?.Invoke("EFEM Homing Start");
 
                 WaitEFEMonSafe = Robot.Home();
 
                 await WaitEFEMonSafe;
+
+                WriteLog?.Invoke("Robot Homing End");
 
                 Task aligner8Home = Task.CompletedTask;
                 if (AlignerL != null)
@@ -113,10 +115,14 @@ namespace WLS3200Gen2.Model.Module
                     loadPort12Home = LoadPortR.Home();
                 }
 
-                await Task.WhenAll(aligner8Home, aligner12Home);
-                await Task.WhenAll(loadPort8Home, loadPort12Home, robotAxisHome);
+                Task macroHome = Macro.Home();
 
-                WriteLog("EFEM Homing End");
+                await Task.WhenAll(aligner8Home, aligner12Home);
+                await Task.WhenAll(loadPort8Home, loadPort12Home);
+                await Task.WhenAll(robotAxisHome);
+                await Task.WhenAll(macroHome);
+
+                WriteLog?.Invoke("EFEM Homing End");
             }
             catch (Exception ex)
             {
@@ -192,17 +198,17 @@ namespace WLS3200Gen2.Model.Module
                      // if (processWafers.Count() > 0)
                      {
                          //      TempPre_Wafer = processWafers.Dequeue();
-                         WriteLog($"Wafer Preload Start: CassetteIndex  {cassetteIndex}");
+                         WriteLog?.Invoke($"Wafer Preload Start: CassetteIndex  {cassetteIndex}");
 
                          await LoadWaferFromCassette(cassetteIndex, isLoadport1);
                          await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                          await WaferStandByToMacro();
-                         WriteLog("Wafer Preload End");
+                         WriteLog?.Invoke("Wafer Preload End");
                      }
                      //   if (processWafers.Count == 0)
                      isCassetteDone = true;
                  });
-                
+
 
             }
             catch (Exception ex)
@@ -340,7 +346,7 @@ namespace WLS3200Gen2.Model.Module
         {
             await Task.Run(async () =>
             {
-                WriteLog("LoadToAligner Start");
+                WriteLog?.Invoke("LoadToAligner Start");
                 Task alignerHome = tempAligner.Home();
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
                 await WaferMacroToStandBy();
@@ -349,8 +355,8 @@ namespace WLS3200Gen2.Model.Module
                 await tempAligner.Vaccum(true);
                 await WaferStandByToAligner();
                 await tempAligner.Run(0);
-                station= WaferProcessStatus.Complate;
-                WriteLog("LoadToAligner  End");
+                station = WaferProcessStatus.Complate;
+                WriteLog?.Invoke("LoadToAligner  End");
                 if (station == WaferProcessStatus.Select)
                 {
                     await tempAligner.Run(eFEMtionRecipe.AlignerWaferIDAngle);
@@ -373,11 +379,11 @@ namespace WLS3200Gen2.Model.Module
         {
             await Task.Run(async () =>
             {
-                WriteLog("LoadToMicroReadyPos Start");
+                WriteLog?.Invoke("LoadToMicroReadyPos Start");
 
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                 await WaferAlignerToStandBy();
-                WriteLog("LoadToMicroReadyPos  End");
+                WriteLog?.Invoke("LoadToMicroReadyPos  End");
             });
 
         }
@@ -407,11 +413,11 @@ namespace WLS3200Gen2.Model.Module
 
         public async Task MicroUnLoadToStandByAsync()
         {
-            WriteLog("UnLoad Wafer Start ");
+            WriteLog?.Invoke("UnLoad Wafer Start ");
             await RobotAxis.MoveAsync(machineSetting.RobotAxisMicroTakePosition);
             await WaferMicroToStandBy();
 
-            WriteLog("UnLoad Wafer End ");
+            WriteLog?.Invoke("UnLoad Wafer End ");
         }
 
 
@@ -432,7 +438,7 @@ namespace WLS3200Gen2.Model.Module
             await WaferLoadPortToStandBy(cassetteIndex, ArmStation.Cassette1);
 
             //設定 Cassette內WAFER的狀態  
-          //  Cassette.Wafers[cassetteIndex].ProcessStatus.Totally = WaferProcessStatus.InProgress;
+            //  Cassette.Wafers[cassetteIndex].ProcessStatus.Totally = WaferProcessStatus.InProgress;
         }
 
         /// <summary>
@@ -450,7 +456,7 @@ namespace WLS3200Gen2.Model.Module
             await WaferStandByToLoadPort(wafer.CassetteIndex, ArmStation.Cassette1);
             wafer.ProcessStatus.Totally = WaferProcessStatus.Complate;
             //設定 Cassette內WAFER的狀態
-        //    Cassette.Wafers[wafer.CassetteIndex] = wafer;
+            //    Cassette.Wafers[wafer.CassetteIndex] = wafer;
             return wafer;
         }
 
