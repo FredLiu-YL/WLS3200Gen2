@@ -46,6 +46,16 @@ namespace WLS3200Gen2.Model.Recipe
         public Point Position { get => position; set => SetValue(ref position, value); }
 
 
+        /// <summary>
+        /// 目前光強度
+        /// </summary>
+        public int LightValue { get; set; }
+        /// <summary>
+        /// 目前光圈
+        /// </summary>
+        public int ApertureValue { get; set; }
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
