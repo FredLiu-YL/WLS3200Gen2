@@ -18,21 +18,21 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsOuterUsing => throw new NotImplementedException();
 
-        public bool IsLockOK => throw new NotImplementedException();
+        public bool IsLockOK => false;
 
         public void FixWafer()
         {
-            
+
         }
 
         public Task GoInnerRingCheckPos()
         {
-          return  Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public Task GoOuterRingCheckPos()
         {
-          return  Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public Task Home()
@@ -52,52 +52,52 @@ namespace WLS3200Gen2.Model.Component
 
         public void Initial()
         {
-            
+
         }
 
         public void InnerRingPitchX_Move(bool isForward)
         {
-             
+
         }
 
         public void InnerRingPitchX_Stop()
         {
-            
+
         }
 
         public void InnerRingRollY_Move(bool isForward)
         {
-             
+
         }
 
         public void InnerRingRollY_Stop()
         {
-             
+
         }
 
         public void InnerRingYawT_Move(bool isForwards)
         {
-            
+
         }
 
         public void InnerRingYawT_Stop()
         {
-             
+
         }
 
         public void OuterRingRollY_Move(bool isForwards)
         {
-        
+
         }
 
         public void OuterRingRollY_Stop()
         {
-           
+
         }
 
         public void ReleaseWafer()
         {
-        
+
         }
     }
 }
