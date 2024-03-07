@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using YuanliCore.Data;
 
 namespace YuanliCore.Model.UserControls
 {
@@ -31,8 +32,8 @@ namespace YuanliCore.Model.UserControls
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty ExistStateProperty = DependencyProperty.Register(nameof(ExistState), typeof(ExistStates), typeof(ExistNotifyUC),
-                                                                                new FrameworkPropertyMetadata(ExistStates.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ExistStateProperty = DependencyProperty.Register(nameof(ExistState), typeof(WaferProcessStatus), typeof(ExistNotifyUC),
+                                                                                new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty SNProperty = DependencyProperty.Register(nameof(SN), typeof(string), typeof(ExistNotifyUC),
                                                                               new FrameworkPropertyMetadata("12", FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -40,9 +41,9 @@ namespace YuanliCore.Model.UserControls
         public static readonly DependencyProperty SNWidthProperty = DependencyProperty.Register(nameof(SNWidth), typeof(int), typeof(ExistNotifyUC),
                                                                              new FrameworkPropertyMetadata(20, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public ExistStates ExistState
+        public WaferProcessStatus ExistState
         {
-            get => (ExistStates)GetValue(ExistStateProperty);
+            get => (WaferProcessStatus)GetValue(ExistStateProperty);
             set => SetValue(ExistStateProperty, value);
         }
 
@@ -61,11 +62,13 @@ namespace YuanliCore.Model.UserControls
         {
             try
             {
-                if (ExistState == ExistStates.Exist)
-                    ExistState = ExistStates.Select;
-                else if(ExistState == ExistStates.Select)
-                    ExistState = ExistStates.Exist;
-
+                //關閉內部自動切換顏色功能
+                /*
+                if (ExistState == WaferProcessStatus.NotSelect)
+                    ExistState = WaferProcessStatus.Select;
+                else if(ExistState == WaferProcessStatus.Select)
+                    ExistState = WaferProcessStatus.NotSelect;
+                */
 
             }
             catch (Exception ex)
@@ -97,7 +100,7 @@ namespace YuanliCore.Model.UserControls
     }
 
 
-    public enum ExistStates
+  /*  public enum ExistStates
     {
         None,
         Exist,
@@ -107,7 +110,7 @@ namespace YuanliCore.Model.UserControls
         Error
 
 
-    }
+    }*/
 
     public class BackColorConver : IValueConverter
     {
@@ -115,25 +118,24 @@ namespace YuanliCore.Model.UserControls
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
 
-            switch ((ExistStates)value)
+            switch ((WaferProcessStatus)value)
             {
-                case ExistStates.None:
+                case WaferProcessStatus.None:
                     return Brushes.DimGray;
 
-                case ExistStates.Exist:
+                case WaferProcessStatus.NotSelect:
                     return Brushes.RoyalBlue;
 
-                case ExistStates.Select:
+                case WaferProcessStatus.Select:
                     return Brushes.LawnGreen;
 
-                case ExistStates.Complete:
+                case WaferProcessStatus.Complate:
                     return Brushes.ForestGreen;
 
-                case ExistStates.Running:
+                case WaferProcessStatus.InProgress:
                     return Brushes.MediumTurquoise;
 
-                case ExistStates.Error:
-                    return Brushes.Red;
+               
 
                 default:
                     return Brushes.DarkRed;

@@ -45,7 +45,7 @@ namespace WLS3200Gen2
         private Action<CogMatcher> sampleFind;
         private LocateMode selectMode;
         private double alignOffsetX, alignOffsetY;
-        private ExistStates testStates;
+
         private ITransform transForm; //紀錄 從設計座標轉換成對位後座標的 公式
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private bool isLocate;
@@ -171,7 +171,7 @@ namespace WLS3200Gen2
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
         public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
-        public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
+        //  public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
         public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
@@ -179,7 +179,6 @@ namespace WLS3200Gen2
         public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
         public LocateMode SelectMode { get => selectMode; set => SetValue(ref selectMode, value); }
 
-        public ExistStates TestStates { get => testStates; set => SetValue(ref testStates, value); }
 
         public double AlignOffsetX { get => alignOffsetX; set => SetValue(ref alignOffsetX, value); }
         public double AlignOffsetY { get => alignOffsetY; set => SetValue(ref alignOffsetY, value); }
@@ -218,6 +217,19 @@ namespace WLS3200Gen2
                 IsMainHomePageSelect = true;
                 return;
             }
+
+            LoadPort1Wafers.Clear();
+            foreach (var item in ProcessStations)
+            {
+                var w = new WaferUIData();
+                w.SN = item.CassetteIndex.ToString();
+                //只要不是空的 就是有片
+                if (item.MacroBack != WaferProcessStatus.None || item.MacroTop != WaferProcessStatus.None || item.Micro != WaferProcessStatus.None)
+                    w.WaferStates = WaferProcessStatus.NotSelect;
+                LoadPort1Wafers.Add(w);
+            }
+
+
 
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
@@ -289,21 +301,22 @@ namespace WLS3200Gen2
         public ICommand LoadWaferCommand => new RelayCommand(() =>
         {
 
-            LoadPort2Wafers.Add(
-                new WaferUIData
-                {
-                    WaferStates = ExistStates.Exist
-                });
-            LoadPort2Wafers.Add(
-          new WaferUIData
-          {
-              WaferStates = ExistStates.Exist
-          });
+            /* LoadPort2Wafers.Add(
+                 new WaferUIData
+                 {
+                     WaferStates = ExistStates.Exist
+                 });
+             LoadPort2Wafers.Add(
+           new WaferUIData
+           {
+               WaferStates = ExistStates.Exist
+           });
 
 
-            LoadPort2Wafers[4].WaferStates = ExistStates.Error;
+             LoadPort2Wafers[4].WaferStates = ExistStates.Error;
 
-            TestStates = ExistStates.Exist;
+             TestStates = ExistStates.Exist;*/
+
         });
 
 
@@ -311,7 +324,7 @@ namespace WLS3200Gen2
 
         public ICommand MappingEditCommand => new RelayCommand(() =>
        {
-           
+
 
        });
         public ICommand LoadMappingCommand => new RelayCommand(() =>
@@ -710,10 +723,10 @@ namespace WLS3200Gen2
 
     public class WaferUIData : INotifyPropertyChanged
     {
-        private ExistStates waferStates;
-        public ExistStates WaferStates { get => waferStates; set => SetValue(ref waferStates, value); }//{ get; set; }
+        private WaferProcessStatus waferStates;
+        public WaferProcessStatus WaferStates { get => waferStates; set => SetValue(ref waferStates, value); }//{ get; set; }
 
-        private int sNWidth;
+        private int sNWidth=20;
         public int SNWidth { get => sNWidth; set => SetValue(ref sNWidth, value); }//{ get; set; }
         public string SN { get; set; }
 

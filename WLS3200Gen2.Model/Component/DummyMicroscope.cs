@@ -9,8 +9,8 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyMicroscope : IMicroscope
     {
-        public int LightValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int ApertureValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int LightValue { get; set  ; }
+        public int ApertureValue { get ; set  ; }
 
         public Task AberrationMoveCommand(double distance)
         {

@@ -185,22 +185,7 @@ namespace WLS3200Gen2
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
-
-                for (int i = 0; i < 5; i++)
-                {
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString(), SNWidth = 20 });
-                    LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString(), SNWidth = 0 });
-                }
-                for (int i = 5; i < 10; i++)
-                {
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString(), SNWidth = 20 });
-                    LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.Select, SN = (i + 1).ToString(), SNWidth = 0 });
-                }
-                for (int i = 10; i < 25; i++)
-                {
-                    LoadPort1Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString(), SNWidth = 20 });
-                    LoadPort2Wafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString(), SNWidth = 0 });
-                }
+    
 
                 WriteLog("Equipment Ready．．．");
 
@@ -213,11 +198,7 @@ namespace WLS3200Gen2
                 CameraLive();
 
 
-                //測試用
-                for (int i = 0; i < 25; i++)
-                {
-                    ProcessStations.Insert(0, new ProcessStation(i + 1));
-                }
+               
                 isInitialComplete = true;
 
                 //載入機台設定LoadPort 數量  給UI作卡控

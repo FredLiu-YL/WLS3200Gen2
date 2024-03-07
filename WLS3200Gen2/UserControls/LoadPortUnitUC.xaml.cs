@@ -62,7 +62,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                IsLoadPortEnabled = false;
+              /*  IsLoadPortEnabled = false;
                 await LoadPort.Load();
                 LoadPortWafers.Clear();
                 int i = 1;
@@ -84,7 +84,7 @@ namespace WLS3200Gen2.UserControls
                         }
                         i++;
                     }
-                }
+                }*/
             }
             catch (Exception ex)
             {

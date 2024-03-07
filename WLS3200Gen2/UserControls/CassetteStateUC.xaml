@@ -4,12 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:YuanliCore.Model.UserControls" 
-           
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
               x:Name="CassetteState"
-             d:DesignHeight="190" d:DesignWidth="50">
+             d:DesignHeight="190" d:DesignWidth="70">
     <Grid  DataContext="{Binding ElementName=CassetteState}" >
-        <ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPortWafers}">
+        <ListBox  Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPortWafers}"    SelectedIndex="{Binding SelectIndex}" SelectionChanged="ListBox_SelectionChanged">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Selected">
+                    <i:InvokeCommandAction Command="{Binding SelectedCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Margin" Value="0"/>

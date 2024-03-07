@@ -93,7 +93,7 @@ namespace WLS3200Gen2.Model
                             await pts.Token.WaitWhilePausedAsync(cts.Token);
 
 
-                            Task taskLoad = Task.CompletedTask;
+                            Task taskLoad = Task.CompletedTask; 
 
 
                             if (currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)//判斷如果有需要進顯微鏡
