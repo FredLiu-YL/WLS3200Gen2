@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Interface;
 using YuanliCore.Motion;
 
@@ -18,6 +19,11 @@ namespace WLS3200Gen2.Model
         public AxisConfig TableZConfig { get; set; } = new AxisConfig();
         public AxisConfig TableRConfig { get; set; } = new AxisConfig();
         public AxisConfig RobotAxisConfig { get; set; } = new AxisConfig();
+        /// <summary>
+        /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
+        /// </summary>
+        public IEnumerable<BincodeInfo> BincodeListDefault { get; set; }
+         
         /// <summary>
         /// 平台Robot取放料位置
         /// </summary>
