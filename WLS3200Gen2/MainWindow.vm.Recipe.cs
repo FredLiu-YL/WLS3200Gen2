@@ -311,18 +311,7 @@ namespace WLS3200Gen2
 
         public ICommand MappingEditCommand => new RelayCommand(() =>
        {
-           try
-           {
-               BincodeSettingWindow settingWindow = new BincodeSettingWindow();
-               settingWindow.ShowDialog();
-
-
-
-           }
-           catch (Exception ex)
-           {
-               MessageBox.Show(ex.Message);
-           }
+           
 
        });
         public ICommand LoadMappingCommand => new RelayCommand(() =>

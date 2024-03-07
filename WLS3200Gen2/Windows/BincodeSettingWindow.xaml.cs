@@ -26,32 +26,40 @@ namespace WLS3200Gen2
     {
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
         private int selectList;
-        public BincodeSettingWindow()
+        public BincodeSettingWindow(IEnumerable<BincodeInfo> Bincodes)
         {
             InitializeComponent();
+            if(Bincodes.Count()==0)
+            {
+                BincodeInfo bincode1 = new BincodeInfo
+                {
+                    Code = "B01",
+                    Describe = "TES_TEST123",
+                    Color = Brushes.Blue
+                };
+                BincodeInfo bincode2 = new BincodeInfo
+                {
+                    Code = "B02",
+                    Describe = "ABc_TEST123",
+                    Color = Brushes.GreenYellow
+                };
+                BincodeList.Add(bincode1);
+                BincodeList.Add(bincode2);
+                BincodeList.Add(new BincodeInfo());
 
-            BincodeInfo bincode1 = new BincodeInfo
+            }
+            else
             {
-                Code = "B01",
-                Describe = "TES_TEST123",
-                Color = Brushes.Blue
-            };
-            BincodeInfo bincode2 = new BincodeInfo
-            {
-                Code = "B02",
-                Describe = "ABc_TEST123",
-                Color = Brushes.GreenYellow
-            };
-            BincodeList.Add(bincode1);
-            BincodeList.Add(bincode2);
-            BincodeList.Add(new BincodeInfo());
+
+                BincodeList = new ObservableCollection<BincodeInfo>(Bincodes);
+            }
         }
 
 
 
         public ObservableCollection<BincodeInfo> BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
         public int SelectList { get => selectList; set => SetValue(ref selectList, value); }
-        
+
 
 
 
@@ -77,18 +85,35 @@ namespace WLS3200Gen2
         private void OpenPalette_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
+            //如果陣列數量沒有自動產生 需要防呆自動產生
+           /* var temp = SelectList;
+            if (BincodeList.Count == SelectList)
+            {
+                BincodeList.Add(new BincodeInfo());
+                SelectList = temp;
+            }*/
 
             if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
 
-                
+
 
                 Color selectedColor = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
-               
+
                 BincodeList[SelectList].Color = new SolidColorBrush(selectedColor);
 
                 // 使用選擇的顏色
-                MessageBox.Show($"選擇的顏色是: {selectedColor.ToString()}");
+                // MessageBox.Show($"選擇的顏色是: {selectedColor.ToString()}");
+
+                if (BincodeList.Count == SelectList + 1)//點到最後一列  就自動增加一列
+                {
+                    BincodeInfo bincode2 = new BincodeInfo
+                    {                     
+                        Color = Brushes.GreenYellow
+                    };
+                    BincodeList.Add(bincode2);
+                }
+                    
             }
         }
 
@@ -111,6 +136,6 @@ namespace WLS3200Gen2
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-     
+
     }
 }

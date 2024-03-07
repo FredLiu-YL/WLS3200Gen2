@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WLS3200Gen2" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"  WindowStartupLocation="CenterScreen"  
            x:Name="BincodeSetting"
-        Title="BincodeSettingWindow" Height="450" Width="280">
+        Title="BincodeSettingWindow" Height="450" Width="320">
     <Grid DataContext="{Binding ElementName=BincodeSetting}"  >
         <DataGrid Margin="0" ItemsSource="{Binding BincodeList}"  CanUserSortColumns="False" Height="300"
                                                     AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectList}"   >

@@ -23,11 +23,13 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         public WaferMapping WaferMap { get; set; }
 
+
+
     }
 
     public class DetectionPoint : INotifyPropertyChanged
     {
-        private int indexX,indexY;
+        private int indexX, indexY;
         private double offsetX, offsetY;
         private Point position;
 
