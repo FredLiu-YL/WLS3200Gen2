@@ -10,7 +10,7 @@ using YuanliCore.Model.Interface;
 
 namespace WLS3200Gen2.Model.Component
 {
-    public class BXUCB :  IMicroscope
+    public class BXUCB : IMicroscope
     {
         private readonly object lockObj = new object();
         private SerialPort serialPort = new SerialPort();
@@ -1306,7 +1306,7 @@ namespace WLS3200Gen2.Model.Component
             {
                 serialPort.Open();
                 LogIn();
-             
+
             }
             catch (Exception ex)
             {
@@ -1318,7 +1318,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                 
+
             }
             catch (Exception ex)
             {

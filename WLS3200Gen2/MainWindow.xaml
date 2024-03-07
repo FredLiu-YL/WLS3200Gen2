@@ -404,24 +404,7 @@
 
 
                                         </Grid>
-                                        <GroupBox Grid.Column="0 " Grid.Row="1" Header="Defect List" Grid.ColumnSpan="1" FontSize="12" >
-                                            <DataGrid Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
-                                                      FontSize="10"
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}"   >
-                                                <i:Interaction.Triggers>
-                                                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                                                        <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
-                                                    </i:EventTrigger>
-                                                </i:Interaction.Triggers>
-                                                <DataGrid.Columns >
-                                                    <DataGridTextColumn  Width="50"  Header="Idx"  Binding="{Binding IndexX}"  />
-                                                    <DataGridTextColumn  Width="50"  Header="Col"  Binding="{Binding IndexX}"  />
-                                                    <DataGridTextColumn  Width="55"  Header="Row"  Binding="{Binding IndexY}"  />
-                                                    <DataGridTextColumn  Width="120"  Header="Pos"  Binding="{Binding Position}"  />
-                                                </DataGrid.Columns>
-                                            </DataGrid>
-                                        </GroupBox>
-                                        <GroupBox Grid.Column="1 " Grid.Row="1" Header="Bin Code List" Grid.ColumnSpan="1" FontSize="12">
+                                        <GroupBox Grid.Column="0" Grid.Row="1" Header="Bin Code List" Grid.ColumnSpan="2" FontSize="12">
                                             <DataGrid Margin="0" ItemsSource="{Binding BincodeList}"  CanUserSortColumns="False" 
                                                     AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectList}" FontSize="10" >
                                                 <i:Interaction.Triggers>
@@ -430,11 +413,11 @@
                                                     </i:EventTrigger>
                                                 </i:Interaction.Triggers>
                                                 <DataGrid.Columns >
-                                                    <DataGridTemplateColumn Header="Color" Width="10"  >
+                                                    <DataGridTemplateColumn Header="Color" Width="60"  >
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel Orientation="Horizontal">
-                                                                    <Button  Width="15"  Height="30"  Content="Click" Click="OpenPalette_Click"  BorderBrush="{Binding Color}"  Background="{Binding Color}" />
+                                                                    <Button  Width="60"  Height="30"  Content="Click" Click="OpenPalette_Click"  BorderBrush="{Binding Color}"  Background="{Binding Color}" />
                                                                 </StackPanel>
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
@@ -447,7 +430,39 @@
                                     </Grid>
 
 
-                                    <TabControl Grid.Column="2" >
+                                    <TabControl Grid.Column="2"  Style="{StaticResource MaterialDesignFilledTabControl}"  >
+                                        <TabItem Height="30">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <TextBlock Text="Defect List" Grid.Column="1"  Margin="0,-10,0,-10" FontSize="15" />
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <Grid>
+                                                <Grid.RowDefinitions >
+                                                    <RowDefinition Height="0.12*"/>
+                                                    <RowDefinition Height="0.88*"/>
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,-10">
+                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>
+                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
+                                                </StackPanel>
+                                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
+                                                      FontSize="10" 
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}"   >
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                                            <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
+                                                    <DataGrid.Columns >
+                                                        <DataGridTextColumn  Width="50"  Header="Idx"  Binding="{Binding IndexX}"  />
+                                                        <DataGridTextColumn  Width="50"  Header="Col"  Binding="{Binding IndexX}"  />
+                                                        <DataGridTextColumn  Width="55"  Header="Row"  Binding="{Binding IndexY}"  />
+                                                        <DataGridTextColumn  Width="120"  Header="Pos"  Binding="{Binding Position}"  />
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </Grid>
+                                        </TabItem>
                                         <TabItem  Height="30">
                                             <TabItem.Header>
                                                 <StackPanel Orientation="Horizontal" >
