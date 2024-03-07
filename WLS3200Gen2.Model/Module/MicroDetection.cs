@@ -24,7 +24,7 @@ namespace WLS3200Gen2.Model.Module
 
         private PauseTokenSource pauseToken;
         private CancellationTokenSource cancelToken;
-        private Subject<(BitmapSource, bool)> subject = new Subject<(BitmapSource, bool)>();
+        private Subject<BitmapSource> subject = new Subject<BitmapSource>();
         private IDisposable camlive;
 
 
@@ -57,7 +57,7 @@ namespace WLS3200Gen2.Model.Module
         public IMicroscope Microscope { get; }
 
         public DetectionRecipe DetectionRecipe { set; get; }
-        public IObservable<(BitmapSource image, bool isAutoSave)> Observable => subject;
+        public IObservable<BitmapSource> Observable => subject;
 
         public event Action<string> WriteLog;
         public async Task Home()
@@ -172,7 +172,7 @@ namespace WLS3200Gen2.Model.Module
 
                 if(isAutoSave)
                 {
-                    subject.OnNext((bmp, isAutoSave));//AOI另外丟到其他執行續處理
+                    subject.OnNext(bmp);//AOI另外丟到其他執行續處理
                 }
                 else
                 {
@@ -244,12 +244,11 @@ namespace WLS3200Gen2.Model.Module
                     .ObserveOn(TaskPoolScheduler.Default)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
                     .Subscribe(async frame =>
                     {
-                        if (frame.isAutoSave)
-                        {
-                            frame.image.Save("C:\\TEST", ImageFileFormats.Bmp);
-                        }
+                        
+                            frame.Save("C:\\TEST", ImageFileFormats.Bmp);
+                    
 
-                        await DefectDetection(frame.image);
+                        await DefectDetection(frame);
                     });
         }
 
