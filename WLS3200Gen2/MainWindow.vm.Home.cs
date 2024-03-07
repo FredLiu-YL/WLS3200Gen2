@@ -30,13 +30,13 @@ namespace WLS3200Gen2
         private string logMessage;
         private bool isRunning = false;
         private bool isRunCommand = false;
-        private ProcessSetting processSetting ;
+        private ProcessSetting processSetting;
 
         private Visibility informationUIVisibility, workholderUCVisibility;
 
         private int tabControlSelectedIndex; // 0:Process Infomation   1:Alignment  2:Micro  3 :Macro
         private bool isOperateUI = true;
-    
+
         private double manualPosX, manualPosY;
         private MachineStates machinestatus = MachineStates.IDLE;
         private WaferProcessStatus macroJudgeOperation;
@@ -97,19 +97,19 @@ namespace WLS3200Gen2
 
                     IsRunning = true;
                     WriteLog("Process Start");
-          
+
                     SwitchStates(MachineStates.RUNNING);
                     //判斷是使用loadport1 還是 2
                     ProcessSetting.IsLoadport1 = IsLoadport1;
                     ProcessSetting.IsLoadport2 = IsLoadport2;//暫時沒用到 都用IsLoadport1 判斷
                     //寫入每片Wafer的作業流程
                     ProcessSetting.ProcessStation = ProcessStations.ToArray();
-               
+
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
                     await machine.ProcessRunAsync(ProcessSetting);
 
                     SwitchStates(MachineStates.IDLE);
-                    
+
                     isRunCommand = false;
                     IsRunning = false;
                 }
@@ -124,7 +124,7 @@ namespace WLS3200Gen2
                 WriteLog(ex.Message);
                 MessageBox.Show(ex.Message);
                 isRunCommand = false;
-          
+
                 SwitchStates(MachineStates.Alarm);
             }
             finally
@@ -142,7 +142,7 @@ namespace WLS3200Gen2
 
                 IsRunning = false;
                 // ProcessVisibility = Visibility.Hidden;
-               
+
                 SwitchStates(MachineStates.PAUSED);
                 await machine.ProcessPause();
 
@@ -166,7 +166,7 @@ namespace WLS3200Gen2
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
                 IsRunning = false;
- 
+
                 SwitchStates(MachineStates.RUNNING);
                 await machine.ProcessResume();
                 ProcessVisibility = Visibility.Visible;
@@ -189,7 +189,7 @@ namespace WLS3200Gen2
                 IsRunning = false;
                 ProcessVisibility = Visibility.Visible;
                 SwitchStates(MachineStates.IDLE);
-                
+
             }
             catch (Exception ex)
             {
@@ -226,7 +226,7 @@ namespace WLS3200Gen2
                     mainRecipe.Load(path, recipename);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
 
-                    WriteLog("Load Recipe :"+recipename);
+                    WriteLog("Load Recipe :" + recipename);
                 }
 
             }
@@ -472,9 +472,6 @@ namespace WLS3200Gen2
             {
             }
         });
-
-
-
         private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             machine.ProcessPause();//暫停

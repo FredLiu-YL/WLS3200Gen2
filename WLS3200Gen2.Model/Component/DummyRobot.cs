@@ -10,8 +10,8 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyRobot : IEFEMRobot
     {
-        public PauseTokenSource pauseToken { get; set ; }
-        public CancellationTokenSource cancelToken { get ; set; }
+        public PauseTokenSource pauseToken { get; set; }
+        public CancellationTokenSource cancelToken { get; set; }
 
         public bool IsOpen => throw new NotImplementedException();
 
@@ -38,7 +38,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<RobotStatus> GetStatus()
         {
-            return Task.Run(()=> new RobotStatus());
+            return Task.Run(() => new RobotStatus());
         }
 
         public Task Home()
@@ -49,7 +49,7 @@ namespace WLS3200Gen2.Model.Component
 
         public void Initial()
         {
-          
+
         }
 
         public Task<bool> IsHavePiece()
@@ -57,9 +57,9 @@ namespace WLS3200Gen2.Model.Component
             return Task.Run(() => false);
         }
 
-        public async Task<bool> IsLockOK()
+        public Task<bool> IsLockOK()
         {
-            return true;
+            return Task.Run(() => false);
         }
 
         public Task MovAddress(int address, double zShift)
@@ -172,6 +172,6 @@ namespace WLS3200Gen2.Model.Component
             return Task.CompletedTask;
         }
 
-        
+
     }
 }

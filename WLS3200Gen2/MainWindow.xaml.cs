@@ -51,5 +51,16 @@ namespace WLS3200Gen2
             }
             return false;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OpenPalette_Click(object sender, RoutedEventArgs e)
+        {
+            double ss = 0;
+            ss = 3;
+        }
     }
 }

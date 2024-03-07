@@ -39,7 +39,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<bool> IsLockOK()
         {
-            throw new NotImplementedException();
+            return Task.Run(() => false);
         }
 
         public Task Run(double degree)

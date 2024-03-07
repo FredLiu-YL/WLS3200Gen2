@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
@@ -40,7 +41,7 @@ namespace WLS3200Gen2
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
         private double tablePosX, tablePosY, tablePosR;
         private StackLight stackLight;
-
+        private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
         private WriteableBitmap mainImage, mapImage;
@@ -71,7 +72,7 @@ namespace WLS3200Gen2
         public AxisConfig RobotAxisConfig { get => robotAxisConfig; set => SetValue(ref robotAxisConfig, value); }
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
         public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
-
+        public ObservableCollection<BincodeInfo> BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
 
         //刷新座標
         public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
@@ -145,6 +146,23 @@ namespace WLS3200Gen2
                 {
                     //直接關掉程式!
                 }
+
+                BincodeInfo bincode1 = new BincodeInfo
+                {
+                    Code = "B01",
+                    Describe = "TES_TEST123",
+                    Color = Brushes.Blue
+                };
+                BincodeInfo bincode2 = new BincodeInfo
+                {
+                    Code = "B02",
+                    Describe = "ABc_TEST123",
+                    Color = Brushes.GreenYellow
+                };
+                BincodeList.Add(bincode1);
+                BincodeList.Add(bincode2);
+                BincodeList.Add(new BincodeInfo());
+
 
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
