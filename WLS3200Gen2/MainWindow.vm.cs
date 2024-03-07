@@ -232,6 +232,7 @@ namespace WLS3200Gen2
                 BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
 
                 MapImage = new WriteableBitmap(bitmap);
+                //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
                 Customers = new ObservableCollection<RobotAddress>()
             {
@@ -346,6 +347,10 @@ namespace WLS3200Gen2
                     TablePosR = machine.MicroDetection.AxisR.Position;
                     //if (atfMachine.AFModule.AFSystem != null)
                     //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
+                    
+
+                    //刷IO 得到EMO 軸停止
+
 
                     if (machine.Feeder.LoadPortL != null)
                     {

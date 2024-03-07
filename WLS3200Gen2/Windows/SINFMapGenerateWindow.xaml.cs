@@ -318,10 +318,10 @@ namespace WLS3200Gen2
                 {
                     if (Sinf == null)
                     {
-                        Sinf = new SinfWaferMapping(SINF_Path);
+                        Sinf = new SinfWaferMapping("");
                     }
                     path = SINF_Path;
-                    Sinf.ReadWaferFile(path);
+                    (Sinf.Dies, Sinf.WaferSize) = Sinf.ReadWaferFile(path);
                     SinfPath = path;
                     Wafer_ID = Sinf.Lot_ID;
                     Wafer_Slot = Sinf.Wafer_Idx.ToString();

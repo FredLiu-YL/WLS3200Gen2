@@ -491,6 +491,7 @@ namespace WLS3200Gen2.Model
         bool IsOuterCanMoveStartPos { get; }
         bool IsOuterUsing { get; }
         bool IsLockOK { get; }
+        double Position { get; }
         /// <summary>
         /// 
         /// </summary>

@@ -311,54 +311,79 @@ namespace WLS3200Gen2
 
         public ICommand MappingEditCommand => new RelayCommand(() =>
        {
-           
+
 
        });
         public ICommand LoadMappingCommand => new RelayCommand(() =>
         {
-            MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
-            ClearMapShapeAction.Execute(MapDrawings);
+            //MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
+            //ClearMapShapeAction.Execute(MapDrawings);
 
-            List<Die> dielist = new List<Die>();
-            for (int x = 1; x <= 100; x++)
+            //List<Die> dielist = new List<Die>();
+            //for (int x = 1; x <= 100; x++)
+            //{
+            //    for (int y = 1; y <= 100; y++)
+            //    {
+            //        var temp = new Die
+            //        {
+            //            IndexX = x,
+            //            IndexY = y,
+            //            PosX = 1000 + x * 100,
+            //            PosY = 1000 + y * 100,
+            //            DieSize = new Size(40, 40)
+            //        };
+
+            //        dielist.Add(temp);
+            //    }
+            //}
+
+            ////模擬  編輯完MAP圖後 資料存回mainRecipe內
+            //mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+            //mainRecipe.DetectRecipe.WaferMap.Dies = dielist.ToArray();
+
+            ////將MAP圖資訊 轉換成顯示資訊
+            //mainRecipe.DetectRecipe.WaferMap.ReadWaferFile("");
+            //foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
+            //{
+
+            //    var center = new ROIRotatedRect
+            //    {
+            //        X = item.PosX,
+            //        Y = item.PosY,
+            //        LengthX = item.DieSize.Width,
+            //        LengthY = item.DieSize.Height,
+            //        StrokeThickness = 2,
+            //        Stroke = System.Windows.Media.Brushes.LightGreen,
+            //        IsInteractived = false,
+            //        ToolTip = $"X={item.IndexX} , Y={item.IndexY}",
+            //        IsCenterShow = false
+            //    };
+            //    AddMapShapeAction.Execute(center);
+            //}
+
+            string SINF_Path = "";
+            System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
+            dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
+            dlg_image.InitialDirectory = SINF_Path;
+            if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                for (int y = 1; y <= 100; y++)
+                SINF_Path = dlg_image.FileName;
+                if (SINF_Path != "")
                 {
-                    var temp = new Die
-                    {
-                        IndexX = x,
-                        IndexY = y,
-                        PosX = 1000 + x * 100,
-                        PosY = 1000 + y * 100,
-                        DieSize = new Size(40, 40)
-                    };
+                    var m_Sinf = new SinfWaferMapping("");
+                    (m_Sinf.Dies, m_Sinf.WaferSize) = m_Sinf.ReadWaferFile(SINF_Path);
 
-                    dielist.Add(temp);
+                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+                    mainRecipe.DetectRecipe.WaferMap = m_Sinf;
+                    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+                    ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+
                 }
             }
-
-            //模擬  編輯完MAP圖後 資料存回mainRecipe內
-            mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
-            mainRecipe.DetectRecipe.WaferMap.Dies = dielist.ToArray();
-
-            //將MAP圖資訊 轉換成顯示資訊
-            mainRecipe.DetectRecipe.WaferMap.ReadWaferFile("");
-            foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
+            else
             {
-
-                var center = new ROIRotatedRect
-                {
-                    X = item.PosX,
-                    Y = item.PosY,
-                    LengthX = item.DieSize.Width,
-                    LengthY = item.DieSize.Height,
-                    StrokeThickness = 2,
-                    Stroke = System.Windows.Media.Brushes.LightGreen,
-                    IsInteractived = false,
-                    ToolTip = $"X={item.IndexX} , Y={item.IndexY}",
-                    IsCenterShow = false
-                };
-                AddMapShapeAction.Execute(center);
+                SINF_Path = "";
+                ClearMapShapeAction.Execute(true);
             }
         });
 
@@ -366,37 +391,23 @@ namespace WLS3200Gen2
         {
             try
             {
-                //string SINF_Path = "";
-                //System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
-                //dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
-                //dlg_image.InitialDirectory = SINF_Path;
-                //if (dlg_image.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                //{
-                //    SINF_Path = dlg_image.FileName;
-                //    if (SINF_Path != "")
-                //    {
-                //        var m_Sinf = new SinfWaferMapping("");
-                //        m_Sinf.ReadWaferFile(SINF_Path);
 
-                //        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
-                //        mainRecipe.DetectRecipe.WaferMap.Dies = m_Sinf.Dies.ToArray();
-
-                //        ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
-
-                //    }
-                //}
-                //else
-                //{
-                //    SINF_Path = "";
-                //}
 
 
 
                 SINFMapGenerateWindow sINFMapGenerateWindow = new SINFMapGenerateWindow();
                 sINFMapGenerateWindow.ShowDialog();
-                if (sINFMapGenerateWindow.Sinf.Dies != null && sINFMapGenerateWindow.Sinf.Dies.Length > 0)
+
+
+                if (sINFMapGenerateWindow.Sinf != null && sINFMapGenerateWindow.Sinf.Dies != null && sINFMapGenerateWindow.Sinf.Dies.Length > 0)
                 {
+                    if (mainRecipe.DetectRecipe.WaferMap == null)
+                    {
+                        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+                    }
                     mainRecipe.DetectRecipe.WaferMap.Dies = sINFMapGenerateWindow.Sinf.Dies.ToArray();
+
+                    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                     ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                 }
 
@@ -415,6 +426,7 @@ namespace WLS3200Gen2
             try
             {
                 ClearMapShapeAction.Execute(true);
+
                 double showSize_X;
                 double showSize_Y;
                 double dieSizeX = dies[0].DieSize.Width;
@@ -422,6 +434,7 @@ namespace WLS3200Gen2
                 double offsetDraw = mappingImageDrawSize / 150;
                 double scale = 1;
                 scale = Math.Max((columnCount + 2.5) * dieSizeX, (rowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                scale = Math.Max(columnCount * dieSizeX, rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
                 double strokeThickness = 1;
                 double crossThickness = 1;
                 strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
@@ -429,15 +442,35 @@ namespace WLS3200Gen2
 
                 showSize_X = (columnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
                 showSize_Y = (rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+
+
+                if (machineSetting.BinCodes == null)
+                {
+                    Model.BinCode[] pBinCodes = new Model.BinCode[2];
+                    pBinCodes[0] = new Model.BinCode();
+                    pBinCodes[1] = new Model.BinCode();
+                    pBinCodes[0].Code = "000";
+                    pBinCodes[0].Describe = "OK";
+                    pBinCodes[0].CodeColor = Brushes.Green;
+                    pBinCodes[1].Code = "099";
+                    pBinCodes[1].Describe = "NG";
+                    pBinCodes[1].CodeColor = Brushes.Red;
+                    machineSetting.BinCodes = pBinCodes;
+                }
                 foreach (var item in dies)
                 {
                     Brush drawStroke = Brushes.Black;
                     Brush drawFill = Brushes.Gray;
                     //判斷要用什麼顏色
-                    //foreach (var item2 in collection)
-                    //{
+                    foreach (var item2 in machineSetting.BinCodes)
+                    {
+                        if (item.BinCode == item2.Code)
+                        {
+                            drawFill = item2.CodeColor;
+                        }
+                    }
 
-                    //}
+
                     AddMapShapeAction.Execute(new ROIRotatedRect
                     {
                         Stroke = drawStroke,

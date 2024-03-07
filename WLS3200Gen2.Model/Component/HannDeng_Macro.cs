@@ -166,6 +166,8 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsLockOK => InnerRingIsVacuumOn.IsSignal;
 
+        public double Position => 0;
+
         public Task Home()
         {
             try
