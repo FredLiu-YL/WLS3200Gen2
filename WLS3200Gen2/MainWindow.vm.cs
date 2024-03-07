@@ -50,7 +50,7 @@ namespace WLS3200Gen2
         private System.Windows.Point mapmousePixcel;
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
-        private bool isRefresh, isInitialComplete;
+        private bool isRefresh, isInitialComplete, isWaferInSystem;
         private LoadPortQuantity loadportQuantity;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
@@ -128,7 +128,24 @@ namespace WLS3200Gen2
                 machine.MicroDetection.WriteLog += WriteLog;
                 machine.Feeder.WriteLog += WriteLog;
                 await Task.Delay(10);//顯示UI 
-                await machine.Home();
+                isWaferInSystem = true;
+                isWaferInSystem = await machine.BeforeHomeCheck();
+                MessageBoxResult result = MessageBoxResult.Yes;
+
+                if (isWaferInSystem)
+                {
+                    result = MessageBox.Show("Wafer In System!! StartHome??", "StartHome", MessageBoxButton.YesNo);
+                }
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    await machine.Home();
+                }
+                else
+                {
+                    //直接關掉程式!
+                }
+
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;

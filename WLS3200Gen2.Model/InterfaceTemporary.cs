@@ -458,6 +458,16 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         Task AlarmReset();
         /// <summary>
+        /// 手臂是否固定住Wafer
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsLockOK();
+        /// <summary>
+        /// Aligner是否有Wafer
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsHavePiece();
+        /// <summary>
         /// 取得目前狀態
         /// </summary>
         /// <returns></returns>
@@ -480,6 +490,7 @@ namespace WLS3200Gen2.Model
         bool IsInnerUsing { get; }
         bool IsOuterCanMoveStartPos { get; }
         bool IsOuterUsing { get; }
+        bool IsLockOK { get; }
         /// <summary>
         /// 
         /// </summary>
@@ -542,6 +553,6 @@ namespace WLS3200Gen2.Model
 
         void OuterRingRollY_Stop();
     }
- 
+
 
 }

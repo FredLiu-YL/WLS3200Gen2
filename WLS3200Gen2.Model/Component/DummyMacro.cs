@@ -18,6 +18,8 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsOuterUsing => throw new NotImplementedException();
 
+        public bool IsLockOK => throw new NotImplementedException();
+
         public void FixWafer()
         {
             

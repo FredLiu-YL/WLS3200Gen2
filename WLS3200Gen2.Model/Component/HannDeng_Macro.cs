@@ -164,6 +164,8 @@ namespace WLS3200Gen2.Model.Component
         public bool IsOuterCanMoveStartPos { get => isOuterCanMoveStartPos; set => SetValue(ref isOuterCanMoveStartPos, value); }
         public bool IsOuterUsing { get => isOuterUsing; set => SetValue(ref isOuterUsing, value); }
 
+        public bool IsLockOK => InnerRingIsVacuumOn.IsSignal;
+
         public Task Home()
         {
             try

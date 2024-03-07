@@ -32,6 +32,16 @@ namespace WLS3200Gen2.Model.Component
         {
         }
 
+        public Task<bool> IsHavePiece()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsLockOK()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task Run(double degree)
         {
             return Task.CompletedTask;

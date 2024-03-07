@@ -142,7 +142,7 @@ namespace WLS3200Gen2.Model.Module
             this.cancelToken = ctk;
 
             //入料準備?
-
+            //await subject.ToTask();
 
             cancelToken.Token.ThrowIfCancellationRequested();
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
@@ -169,8 +169,15 @@ namespace WLS3200Gen2.Model.Module
                 await TableMoveToAsync(transPosition);
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
-                subject.OnNext((bmp, isAutoSave));//AOI另外丟到其他執行續處理
 
+                if(isAutoSave)
+                {
+                    subject.OnNext((bmp, isAutoSave));//AOI另外丟到其他執行續處理
+                }
+                else
+                {
+
+                }
                 // pauseToken.IsPaused = true;
 
                 cancelToken.Token.ThrowIfCancellationRequested();
@@ -241,6 +248,7 @@ namespace WLS3200Gen2.Model.Module
                         {
                             frame.image.Save("C:\\TEST", ImageFileFormats.Bmp);
                         }
+
                         await DefectDetection(frame.image);
                     });
         }

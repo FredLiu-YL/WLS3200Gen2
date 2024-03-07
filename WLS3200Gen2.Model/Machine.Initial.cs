@@ -80,16 +80,43 @@ namespace WLS3200Gen2.Model
             StackLight = new StackLight(dos);
         
         }
-
+        public async Task<bool> BeforeHomeCheck()
+        {
+            try
+            {
+                bool isWaferInSystem = false;
+                Task robotLock = Feeder.Robot.FixWafer();
+                Task alignerLock = Feeder.AlignerL.Vaccum(true);
+                Feeder.Macro.FixWafer();
+                MicroDetection.TableVacuum.On();
+                await Task.WhenAll(robotLock, alignerLock);
+                await Task.Delay(1000); //暫停1000ms 等待真空建立完成
+                if (await Feeder.Robot.IsLockOK() || await Feeder.Robot.IsHavePiece())
+                {
+                    isWaferInSystem = true;
+                }
+                if (Feeder.Macro.IsLockOK)
+                {
+                    isWaferInSystem = true;
+                }
+                if (await Feeder.AlignerL.IsLockOK())
+                {
+                    isWaferInSystem = true;
+                }
+                return isWaferInSystem;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
 
         public async Task Home()
         {
             try
             {
-
-
-
+                //顯示是否要復歸
                 Task feedHome = Feeder.Home();
                 await Task.Delay(500); //先暫停500ms 避免判定還沒出現就過了 WaitEFEMonSafe
                 await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
