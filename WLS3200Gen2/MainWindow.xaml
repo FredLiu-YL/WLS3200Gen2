@@ -1146,7 +1146,9 @@
                                     </StackPanel>
                                 </Grid>
                             </GroupBox>
-
+                            <Grid Grid.Column="1" Grid.Row="1" >
+                                <UserControlUC:MappingCanvas/>
+                            </Grid>
                         </Grid>
                     </GroupBox>
 

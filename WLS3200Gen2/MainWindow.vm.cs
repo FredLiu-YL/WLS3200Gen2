@@ -13,6 +13,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -278,7 +280,23 @@ namespace WLS3200Gen2
 
             }
         });
+        public ICommand DragTESTCommand => new RelayCommand<DragDeltaEventArgs>(async e =>
+        {
+            try
+            {
+               
 
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
+            }
+        });
         private void SwitchStates(MachineStates states)
         {
             Machinestatus = states;

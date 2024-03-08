@@ -145,6 +145,9 @@
     <Compile Include="UserControls\MachineStateUC.xaml.cs">
       <DependentUpon>MachineStateUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MappingCanvas.xaml.cs">
+      <DependentUpon>MappingCanvas.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\ProcessCassetteMenuUC.xaml.cs">
       <DependentUpon>ProcessCassetteMenuUC.xaml</DependentUpon>
     </Compile>
@@ -226,6 +229,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MachineStateUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\MappingCanvas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
