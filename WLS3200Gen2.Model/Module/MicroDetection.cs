@@ -81,7 +81,7 @@ namespace WLS3200Gen2.Model.Module
 
                 Task axisRHome = AxisR.HomeAsync();
 
-                Task microscopeHome1 = Microscope.Home();
+                Task microscopeHome1 = Microscope.HomeAsync();
 
                 await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
 
@@ -170,7 +170,7 @@ namespace WLS3200Gen2.Model.Module
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
 
-                if(isAutoSave)
+                if (isAutoSave)
                 {
                     subject.OnNext(bmp);//AOI另外丟到其他執行續處理
                 }
@@ -244,9 +244,9 @@ namespace WLS3200Gen2.Model.Module
                     .ObserveOn(TaskPoolScheduler.Default)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
                     .Subscribe(async frame =>
                     {
-                        
-                            frame.Save("C:\\TEST", ImageFileFormats.Bmp);
-                    
+
+                        frame.Save("C:\\TEST", ImageFileFormats.Bmp);
+
 
                         await DefectDetection(frame);
                     });

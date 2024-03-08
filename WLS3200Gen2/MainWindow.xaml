@@ -635,39 +635,27 @@
                                         </TabItem.Header>
                                         <!-- TabItem 的內容 -->
 
-                                        <Grid>
+                                        <Grid Grid.Row="0">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="0.7*"/>
-                                                <RowDefinition Height="0.3*"/>
+                                                <RowDefinition Height="0.5*"/>
+                                                <RowDefinition Height="0.5*"/>
                                             </Grid.RowDefinitions>
-
-                                            <Grid Grid.Row="0">
-                                                <Grid.RowDefinitions>
-
-                                                    <RowDefinition Height="0.65*"/>
-                                                    <RowDefinition Height="0.35*"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions >
-                                                    <ColumnDefinition Width="0.20*"/>
-                                                    <ColumnDefinition Width="0.7*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="1" >
-                                                    <GroupBox.Header>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Label  Content="Load Port"  />
-                                                        </StackPanel>
-
-                                                    </GroupBox.Header>
-                                                    <Grid >
-                                                        <Grid Margin="-5">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition />
-                                                            </Grid.ColumnDefinitions>
-                                                            <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"  />
-                                                            <!--<usercontrols1:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>-->
+                                            <Grid.ColumnDefinitions >
+                                                <ColumnDefinition Width="0.20*"/>
+                                                <ColumnDefinition Width="0.7*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="1" Header="Load Port" >
+                                                
+                                                <Grid >
+                                                    <Grid Margin="-5">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"  />
+                                                        <!--<usercontrols1:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>-->
 
 
-                                                            <!--<ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
+                                                        <!--<ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
                                                             <ListBox.ItemContainerStyle>
                                                                 <Style TargetType="ListBoxItem">
                                                                     <Setter Property="Margin" Value="0"/>
@@ -676,110 +664,138 @@
                                                             <ListBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                      -->
-                                                            <!--這裡放置你的 UserControl-->
-                                                            <!-- 
+                                                        <!--這裡放置你的 UserControl-->
+                                                        <!-- 
                                                                     <wls3200controls:ExistNotifyUC ExistState="{Binding WaferStates}" />
                                                                     -->
-                                                            <!--<Button/>-->
-                                                            <!--
+                                                        <!--<Button/>-->
+                                                        <!--
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>-->
 
-                                                        </Grid>
                                                     </Grid>
+                                                </Grid>
 
-                                                </GroupBox>
+                                            </GroupBox>
 
 
 
 
-                                                <GroupBox Header="Aligner"  Grid.Row="1" Grid.Column="1">
-                                                    <Grid Margin="-5" >
-                                                        <Grid >
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition />
-                                                                <RowDefinition />
+                                            <GroupBox Header="Aligner"  Grid.Row="0" Grid.Column="1">
+                                                <Grid Margin="-5" >
+                                                    <Grid >
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.4*"/>
+                                                            <ColumnDefinition Width="0.3*"/>
+                                                            <ColumnDefinition Width="0.3*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="0"  Grid.Column="1" VerticalAlignment="Center" Width="125" />
+                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run"/>
+
+                                                        <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" />
+                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Run"/>
+
+                                                        <TextBlock Grid.Row="2"  Grid.Column="0"  Text="Wafer ID Test:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" />
+                                                        <Button Grid.Row="2"  Grid.Column="2" Content="Test"/>
+                                                        
+                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
+                                                    </Grid>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Header="Macro" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                                <Grid Margin="-5,-5,-5,-5">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition Height="0.20*"/>
+                                                        <RowDefinition Height="0.3*"/>
+                                                        <RowDefinition Height="0.50*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <GroupBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Light" Style="{StaticResource MaterialDesignGroupBox}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions >
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RowDefinitions >
+                                                                <RowDefinition Height="0.3*"/>
+                                                                <RowDefinition Height="0.7*"/>
+                                                            </Grid.RowDefinitions>
+                                                            <TextBlock Grid.Column="0" Grid.Row="0"   Text="Left" FontSize="15"  VerticalAlignment="Top"    HorizontalAlignment="Center" Margin="0,-5,0,-5"/>
+                                                            <TextBlock Grid.Column="1" Grid.Row="0"   Text="Right" FontSize="15"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,-5,0,-5"/>
+                                                            <UserControlUC:LightUnitUC Grid.Column="0" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25" />
+                                                            <UserControlUC:LightUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
+                                                        </Grid>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,-5,0,-5" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource MaterialDesignGroupBox}">
+                                                        <Grid>
+                                                            <Grid.RowDefinitions >
                                                                 <RowDefinition />
                                                                 <RowDefinition />
                                                                 <RowDefinition />
                                                             </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="0.4*"/>
-                                                                <ColumnDefinition Width="0.3*"/>
+                                                            <Grid.ColumnDefinitions >
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <TextBlock Grid.Column="0" Grid.Row="0"   Text="Pitch X:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"   />
+                                                            <TextBlock Grid.Column="2" Grid.Row="0"   Text="Roll Y:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <TextBlock Grid.Column="0" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <TextBlock Grid.Column="0" Grid.Row="2"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+
+                                                        </Grid>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,-5,0,-5" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Control" Style="{StaticResource MaterialDesignGroupBox}">
+                                                        <Grid >
+                                                            <Grid.ColumnDefinitions >
+                                                                <ColumnDefinition Width="0.7*"/>
                                                                 <ColumnDefinition Width="0.3*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox  Grid.Row="0"  Grid.Column="1"  />
-                                                            <Button Grid.Row="0"  Grid.Column="2" Content="Run"/>
-
-                                                            <TextBlock Grid.Row="2"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox  Grid.Row="2"  Grid.Column="1"  />
-                                                            <Button Grid.Row="2"  Grid.Column="2" Content="Run"/>
+                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,-5,0,-5" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
+                                                            <Grid Grid.Column="1">
+                                                                <Grid.RowDefinitions >
+                                                                    <RowDefinition Height="0.5*"/>
+                                                                    <RowDefinition Height="0.5*"/>
+                                                                    <RowDefinition Height="0.5*"/>
+                                                                </Grid.RowDefinitions>
+                                                                <StackPanel Grid.Row="0"   Grid.Column="1" Orientation="Horizontal">
+                                                                    <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
+                                                                    <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                                </StackPanel>
+                                                                <Button Grid.Row="1" Content="WaferToMacro" Width="150" Height="40" HorizontalAlignment="Left" />
+                                                            </Grid>
+                                                            
                                                         </Grid>
-                                                    </Grid>
-                                                </GroupBox>
-                                                <GroupBox Header="Macro" Grid.Row="0" Grid.Column="1">
-                                                    <StackPanel Orientation="Vertical" Margin="-5"  >
-                                                        <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" Width="380" />
-                                                        <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" Width="380" />
-                                                        <UserControlUC:MacroUnitUC Grid.Column="3" Grid.Row="2" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
-                                                    </StackPanel>
-                                                </GroupBox>
-                                            </Grid>
-
-
-                                            <GroupBox Header="Robot" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" >
-                                                <Grid >
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                        <RowDefinition />
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition/>
-                                                        <ColumnDefinition/>
-                                                        <ColumnDefinition/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <StackPanel  Grid.Column="0" Orientation="Horizontal">
-                                                        <TextBlock Margin="2" Text="LoadPort:" FontSize="20" />
-                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="0"   FontSize="20"  />
-                                                    </StackPanel>
-                                                    <StackPanel  Grid.Column="1" Orientation="Horizontal">
-                                                        <TextBlock Margin="2" Text="Wafer:" FontSize="20" />
-                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="21"   FontSize="20"  />
-                                                    </StackPanel>
-                                                    <Button Grid.Column="2" Content="Load" Command="{Binding LoadWaferCommand}"  />
-
-                                                    <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal">
-                                                        <TextBlock Margin="2" Text="LoadPort:" FontSize="20" />
-                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="0"   FontSize="20"  />
-                                                    </StackPanel>
-                                                    <StackPanel Grid.Row="1"   Grid.Column="1" Orientation="Horizontal">
-                                                        <TextBlock Margin="2" Text="Wafer:" FontSize="20" />
-                                                        <TextBox  Margin="5,0,0,0" Width="40"  Text="21"   FontSize="20"  />
-                                                    </StackPanel>
-                                                    <Button Grid.Row="1"  Grid.Column="2" Content="UnLoad" />
-
-                                                    <StackPanel Grid.Row="2"   Grid.Column="0" Orientation="Horizontal">
-                                                        <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
-                                                        <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
-                                                    </StackPanel>
-                                                    <StackPanel Grid.Row="2"   Grid.Column="1" Orientation="Horizontal">
-                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
-                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
-                                                    </StackPanel>
-                                                    <StackPanel Grid.Row="2"   Grid.Column="2" Orientation="Horizontal">
-                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="On" />
-                                                        <Button Width="70" Grid.Row="2"  Grid.Column="1" Content="Off" />
-                                                    </StackPanel>
-
+                                                    </GroupBox>
                                                 </Grid>
 
                                             </GroupBox>
+
+
+
 
                                         </Grid>
                                     </TabItem>
@@ -923,9 +939,9 @@
                                     <StackPanel Orientation="Horizontal"  >
                                         <Label Content="Index" Width="80" FontSize="26" />
                                         <Label Content="Col" Width="70" FontSize="26" />
-                                        <TextBox Text="{Binding MoveIndexX}"    FontSize="22"   Width="70" />
+                                        <TextBox Text="{Binding MoveIndexX}"    FontSize="22"   Width="70" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <Label Content="Row" Width="70" FontSize="26" />
-                                        <TextBox Text="{Binding MoveIndexY}"   FontSize="26"  Width="70" />
+                                        <TextBox Text="{Binding MoveIndexY}"   FontSize="26"  Width="70" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}"  />
                                     </StackPanel>
                                 </Border>

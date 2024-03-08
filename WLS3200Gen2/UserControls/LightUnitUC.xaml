@@ -6,17 +6,11 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
         mc:Ignorable="d"
-        x:Name="LightUnit" Height="80" Width="300">
+        x:Name="LightUnit" Height="30" Width="240">
     <Grid DataContext="{Binding ElementName=LightUnit}">
-        <GroupBox Grid.Column="0 " Grid.Row="1" Grid.ColumnSpan="2" materialDesign:ColorZoneAssist.Background="DeepSkyBlue"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12"
-                                     Header="Intensity" Style="{StaticResource MaterialDesignGroupBox}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="4234" FontSize="20" Width="50" />
-                <Slider Maximum="50" Minimum="0" Width="180" Value="35"   />
-            </StackPanel>
-
-        </GroupBox>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="4234" FontSize="20" Width="50" Margin="5,0,0,0"/>
+            <Slider Maximum="50" Minimum="0" Width="180" Value="35"   />
+        </StackPanel>
     </Grid>
 </UserControl>

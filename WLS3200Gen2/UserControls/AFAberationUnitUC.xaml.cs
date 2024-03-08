@@ -67,10 +67,10 @@ namespace WLS3200Gen2.UserControls
                 switch (key)
                 {
                     case "Up":
-                        await Microscope.AberrationMoveCommand(-DistanceAberation);
+                        await Microscope.AberrationMoveAsync(-DistanceAberation);
                         break;
                     case "Down":
-                        await Microscope.AberrationMoveCommand(DistanceAberation);
+                        await Microscope.AberrationMoveAsync(DistanceAberation);
                         break;
                     default:
                         break;

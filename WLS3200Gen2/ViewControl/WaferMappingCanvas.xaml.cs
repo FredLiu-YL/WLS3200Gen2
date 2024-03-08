@@ -460,9 +460,38 @@ namespace WLS3200Gen2.Views
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string file = dialog.FileName.Split('.').First();
-                ImageSource.Save(file);
+                //ImageSource.Save(file);
+                SaveAll(file + ".bmp");
             }
         });
+
+        public void SaveAll(string filePath)
+        {
+            var targetWidth = Convert.ToInt32(MainCanvas.ActualWidth);//3000
+            var targetHeight = Convert.ToInt32(MainCanvas.ActualHeight);//3000
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(targetWidth, targetHeight, 96, 96, PixelFormats.Pbgra32);
+
+            // 使用 VisualBrush 來渲染 Canvas 的內容
+            VisualBrush visualBrush = new VisualBrush(MainCanvas);
+            DrawingVisual drawingVisual = new DrawingVisual();
+            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+            {
+                drawingContext.DrawRectangle(visualBrush, null, new Rect(new Point(), new Size(targetWidth, targetHeight)));
+            }
+
+            // 將 DrawingVisual 渲染到 RenderTargetBitmap
+            renderTargetBitmap.Render(drawingVisual);
+
+            BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+            using (System.IO.FileStream stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+            {
+                encoder.Save(stream);
+            }
+
+            Console.WriteLine($"Bitmap saved to {filePath}");
+        }
 
         public ICommand ClearCommand => new RelayCommand(() =>
         {

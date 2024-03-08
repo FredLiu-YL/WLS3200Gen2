@@ -190,7 +190,7 @@ namespace Test
 
                 //Task axisRHome = TableR.HomeAsync();
 
-                await Micro.Home();//Task microscopeHome1 =
+                //await Micro.HomeAsync();//Task microscopeHome1 =
 
                 //await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
 
@@ -362,7 +362,7 @@ namespace Test
 
                         if (Micro != null)
                         {
-                            NowPos = await Micro.GetZPosition();
+                            NowPos = Micro.Position;
                             BXFMUIShow.FocusZ = Convert.ToInt32(nowPos);
                             BXFMUIShow.ApertureValue = Micro.ApertureValue;
                             BXFMUIShow.LightValue = Micro.LightValue;
@@ -411,12 +411,12 @@ namespace Test
 
         });
 
-        public ICommand OpenBXFMACommand => new RelayCommand<string>( key =>
-        {
+        public ICommand OpenBXFMACommand => new RelayCommand<string>(key =>
+       {
 
-            BXFMA bXFMA = new BXFMA("COM24");
-            bXFMA.Initial();
-        });
+           BXFMA bXFMA = new BXFMA("COM24");
+           bXFMA.Initial();
+       });
 
 
 
@@ -429,29 +429,29 @@ namespace Test
                 switch (key)
                 {
                     case "btn1":
-                        await Micro.ZMoveCommand(1000);
+                        await Micro.MoveAsync(1000);
                         break;
                     case "btn2":
-                        await Micro.ZMoveToCommand(10);
+                        await Micro.MoveToAsync(10);
                         break;
                     case "btn0":
                         double aberationNow = 0;
                         if (isFirst)
                         {
-                            await Micro.ChangeLight(65);
+                            await Micro.ChangeLightAsync(65);
 
-                            await Micro.ChangeAperture(500);
+                            await Micro.ChangeApertureAsync(500);
 
-                            double zNow = await Micro.GetAFPEL();
+                            double zNow = Micro.AFPEL;
 
-                            aberationNow = await Micro.GetAFNEL();
+                            aberationNow = Micro.AFNEL;
 
-                            await Micro.SetSearchRange(585827, 5000);
+                            Micro.SetSearchRange(585827, 5000);
                             isFirst = false;
                         }
 
 
-                        await Micro.AF_OneShot();
+                        await Micro.AFOneShotAsync();
 
 
                         //Micro.Z_PositionPEL = 851110;
