@@ -9,60 +9,70 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyMicroscope : IMicroscope
     {
-        public int LightValue { get; set  ; }
-        public int ApertureValue { get ; set  ; }
+        public int LightValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int ApertureValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public Task AberrationMoveCommand(double distance)
+        public int Position => throw new NotImplementedException();
+
+        public int NEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int PEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public double AberationPosition => throw new NotImplementedException();
+
+        public int AFNEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int AFPEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public Task AberrationMoveAsync(double distance)
         {
             throw new NotImplementedException();
         }
 
-        public Task AberrationMoveToCommand(double position)
+        public Task AberrationMoveToAsync(double position)
         {
             throw new NotImplementedException();
         }
 
-        public Task AF_Off()
+        public void AFOff()
         {
             throw new NotImplementedException();
         }
 
-        public Task AF_OneShot()
+        public Task AFOneShotAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task AF_Trace()
+        public void AFTrace()
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeAperture(int ApertureValue)
+        public Task ChangeApertureAsync(int ApertureValue)
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeCube(int idx)
+        public Task ChangeCubeAsync(int idx)
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeFilter(int wheelIdx, int idx)
+        public Task ChangeFilterAsync(int wheelIdx, int idx)
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeLens(int idx)
+        public Task ChangeLensAsync(int idx)
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeLight(int LigntValue)
+        public Task ChangeLightAsync(int LigntValue)
         {
             throw new NotImplementedException();
         }
 
-        public Task ChangeLightSpread(int idx)
+        public Task ChangeLightSpreadAsync(int idx)
         {
             throw new NotImplementedException();
         }
@@ -94,18 +104,19 @@ namespace WLS3200Gen2.Model.Component
 
         public Task<double> GetZPosition()
         {
-            return Task.FromResult<double>(0); 
+            return Task.FromResult<double>(0);
         }
 
-        public Task Home()
+        public Task HomeAsync()
         {
-          return Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public void Initial()
         {
-           
+
         }
+
 
         public Task SetAFNEL(int position)
         {
@@ -117,7 +128,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task SetSearchRange(double FirstZPos, double Range)
+        public void SetSearchRange(double FirstZPos, double Range)
         {
             throw new NotImplementedException();
         }
@@ -132,12 +143,12 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task ZMoveCommand(double distance)
+        public Task MoveAsync(double distance)
         {
             throw new NotImplementedException();
         }
 
-        public Task ZMoveToCommand(double position)
+        public Task MoveToAsync(double position)
         {
             throw new NotImplementedException();
         }

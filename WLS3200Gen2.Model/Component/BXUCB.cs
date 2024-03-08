@@ -14,16 +14,15 @@ namespace WLS3200Gen2.Model.Component
     {
         private readonly object lockObj = new object();
         private SerialPort serialPort = new SerialPort();
-        private string Microscope_Terminator;
+        private TaskCompletionSource<string> tcsReceived;
+        private string microscope_Terminator;
         private int apertureValue = -1;
         private double cubeIdx = -1;
         private int[] filterWheelIdx = new int[] { -1, -1, -1 };
         private int lens = -1;
         private int lightValue = -1;
         private int lightSpreadIdx = -1;
-
-        public int LightValue { get => lightValue; set => ChangeLight(value).Wait(); }
-        public int ApertureValue { get => apertureValue; set => ChangeAperture(value).Wait(); }
+        private string errcode = "";
         public BXUCB(string comPort)
         {
             try
@@ -34,7 +33,10 @@ namespace WLS3200Gen2.Model.Component
                 serialPort.Parity = Parity.Even;
                 serialPort.StopBits = StopBits.Two;
                 serialPort.RtsEnable = false;
-                Microscope_Terminator = "\r\n";
+                serialPort.NewLine = "\r\n";
+                microscope_Terminator = "\r\n";
+                serialPort.DataReceived += DataReceived;
+                tcsReceived = new TaskCompletionSource<string>();
             }
             catch (Exception ex)
             {
@@ -42,6 +44,19 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public int LightValue { get => lightValue; }
+        public int ApertureValue { get => apertureValue; }
+
+        public int Position => Convert.ToInt32(GetZPosition());
+
+        public int NEL { get => Convert.ToInt32(GetZNEL()); set => SetZNEL(value); }
+        public int PEL { get => Convert.ToInt32(GetZPEL()); set => SetZPEL(value); }
+
+        public double AberationPosition => GetAberationPosition();
+
+        public int AFNEL { get => GetAFNEL(); set => SetAFNEL(value); }
+        public int AFPEL { get => GetAFPEL(); set => SetAFPEL(value); }
+
         public void Initial()
         {
             try
@@ -56,18 +71,18 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task Home()
+        public Task HomeAsync()
         {
             try
             {
                 return Task.Run(async () =>
                {
-                   await ZMoveToCommand(1);
-                   await ChangeLens(1);
-                   await ChangeAperture(0);
-                   await ChangeLight(0);
-                   await ChangeFilter(1, 1);
-                   await ChangeFilter(2, 1);
+                   await MoveToAsync(1);
+                   await ChangeLensAsync(1);
+                   await ChangeApertureAsync(0);
+                   await ChangeLightAsync(0);
+                   await ChangeFilterAsync(1, 1);
+                   await ChangeFilterAsync(2, 1);
                });
             }
             catch (Exception ex)
@@ -115,7 +130,7 @@ namespace WLS3200Gen2.Model.Component
         //    }
         //}
 
-        public Task AberrationMoveCommand(double distance)
+        public Task AberrationMoveAsync(double distance)
         {
             try
             {
@@ -160,13 +175,13 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task AberrationMoveToCommand(double position)
+        public Task AberrationMoveToAsync(double position)
         {
             try
             {
                 return Task.Run(async () =>
                 {
-                    double nowPos = await GetAberationPosition();
+                    double nowPos = GetAberationPosition();
                     double distance = position - nowPos;
                     List<string> str = new List<string>();
                     if (distance > 0)
@@ -207,36 +222,33 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task AF_Off()
+        public void AFOff()
         {
             try
             {
-                return Task.Run(() =>
+                List<string> str = new List<string>();
+                str = SendGetMessage("2AF OFF", "AF");
+                bool isOK = false;
+                string errorStr = "";
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2AF OFF", "AF");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    if (item.Contains("AF"))
                     {
-                        if (item.Contains("AF"))
+                        if (item.Contains("+"))
                         {
-                            if (item.Contains("+"))
-                            {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2AF !,", "");
-                                break;
-                            }
+                            isOK = true;
+                        }
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2AF !,", "");
+                            break;
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB AF_Off Error:" + errorStr);
-                    }
-                });
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB AF_Off Error:" + errorStr);
+                }
             }
             catch (Exception ex)
             {
@@ -245,7 +257,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task AF_OneShot()
+        public Task AFOneShotAsync()
         {
             try
             {
@@ -283,36 +295,33 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task AF_Trace()
+        public void AFTrace()
         {
             try
             {
-                return Task.Run(() =>
+                List<string> str = new List<string>();
+                str = SendGetMessage("2AF REAL", "AF");
+                bool isOK = false;
+                string errorStr = "";
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2AF REAL", "AF");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    if (item.Contains("AF"))
                     {
-                        if (item.Contains("AF"))
+                        if (item.Contains("+"))
                         {
-                            if (item.Contains("+"))
-                            {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2AF !,", "");
-                                break;
-                            }
+                            isOK = true;
+                        }
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2AF !,", "");
+                            break;
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB AF_Trace Error:" + errorStr);
-                    }
-                });
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB AF_Trace Error:" + errorStr);
+                }
             }
             catch (Exception ex)
             {
@@ -321,7 +330,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ChangeAperture(int ApertureValue)
+        public Task ChangeApertureAsync(int ApertureValue)
         {
             try
             {
@@ -363,7 +372,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ChangeCube(int idx)
+        public Task ChangeCubeAsync(int idx)
         {
             try
             {
@@ -395,7 +404,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ChangeFilter(int wheelIdx, int idx)
+        public Task ChangeFilterAsync(int wheelIdx, int idx)
         {
             try
             {
@@ -436,7 +445,7 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task ChangeLight(int LigntValue)
+        public Task ChangeLightAsync(int LigntValue)
         {
             try
             {
@@ -508,7 +517,7 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task ChangeLightSpread(int idx)
+        public Task ChangeLightSpreadAsync(int idx)
         {
             try
             {
@@ -557,7 +566,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ChangeLens(int idx)
+        public Task ChangeLensAsync(int idx)
         {
             try
             {
@@ -567,7 +576,7 @@ namespace WLS3200Gen2.Model.Component
                     {
                         lens = idx;
                         List<string> str = new List<string>();
-                        await AF_Off();
+                        AFOff();
                         str = SendGetMessage("1OB " + idx, "OB");
                         bool isOK = false;
                         string errorStr = "";
@@ -604,29 +613,26 @@ namespace WLS3200Gen2.Model.Component
 
 
 
-        public Task SetSearchRange(double FirstZPos, double Range)
+        public void SetSearchRange(double FirstZPos, double Range)
         {
             try
             {
-                return Task.Run(async () =>
+                AFOff();
+                List<string> str = new List<string>();
+                double setZPEL = FirstZPos + Range;
+                double z_PositionPEL = GetZPEL();
+                double z_PositionNEL = GetZNEL();
+                if (FirstZPos + Range >= z_PositionPEL)
                 {
-                    await AF_Off();
-                    List<string> str = new List<string>();
-                    double setZPEL = FirstZPos + Range;
-                    double z_PositionPEL = await GetZPEL();
-                    double z_PositionNEL = await GetZNEL();
-                    if (FirstZPos + Range >= z_PositionPEL)
-                    {
-                        setZPEL = z_PositionPEL;
-                    }
-                    double setZNEL = FirstZPos - Range;
-                    if (FirstZPos - Range <= z_PositionNEL)
-                    {
-                        setZNEL = z_PositionNEL;
-                    }
-                    await SetAFPEL(Convert.ToInt32(setZPEL));//710000
-                    await SetAFNEL(Convert.ToInt32(setZNEL));//350000
-                });
+                    setZPEL = z_PositionPEL;
+                }
+                double setZNEL = FirstZPos - Range;
+                if (FirstZPos - Range <= z_PositionNEL)
+                {
+                    setZNEL = z_PositionNEL;
+                }
+                SetAFPEL(Convert.ToInt32(setZPEL));//710000
+                SetAFNEL(Convert.ToInt32(setZNEL));//350000
             }
             catch (Exception ex)
             {
@@ -634,7 +640,7 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ZMoveCommand(double distance)
+        public Task MoveAsync(double distance)
         {
             try
             {
@@ -679,13 +685,13 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task ZMoveToCommand(double position)
+        public Task MoveToAsync(double position)
         {
             try
             {
                 return Task.Run(async () =>
                 {
-                    double nowPos = await GetZPosition();
+                    double nowPos = this.Position;
                     double distance = position - nowPos;
                     List<string> str = new List<string>();
                     if (distance > 0)
@@ -805,118 +811,108 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task<double> GetZNEL()
+        private double GetZNEL()
         {
             try
             {
-                return Task.Run(() =>
+                List<string> str = new List<string>();
+                str = SendGetMessage("2FARLMT?", "FARLMT");
+                bool isOK = false;
+                string errorStr = "";
+                double nowPos = 0;
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2FARLMT?", "FARLMT");
-                    bool isOK = false;
-                    string errorStr = "";
-                    double nowPos = 0;
-                    foreach (var item in str)
+                    if (item.Contains("2FARLMT"))
                     {
-                        if (item.Contains("2FARLMT"))
+                        if (item.Contains("!"))
                         {
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2FARLMT !,", "");
-                                break;
-                            }
-                            else
-                            {
-                                isOK = true;
-                                nowPos = Convert.ToDouble(item.Replace("2FARLMT ", ""));
-                            }
+                            errorStr = item.Replace("2FARLMT !,", "");
+                            break;
+                        }
+                        else
+                        {
+                            isOK = true;
+                            nowPos = Convert.ToDouble(item.Replace("2FARLMT ", ""));
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB GetZNEL Error:" + errorStr);
-                    }
-                    return nowPos;
-                });
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-        public Task SetZNEL(int position)
-        {
-            try
-            {
-                return Task.Run(() =>
-               {
-                   List<string> str = new List<string>();
-                   str = SendGetMessage("2FARLMT " + position, "FARLMT");
-                   //z_PositionNEL = position;
-                   bool isOK = false;
-                   string errorStr = "";
-                   foreach (var item in str)
-                   {
-                       if (item.Contains("FARLMT"))
-                       {
-                           if (item.Contains("+"))
-                           {
-                               isOK = true;
-                           }
-                           if (item.Contains("!"))
-                           {
-                               errorStr = item.Replace("2FARLMT !,", "");
-                               break;
-                           }
-                       }
-                   }
-                   if (isOK == false)
-                   {
-                       throw new Exception("BXUCB SetZNEL Error:" + errorStr);
-                   }
-               });
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-        public Task<double> GetZPEL()
-        {
-            try
-            {
-                return Task.Run(() =>
+                }
+                if (isOK == false)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2NEARLMT?", "NEARLMT");
-                    bool isOK = false;
-                    string errorStr = "";
-                    double nowPos = 0;
-                    foreach (var item in str)
+                    throw new Exception("BXUCB GetZNEL Error:" + errorStr);
+                }
+                return nowPos;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        private void SetZNEL(int position)
+        {
+            try
+            {
+                List<string> str = new List<string>();
+                str = SendGetMessage("2FARLMT " + position, "FARLMT");
+                //z_PositionNEL = position;
+                bool isOK = false;
+                string errorStr = "";
+                foreach (var item in str)
+                {
+                    if (item.Contains("FARLMT"))
                     {
-                        if (item.Contains("2NEARLMT"))
+                        if (item.Contains("+"))
                         {
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2NEARLMT !,", "");
-                                break;
-                            }
-                            else
-                            {
-                                isOK = true;
-                                nowPos = Convert.ToDouble(item.Replace("2NEARLMT ", ""));
-                            }
+                            isOK = true;
+                        }
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2FARLMT !,", "");
+                            break;
                         }
                     }
-                    if (isOK == false)
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB SetZNEL Error:" + errorStr);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public double GetZPEL()
+        {
+            try
+            {
+                List<string> str = new List<string>();
+                str = SendGetMessage("2NEARLMT?", "NEARLMT");
+                bool isOK = false;
+                string errorStr = "";
+                double nowPos = 0;
+                foreach (var item in str)
+                {
+                    if (item.Contains("2NEARLMT"))
                     {
-                        throw new Exception("BXUCB GetZPEL Error:" + errorStr);
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2NEARLMT !,", "");
+                            break;
+                        }
+                        else
+                        {
+                            isOK = true;
+                            nowPos = Convert.ToDouble(item.Replace("2NEARLMT ", ""));
+                        }
                     }
-                    return nowPos;
-                });
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB GetZPEL Error:" + errorStr);
+                }
+                return nowPos;
             }
             catch (Exception ex)
             {
@@ -924,37 +920,34 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task SetZPEL(int position)
+        public void SetZPEL(int position)
         {
             try
             {
-                return Task.Run(() =>
-               {
-                   List<string> str = new List<string>();
-                   str = SendGetMessage("2NEARLMT " + position, "NEARLMT");
-                   //z_PositionPEL = position;
-                   bool isOK = false;
-                   string errorStr = "";
-                   foreach (var item in str)
-                   {
-                       if (item.Contains("NEARLMT"))
-                       {
-                           if (item.Contains("+"))
-                           {
-                               isOK = true;
-                           }
-                           if (item.Contains("!"))
-                           {
-                               errorStr = item.Replace("2NEARLMT !,", "");
-                               break;
-                           }
-                       }
-                   }
-                   if (isOK == false)
-                   {
-                       throw new Exception("BXUCB SetZPEL Error:" + errorStr);
-                   }
-               });
+                List<string> str = new List<string>();
+                str = SendGetMessage("2NEARLMT " + position, "NEARLMT");
+                //z_PositionPEL = position;
+                bool isOK = false;
+                string errorStr = "";
+                foreach (var item in str)
+                {
+                    if (item.Contains("NEARLMT"))
+                    {
+                        if (item.Contains("+"))
+                        {
+                            isOK = true;
+                        }
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2NEARLMT !,", "");
+                            break;
+                        }
+                    }
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB SetZPEL Error:" + errorStr);
+                }
             }
             catch (Exception ex)
             {
@@ -962,24 +955,21 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task<int> GetAFNEL()
+        public int GetAFNEL()
         {
             try
             {
-                return Task.Run(() =>
-               {
-                   List<string> str = new List<string>();
-                   str = SendGetMessage("2AFFLMT?", "AFFLMT");
-                   int value = 0;
-                   foreach (var item in str)
-                   {
-                       if (item.Contains("AFFLMT"))
-                       {
-                           value = Convert.ToInt32(item.Replace("2AFFLMT ", ""));
-                       }
-                   }
-                   return value;
-               });
+                List<string> str = new List<string>();
+                str = SendGetMessage("2AFFLMT?", "AFFLMT");
+                int value = 0;
+                foreach (var item in str)
+                {
+                    if (item.Contains("AFFLMT"))
+                    {
+                        value = Convert.ToInt32(item.Replace("2AFFLMT ", ""));
+                    }
+                }
+                return value;
             }
             catch (Exception ex)
             {
@@ -987,36 +977,33 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task SetAFNEL(int position)
+        public void SetAFNEL(int position)
         {
             try
             {
-                return Task.Run(() =>
-               {
-                   List<string> str = new List<string>();
-                   str = SendGetMessage("2AFFLMT " + position, "AFFLMT");
-                   bool isOK = false;
-                   string errorStr = "";
-                   foreach (var item in str)
-                   {
-                       if (item.Contains("AFFLMT"))
-                       {
-                           if (item.Contains("+"))
-                           {
-                               isOK = true;
-                           }
-                           if (item.Contains("!"))
-                           {
-                               errorStr = item.Replace("2AFFLMT !,", "");
-                               break;
-                           }
-                       }
-                   }
-                   if (isOK == false)
-                   {
-                       throw new Exception("BXUCB SetAberationNEL Error:" + errorStr);
-                   }
-               });
+                List<string> str = new List<string>();
+                str = SendGetMessage("2AFFLMT " + position, "AFFLMT");
+                bool isOK = false;
+                string errorStr = "";
+                foreach (var item in str)
+                {
+                    if (item.Contains("AFFLMT"))
+                    {
+                        if (item.Contains("+"))
+                        {
+                            isOK = true;
+                        }
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2AFFLMT !,", "");
+                            break;
+                        }
+                    }
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB SetAberationNEL Error:" + errorStr);
+                }
             }
             catch (Exception ex)
             {
@@ -1028,24 +1015,21 @@ namespace WLS3200Gen2.Model.Component
         /// 取得AFPEL值
         /// </summary>
         /// <returns></returns>
-        public Task<int> GetAFPEL()
+        public int GetAFPEL()
         {
             try
             {
-                return Task.Run(() =>
-               {
-                   List<string> str = new List<string>();
-                   str = SendGetMessage("2AFNLMT?", "AFNLMT");
-                   int value = 0;
-                   foreach (var item in str)
-                   {
-                       if (item.Contains("AFNLMT"))
-                       {
-                           value = Convert.ToInt32(item.Replace("2AFNLMT ", ""));
-                       }
-                   }
-                   return value;
-               });
+                List<string> str = new List<string>();
+                str = SendGetMessage("2AFNLMT?", "AFNLMT");
+                int value = 0;
+                foreach (var item in str)
+                {
+                    if (item.Contains("AFNLMT"))
+                    {
+                        value = Convert.ToInt32(item.Replace("2AFNLMT ", ""));
+                    }
+                }
+                return value;
             }
             catch (Exception ex)
             {
@@ -1057,36 +1041,33 @@ namespace WLS3200Gen2.Model.Component
         /// 
         /// </summary>
         /// <param name="position"></param>
-        public Task SetAFPEL(int position)
+        public void SetAFPEL(int position)
         {
             try
             {
-                return Task.Run(() =>
+                List<string> str = new List<string>();
+                str = SendGetMessage("2AFNLMT " + position, "AFNLMT");
+                bool isOK = false;
+                string errorStr = "";
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2AFNLMT " + position, "AFNLMT");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    if (item.Contains("AFNLMT"))
                     {
-                        if (item.Contains("AFNLMT"))
+                        if (item.Contains("+"))
                         {
-                            if (item.Contains("+"))
-                            {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2AFNLMT !,", "");
-                                break;
-                            }
+                            isOK = true;
+                        }
+                        if (item.Contains("!"))
+                        {
+                            errorStr = item.Replace("2AFNLMT !,", "");
+                            break;
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB SetAberationPEL Error:" + errorStr);
-                    }
-                });
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB SetAberationPEL Error:" + errorStr);
+                }
             }
             catch (Exception ex)
             {
@@ -1095,39 +1076,36 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task<double> GetZPosition()
+        private double GetZPosition()
         {
             try
             {
-                return Task.Run(() =>
+                List<string> str = new List<string>();
+                str = SendGetMessage("2POS?", "POS");
+                bool isOK = false;
+                string errorStr = "";
+                double nowPos = 0;
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2POS?", "POS");
-                    bool isOK = false;
-                    string errorStr = "";
-                    double nowPos = 0;
-                    foreach (var item in str)
+                    if (item.Contains("2POS"))
                     {
-                        if (item.Contains("2POS"))
+                        if (item.Contains("!"))
                         {
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2POS !,", "");
-                                break;
-                            }
-                            else
-                            {
-                                isOK = true;
-                                nowPos = Convert.ToDouble(item.Replace("2POS ", ""));
-                            }
+                            errorStr = item.Replace("2POS !,", "");
+                            break;
+                        }
+                        else
+                        {
+                            isOK = true;
+                            nowPos = Convert.ToDouble(item.Replace("2POS ", ""));
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB GetZPosition Error:" + errorStr);
-                    }
-                    return nowPos;
-                });
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB GetZPosition Error:" + errorStr);
+                }
+                return nowPos;
             }
             catch (Exception ex)
             {
@@ -1135,39 +1113,36 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public Task<double> GetAberationPosition()
+        public double GetAberationPosition()
         {
             try
             {
-                return Task.Run(() =>
+                List<string> str = new List<string>();
+                str = SendGetMessage("2APOS? ", "APOS");
+                bool isOK = false;
+                string errorStr = "";
+                double nowPos = 0;
+                foreach (var item in str)
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2APOS? ", "APOS");
-                    bool isOK = false;
-                    string errorStr = "";
-                    double nowPos = 0;
-                    foreach (var item in str)
+                    if (item.Contains("2APOS"))
                     {
-                        if (item.Contains("2APOS"))
+                        if (item.Contains("!"))
                         {
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2APOS !,", "");
-                                break;
-                            }
-                            else
-                            {
-                                isOK = true;
-                                nowPos = Convert.ToDouble(item.Replace("2APOS ", ""));
-                            }
+                            errorStr = item.Replace("2APOS !,", "");
+                            break;
+                        }
+                        else
+                        {
+                            isOK = true;
+                            nowPos = Convert.ToDouble(item.Replace("2APOS ", ""));
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB GetAberationPosition Error:" + errorStr);
-                    }
-                    return nowPos;
-                });
+                }
+                if (isOK == false)
+                {
+                    throw new Exception("BXUCB GetAberationPosition Error:" + errorStr);
+                }
+                return nowPos;
             }
             catch (Exception ex)
             {
@@ -1188,12 +1163,13 @@ namespace WLS3200Gen2.Model.Component
                     int timeOut1 = 10 * 1000;
                     int timeOut2 = 600 * 1000;
                     Stopwatch stopwatch = new Stopwatch();
+                    List<string> returnMessage1 = new List<string>();
+                    List<string> readMessage1 = new List<string>();
+
                     stopwatch.Start();
                     serialPort.DiscardInBuffer();
                     serialPort.DiscardOutBuffer();
-                    serialPort.Write(message + Microscope_Terminator);
-                    List<string> returnMessage1 = new List<string>();
-                    List<string> readMessage1 = new List<string>();
+                    serialPort.Write(message + microscope_Terminator);
                     Thread.Sleep(delayTime);
                     stopwatch.Restart();
                     bool isSendOK = false;
@@ -1225,6 +1201,76 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        private List<string> SendGetMessage_New(string message, string checkString)
+        {
+            lock (lockObj)
+            {
+                List<string> returnMessage1 = new List<string>();
+                serialPort.DiscardInBuffer();
+                serialPort.DiscardOutBuffer();
+                serialPort.WriteLine(message);
+
+                int maxRetryMilliseconds = 5 * 1000;
+                string data = "";
+                SpinWait.SpinUntil(() =>
+                {
+                    try
+                    {
+                        data = tcsReceived.Task.Result;//會停在這一行
+                    }
+                    catch
+                    {
+                    }
+                    return (data != "");
+                }, maxRetryMilliseconds);
+
+                if (data.Contains("+"))
+                {
+                    returnMessage1.Add("OK");
+                    return returnMessage1;
+                }
+
+                if (data.Contains("!"))
+                {
+                    errcode = data;
+                }
+                returnMessage1.Add("Error");
+                return returnMessage1;
+            }
+        }
+        private void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                string data = serialPort.ReadExisting();
+
+                tcsReceived.TrySetResult(data);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        private Task TimeoutWhile(int ms)
+        {
+            return Task.Run(() =>
+             {
+                 SpinWait.SpinUntil(() =>
+                 {
+                     string data = "";
+                     try
+                     {
+                         data = tcsReceived.Task.Result;//會停在這一行
+                     }
+                     catch
+                     {
+                     }
+                     return (data != "");
+                 }, ms);
+             });
+        }
+
         public List<string> GetMessage()
         {
             try
@@ -1258,6 +1304,8 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+
+
     }
 
 

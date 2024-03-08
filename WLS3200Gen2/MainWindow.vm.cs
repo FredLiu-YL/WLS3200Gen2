@@ -185,7 +185,7 @@ namespace WLS3200Gen2
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
-    
+
 
                 WriteLog("Equipment Ready．．．");
 
@@ -198,7 +198,7 @@ namespace WLS3200Gen2
                 CameraLive();
 
 
-               
+
                 isInitialComplete = true;
 
                 //載入機台設定LoadPort 數量  給UI作卡控
@@ -282,7 +282,7 @@ namespace WLS3200Gen2
         private void SwitchStates(MachineStates states)
         {
             Machinestatus = states;
-            if(stackLight!=null)
+            if (stackLight != null)
                 stackLight.SwitchStates(states);
         }
 
@@ -328,7 +328,7 @@ namespace WLS3200Gen2
                     TablePosR = machine.MicroDetection.AxisR.Position;
                     //if (atfMachine.AFModule.AFSystem != null)
                     //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
-                    
+
 
                     //刷IO 得到EMO 軸停止
 
@@ -380,7 +380,7 @@ namespace WLS3200Gen2
                     if (machine.MicroDetection.Microscope != null)
                     {
                         double nowPos = 0;
-                        nowPos = await machine.MicroDetection.Microscope.GetZPosition();
+                        nowPos = machine.MicroDetection.Microscope.Position;
                         BXFMUIShow.FocusZ = Convert.ToInt32(nowPos);
                         BXFMUIShow.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
                         BXFMUIShow.LightValue = machine.MicroDetection.Microscope.LightValue;
@@ -393,7 +393,7 @@ namespace WLS3200Gen2
             catch (Exception ex)
             {
 
-           
+
                 SwitchStates(MachineStates.Emergency);
                 throw ex;
             }

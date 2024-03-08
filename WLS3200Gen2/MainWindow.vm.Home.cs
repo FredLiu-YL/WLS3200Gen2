@@ -277,14 +277,16 @@ namespace WLS3200Gen2
             try
             {
                 bool?[] wafers = null;
-                if (IsLoadport1 == IsLoadport2) throw new Exception("Loadport Wrong choice");
+                if (IsLoadport1 == IsLoadport2)
+                {
+                    throw new Exception("Loadport Wrong choice");
+                }
 
                 if (IsLoadport1)
                 {
+
                     await machine.Feeder.LoadPortL.Load();
                     wafers = machine.Feeder.LoadPortL.Slot;
-
-
                 }
                 else if (IsLoadport2)
                 {
