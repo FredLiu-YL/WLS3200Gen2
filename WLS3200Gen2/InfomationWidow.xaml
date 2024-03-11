@@ -1,0 +1,60 @@
+﻿<Window x:Class="WLS3200Gen2.InfomationWidow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WLS3200Gen2"
+        mc:Ignorable="d" ResizeMode="NoResize"  
+       WindowStartupLocation="CenterScreen" 
+        Title="InfomationWidow" Height="1050" Width="1920">
+       
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition   />
+            <ColumnDefinition  Width="1*" />
+        </Grid.ColumnDefinitions>
+       
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"  Text="關於元利:" TextWrapping="Wrap"  FontSize="24"  />
+            <TextBlock Grid.Row="1" x:Name="TextBlock1"  TextWrapping="Wrap"  FontSize="24" Width="920"  />
+            <Grid Grid.Row="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" FontSize="20" > 
+                    <Hyperlink NavigateUri="https://yuanli.com.tw/about-us/" RequestNavigate="Hyperlink_RequestNavigate" Cursor="Hand" >元利儀器官方網站</Hyperlink> 
+                </TextBlock>
+                <TextBlock Grid.Row="1" FontSize="20" > 
+                     Click <Hyperlink NavigateUri="file:\\D:/111111.xlsx"  RequestNavigate="Hyperlink_RequestNavigate">操作手冊</Hyperlink> .
+                </TextBlock>
+                <TextBlock Grid.Row="3" FontSize="18">
+                Click <Hyperlink NavigateUri="https://www.example.com">元利儀器官方網站</Hyperlink> to visit Example website.
+                </TextBlock>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition  />
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Header="Version">
+                
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Release note">
+
+            </GroupBox>
+            <Button Grid.Row="2" Click="Button_Click" />
+        </Grid>
+    </Grid>
+</Window>

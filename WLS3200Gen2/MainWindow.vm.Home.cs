@@ -446,7 +446,8 @@ namespace WLS3200Gen2
         {
             try
             {
-
+                InfomationWidow widow = new InfomationWidow();
+                widow.ShowDialog();
 
             }
             catch (Exception ex)

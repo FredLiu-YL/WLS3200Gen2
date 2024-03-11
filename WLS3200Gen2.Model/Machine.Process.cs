@@ -26,6 +26,7 @@ namespace WLS3200Gen2.Model
 
         public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MacroReady;
         public event Action<Wafer> SetWaferStatus;
+
         public async Task ProcessRunAsync(ProcessSetting processSetting)
         {
             try

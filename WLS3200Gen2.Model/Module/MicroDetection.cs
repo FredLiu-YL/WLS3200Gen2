@@ -46,6 +46,7 @@ namespace WLS3200Gen2.Model.Module
 
 
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
+            opticalAlignment.FiducialRecord += AlignRecord;
         }
         public ICamera Camera { get; }
         public Axis AxisX { get; }
@@ -58,8 +59,19 @@ namespace WLS3200Gen2.Model.Module
 
         public DetectionRecipe DetectionRecipe { set; get; }
         public IObservable<BitmapSource> Observable => subject;
-
+        /// <summary>
+        /// 流程動作文字記錄
+        /// </summary>
         public event Action<string> WriteLog;
+        /// <summary>
+        /// 對位結果紀錄 (圖像 對位座標(pxel))
+        /// </summary>
+        public event Action<BitmapSource , Point> FiducialRecord;
+        /// <summary>
+        /// 檢測結果紀錄
+        /// </summary>
+        public event Action<BitmapSource> DetectionRecord;
+
         public async Task Home()
         {
             try
@@ -140,6 +152,8 @@ namespace WLS3200Gen2.Model.Module
         {
             this.pauseToken = pst;
             this.cancelToken = ctk;
+            opticalAlignment.CancelToken = cancelToken;
+            opticalAlignment.PauseToken = pauseToken;
 
             //入料準備?
             //await subject.ToTask();
@@ -148,11 +162,8 @@ namespace WLS3200Gen2.Model.Module
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 
 
+          
             //對位
-            opticalAlignment.CancelToken = cancelToken;
-            opticalAlignment.PauseToken = pauseToken;
-
-
             //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
             ITransform transForm = await Alignment(recipe.AlignRecipe);
             cancelToken.Token.ThrowIfCancellationRequested();
@@ -169,7 +180,7 @@ namespace WLS3200Gen2.Model.Module
                 await TableMoveToAsync(transPosition);
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
-
+             
                 if (isAutoSave)
                 {
                     subject.OnNext(bmp);//AOI另外丟到其他執行續處理
@@ -178,6 +189,7 @@ namespace WLS3200Gen2.Model.Module
                 {
 
                 }
+                DetectionRecord?.Invoke(bmp);
                 // pauseToken.IsPaused = true;
 
                 cancelToken.Token.ThrowIfCancellationRequested();
@@ -236,6 +248,12 @@ namespace WLS3200Gen2.Model.Module
         {
             return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY);
 
+        }
+        //預留拿到對位結果後 可以做其他事
+        private void AlignRecord(BitmapSource bitmap  , Point pixel)
+        {
+
+            FiducialRecord?.Invoke(bitmap, pixel);
         }
 
         private void ObservableDetection()
