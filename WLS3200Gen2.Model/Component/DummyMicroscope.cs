@@ -21,6 +21,7 @@ namespace WLS3200Gen2.Model.Component
 
         public int AFNEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int AFPEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int TimeOutRetryCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Task AberrationMoveAsync(double distance)
         {

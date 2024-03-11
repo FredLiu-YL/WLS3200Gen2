@@ -119,7 +119,13 @@ namespace Test
             {
 
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                Micro = new BXUCB("COM24");
+                BXUCB aa=  new BXUCB("COM24");
+
+                aa.Error += (e) =>
+                {
+                    throw e; 
+                };
+                Micro = aa;
                 Micro.Initial();
 
                 bool IsMotionInitOK = false;

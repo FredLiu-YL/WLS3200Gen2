@@ -22,7 +22,7 @@ namespace WLS3200Gen2.Model.Component
         private int lens = -1;
         private int lightValue = -1;
         private int lightSpreadIdx = -1;
-        private string errcode = "";
+
         public BXUCB(string comPort)
         {
             try
@@ -34,8 +34,10 @@ namespace WLS3200Gen2.Model.Component
                 serialPort.StopBits = StopBits.Two;
                 serialPort.RtsEnable = false;
                 serialPort.NewLine = "\r\n";
+                serialPort.WriteTimeout = 3000;
+                serialPort.ReadTimeout = 3000;
                 microscope_Terminator = "\r\n";
-                serialPort.DataReceived += DataReceived;
+                //serialPort.DataReceived += DataReceived;
                 tcsReceived = new TaskCompletionSource<string>();
             }
             catch (Exception ex)
@@ -56,6 +58,9 @@ namespace WLS3200Gen2.Model.Component
 
         public int AFNEL { get => GetAFNEL(); set => SetAFNEL(value); }
         public int AFPEL { get => GetAFPEL(); set => SetAFPEL(value); }
+        public int TimeOutRetryCount { get; set; } = 1;
+
+        public event Action<Exception> Error;
 
         public void Initial()
         {
@@ -136,36 +141,38 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    if (distance > 0)
+                    string str = "";
+                    int nowCount = 0;
+                    while (true)
                     {
-                        str = SendGetMessage("2AMOV N," + Math.Abs(distance), "AMOV");
-                    }
-                    else
-                    {
-                        str = SendGetMessage("2AMOV F," + Math.Abs(distance), "AMOV");
-                    }
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
-                    {
-                        if (item.Contains("AMOV"))
+                        if (distance > 0)
                         {
-                            if (item.Contains("+"))
+                            str = SendGetMessage("2AMOV N," + Math.Abs(distance), 3);
+                        }
+                        else
+                        {
+                            str = SendGetMessage("2AMOV F," + Math.Abs(distance), 3);
+                        }
+
+                        if (str.Contains("AMOV +"))
+                        {
+                            break;
+                        }
+                        else if (str.Contains("AMOV !"))
+                        {
+                            string errorStr = str.Replace("2AMOV !,", "");
+                            throw new Exception("BXUCB AberrationMoveCommand Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2AMOV !,", "");
-                                break;
+                                throw new Exception("BXUCB AberrationMoveCommand Error:Retry " + TimeOutRetryCount + " Count");
                             }
                         }
                     }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB AberrationMoveCommand Error:" + errorStr);
-                    }
+
                 });
             }
             catch (Exception ex)
@@ -181,37 +188,41 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                 {
-                    double nowPos = GetAberationPosition();
-                    double distance = position - nowPos;
-                    List<string> str = new List<string>();
-                    if (distance > 0)
+                    double nowPos = 0;
+                    double distance = 0;
+                    string str = "";
+                    int nowCount = 0;
+
+                    while (true)
                     {
-                        str = SendGetMessage("2AMOV N," + Math.Abs(distance), "AMOV");
-                    }
-                    else
-                    {
-                        str = SendGetMessage("2AMOV F," + Math.Abs(distance), "AMOV");
-                    }
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
-                    {
-                        if (item.Contains("AMOV"))
+                        nowPos = GetAberationPosition();
+                        distance = position - nowPos;
+                        if (distance > 0)
                         {
-                            if (item.Contains("+"))
+                            str = SendGetMessage("2AMOV N," + Math.Abs(distance), 3);
+                        }
+                        else
+                        {
+                            str = SendGetMessage("2AMOV F," + Math.Abs(distance), 3);
+                        }
+
+                        if (str.Contains("AMOV +"))
+                        {
+                            break;
+                        }
+                        else if (str.Contains("AMOV !"))
+                        {
+                            string errorStr = str.Replace("2AMOV !,", "");
+                            throw new Exception("BXUCB AberrationMoveToAsync Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2AMOV !,", "");
-                                break;
+                                throw new Exception("BXUCB AberrationMoveToAsync Error:Retry " + TimeOutRetryCount + " Count");
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB AberrationMoveToCommand Error:" + errorStr);
                     }
                 });
             }
@@ -226,29 +237,30 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2AF OFF", "AF");
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    if (item.Contains("AF"))
+                    str = SendGetMessage("2AF OFF", 3);
+                    if (str.Contains("AF +"))
                     {
-                        if (item.Contains("+"))
+                        break;
+                    }
+                    else if (str.Contains("AF !"))
+                    {
+                        string errorStr = str.Replace("2AF !,", "");
+                        throw new Exception("BXUCB AF_Off Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2AF !,", "");
-                            break;
+                            throw new Exception("BXUCB AF_Off Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
                 }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB AF_Off Error:" + errorStr);
-                }
+
             }
             catch (Exception ex)
             {
@@ -261,30 +273,30 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
+                int nowCount = 0;
+                string str = "";
                 return Task.Run(() =>
                 {
-                    List<string> str = new List<string>();
-                    str = SendGetMessage("2AF SHOT", "AF");
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
+                    while (true)
                     {
-                        if (item.Contains("AF"))
+                        str = SendGetMessage("2AF SHOT", 3);
+                        if (str.Contains("AF +"))
                         {
-                            if (item.Contains("+"))
+                            break;
+                        }
+                        else if (str.Contains("AF !"))
+                        {
+                            string errorStr = str.Replace("2AF !,", "");
+                            throw new Exception("BXUCB AFOneShotAsync Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2AF !,", "");
-                                break;
+                                throw new Exception("BXUCB AFOneShotAsync Error:Retry " + TimeOutRetryCount + " Count");
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB AF_OneShot Error:" + errorStr);
                     }
                 });
             }
@@ -299,28 +311,28 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2AF REAL", "AF");
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
+                int nowCount = 0;
+                string str = "";
+                while (true)
                 {
-                    if (item.Contains("AF"))
+                    str = SendGetMessage("2AF REAL", 3);
+                    if (str.Contains("AF +"))
                     {
-                        if (item.Contains("+"))
+                        break;
+                    }
+                    else if (str.Contains("AF !"))
+                    {
+                        string errorStr = str.Replace("2AF !,", "");
+                        throw new Exception("BXUCB AF_Trace Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2AF !,", "");
-                            break;
+                            throw new Exception("BXUCB AF_Trace Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB AF_Trace Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -339,28 +351,28 @@ namespace WLS3200Gen2.Model.Component
                     if (apertureValue != ApertureValue)
                     {
                         apertureValue = ApertureValue;
-                        List<string> str = new List<string>();
-                        str = SendGetMessage("1EAS " + ApertureValue, "EAS");
-                        bool isOK = false;
-                        string errorStr = "";
-                        foreach (var item in str)
+                        int nowCount = 0;
+                        string str = "";
+                        while (true)
                         {
-                            if (item.Contains("EAS"))
+                            str = SendGetMessage("1EAS " + ApertureValue, 3);
+                            if (str.Contains("EAS +"))
                             {
-                                if (item.Contains("+"))
+                                break;
+                            }
+                            else if (str.Contains("EAS !"))
+                            {
+                                string errorStr = str.Replace("1EAS !,", "");
+                                throw new Exception("BXUCB ChangeAperture Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
                                 {
-                                    isOK = true;
-                                }
-                                if (item.Contains("!"))
-                                {
-                                    errorStr = item.Replace("1EAS !,", "");
-                                    break;
+                                    throw new Exception("BXUCB ChangeAperture Error:Retry " + TimeOutRetryCount + " Count");
                                 }
                             }
-                        }
-                        if (isOK == false)
-                        {
-                            throw new Exception("BXUCB ChangeAperture Error:" + errorStr);
                         }
                     }
                 });
@@ -381,18 +393,29 @@ namespace WLS3200Gen2.Model.Component
                     if (cubeIdx != idx)
                     {
                         cubeIdx = idx;
-                        List<string> str = new List<string>();
-                        if (idx == 0)
+                        string str = "";
+                        int nowCount = 0;
+                        while (true)
                         {
-                            str = SendGetMessage("1CUBE 1" + idx, "CUBE");
-                        }
-                        else if (idx == 1)
-                        {
-                            str = SendGetMessage("1CUBE 2" + idx, "1CUBE");
-                        }
-                        else if (idx == 2)
-                        {
-                            str = SendGetMessage("1CUBE 3" + idx, "1CUBE");
+                            str = SendGetMessage("1CUBE " + idx, 3);
+
+                            if (str.Contains("CUBE +"))
+                            {
+                                break;
+                            }
+                            else if (str.Contains("CUBE !"))
+                            {
+                                string errorStr = str.Replace("1CUBE !,", "");
+                                throw new Exception("BXUCB ChangeCubeAsync Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
+                                {
+                                    throw new Exception("BXUCB ChangeCubeAsync Error:Retry " + TimeOutRetryCount + " Count");
+                                }
+                            }
                         }
                     }
                 });
@@ -413,28 +436,28 @@ namespace WLS3200Gen2.Model.Component
                     if (filterWheelIdx[wheelIdx] != idx)
                     {
                         filterWheelIdx[wheelIdx] = idx;
-                        List<string> str = new List<string>();
-                        str = SendGetMessage("1FW" + wheelIdx + " " + idx, "FW");
-                        bool isOK = false;
-                        string errorStr = "";
-                        foreach (var item in str)
+                        int nowCount = 0;
+                        string str = "";
+                        while (true)
                         {
-                            if (item.Contains("FW"))
+                            str = SendGetMessage("1FW" + wheelIdx + " " + idx, 3);
+                            if (str.Contains("FW +"))
                             {
-                                if (item.Contains("+"))
+                                break;
+                            }
+                            else if (str.Contains("FW !"))
+                            {
+                                string errorStr = str.Replace("1FW !,", "");
+                                throw new Exception("BXUCB ChangeFilter Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
                                 {
-                                    isOK = true;
-                                }
-                                if (item.Contains("!"))
-                                {
-                                    errorStr = item.Replace("1FW" + wheelIdx + " !,", "");
-                                    break;
+                                    throw new Exception("BXUCB ChangeFilter Error:Retry " + TimeOutRetryCount + " Count");
                                 }
                             }
-                        }
-                        if (isOK == false)
-                        {
-                            throw new Exception("BXUCB ChangeFilter Error:" + errorStr);
                         }
                     }
                 });
@@ -454,59 +477,62 @@ namespace WLS3200Gen2.Model.Component
                     if (lightValue != LigntValue)
                     {
                         lightValue = LigntValue;
-                        List<string> str = new List<string>();
-                        bool isOK = false;
-                        string errorStr = "";
+                        string str = "";
+                        int nowCount = 0;
 
-                        if (LigntValue <= 0)
+                        //開關燈
+                        while (true)
                         {
-                            str = SendGetMessage("1LMPSW OFF", "LMPSW");
-                        }
-                        else
-                        {
-                            str = SendGetMessage("1LMPSW ON", "LMPSW");
-                        }
-                        foreach (var item in str)
-                        {
-                            if (item.Contains("LMPSW"))
+                            if (LigntValue <= 0)
                             {
-                                if (item.Contains("+"))
+                                str = SendGetMessage("1LMPSW OFF", 3);
+                            }
+                            else
+                            {
+                                str = SendGetMessage("1LMPSW ON", 3);
+                            }
+                            if (str.Contains("LMPSW +"))
+                            {
+                                break;
+                            }
+                            else if (str.Contains("LMPSW !"))
+                            {
+                                string errorStr = str.Replace("1LMPSW !,", "");
+                                throw new Exception("BXUCB ChangeLight Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
                                 {
-                                    isOK = true;
-                                }
-                                if (item.Contains("!"))
-                                {
-                                    errorStr = item.Replace("1LMPSW !,", "");
-                                    break;
+                                    throw new Exception("BXUCB ChangeLight Error:Retry " + TimeOutRetryCount + " Count");
                                 }
                             }
                         }
-                        if (isOK == false)
-                        {
-                            throw new Exception("BXUCB ChangeLight Error:" + errorStr);
-                        }
 
-                        isOK = false;
-                        errorStr = "";
-                        str = SendGetMessage("1LMP " + LigntValue, "LMP");
-                        foreach (var item in str)
+                        nowCount = 0;
+
+                        //調整亮度
+                        while (true)
                         {
-                            if (item.Contains("LMP"))
+                            str = SendGetMessage("1LMP " + LigntValue, 3);
+                            if (str.Contains("LMP +"))
                             {
-                                if (item.Contains("+"))
+                                break;
+                            }
+                            else if (str.Contains("LMP !"))
+                            {
+                                string errorStr = str.Replace("1LMP !,", "");
+                                throw new Exception("BXUCB ChangeLight Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
                                 {
-                                    isOK = true;
-                                }
-                                if (item.Contains("!"))
-                                {
-                                    errorStr = item.Replace("1LMP !,", "");
-                                    break;
+                                    throw new Exception("BXUCB ChangeLight Error:Retry " + TimeOutRetryCount + " Count");
                                 }
                             }
-                        }
-                        if (isOK == false)
-                        {
-                            throw new Exception("BXUCB ChangeLight Error:" + errorStr);
                         }
                     }
                 });
@@ -526,35 +552,36 @@ namespace WLS3200Gen2.Model.Component
                     if (lightSpreadIdx != idx)
                     {
                         lightSpreadIdx = idx;
-                        List<string> str = new List<string>();
-                        if (idx == 0)
+                        string str = "";
+                        int nowCount = 0;
+                        while (true)
                         {
-                            str = SendGetMessage("1LMPSEL DIA" + idx, "LMPSEL");
-                        }
-                        else if (idx == 1)
-                        {
-                            str = SendGetMessage("1LMPSEL EPI" + idx, "LMPSEL");
-                        }
-                        bool isOK = false;
-                        string errorStr = "";
-                        foreach (var item in str)
-                        {
-                            if (item.Contains("LMPSEL"))
+                            if (idx == 0)
                             {
-                                if (item.Contains("+"))
+                                str = SendGetMessage("1LMPSEL DIA" + idx, 3);
+                            }
+                            else if (idx == 1)
+                            {
+                                str = SendGetMessage("1LMPSEL EPI" + idx, 3);
+                            }
+
+                            if (str.Contains("LMPSEL +"))
+                            {
+                                break;
+                            }
+                            else if (str.Contains("LMPSEL !"))
+                            {
+                                string errorStr = str.Replace("1LMPSEL !,", "");
+                                throw new Exception("BXUCB ChangeLightSpread Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
                                 {
-                                    isOK = true;
-                                }
-                                if (item.Contains("!"))
-                                {
-                                    errorStr = item.Replace("1LMPSEL !,", "");
-                                    break;
+                                    throw new Exception("BXUCB ChangeLightSpread Error:Retry " + TimeOutRetryCount + " Count");
                                 }
                             }
-                        }
-                        if (isOK == false)
-                        {
-                            throw new Exception("BXUCB ChangeLightSpread Error:" + errorStr);
                         }
                     }
                 });
@@ -575,29 +602,31 @@ namespace WLS3200Gen2.Model.Component
                     if (lens != idx)
                     {
                         lens = idx;
-                        List<string> str = new List<string>();
+                        string str = "";
+                        int nowCount = 0;
+
                         AFOff();
-                        str = SendGetMessage("1OB " + idx, "OB");
-                        bool isOK = false;
-                        string errorStr = "";
-                        foreach (var item in str)
+                        while (true)
                         {
-                            if (item.Contains("OB"))
+                            str = SendGetMessage("1OB " + idx, 3);
+
+                            if (str.Contains("OB +"))
                             {
-                                if (item.Contains("+"))
+                                break;
+                            }
+                            else if (str.Contains("OB !"))
+                            {
+                                string errorStr = str.Replace("1OB !,", "");
+                                throw new Exception("BXUCB ChangeLens Error:" + errorStr);
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
                                 {
-                                    isOK = true;
-                                }
-                                if (item.Contains("!"))
-                                {
-                                    errorStr = item.Replace("1OB !,", "");
-                                    break;
+                                    throw new Exception("BXUCB ChangeLens Error:Retry " + TimeOutRetryCount + " Count");
                                 }
                             }
-                        }
-                        if (isOK == false)
-                        {
-                            throw new Exception("BXUCB ChangeLens Error:" + errorStr);
                         }
                     }
                 });
@@ -646,35 +675,36 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                {
-                   List<string> str = new List<string>();
-                   if (distance > 0)
+                   string str = "";
+                   int nowCount = 0;
+                   while (true)
                    {
-                       str = SendGetMessage("2MOV N," + Math.Abs(distance), "MOV");
-                   }
-                   else
-                   {
-                       str = SendGetMessage("2MOV F," + Math.Abs(distance), "MOV");
-                   }
-                   bool isOK = false;
-                   string errorStr = "";
-                   foreach (var item in str)
-                   {
-                       if (item.Contains("MOV"))
+                       if (distance > 0)
                        {
-                           if (item.Contains("+"))
+                           str = SendGetMessage("2MOV N," + Math.Abs(distance), 3);
+                       }
+                       else
+                       {
+                           str = SendGetMessage("2MOV F," + Math.Abs(distance), 3);
+                       }
+
+                       if (str.Contains("MOV +"))
+                       {
+                           break;
+                       }
+                       else if (str.Contains("MOV !"))
+                       {
+                           string errorStr = str.Replace("2MOV !,", "");
+                           throw new Exception("BXUCB ZMoveCommand Error:" + errorStr);
+                       }
+                       else
+                       {
+                           nowCount++;
+                           if (nowCount > TimeOutRetryCount)
                            {
-                               isOK = true;
-                           }
-                           if (item.Contains("!"))
-                           {
-                               errorStr = item.Replace("2MOV !,", "");
-                               break;
+                               throw new Exception("BXUCB ZMoveCommand Error:Retry " + TimeOutRetryCount + " Count");
                            }
                        }
-                   }
-                   if (isOK == false)
-                   {
-                       throw new Exception("BXUCB ZMoveCommand Error:" + errorStr);
                    }
                });
             }
@@ -691,37 +721,40 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                 {
-                    double nowPos = this.Position;
-                    double distance = position - nowPos;
-                    List<string> str = new List<string>();
-                    if (distance > 0)
+                    double nowPos = 0;
+                    double distance = 0;
+                    string str = "";
+                    int nowCount = 0;
+                    while (true)
                     {
-                        str = SendGetMessage("2MOV N," + Math.Abs(distance), "MOV");
-                    }
-                    else
-                    {
-                        str = SendGetMessage("2MOV F," + Math.Abs(distance), "MOV");
-                    }
-                    bool isOK = false;
-                    string errorStr = "";
-                    foreach (var item in str)
-                    {
-                        if (item.Contains("MOV"))
+                        nowPos = this.Position;
+                        distance = position - nowPos;
+                        if (distance > 0)
                         {
-                            if (item.Contains("+"))
+                            str = SendGetMessage("2MOV N," + Math.Abs(distance), 3);
+                        }
+                        else
+                        {
+                            str = SendGetMessage("2MOV F," + Math.Abs(distance), 3);
+                        }
+
+                        if (str.Contains("MOV +"))
+                        {
+                            break;
+                        }
+                        else if (str.Contains("MOV !"))
+                        {
+                            string errorStr = str.Replace("2MOV !,", "");
+                            throw new Exception("BXUCB ZMoveToCommand Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
                             {
-                                isOK = true;
-                            }
-                            if (item.Contains("!"))
-                            {
-                                errorStr = item.Replace("2MOV !,", "");
-                                break;
+                                throw new Exception("BXUCB ZMoveToCommand Error:Retry " + TimeOutRetryCount + " Count");
                             }
                         }
-                    }
-                    if (isOK == false)
-                    {
-                        throw new Exception("BXUCB ZMoveToCommand Error:" + errorStr);
                     }
                 });
             }
@@ -735,35 +768,36 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                if (isLogIn)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    str = SendGetMessage("1LOG IN", "LOG");
-                }
-                else
-                {
-                    str = SendGetMessage("1LOG OUT", "LOG");
-                }
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
-                {
-                    if (item.Contains("LOG"))
+                    if (isLogIn)
                     {
-                        if (item.Contains("+"))
+                        str = SendGetMessage("1LOG IN", 3);
+                    }
+                    else
+                    {
+                        str = SendGetMessage("1LOG OUT", 3);
+                    }
+
+                    if (str.Contains("1LOG +"))
+                    {
+                        break;
+                    }
+                    else if (str.Contains("1LOG !"))
+                    {
+                        string errorStr = str.Replace("1LOG !,", "");
+                        throw new Exception("BXUCB LogInOutBXFM Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("1LOG !,", "");
-                            break;
+                            throw new Exception("BXUCB LogInOutBXFM Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB LogInOutBXFM Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -775,35 +809,36 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                if (isLogIn)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    str = SendGetMessage("2LOG IN", "LOG");
-                }
-                else
-                {
-                    str = SendGetMessage("2LOG OUT", "LOG");
-                }
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
-                {
-                    if (item.Contains("LOG"))
+                    if (isLogIn)
                     {
-                        if (item.Contains("+"))
+                        str = SendGetMessage("2LOG IN", 3);
+                    }
+                    else
+                    {
+                        str = SendGetMessage("2LOG OUT", 3);
+                    }
+
+                    if (str.Contains("2LOG +"))
+                    {
+                        break;
+                    }
+                    else if (str.Contains("2LOG !"))
+                    {
+                        string errorStr = str.Replace("2LOG !,", "");
+                        throw new Exception("BXUCB LogInOutA2M Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2LOG !,", "");
-                            break;
+                            throw new Exception("BXUCB LogInOutA2M Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB LogInOutA2M Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -815,30 +850,31 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2FARLMT?", "FARLMT");
-                bool isOK = false;
-                string errorStr = "";
+                string str = "";
+                int nowCount = 0;
                 double nowPos = 0;
-                foreach (var item in str)
+                while (true)
                 {
-                    if (item.Contains("2FARLMT"))
+                    str = SendGetMessage("2FARLMT?", 3);
+
+                    if (str.Contains("2FARLMT !"))
                     {
-                        if (item.Contains("!"))
+                        string errorStr = str.Replace("2FARLMT !,", "");
+                        throw new Exception("BXUCB GetZNEL Error:" + errorStr);
+                    }
+                    else if (str.Contains("2FARLMT"))
+                    {
+                        nowPos = Convert.ToDouble(str.Replace("2FARLMT ", ""));
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            errorStr = item.Replace("2FARLMT !,", "");
-                            break;
-                        }
-                        else
-                        {
-                            isOK = true;
-                            nowPos = Convert.ToDouble(item.Replace("2FARLMT ", ""));
+                            throw new Exception("BXUCB GetZNEL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB GetZNEL Error:" + errorStr);
                 }
                 return nowPos;
             }
@@ -852,29 +888,29 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2FARLMT " + position, "FARLMT");
-                //z_PositionNEL = position;
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    if (item.Contains("FARLMT"))
+                    str = SendGetMessage("2FARLMT " + position, 3);
+
+                    if (str.Contains("2FARLMT +"))
                     {
-                        if (item.Contains("+"))
+                        break;
+                    }
+                    else if (str.Contains("2FARLMT !"))
+                    {
+                        string errorStr = str.Replace("2FARLMT !,", "");
+                        throw new Exception("BXUCB SetZNEL Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2FARLMT !,", "");
-                            break;
+                            throw new Exception("BXUCB SetZNEL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB SetZNEL Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -887,30 +923,31 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2NEARLMT?", "NEARLMT");
-                bool isOK = false;
-                string errorStr = "";
+                string str = "";
+                int nowCount = 0;
                 double nowPos = 0;
-                foreach (var item in str)
+                while (true)
                 {
-                    if (item.Contains("2NEARLMT"))
+                    str = SendGetMessage("2NEARLMT?", 3);
+
+                    if (str.Contains("2FARLMT !"))
                     {
-                        if (item.Contains("!"))
+                        string errorStr = str.Replace("2NEARLMT !,", "");
+                        throw new Exception("BXUCB GetZPEL Error:" + errorStr);
+                    }
+                    else if (str.Contains("2NEARLMT"))
+                    {
+                        nowPos = Convert.ToDouble(str.Replace("2NEARLMT ", ""));
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            errorStr = item.Replace("2NEARLMT !,", "");
-                            break;
-                        }
-                        else
-                        {
-                            isOK = true;
-                            nowPos = Convert.ToDouble(item.Replace("2NEARLMT ", ""));
+                            throw new Exception("BXUCB GetZPEL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB GetZPEL Error:" + errorStr);
                 }
                 return nowPos;
             }
@@ -924,29 +961,29 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2NEARLMT " + position, "NEARLMT");
-                //z_PositionPEL = position;
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    if (item.Contains("NEARLMT"))
+                    str = SendGetMessage("2NEARLMT " + position, 3);
+
+                    if (str.Contains("2NEARLMT +"))
                     {
-                        if (item.Contains("+"))
+                        break;
+                    }
+                    else if (str.Contains("2NEARLMT !"))
+                    {
+                        string errorStr = str.Replace("2NEARLMT !,", "");
+                        throw new Exception("BXUCB SetZPEL Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2NEARLMT !,", "");
-                            break;
+                            throw new Exception("BXUCB SetZPEL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB SetZPEL Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -959,17 +996,33 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2AFFLMT?", "AFFLMT");
-                int value = 0;
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                int nowPos = 0;
+                while (true)
                 {
-                    if (item.Contains("AFFLMT"))
+                    str = SendGetMessage("2AFFLMT?", 3);
+
+                    if (str.Contains("2AFFLMT !"))
                     {
-                        value = Convert.ToInt32(item.Replace("2AFFLMT ", ""));
+                        string errorStr = str.Replace("2AFFLMT !,", "");
+                        throw new Exception("BXUCB GetAFNEL Error:" + errorStr);
+                    }
+                    else if (str.Contains("2AFFLMT"))
+                    {
+                        nowPos = Convert.ToInt32(str.Replace("2AFFLMT ", ""));
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
+                        {
+                            throw new Exception("BXUCB GetAFNEL Error:Retry " + TimeOutRetryCount + " Count");
+                        }
                     }
                 }
-                return value;
+                return nowPos;
             }
             catch (Exception ex)
             {
@@ -981,28 +1034,29 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2AFFLMT " + position, "AFFLMT");
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    if (item.Contains("AFFLMT"))
+                    str = SendGetMessage("2AFFLMT " + position, 3);
+
+                    if (str.Contains("2AFFLMT +"))
                     {
-                        if (item.Contains("+"))
+                        break;
+                    }
+                    else if (str.Contains("2AFFLMT !"))
+                    {
+                        string errorStr = str.Replace("2AFFLMT !,", "");
+                        throw new Exception("BXUCB SetAFNEL Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2AFFLMT !,", "");
-                            break;
+                            throw new Exception("BXUCB SetAFNEL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB SetAberationNEL Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -1019,17 +1073,33 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2AFNLMT?", "AFNLMT");
-                int value = 0;
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                int nowPos = 0;
+                while (true)
                 {
-                    if (item.Contains("AFNLMT"))
+                    str = SendGetMessage("2AFNLMT?", 3);
+
+                    if (str.Contains("2AFFLMT !"))
                     {
-                        value = Convert.ToInt32(item.Replace("2AFNLMT ", ""));
+                        string errorStr = str.Replace("2AFFLMT !,", "");
+                        throw new Exception("BXUCB GetAFNEL Error:" + errorStr);
+                    }
+                    else if (str.Contains("2AFNLMT "))
+                    {
+                        nowPos = Convert.ToInt32(str.Replace("2AFNLMT ", ""));
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
+                        {
+                            throw new Exception("BXUCB GetAFNEL Error:Retry " + TimeOutRetryCount + " Count");
+                        }
                     }
                 }
-                return value;
+                return nowPos;
             }
             catch (Exception ex)
             {
@@ -1045,28 +1115,29 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2AFNLMT " + position, "AFNLMT");
-                bool isOK = false;
-                string errorStr = "";
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                while (true)
                 {
-                    if (item.Contains("AFNLMT"))
+                    str = SendGetMessage("2AFNLMT " + position, 3);
+
+                    if (str.Contains("2AFNLMT +"))
                     {
-                        if (item.Contains("+"))
+                        break;
+                    }
+                    else if (str.Contains("2AFNLMT !"))
+                    {
+                        string errorStr = str.Replace("2AFNLMT !,", "");
+                        throw new Exception("BXUCB SetAFPEL Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            isOK = true;
-                        }
-                        if (item.Contains("!"))
-                        {
-                            errorStr = item.Replace("2AFNLMT !,", "");
-                            break;
+                            throw new Exception("BXUCB SetAFPEL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB SetAberationPEL Error:" + errorStr);
                 }
             }
             catch (Exception ex)
@@ -1080,30 +1151,30 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2POS?", "POS");
-                bool isOK = false;
-                string errorStr = "";
-                double nowPos = 0;
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                int nowPos = 0;
+                while (true)
                 {
-                    if (item.Contains("2POS"))
+                    str = SendGetMessage("2POS?", 3);
+                    if (str.Contains("2POS !"))
                     {
-                        if (item.Contains("!"))
+                        string errorStr = str.Replace("2POS !,", "");
+                        throw new Exception("BXUCB GetZPosition Error:" + errorStr);
+                    }
+                    else if (str.Contains("2POS "))
+                    {
+                        nowPos = Convert.ToInt32(str.Replace("2POS ", ""));
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            errorStr = item.Replace("2POS !,", "");
-                            break;
-                        }
-                        else
-                        {
-                            isOK = true;
-                            nowPos = Convert.ToDouble(item.Replace("2POS ", ""));
+                            throw new Exception("BXUCB GetZPosition Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB GetZPosition Error:" + errorStr);
                 }
                 return nowPos;
             }
@@ -1117,30 +1188,30 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                List<string> str = new List<string>();
-                str = SendGetMessage("2APOS? ", "APOS");
-                bool isOK = false;
-                string errorStr = "";
-                double nowPos = 0;
-                foreach (var item in str)
+                string str = "";
+                int nowCount = 0;
+                int nowPos = 0;
+                while (true)
                 {
-                    if (item.Contains("2APOS"))
+                    str = SendGetMessage("2APOS? ", 3);
+                    if (str.Contains("2APOS !"))
                     {
-                        if (item.Contains("!"))
+                        string errorStr = str.Replace("2APOS !,", "");
+                        throw new Exception("BXUCB GetAberationPosition Error:" + errorStr);
+                    }
+                    else if (str.Contains("2APOS "))
+                    {
+                        nowPos = Convert.ToInt32(str.Replace("2APOS ", ""));
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
                         {
-                            errorStr = item.Replace("2APOS !,", "");
-                            break;
-                        }
-                        else
-                        {
-                            isOK = true;
-                            nowPos = Convert.ToDouble(item.Replace("2APOS ", ""));
+                            throw new Exception("BXUCB GetAberationPosition Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
-                }
-                if (isOK == false)
-                {
-                    throw new Exception("BXUCB GetAberationPosition Error:" + errorStr);
                 }
                 return nowPos;
             }
@@ -1153,7 +1224,7 @@ namespace WLS3200Gen2.Model.Component
 
 
 
-        public List<string> SendGetMessage(string message, string checkString)
+        public List<string> SendGetMessage_Old(string message, string checkString)
         {
             try
             {
@@ -1201,75 +1272,180 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        private List<string> SendGetMessage_New(string message, string checkString)
-        {
-            lock (lockObj)
-            {
-                List<string> returnMessage1 = new List<string>();
-                serialPort.DiscardInBuffer();
-                serialPort.DiscardOutBuffer();
-                serialPort.WriteLine(message);
-
-                int maxRetryMilliseconds = 5 * 1000;
-                string data = "";
-                SpinWait.SpinUntil(() =>
-                {
-                    try
-                    {
-                        data = tcsReceived.Task.Result;//會停在這一行
-                    }
-                    catch
-                    {
-                    }
-                    return (data != "");
-                }, maxRetryMilliseconds);
-
-                if (data.Contains("+"))
-                {
-                    returnMessage1.Add("OK");
-                    return returnMessage1;
-                }
-
-                if (data.Contains("!"))
-                {
-                    errcode = data;
-                }
-                returnMessage1.Add("Error");
-                return returnMessage1;
-            }
-        }
-        private void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        /// <summary>
+        /// 一送一收RS232，message要送出的RS232文字，timeOutCount有些動作比較久，TimeOut時間內等不到，要再等多少次數
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="timeOutCount"></param>
+        /// <returns></returns>
+        private string SendGetMessage(string message, int timeOutCount)
         {
             try
             {
-                string data = serialPort.ReadExisting();
+                lock (lockObj)
+                {
+                    List<string> returnMessage1 = new List<string>();
+                    serialPort.DiscardInBuffer();
+                    serialPort.DiscardOutBuffer();
+                    int retryCount = 0;
+                    string data = "";
+                    serialPort.WriteLine(message);
+                    while (true)//有些動作比較久，TimeOut時間內等不到，要再等
+                    {
+                        retryCount++;
+                        try
+                        {
+                            data = serialPort.ReadLine();
+                            return data;
+                        }
+                        catch (Exception ex)
+                        {
+                            //TimeOut
+                            if (retryCount >= timeOutCount)
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private List<string> SendGetMessage_New(string message, string checkString)
+        {
+            try
+            {
 
-                tcsReceived.TrySetResult(data);
+
+                lock (lockObj)
+                {
+                    List<string> returnMessage1 = new List<string>();
+                    serialPort.DiscardInBuffer();
+                    serialPort.DiscardOutBuffer();
+                    int maxRetryMilliseconds = 5 * 1000;
+                    string data = "";
+                    SpinWait.SpinUntil(() =>
+                    {
+                        try
+                        {
+                            serialPort.WriteLine(message);
+
+
+
+
+                            data = tcsReceived.Task.Result;//會停在這一行
+
+
+                            tcsReceived.Task.Wait();
+                            data = tcsReceived.Task.Result;//會停在這一行
+
+                        }
+                        catch
+                        {
+                        }
+                        return (data != "");
+                    }, maxRetryMilliseconds);
+
+                    if (data.Contains("+"))
+                    {
+                        returnMessage1.Add("OK");
+                        return returnMessage1;
+                    }
+
+                    if (data.Contains("!"))
+                    {
+                        //errcode = data;
+                    }
+                    returnMessage1.Add("Error");
+                    return returnMessage1;
+
+                }
             }
             catch (Exception)
             {
 
                 throw;
             }
+
         }
-        private Task TimeoutWhile(int ms)
+        private List<string> SendGetWhileMessage(string message, string checkString)
         {
-            return Task.Run(() =>
-             {
-                 SpinWait.SpinUntil(() =>
-                 {
-                     string data = "";
-                     try
-                     {
-                         data = tcsReceived.Task.Result;//會停在這一行
-                     }
-                     catch
-                     {
-                     }
-                     return (data != "");
-                 }, ms);
-             });
+            try
+            {
+
+
+                lock (lockObj)
+                {
+                    List<string> returnMessage1 = new List<string>();
+                    serialPort.DiscardInBuffer();
+                    serialPort.DiscardOutBuffer();
+                    serialPort.WriteLine(message);
+
+                    int maxRetryMilliseconds = 5 * 1000;
+                    string data = "";
+                    //SpinWait.SpinUntil(() =>
+                    //{
+                    //    try
+                    //    {
+                    //        data = tcsReceived.Task.Result;//會停在這一行
+                    //    }
+                    //    catch
+                    //    {
+                    //    }
+                    //    return (data != "");
+                    //}, maxRetryMilliseconds);
+
+                    tcsReceived.Task.Wait();
+                    data = tcsReceived.Task.Result;//會停在這一行
+
+
+
+                    tcsReceived.Task.Wait();
+                    data = tcsReceived.Task.Result;//會停在這一行
+
+
+
+
+                    if (data.Contains("+"))
+                    {
+                        returnMessage1.Add("OK");
+                        return returnMessage1;
+                    }
+
+                    if (data.Contains("!"))
+                    {
+                        //errcode = data;
+                    }
+                    returnMessage1.Add("Error");
+                    return returnMessage1;
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
+        private void DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                string data = serialPort.ReadExisting();
+                tcsReceived.SetResult(data);
+                tcsReceived = new TaskCompletionSource<string>();
+            }
+            catch (Exception ex)
+            {
+
+                Error.Invoke(ex);
+            }
+        }
+
 
         public List<string> GetMessage()
         {
@@ -1427,6 +1603,17 @@ namespace WLS3200Gen2.Model.Component
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class ErrorcodeException : Exception
+    {
+
+        public ErrorcodeException(string code, string des)
+        {
+
+
+        }
+
     }
 
 }

@@ -1163,7 +1163,7 @@
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
-                                <UserControlUC:MappingCanvas/>
+                                
                             </Grid>
                         </Grid>
                     </GroupBox>
@@ -1681,19 +1681,24 @@
                         </TabItem.Header>
                         <Grid>
                             <Grid.ColumnDefinitions >
-                                <ColumnDefinition Width="299*"/>
-                                <ColumnDefinition Width="613*"/>
-                                <ColumnDefinition Width="912*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.15*"/>
+                                <ColumnDefinition Width="0.15*"/>
+                                <ColumnDefinition Width="0.2*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions >
                                 <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <GroupBox  FontSize="16"  Header="Microscope" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" >
+                            <GroupBox  FontSize="16"  Header="Microscope" Grid.Column="0" Grid.Row="0">
                                 <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
                             </GroupBox>
-                            <UserControlUC:AFAberationUnitUC Grid.Column="2" Margin="356,92"/>
+                            <GroupBox Grid.Column="1" Grid.Row="0" Header="Aberation" FontSize="16">
+                                
+                                <UserControlUC:AFAberationUnitUC Grid.Column="2"  HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            </GroupBox>
+                            
 
                         </Grid>
 
