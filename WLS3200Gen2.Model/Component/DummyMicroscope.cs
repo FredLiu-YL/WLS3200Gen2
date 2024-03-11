@@ -9,18 +9,18 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyMicroscope : IMicroscope
     {
-        public int LightValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int ApertureValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int LightValue { get ; set ; }
+        public int ApertureValue { get; set; }
 
-        public int Position => throw new NotImplementedException();
+        public int Position =>0;
 
-        public int NEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int PEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int NEL { get ; set ; }
+        public int PEL { get ; set ; }
 
-        public double AberationPosition => throw new NotImplementedException();
+        public double AberationPosition => 0;
 
-        public int AFNEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public int AFPEL { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int AFNEL { get; set; }
+        public int AFPEL { get ; set ; }
 
         public Task AberrationMoveAsync(double distance)
         {

@@ -23,6 +23,7 @@
         Icon= "YuanLi.ico" 
         WindowState="Maximized"  ResizeMode="NoResize" IsHitTestVisible="True"  
         ShowIconOnTitleBar="True"   ShowCloseButton="True" ShowMinButton="False" ShowMaxRestoreButton="False"  
+
      PreviewMouseDown="Window_PreviewMouseDown">
 
     <i:Interaction.Triggers>

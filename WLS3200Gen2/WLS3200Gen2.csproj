@@ -136,6 +136,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="InfomationWidow.xaml.cs">
+      <DependentUpon>InfomationWidow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.vm.Setting.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -224,6 +227,10 @@
     <Compile Include="Windows\SINFMapGenerateWindow.xaml.cs">
       <DependentUpon>SINFMapGenerateWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="InfomationWidow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\AFAberationUnitUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -40,37 +40,48 @@ namespace WLS3200Gen2.Model.Module
 
 
         public Action<string> WriteLog { get; set; }
-
+        public Action<BitmapSource ,Point   > FiducialRecord { get; set; }
 
         public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
         {
-            List<Point> targetPos = new List<Point>();
-            //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
-            foreach (LocateParam fiducial in fiducialDatas)
+            try
             {
 
-                WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
-                await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
-                BitmapSource image = camera.GrabAsync();
 
-                //Pattern match參數傳入 蒐尋器內
-                matcher.RunParams = fiducial.MatchParam;
+                List<Point> targetPos = new List<Point>();
+                //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
+                foreach (LocateParam fiducial in fiducialDatas)
+                {
 
-                var actualPos = await FindFiducial(image, fiducial.GrabPositionX, fiducial.GrabPositionY);
+                    WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
+                    await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
+                    BitmapSource image = camera.GrabAsync();
 
-                targetPos.Add(actualPos);
+                    //Pattern match參數傳入 蒐尋器內
+                    matcher.RunParams = fiducial.MatchParam;
 
-                CancelToken.Token.ThrowIfCancellationRequested();
-                await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                    var actualPos = await FindFiducial(image, fiducial.GrabPositionX, fiducial.GrabPositionY);
+
+                    targetPos.Add(actualPos);
+
+                    CancelToken.Token.ThrowIfCancellationRequested();
+                    await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+
+                }
+                //獲得設計座標
+                Point[] designPos = ConvertDesignPos();
+
+                //設計座標與實際座標做對應 ，計算出轉換矩陣       
+                affineTransform = new CogAffineTransform(designPos, targetPos);
+
+                return affineTransform;
 
             }
-            //獲得設計座標
-            Point[] designPos = ConvertDesignPos();
+            catch (Exception ex)
+            {
 
-            //設計座標與實際座標做對應 ，計算出轉換矩陣       
-            affineTransform = new CogAffineTransform(designPos, targetPos);
-
-            return affineTransform;
+                throw ex;
+            }
         }
         /// <summary>
         /// 找出定位點實際座標
@@ -91,9 +102,12 @@ namespace WLS3200Gen2.Model.Module
 
                 CancelToken.Token.ThrowIfCancellationRequested();
                 await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-
+                FiducialRecord?.Invoke(image, new Point());
                 throw new Exception("搜尋失敗");
             }
+
+            FiducialRecord?.Invoke(image, result[0].Center);
+
             Point actualPos = await GetTargetPos(image, currentPosX, currentPosY, result[0].Center);
             return actualPos;
         }
