@@ -40,27 +40,28 @@ namespace WLS3200Gen2.Model.Module
 
 
         public Action<string> WriteLog { get; set; }
-        public Action<BitmapSource ,Point   > FiducialRecord { get; set; }
+        public Action<BitmapSource ,Point? ,int  > FiducialRecord { get; set; }
 
         public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
         {
+            BitmapSource image =null;
             try
             {
 
-
+               
                 List<Point> targetPos = new List<Point>();
                 //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
                 foreach (LocateParam fiducial in fiducialDatas)
                 {
-
+                   int number =fiducialDatas.ToList().IndexOf(fiducial);
                     WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
                     await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
-                    BitmapSource image = camera.GrabAsync();
+                    image = camera.GrabAsync();
 
                     //Pattern match參數傳入 蒐尋器內
                     matcher.RunParams = fiducial.MatchParam;
 
-                    var actualPos = await FindFiducial(image, fiducial.GrabPositionX, fiducial.GrabPositionY);
+                    var actualPos = await FindFiducial(image, fiducial.GrabPositionX, fiducial.GrabPositionY, number);
 
                     targetPos.Add(actualPos);
 
@@ -79,7 +80,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+              
                 throw ex;
             }
         }
@@ -91,22 +92,24 @@ namespace WLS3200Gen2.Model.Module
         /// <param name="currentPosY"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
+        public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY,int number)
         {
             MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
 
             if (result.Length == 0)
             {
+                FiducialRecord?.Invoke(image, null, number);
                 WriteLog($"Search failed ");
                 //沒搜尋到  要做些處置(目前沒做事)
 
+
                 CancelToken.Token.ThrowIfCancellationRequested();
                 await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-                FiducialRecord?.Invoke(image, new Point());
+             
                 throw new Exception("搜尋失敗");
             }
 
-            FiducialRecord?.Invoke(image, result[0].Center);
+            FiducialRecord?.Invoke(image, result[0].Center, number);
 
             Point actualPos = await GetTargetPos(image, currentPosX, currentPosY, result[0].Center);
             return actualPos;

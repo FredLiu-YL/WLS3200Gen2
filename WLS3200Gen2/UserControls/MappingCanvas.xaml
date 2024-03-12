@@ -7,12 +7,15 @@
              mc:Ignorable="d" 
                x:Name="Mapping"
              d:DesignHeight="450" d:DesignWidth="600">
+    <UserControl.Resources>
+        <local:ImagePositionConverter x:Key="ImagePositionConverter"/>
+    </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=Mapping}"  >
         <ScrollViewer   x:Name="scrollViewer" VerticalScrollBarVisibility="Hidden"  HorizontalScrollBarVisibility="Hidden"
               PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
             <Grid>
-                <Canvas >
-                    <Image x:Name="myImage"    MouseLeftButtonDown="Image_MouseLeftButtonDown"   MouseMove="Image_MouseMove"   MouseLeftButtonUp="Image_MouseLeftButtonUp">
+
+                <Image x:Name="myImage"   MouseLeftButtonDown="Image_MouseLeftButtonDown"   MouseMove="Image_MouseMove"   MouseLeftButtonUp="Image_MouseLeftButtonUp">
 
                         <Image.RenderTransform>
                             <TransformGroup>
@@ -24,26 +27,7 @@
 
                     </Image>
                     <!-- 透明的 Grid 覆盖在 Image 控件上 -->
-                    <ItemsControl ItemsSource="{Binding Rectangles}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="ContentPresenter">
-                                <Setter Property="Canvas.Left" Value="{Binding Left}"/>
-                                <Setter Property="Canvas.Top" Value="{Binding Top}"/>
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Rectangle/>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Canvas>
-                         
+               
             </Grid>
         </ScrollViewer>
     </Grid>

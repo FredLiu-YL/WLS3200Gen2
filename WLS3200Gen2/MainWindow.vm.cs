@@ -218,6 +218,7 @@ namespace WLS3200Gen2
                 // 讀取BMP檔案
                 BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
 
+     
                 MapImage = new WriteableBitmap(bitmap);
                 //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
@@ -302,10 +303,31 @@ namespace WLS3200Gen2
             }
         });
 
-        private void FiducialRecord(BitmapSource bitmap , Point pixel)
+        private void FiducialRecord(BitmapSource bitmap , Point? pixel,int number)
         {
-            
-            bitmap.Save(processDataPath+"\\1.bmp");
+            var bmp = bitmap.ToBitmap();
+            // 建立Graphics物件
+            using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(bmp))
+            {
+                if(pixel.HasValue)//有座標表示有對位成功 ，劃出紅色十字
+                {
+                    // 繪製紅色直線 (橫線)
+                    System.Drawing.Pen pen = new System.Drawing.Pen(System.Drawing.Color.Red);
+
+                    graphics.DrawLine(pen, (float)(pixel.Value.X - 20), (float)pixel.Value.Y, (float)(pixel.Value.X + 20), (float)pixel.Value.Y);
+
+                    // 繪製紅色直線 (豎線)
+                    graphics.DrawLine(pen, (float)pixel.Value.X, (float)(pixel.Value.Y - 20), (float)pixel.Value.X, (float)(pixel.Value.Y + 20));
+
+                    // 釋放Pen物件
+                    pen.Dispose();
+
+                }
+               
+                
+                bmp.Save(processDataPath + $"\\{number}.bmp");
+            }
+           
             
         }
 
