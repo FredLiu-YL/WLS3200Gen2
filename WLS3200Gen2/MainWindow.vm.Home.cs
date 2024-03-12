@@ -97,7 +97,7 @@ namespace WLS3200Gen2
 
                     IsRunning = true;
                     WriteLog("Process Start");
-                    //產生當天日期的資料夾
+                    //產生當下時間的資料夾
                     processDataPath = CreateProcessFolder();
 
                     SwitchStates(MachineStates.RUNNING);

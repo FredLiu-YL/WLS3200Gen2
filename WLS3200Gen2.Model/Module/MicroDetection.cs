@@ -66,7 +66,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 對位結果紀錄 (圖像 對位座標(pxel))
         /// </summary>
-        public event Action<BitmapSource , Point> FiducialRecord;
+        public event Action<BitmapSource , Point?,int> FiducialRecord;
         /// <summary>
         /// 檢測結果紀錄
         /// </summary>
@@ -253,7 +253,7 @@ namespace WLS3200Gen2.Model.Module
 
         public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
         {
-            return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY);
+            return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY,0);
 
         }
 
@@ -265,10 +265,10 @@ namespace WLS3200Gen2.Model.Module
         
 
         //預留拿到對位結果後 可以做其他事
-        private void AlignRecord(BitmapSource bitmap  , Point pixel)
+        private void AlignRecord(BitmapSource bitmap  , Point? pixel,int number)
         {
 
-            FiducialRecord?.Invoke(bitmap, pixel);
+            FiducialRecord?.Invoke(bitmap, pixel, number);
         }
 
         private void ObservableDetection()

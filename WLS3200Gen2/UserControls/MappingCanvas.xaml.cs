@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,39 +23,36 @@ namespace WLS3200Gen2.UserControls
     /// <summary>
     /// MappingCanvas.xaml 的互動邏輯
     /// </summary>
-    public partial class MappingCanvas : UserControl
+    public partial class MappingCanvas : UserControl, INotifyPropertyChanged
     {
 
         private bool isDragging;
         private Point lastMousePosition;
         private BitmapImage bitmapImage;
+
+        private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
         public MappingCanvas()
         {
             InitializeComponent();
 
            
-            bitmapImage = new BitmapImage();
+            /*bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri("D:\\9.bmp");
             bitmapImage.EndInit();
-            myImage.Source = bitmapImage;
+            myImage.Source = bitmapImage;*/
            
             // 初始化矩形的位置集合
-            InitializeRectangles();
-
+       
+          //  CreateRectangles();
         }
-        public ObservableCollection<Point> Rectangles { get; } = new ObservableCollection<Point>();
-        private void InitializeRectangles()
+        public ObservableCollection<Rectangle> Rectangles
         {
-            // 添加20个等距的矩形的位置到集合中
-            for (int i = 0; i < 20; i++)
-            {
-                Rectangles.Add(new Point(i * 50, 0)); // 在这里设置矩形的初始位置，这里的 50 是矩形之间的间距
-            }
-
-            // 设置 DataContext，将集合绑定到 XAML 中的 ItemsControl
-
+            get => rectangles;
+            set => SetValue(ref rectangles, value);
         }
+
+
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isDragging = true;
@@ -112,8 +111,8 @@ namespace WLS3200Gen2.UserControls
         private void ScaleImage(double scale)
         {
             // 设置放大缩小的最小值和最大值
-            double minScale = 0.1;
-            double maxScale = 10;
+            double minScale = 0.02;
+            double maxScale = 2;
 
             // 计算新的缩放比例
             double newScaleX = Math.Max(minScale, Math.Min(scaleTransform.ScaleX * scale, maxScale));
@@ -145,10 +144,86 @@ namespace WLS3200Gen2.UserControls
             }
         }
 
+
+
+        private Point lastPosition;
+
+   
+
+        private void CreateRectangles()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                var t = new Rectangle();
+                t.Width = 40;
+              //  t.ActualWidth = 40;
+                t.Height = 40;
+             //   t.ActualHeight = 40;
+                t.Fill = Brushes.Red;
+
+                Rectangles.Add(t);
+            }
+        }
+
+        private void Rectangle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            isDragging = true;
+            lastPosition = e.GetPosition(this);
+            ((Rectangle)sender).CaptureMouse();
+        }
+
+        private void Rectangle_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                var currentPosition = e.GetPosition(this);
+                var offset = currentPosition - lastPosition;
+                Canvas.SetLeft((Rectangle)sender, Canvas.GetLeft((Rectangle)sender) + offset.X);
+                Canvas.SetTop((Rectangle)sender, Canvas.GetTop((Rectangle)sender) + offset.Y);
+                lastPosition = currentPosition;
+            }
+        }
+
+        private void Rectangle_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            isDragging = false;
+            ((Rectangle)sender).ReleaseMouseCapture();
+        } 
+
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return;
+            T oldValue = field;
+            field = value;
+            OnPropertyChanged(propertyName, oldValue, value);
+        }
+        protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
+        {
+            // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
 
+    public class ImagePositionConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is double imageSize && parameter is double offset)
+            {
+                return imageSize / 2 - offset / 2;
+            }
+            return Binding.DoNothing;
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
 }
