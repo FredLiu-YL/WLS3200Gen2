@@ -710,7 +710,7 @@
                                                         <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding WaferIDResult}" />
                                                         <Button Grid.Row="2"  Grid.Column="2" Content="Test"  Command="{Binding AlignerCommand}" CommandParameter="WaferIDTest"/>
 
-                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToAligner" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
+                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
                                                     </Grid>
                                                 </Grid>
                                             </GroupBox>
@@ -733,7 +733,7 @@
                                                         </Style>
                                                     </Grid.Resources>
                                                     <GroupBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
-                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Light" Style="{StaticResource MaterialDesignGroupBox}">
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Light" Style="{StaticResource GroupBoxStyle}">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions >
                                                                 <ColumnDefinition />
@@ -749,8 +749,8 @@
                                                             <UserControlUC:LightUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
                                                         </Grid>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,-10,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
-                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource MaterialDesignGroupBox}">
+                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource GroupBoxStyle}">
                                                         <Grid>
                                                             <Grid.RowDefinitions >
                                                                 <RowDefinition />
@@ -771,12 +771,12 @@
                                                             <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
                                                             <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
+                                                            <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
 
 
                                                             <TextBlock Grid.Column="0" Grid.Row="2"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <Button Grid.Column="4" Grid.Row="2" Content="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
+                                                            <Button Grid.Column="4" Grid.Row="2" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
 
                                                         </Grid>
                                                     </GroupBox>
@@ -798,7 +798,7 @@
                                                                     <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
                                                                     <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
                                                                 </StackPanel>
-                                                                <Button Grid.Row="1" Content="WaferToMacro" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToMacro" Width="150" Height="40" HorizontalAlignment="Left" />
+                                                                <Button Grid.Row="1" Content="WaferToMacro" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" />
                                                             </Grid>
 
                                                         </Grid>

@@ -17,8 +17,20 @@ namespace WLS3200Gen2.Model.Component
         private bool isInnerUsing = false;
         private bool isOuterCanMoveStartPos = false;
         private bool isOuterUsing = false;
-        private DigitalOutput InnerRingVacuum { get; }
 
+        private bool isInnerPitchXForward = false;
+        private bool isInnerPitchXBackward = false;
+
+        private bool isInnerRollYForward = false;
+        private bool isInnerRollYBackward = false;
+
+        private bool isInnerYawTForward = false;
+        private bool isInnerYawTBackward = false;
+
+        private bool isOuterRollYForward = false;
+        private bool isOuterRollYBackward = false;
+
+        private DigitalOutput InnerRingVacuum { get; }
         private DigitalOutput InnerRingPitchXServo { get; }
         private DigitalOutput InnerRingPitchXOrg { get; }
         private DigitalOutput InnerRingPitchXForward { get; }
@@ -211,7 +223,33 @@ namespace WLS3200Gen2.Model.Component
         }
         public void Initial()
         {
+            Task.Run(ReflashPosition);
+        }
+        private async Task ReflashPosition()
+        {
+            try
+            {
+                while (true)
+                {
+                    if (isInnerPitchXForward)
+                    {
 
+                    }
+                    else if (isInnerPitchXBackward)
+                    {
+
+                    }
+
+
+
+                    await Task.Delay(1);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public void FixWafer()
@@ -341,11 +379,15 @@ namespace WLS3200Gen2.Model.Component
                     {
                         OuterRingRollYForward.On();
                         OuterRingRollYBackward.Off();
+                        isOuterRollYForward = true;
+                        isOuterRollYBackward = false;
                     }
                     else
                     {
                         OuterRingRollYForward.Off();
                         OuterRingRollYBackward.On();
+                        isOuterRollYForward = false;
+                        isOuterRollYBackward = true;
                     }
 
                 }
@@ -406,11 +448,15 @@ namespace WLS3200Gen2.Model.Component
                     {
                         InnerRingPitchXBackward.Off();
                         InnerRingPitchXForward.On();
+                        isInnerPitchXForward = true;
+                        isInnerPitchXBackward = false;
                     }
                     else
                     {
                         InnerRingPitchXForward.Off();
                         InnerRingPitchXBackward.On();
+                        isInnerPitchXForward = false;
+                        isInnerPitchXBackward = true;
                     }
 
                 }
@@ -452,11 +498,15 @@ namespace WLS3200Gen2.Model.Component
                     {
                         InnerRingRollYBackward.Off();
                         InnerRingRollYForward.On();
+                        isInnerRollYForward = true;
+                        isInnerRollYBackward = false;
                     }
                     else
                     {
                         InnerRingRollYForward.Off();
                         InnerRingRollYBackward.On();
+                        isInnerRollYForward = false;
+                        isInnerRollYBackward = true;
                     }
 
                 }
@@ -500,11 +550,15 @@ namespace WLS3200Gen2.Model.Component
                     {
                         InnerRingYawTBackward.Off();
                         InnerRingYawTForward.On();
+                        isInnerYawTForward = true;
+                        isInnerYawTBackward = false;
                     }
                     else
                     {
                         InnerRingYawTForward.Off();
                         InnerRingYawTBackward.On();
+                        isInnerYawTForward = false;
+                        isInnerYawTBackward = true;
                     }
 
                 }
@@ -761,7 +815,7 @@ namespace WLS3200Gen2.Model.Component
                 return Task.Run(() =>
                 {
                     int i = 0;
-                    if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg || CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
+                    if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OuterInOrg)
                     {
                         IsCanMoveAllHome = false;
                         IsInnerCanMoveStartPos = false;
@@ -815,6 +869,10 @@ namespace WLS3200Gen2.Model.Component
 
                         IsOuterUsing = true;
                     }
+                    else if (CheckMacroCanMoveOuterRing() == CheckMacroCanMove.OK)
+                    {
+                        IsOuterUsing = true;
+                    }
                     else
                     {
                         throw new Exception($"外環 不能上升!");
@@ -838,7 +896,7 @@ namespace WLS3200Gen2.Model.Component
                 return Task.Run(() =>
                 {
                     int i = 0;
-                    if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg || CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                    if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.InnerInOrg)
                     {
                         IsCanMoveAllHome = false;
                         IsInnerCanMoveStartPos = false;
@@ -862,6 +920,10 @@ namespace WLS3200Gen2.Model.Component
                         InnerRingLiftMotorStart.Off();
                         InnerRingLiftMotorM1.Off();
 
+                        IsInnerUsing = true;
+                    }
+                    else if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK)
+                    {
                         IsInnerUsing = true;
                     }
                     else
@@ -998,11 +1060,29 @@ namespace WLS3200Gen2.Model.Component
         public enum CheckMacroCanMove
         {
             OK = 1,
+            /// <summary>
+            /// 內環在下
+            /// </summary>
             InnerInOrg = 2,
+            /// <summary>
+            /// 內環在上
+            /// </summary>
             InnerInTop = 3,
+            /// <summary>
+            /// 外環在下
+            /// </summary>
             OuterInOrg = 4,
+            /// <summary>
+            /// 外環在上
+            /// </summary>
             OuterInTop = 5,
+            /// <summary>
+            /// 內環馬達異常
+            /// </summary>
             InnerMotorError = 6,
+            /// <summary>
+            /// 外環馬達異常
+            /// </summary>
             OuterMotorError = 7
         }
 
