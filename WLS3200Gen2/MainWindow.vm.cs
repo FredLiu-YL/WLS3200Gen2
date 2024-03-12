@@ -24,6 +24,7 @@ using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.Module;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
+using YuanliCore.CameraLib;
 using YuanliCore.Data;
 using YuanliCore.Interface;
 using YuanliCore.Machine.Base;
@@ -53,6 +54,9 @@ namespace WLS3200Gen2
         private System.Windows.Point mapmousePixcel;
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
+        //WLS3200 生產相關資訊會存到這
+        private string processDataPath ;
+
         private bool isRefresh, isInitialComplete, isWaferInSystem;
         private LoadPortQuantity loadportQuantity;
 
@@ -198,7 +202,7 @@ namespace WLS3200Gen2
 
 
                 CameraLive();
-
+                machine.MicroDetection.FiducialRecord += FiducialRecord;
 
 
                 isInitialComplete = true;
@@ -284,7 +288,7 @@ namespace WLS3200Gen2
         {
             try
             {
-               
+
 
             }
             catch (Exception ex)
@@ -297,6 +301,15 @@ namespace WLS3200Gen2
 
             }
         });
+
+        private void FiducialRecord(BitmapSource bitmap , Point pixel)
+        {
+            
+            bitmap.Save(processDataPath+"\\1.bmp");
+            
+        }
+
+
         private void SwitchStates(MachineStates states)
         {
             Machinestatus = states;

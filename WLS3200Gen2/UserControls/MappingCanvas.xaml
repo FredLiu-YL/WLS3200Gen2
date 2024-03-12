@@ -11,19 +11,39 @@
         <ScrollViewer   x:Name="scrollViewer" VerticalScrollBarVisibility="Hidden"  HorizontalScrollBarVisibility="Hidden"
               PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
             <Grid>
-                <Image x:Name="myImage"    MouseLeftButtonDown="Image_MouseLeftButtonDown"   MouseMove="Image_MouseMove"   MouseLeftButtonUp="Image_MouseLeftButtonUp">
-                   
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <!-- 添加 TranslateTransform 用于拖动图像 -->
-                            <TranslateTransform x:Name="translateTransform"/>
-                            <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                
-                </Image>
-                <!-- 透明的 Grid 覆盖在 Image 控件上 -->
-               
+                <Canvas >
+                    <Image x:Name="myImage"    MouseLeftButtonDown="Image_MouseLeftButtonDown"   MouseMove="Image_MouseMove"   MouseLeftButtonUp="Image_MouseLeftButtonUp">
+
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <!-- 添加 TranslateTransform 用于拖动图像 -->
+                                <TranslateTransform x:Name="translateTransform"/>
+                                <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+
+                    </Image>
+                    <!-- 透明的 Grid 覆盖在 Image 控件上 -->
+                    <ItemsControl ItemsSource="{Binding Rectangles}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+                                <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Rectangle/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Canvas>
+                         
             </Grid>
         </ScrollViewer>
     </Grid>

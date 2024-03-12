@@ -15,7 +15,7 @@
     xmlns:motion="clr-namespace:YuanliCore.Motion;assembly=YuanliCore.Model" 
     xmlns:microscope="clr-namespace:YuanliCore.Model.Microscope;assembly=YuanliCore.Model" 
     xmlns:account="clr-namespace:YuanliCore.Account;assembly=YuanliCore.Model"    
-    xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model" xmlns:usercontrols1="clr-namespace:YuanliCore.Model.UserControls" xmlns:wls3200gen2="clr-namespace:WLS3200Gen2"
+    xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model" xmlns:usercontrols1="clr-namespace:YuanliCore.Model.UserControls" xmlns:wls3200gen2="clr-namespace:WLS3200Gen2" xmlns:views1="clr-namespace:WLS3200Gen2.Views"
     mc:Ignorable="d"
         Title="{Binding Version}"   Height="1080" Width="1920"
         DataContext="{Binding Main, Source={StaticResource Locator}}"   
@@ -652,7 +652,7 @@
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition />
                                                         </Grid.ColumnDefinitions>
-                                                        <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}"  />
+                                                        <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}" SelectIndex="{Binding LoadPort1WaferSelect}"  />
                                                         <!--<usercontrols1:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>-->
 
 
@@ -725,6 +725,13 @@
                                                         <RowDefinition Height="0.3*"/>
                                                         <RowDefinition Height="0.50*"/>
                                                     </Grid.RowDefinitions>
+                                                    <Grid.Resources>
+                                                        <!-- 定義一個名為 GroupBoxStyle 的樣式 -->
+                                                        <Style TargetType="GroupBox" x:Key="GroupBoxStyle">
+                                                            <!-- 將 GroupBox 的背景顏色設置為白色 -->
+                                                            <Setter Property="Background" Value="White"/>
+                                                        </Style>
+                                                    </Grid.Resources>
                                                     <GroupBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Light" Style="{StaticResource MaterialDesignGroupBox}">
                                                         <Grid>
@@ -742,7 +749,7 @@
                                                             <UserControlUC:LightUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
                                                         </Grid>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,-5,0,-5" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource MaterialDesignGroupBox}">
                                                         <Grid>
                                                             <Grid.RowDefinitions >
@@ -768,14 +775,14 @@
 
                                                         </Grid>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,-5,0,-5" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
-                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Control" Style="{StaticResource MaterialDesignGroupBox}">
+                                                    <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,0"  Style="{StaticResource GroupBoxStyle}"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="14" Header="Control"  >
                                                         <Grid >
                                                             <Grid.ColumnDefinitions >
                                                                 <ColumnDefinition Width="0.7*"/>
                                                                 <ColumnDefinition Width="0.3*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,-5,0,-5" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
+                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
                                                             <Grid Grid.Column="1">
                                                                 <Grid.RowDefinitions >
                                                                     <RowDefinition Height="0.5*"/>
@@ -1164,7 +1171,7 @@
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
-                                
+                                <UserControlUC:MappingCanvas />
                             </Grid>
                         </Grid>
                     </GroupBox>

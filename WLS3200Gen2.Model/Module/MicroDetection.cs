@@ -178,6 +178,8 @@ namespace WLS3200Gen2.Model.Module
                 var transPosition = transForm.TransPoint(point.Position);
 
                 await TableMoveToAsync(transPosition);
+                SetMicroscope(point);
+
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
              
@@ -215,6 +217,8 @@ namespace WLS3200Gen2.Model.Module
         }
 
 
+
+
         /// <summary>
         /// 檢測功能
         /// </summary>
@@ -226,6 +230,9 @@ namespace WLS3200Gen2.Model.Module
 
 
         }
+
+
+
 
         /// <summary>
         /// 對位功能
@@ -249,6 +256,14 @@ namespace WLS3200Gen2.Model.Module
             return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY);
 
         }
+
+        private void SetMicroscope(DetectionPoint detectionPoint)
+        {
+
+   
+        }
+        
+
         //預留拿到對位結果後 可以做其他事
         private void AlignRecord(BitmapSource bitmap  , Point pixel)
         {

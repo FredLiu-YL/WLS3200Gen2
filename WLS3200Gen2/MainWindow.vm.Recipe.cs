@@ -30,6 +30,7 @@ namespace WLS3200Gen2
         private PatmaxParams matchParam = new PatmaxParams(0);
 
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
+        private int loadPort1WaferSelect;
         private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
         private ObservableCollection<DetectionPoint> detectionPointList = new ObservableCollection<DetectionPoint>();
 
@@ -171,6 +172,7 @@ namespace WLS3200Gen2
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
         public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
+        public int LoadPort1WaferSelect { get => loadPort1WaferSelect; set => SetValue(ref loadPort1WaferSelect, value); }
         //  public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
         public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
@@ -657,8 +659,10 @@ namespace WLS3200Gen2
                 point.OffsetY = 0;
                 point.Position = new Point(die.PosX, die.PosY);
 
-                point.ApertureValue = Microscope.ApertureValue;
-
+                point.MicroscopeLightValue = Microscope.LightValue;
+                point.MicroscopeApertureValue = Microscope.ApertureValue;
+                point.MicroscopePosition = Microscope.Position;
+                point.MicroscopeAberationPosition = Microscope.AberationPosition;
                 DetectionPointList.Add(point);
 
             }
