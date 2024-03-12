@@ -15,9 +15,12 @@ namespace YuanliCore.Model
     public class AlignmentRecipe
     {
         /// <summary>
-        /// 對位成功後 ，原點位置偏移量
+        /// 對位成功後 ，原點位置偏移量X
         /// </summary>
         public double OffsetX { get; set; }
+        /// <summary>
+        /// 對位成功後 ，原點位置偏移量Y
+        /// </summary>
         public double OffsetY { get; set; }
         /// <summary>
         /// 對位方式  

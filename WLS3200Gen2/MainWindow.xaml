@@ -475,7 +475,7 @@
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
                                                     <!--<Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>-->
                                                 </StackPanel>
-                                                <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}" Margin="0,10,0,0" HorizontalAlignment="Left" Width="565" />
+                                                <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,0,0" HorizontalAlignment="Left" Width="565" />
                                             </Grid>
                                         </TabItem>
                                         <TabItem Height="30">
@@ -646,7 +646,7 @@
                                                 <ColumnDefinition Width="0.7*"/>
                                             </Grid.ColumnDefinitions>
                                             <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="1" Header="Load Port" >
-                                                
+
                                                 <Grid >
                                                     <Grid Margin="-5">
                                                         <Grid.ColumnDefinitions>
@@ -699,18 +699,18 @@
                                                             <ColumnDefinition Width="0.3*"/>
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <TextBox  Grid.Row="0"  Grid.Column="1" VerticalAlignment="Center" Width="125" />
-                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run"/>
+                                                        <TextBox  Grid.Row="0"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerMicroAngle}"/>
+                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="NotchAngle"/>
 
                                                         <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" />
-                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Run"/>
+                                                        <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerWaferIDAngle}"/>
+                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle"/>
 
                                                         <TextBlock Grid.Row="2"  Grid.Column="0"  Text="Wafer ID Test:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" />
-                                                        <Button Grid.Row="2"  Grid.Column="2" Content="Test"/>
-                                                        
-                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
+                                                        <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding WaferIDResult}" />
+                                                        <Button Grid.Row="2"  Grid.Column="2" Content="Test"  Command="{Binding AlignerCommand}" CommandParameter="WaferIDTest"/>
+
+                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToAligner" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
                                                     </Grid>
                                                 </Grid>
                                             </GroupBox>
@@ -742,7 +742,7 @@
                                                             <UserControlUC:LightUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
                                                         </Grid>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,-5,0,-5" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,-10,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource MaterialDesignGroupBox}">
                                                         <Grid>
                                                             <Grid.RowDefinitions >
@@ -751,20 +751,25 @@
                                                                 <RowDefinition />
                                                             </Grid.RowDefinitions>
                                                             <Grid.ColumnDefinitions >
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="0.15*"/>
+                                                                <ColumnDefinition Width="0.15*"/>
+                                                                <ColumnDefinition Width="0.15*"/>
+                                                                <ColumnDefinition Width="0.15*"/>
+                                                                <ColumnDefinition Width="0.40*"/>
                                                             </Grid.ColumnDefinitions>
 
                                                             <TextBlock Grid.Column="0" Grid.Row="0"   Text="Pitch X:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"   />
+                                                            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding MacroTopStartPitchX}"   FontSize="20"  Width="70" VerticalAlignment="Center"   />
                                                             <TextBlock Grid.Column="2" Grid.Row="0"   Text="Roll Y:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <TextBlock Grid.Column="0" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
+                                                            <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
+
+
                                                             <TextBlock Grid.Column="0" Grid.Row="2"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MoveIndexY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                            <Button Grid.Column="4" Grid.Row="2" Content="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
 
                                                         </Grid>
                                                     </GroupBox>
@@ -786,9 +791,9 @@
                                                                     <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
                                                                     <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
                                                                 </StackPanel>
-                                                                <Button Grid.Row="1" Content="WaferToMacro" Width="150" Height="40" HorizontalAlignment="Left" />
+                                                                <Button Grid.Row="1" Content="WaferToMacro" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToMacro" Width="150" Height="40" HorizontalAlignment="Left" />
                                                             </Grid>
-                                                            
+
                                                         </Grid>
                                                     </GroupBox>
                                                 </Grid>
@@ -928,15 +933,19 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <GroupBox  FontSize="16"  Header="Microscope"  >
-                            <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
+                            <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" MicroscopeParam="{Binding MicroscopeParam}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1"  FontSize="16"  Header="Axis Move"  >
                             <Grid  Grid.Column="1" Grid.Row="1" Margin="-5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="265*"/>
+                                    <ColumnDefinition Width="272*"/>
+                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="0.2*"/>
                                     <RowDefinition Height="0.80*" />
                                 </Grid.RowDefinitions>
-                                <Border   Grid.Row="0" BorderBrush="Black" BorderThickness="1"  >
+                                <Border   Grid.Row="0" BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="2"  >
                                     <StackPanel Orientation="Horizontal"  >
                                         <Label Content="Index" Width="80" FontSize="26" />
                                         <Label Content="Col" Width="70" FontSize="26" />
@@ -947,7 +956,7 @@
                                     </StackPanel>
                                 </Border>
 
-                                <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="350" Height="200" />
                             </Grid>
                         </GroupBox>
                     </Grid>
@@ -1164,7 +1173,7 @@
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
-                                
+
                             </Grid>
                         </Grid>
                     </GroupBox>
@@ -1693,13 +1702,13 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <GroupBox  FontSize="16"  Header="Microscope" Grid.Column="0" Grid.Row="0">
-                                <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" BXFMUIShow="{Binding BXFMUIShow}"/>
+                                <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" MicroscopeParam="{Binding MicroscopeParam}"/>
                             </GroupBox>
                             <GroupBox Grid.Column="1" Grid.Row="0" Header="Aberation" FontSize="16">
-                                
+
                                 <UserControlUC:AFAberationUnitUC Grid.Column="2"  HorizontalAlignment="Left" VerticalAlignment="Top" />
                             </GroupBox>
-                            
+
 
                         </Grid>
 

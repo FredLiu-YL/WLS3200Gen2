@@ -57,7 +57,7 @@ namespace Test
 
         private RobotUI robotStaus = new RobotUI();
 
-        private BXFMUI bXFMUIShow = new BXFMUI();
+        private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
 
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
@@ -83,7 +83,8 @@ namespace Test
 
         public IMicroscope Micro { get => micro; set => SetValue(ref micro, value); }
 
-        public BXFMUI BXFMUIShow { get => bXFMUIShow; set => SetValue(ref bXFMUIShow, value); }
+
+        public YuanliCore.Model.MicroscopeParam MicroscopeParam { get => microscopeParam; set => SetValue(ref microscopeParam, value); }
         //////////////////////////////////
         private WriteableBitmap mappingImage;
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
@@ -119,11 +120,11 @@ namespace Test
             {
 
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                BXUCB aa=  new BXUCB("COM24");
+                BXUCB aa = new BXUCB("COM24");
 
                 aa.Error += (e) =>
                 {
-                    throw e; 
+                    throw e;
                 };
                 Micro = aa;
                 Micro.Initial();
@@ -369,9 +370,9 @@ namespace Test
                         if (Micro != null)
                         {
                             NowPos = Micro.Position;
-                            BXFMUIShow.FocusZ = Convert.ToInt32(nowPos);
-                            BXFMUIShow.ApertureValue = Micro.ApertureValue;
-                            BXFMUIShow.LightValue = Micro.LightValue;
+                            MicroscopeParam.Position = Convert.ToInt32(nowPos);
+                            MicroscopeParam.ApertureValue = Micro.ApertureValue;
+                            MicroscopeParam.LightValue = Micro.LightValue;
                         }
 
                         await Task.Delay(300);

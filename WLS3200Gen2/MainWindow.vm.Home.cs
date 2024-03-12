@@ -42,7 +42,7 @@ namespace WLS3200Gen2
         private WaferProcessStatus macroJudgeOperation;
         private bool isLoadport1, isLoadport2;
         private IMicroscope microscope;
-        private BXFMUI bXFMUIShow = new BXFMUI();
+        private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
         private IMacro macro;
         private MacroStatus macroStatus = new MacroStatus();
 
@@ -68,7 +68,7 @@ namespace WLS3200Gen2
         public bool IsLoadport1 { get => isLoadport1; set => SetValue(ref isLoadport1, value); }
         public bool IsLoadport2 { get => isLoadport2; set => SetValue(ref isLoadport2, value); }
         public IMicroscope Microscope { get => microscope; set => SetValue(ref microscope, value); }
-        public BXFMUI BXFMUIShow { get => bXFMUIShow; set => SetValue(ref bXFMUIShow, value); }
+        public YuanliCore.Model.MicroscopeParam MicroscopeParam { get => microscopeParam; set => SetValue(ref microscopeParam, value); }
         public IMacro Macro { get => macro; set => SetValue(ref macro, value); }
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
         public ICommand RunCommand => new RelayCommand(async () =>
@@ -224,6 +224,7 @@ namespace WLS3200Gen2
                 {
                     var recipename = win.FileName;
                     mainRecipe.Load(path, recipename);
+                    SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
 
                     WriteLog("Load Recipe :" + recipename);

@@ -63,7 +63,7 @@
                 <UserControlUC:DigitalOutputUC OutputSignals="{Binding DigitalOutputs }"  />
             </GroupBox>-->
 
-            <microscope:BXFMUC Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" Height="240" Width="600" Microscope="{Binding Micro }" BXFMUIShow="{Binding BXFMUIShow}" />
+            <microscope:BXFMUC Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" Height="240" Width="600" Microscope="{Binding Micro }" MicroscopeParam ="{Binding MicroscopeParam}" />
             
             <UserControlUC:RobotUnitUC Width="450" Height="450" Grid.Column="3" Grid.Row="1" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }"   />
             <!--<GroupBox Header="Input" Grid.Column="3" Grid.Row="1" >
