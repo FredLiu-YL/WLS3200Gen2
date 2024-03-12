@@ -1,6 +1,7 @@
 ﻿using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -50,7 +51,7 @@ namespace WLS3200Gen2.Model
                 // Queue<Wafer> processWafers = new Queue<Wafer>(wafers.Reverse());
 
 
-
+                CreateProcessFolder();
                 await Task.Run(async () =>
                 {
                     WriteLog?.Invoke("Process Start");
@@ -73,7 +74,7 @@ namespace WLS3200Gen2.Model
                             MainRecipe recipe = ChangeRecipe.Invoke();
 
 
-                       
+
 
 
                             //晶面檢查
@@ -94,7 +95,7 @@ namespace WLS3200Gen2.Model
                             await pts.Token.WaitWhilePausedAsync(cts.Token);
 
 
-                            Task taskLoad = Task.CompletedTask; 
+                            Task taskLoad = Task.CompletedTask;
 
 
                             if (currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)//判斷如果有需要進顯微鏡
@@ -112,7 +113,7 @@ namespace WLS3200Gen2.Model
 
                                 nextWafer = SearchLoadWafer(processWafers);
                                 // nextWafer = processWafers.Dequeue();
-                                
+
                                 //預載一片在Macro上
                                 if (nextWafer != null)
                                     taskLoad = Feeder.LoadToReadyAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
@@ -256,6 +257,20 @@ namespace WLS3200Gen2.Model
 
 
         }
+
+        private void CreateProcessFolder()
+        {
+            var date = DateTime.Now.Date.ToString("yyyy-MM-dd");
+            var path = "D:\\WLS3200\\" + date;
+            if (!Directory.Exists(path))
+            {
+           
+                //新增資料夾
+                Directory.CreateDirectory(path);
+            }
+
+        }
+
         private void MicroVacuumOn()
         {
 

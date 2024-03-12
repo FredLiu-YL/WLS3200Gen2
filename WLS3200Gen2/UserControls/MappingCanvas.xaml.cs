@@ -31,13 +31,13 @@ namespace WLS3200Gen2.UserControls
         {
             InitializeComponent();
 
-           /* 
+           
             bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri("9.bmp");
+            bitmapImage.UriSource = new Uri("D:\\9.bmp");
             bitmapImage.EndInit();
             myImage.Source = bitmapImage;
-           */
+           
             // 初始化矩形的位置集合
             InitializeRectangles();
 

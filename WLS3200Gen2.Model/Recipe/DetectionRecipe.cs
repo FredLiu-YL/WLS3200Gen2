@@ -51,11 +51,22 @@ namespace WLS3200Gen2.Model.Recipe
         /// <summary>
         /// 目前光強度
         /// </summary>
-        public int LightValue { get; set; }
+        public int MicroscopeLightValue { get; set; }
         /// <summary>
         /// 目前光圈
         /// </summary>
-        public int ApertureValue { get; set; }
+        public int MicroscopeApertureValue { get; set; }
+
+
+        /// <summary>
+        /// 目前Z軸位置
+        /// </summary>
+        public int MicroscopePosition { get; set; }
+
+        /// <summary>
+        /// 準焦位置
+        /// </summary>
+        public double MicroscopeAberationPosition { get; set; }
 
 
 

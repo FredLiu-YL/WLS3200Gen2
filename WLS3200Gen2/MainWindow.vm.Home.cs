@@ -97,6 +97,8 @@ namespace WLS3200Gen2
 
                     IsRunning = true;
                     WriteLog("Process Start");
+                    //產生當天日期的資料夾
+                    processDataPath = CreateProcessFolder();
 
                     SwitchStates(MachineStates.RUNNING);
                     //判斷是使用loadport1 還是 2
@@ -476,6 +478,21 @@ namespace WLS3200Gen2
             {
             }
         });
+        private string CreateProcessFolder()
+        {
+            var date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+           // var time = DateTime.Now.ToString("HH-mm-ss");
+
+            var path = $"D:\\WLS3200\\{date}\\";
+            if (!Directory.Exists(path))
+            {
+
+                //新增資料夾
+                Directory.CreateDirectory(path);
+            }
+            return path;
+        }
+
         private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             machine.ProcessPause();//暫停
