@@ -55,7 +55,7 @@ namespace WLS3200Gen2
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
         //WLS3200 生產相關資訊會存到這
-        private string processDataPath ;
+        private string processDataPath;
 
         private bool isRefresh, isInitialComplete, isWaferInSystem;
         private LoadPortQuantity loadportQuantity;
@@ -218,7 +218,7 @@ namespace WLS3200Gen2
                 // 讀取BMP檔案
                 BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
 
-     
+
                 MapImage = new WriteableBitmap(bitmap);
                 //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
@@ -303,13 +303,13 @@ namespace WLS3200Gen2
             }
         });
 
-        private void FiducialRecord(BitmapSource bitmap , Point? pixel,int number)
+        private void FiducialRecord(BitmapSource bitmap, Point? pixel, int number)
         {
             var bmp = bitmap.ToBitmap();
             // 建立Graphics物件
             using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(bmp))
             {
-                if(pixel.HasValue)//有座標表示有對位成功 ，劃出紅色十字
+                if (pixel.HasValue)//有座標表示有對位成功 ，劃出紅色十字
                 {
                     // 繪製紅色直線 (橫線)
                     System.Drawing.Pen pen = new System.Drawing.Pen(System.Drawing.Color.Red);
@@ -323,12 +323,12 @@ namespace WLS3200Gen2
                     pen.Dispose();
 
                 }
-               
-                
+
+
                 bmp.Save(processDataPath + $"\\Fiducial-{number}.bmp");
             }
-           
-            
+
+
         }
 
 
@@ -425,8 +425,7 @@ namespace WLS3200Gen2
                         RobotStaus.ErrorCode = robotStatus.ErrorCode;
                         RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
 
-                        RobotStaus.IsHavePiece = await machine.Feeder.Robot.IsHavePiece();
-                        RobotStaus.IsLockOK = await machine.Feeder.Robot.IsLockOK();
+                        RobotStaus.IsLockOK = machine.Feeder.Robot.IsLockOK;
                         //RobotUIIShow
                     }
 

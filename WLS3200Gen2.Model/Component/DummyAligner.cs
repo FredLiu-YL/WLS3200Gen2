@@ -9,6 +9,9 @@ namespace WLS3200Gen2.Model.Component
     public class DummyAligner : IAligner
     {
         public int TimeOutRetryCount { get; set; } = 1;
+
+        public bool IsLockOK { get; } = false;
+
         public Task AlarmReset()
         {
             return Task.CompletedTask;
@@ -17,6 +20,11 @@ namespace WLS3200Gen2.Model.Component
         public void Close()
         {
 
+        }
+
+        public Task FixWafer()
+        {
+            return Task.CompletedTask;
         }
 
         public Task<AlignerStatus> GetStatus()
@@ -38,9 +46,10 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        public Task<bool> IsLockOK()
+
+        public Task ReleaseWafer()
         {
-            return Task.Run(() => false);
+            return Task.CompletedTask;
         }
 
         public Task Run(double degree)

@@ -78,7 +78,7 @@ namespace WLS3200Gen2.Model
             Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4], machineSetting);
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
             StackLight = new StackLight(dos);
-        
+
         }
         public async Task<bool> BeforeHomeCheck()
         {
@@ -86,23 +86,44 @@ namespace WLS3200Gen2.Model
             {
                 bool isWaferInSystem = false;
                 Task robotLock = Feeder.Robot.FixWafer();
-                Task alignerLock = Feeder.AlignerL.Vaccum(true);
+                Task alignerLock = Feeder.AlignerL.FixWafer();
                 Feeder.Macro.FixWafer();
                 MicroDetection.TableVacuum.On();
                 await Task.WhenAll(robotLock, alignerLock);
                 await Task.Delay(1000); //暫停1000ms 等待真空建立完成
-                if (await Feeder.Robot.IsLockOK() || await Feeder.Robot.IsHavePiece())
+                if (Feeder.Robot.IsLockOK)
                 {
                     isWaferInSystem = true;
+                }
+                else
+                {
+                    await Feeder.Robot.ReleaseWafer();
                 }
                 if (Feeder.Macro.IsLockOK)
                 {
                     isWaferInSystem = true;
                 }
-                if (await Feeder.AlignerL.IsLockOK())
+                else
+                {
+                    Feeder.Macro.ReleaseWafer();
+                }
+                if (Feeder.AlignerL.IsLockOK)
                 {
                     isWaferInSystem = true;
                 }
+                else
+                {
+                    await Feeder.AlignerL.ReleaseWafer();
+                }
+                if (MicroDetection.IsTableVacuum.IsSignal)
+                {
+                    isWaferInSystem = true;
+                }
+                else
+                {
+                    MicroDetection.TableVacuum.Off();
+                }
+                await Task.Delay(500); //暫停500ms 等待解真空
                 return isWaferInSystem;
             }
             catch (Exception)

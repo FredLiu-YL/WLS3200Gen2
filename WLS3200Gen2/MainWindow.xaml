@@ -700,11 +700,11 @@
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
                                                         <TextBox  Grid.Row="0"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerMicroAngle}"/>
-                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="NotchAngle"/>
+                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="NotchAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
 
                                                         <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
                                                         <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerWaferIDAngle}"/>
-                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle"/>
+                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
 
                                                         <TextBlock Grid.Row="2"  Grid.Column="0"  Text="Wafer ID Test:" FontSize="20"  VerticalAlignment="Center" />
                                                         <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding WaferIDResult}" />
@@ -771,12 +771,12 @@
                                                             <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
                                                             <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
+                                                            <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
 
                                                             <TextBlock Grid.Column="0" Grid.Row="2"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
                                                             <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <Button Grid.Column="4" Grid.Row="2" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" />
+                                                            <Button Grid.Column="4" Grid.Row="2" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
                                                         </Grid>
                                                     </GroupBox>
@@ -787,7 +787,7 @@
                                                                 <ColumnDefinition Width="0.7*"/>
                                                                 <ColumnDefinition Width="0.3*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
+                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
                                                             <Grid Grid.Column="1">
                                                                 <Grid.RowDefinitions >
                                                                     <RowDefinition Height="0.5*"/>
@@ -940,7 +940,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <GroupBox  FontSize="16"  Header="Microscope"  >
-                            <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" MicroscopeParam="{Binding MicroscopeParam}"/>
+                            <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" MicroscopeParam="{Binding MicroscopeParam}" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1"  FontSize="16"  Header="Axis Move"  >
                             <Grid  Grid.Column="1" Grid.Row="1" Margin="-5">
@@ -959,11 +959,11 @@
                                         <TextBox Text="{Binding MoveIndexX}"    FontSize="22"   Width="70" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                         <Label Content="Row" Width="70" FontSize="26" />
                                         <TextBox Text="{Binding MoveIndexY}"   FontSize="26"  Width="70" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                        <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}"  />
+                                        <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
                                     </StackPanel>
                                 </Border>
 
-                                <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="350" Height="200" />
+                                <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="350" Height="200" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
                             </Grid>
                         </GroupBox>
                     </Grid>

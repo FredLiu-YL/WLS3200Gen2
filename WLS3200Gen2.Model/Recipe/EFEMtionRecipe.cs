@@ -13,19 +13,19 @@ namespace WLS3200Gen2.Model.Recipe
         private double alignerMicroAngle;
         private double alignerWaferIDAngle;
         private double alignerLoadPortAngle;
-        private int macroTopStartPitchX;
-        private int macroTopStartRollY;
-        private int macroTopStartYawT;
-        private int macroBackStartPos;
+        private double macroTopStartPitchX;
+        private double macroTopStartRollY;
+        private double macroTopStartYawT;
+        private double macroBackStartPos;
 
         public double AlignerMicroAngle { get => alignerMicroAngle; set => SetValue(ref alignerMicroAngle, value); }
         public double AlignerWaferIDAngle { get => alignerWaferIDAngle; set => SetValue(ref alignerWaferIDAngle, value); }
         public double AlignerLoadPortAngle { get => alignerLoadPortAngle; set => SetValue(ref alignerLoadPortAngle, value); }
-        public int MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
-        public int MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
-        public int MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
+        public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
+        public double MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
+        public double MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
 
-        public int MacroBackStartPos { get => macroBackStartPos; set => SetValue(ref macroBackStartPos, value); }
+        public double MacroBackStartPos { get => macroBackStartPos; set => SetValue(ref macroBackStartPos, value); }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

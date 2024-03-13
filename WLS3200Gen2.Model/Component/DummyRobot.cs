@@ -21,6 +21,8 @@ namespace WLS3200Gen2.Model.Component
 
         public int SpeedPercent => throw new NotImplementedException();
 
+        public bool IsLockOK => false;
+
         public Task Continue()
         {
             return Task.CompletedTask;
@@ -57,10 +59,6 @@ namespace WLS3200Gen2.Model.Component
             return Task.Run(() => false);
         }
 
-        public Task<bool> IsLockOK()
-        {
-            return Task.Run(() => false);
-        }
 
         public Task MovAddress(int address, double zShift)
         {

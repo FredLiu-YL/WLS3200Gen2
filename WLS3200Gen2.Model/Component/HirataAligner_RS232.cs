@@ -42,6 +42,9 @@ namespace WLS3200Gen2.Model.Component
             }
         }
         public int TimeOutRetryCount { get; set; } = 1;
+
+        public bool IsLockOK => IsAlignerLockOK();
+
         public void Initial()
         {
             try
@@ -144,7 +147,7 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Aligner Run:" + ex);
             }
         }
-        public Task Vaccum(bool IsOn)
+        public Task FixWafer()
         {
             try
             {
@@ -154,39 +157,51 @@ namespace WLS3200Gen2.Model.Component
                     while (true)
                     {
                         AlignerItems alignerItems = new AlignerItems();
-                        if (IsOn == true)
+                        alignerItems = Command_MovVaccumON();
+                        if (alignerItems.IsMovOK == true)
                         {
-                            alignerItems = Command_MovVaccumON();
-                            if (alignerItems.IsMovOK == true)
-                            {
-                                break;
-                            }
-                            else if (alignerItems.IsMovOK == false)
-                            {
-                                nowCount++;
-                                if (nowCount > TimeOutRetryCount)
-                                {
-                                    throw new Exception("Vaccum ON Error");
-                                }
-
-                            }
+                            break;
                         }
-                        else
+                        else if (alignerItems.IsMovOK == false)
                         {
-                            alignerItems = Command_MovVaccumOFF();
-                            if (alignerItems.IsMovOK == true)
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
                             {
-                                break;
+                                throw new Exception("FixWafer Error");
                             }
-                            else if (alignerItems.IsMovOK == false)
-                            {
-                                nowCount++;
-                                if (nowCount > TimeOutRetryCount)
-                                {
-                                    throw new Exception("Vaccum OFF Error");
-                                }
 
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Aligner Vaccum:" + ex);
+            }
+        }
+        public Task ReleaseWafer()
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    int nowCount = 0;
+                    while (true)
+                    {
+                        AlignerItems alignerItems = new AlignerItems();
+                        alignerItems = Command_MovVaccumOFF();
+                        if (alignerItems.IsMovOK == true)
+                        {
+                            break;
+                        }
+                        else if (alignerItems.IsMovOK == false)
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("ReleaseWafer Error");
                             }
+
                         }
                     }
 
@@ -1033,34 +1048,31 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task<bool> IsLockOK()
+        public bool IsAlignerLockOK()
         {
             try
             {
-                return Task.Run(() =>
+                int nowCount = 0;
+                while (true)
                 {
-                    int nowCount = 0;
-                    while (true)
+                    AlignerStatus alignerStatus = new AlignerStatus();
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems = Command_GetStatus();
+                    if (alignerItems.IsGetOK)
                     {
-                        AlignerStatus alignerStatus = new AlignerStatus();
-                        AlignerItems alignerItems = new AlignerItems();
-                        alignerItems = Command_GetStatus();
-                        if (alignerItems.IsGetOK)
-                        {
-                            alignerStatus = UpdateStatus(alignerItems);
-                            return alignerStatus.IsVaccum;
-                        }
-                        else
-                        {
-                            nowCount++;
-                            if (nowCount > TimeOutRetryCount)
-                            {
-                                throw new Exception("Get Status Error");
-                            }
-
-                        }
+                        alignerStatus = UpdateStatus(alignerItems);
+                        return alignerStatus.IsVaccum;
                     }
-                });
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
+                        {
+                            throw new Exception("Get Status Error");
+                        }
+
+                    }
+                }
             }
             catch (Exception ex)
             {

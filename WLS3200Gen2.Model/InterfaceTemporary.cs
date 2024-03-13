@@ -214,6 +214,11 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         int SpeedPercent { get; }
         /// <summary>
+        /// 手臂是否固定住Wafer
+        /// </summary>
+        /// <returns></returns>
+        bool IsLockOK { get; }
+        /// <summary>
         /// 手臂初始化
         /// </summary>
         void Initial();
@@ -262,16 +267,6 @@ namespace WLS3200Gen2.Model
         /// </summary>
         /// <returns></returns>
         Task ReleaseWafer();
-        /// <summary>
-        /// 手臂是否固定住Wafer
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> IsLockOK();
-        /// <summary>
-        /// 手臂是否有Wafer
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> IsHavePiece();
     }
     public interface IEFEMRobot : IRobot
     {
@@ -430,6 +425,11 @@ namespace WLS3200Gen2.Model
     public interface IAligner
     {
         /// <summary>
+        /// 手臂是否固定住Wafer
+        /// </summary>
+        /// <returns></returns>
+        bool IsLockOK { get; }
+        /// <summary>
         /// TimeOut重送次數
         /// </summary>
         int TimeOutRetryCount { get; set; }
@@ -453,26 +453,18 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         Task Run(double degree);
         /// <summary>
-        /// 真空 IsOn=true 開啟 IsOn=fals 關閉
+        /// 鎖住Aligner Wafer
         /// </summary>
-        /// <param name="IsOn"></param>
-        /// <returns></returns>
-        Task Vaccum(bool IsOn);
+        Task FixWafer();
+        /// <summary>
+        /// 解開Aligner Wafer
+        /// </summary>
+        Task ReleaseWafer();
         /// <summary>
         /// 異常重置
         /// </summary>
         /// <returns></returns>
         Task AlarmReset();
-        /// <summary>
-        /// 手臂是否固定住Wafer
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> IsLockOK();
-        /// <summary>
-        /// Aligner是否有Wafer
-        /// </summary>
-        /// <returns></returns>
-        Task<bool> IsHavePiece();
         /// <summary>
         /// 取得目前狀態
         /// </summary>

@@ -77,7 +77,7 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.Vaccum(true);
+                await Aligner.FixWafer();
             }
             catch (Exception ex)
             {
@@ -93,7 +93,7 @@ namespace WLS3200Gen2.UserControls
             try
             {
                 IsAlignerEnabled = false;
-                await Aligner.Vaccum(false);
+                await Aligner.ReleaseWafer();
             }
             catch (Exception ex)
             {

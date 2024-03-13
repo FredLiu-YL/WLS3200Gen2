@@ -43,7 +43,7 @@ namespace WLS3200Gen2.Model.Module
             LiftPin = outputs[2];
             Camera = camera;
             ObservableDetection();
-
+            IsTableVacuum = inputs[0];
 
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.FiducialRecord += AlignRecord;
@@ -54,6 +54,7 @@ namespace WLS3200Gen2.Model.Module
         public Axis AxisR { get; }
         public Axis AxisZ { get; }
         public DigitalOutput TableVacuum { get; }
+        public DigitalInput IsTableVacuum { get; }
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
 
@@ -66,7 +67,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 對位結果紀錄 (圖像 對位座標(pxel))
         /// </summary>
-        public event Action<BitmapSource , Point?,int> FiducialRecord;
+        public event Action<BitmapSource, Point?, int> FiducialRecord;
         /// <summary>
         /// 檢測結果紀錄
         /// </summary>
@@ -162,7 +163,7 @@ namespace WLS3200Gen2.Model.Module
             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 
 
-          
+
             //對位
             //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
             ITransform transForm = await Alignment(recipe.AlignRecipe);
@@ -182,7 +183,7 @@ namespace WLS3200Gen2.Model.Module
 
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
-             
+
                 if (isAutoSave)
                 {
                     subject.OnNext(bmp);//AOI另外丟到其他執行續處理
@@ -253,19 +254,19 @@ namespace WLS3200Gen2.Model.Module
 
         public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
         {
-            return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY,0);
+            return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY, 0);
 
         }
 
         private void SetMicroscope(DetectionPoint detectionPoint)
         {
 
-   
+
         }
-        
+
 
         //預留拿到對位結果後 可以做其他事
-        private void AlignRecord(BitmapSource bitmap  , Point? pixel,int number)
+        private void AlignRecord(BitmapSource bitmap, Point? pixel, int number)
         {
 
             FiducialRecord?.Invoke(bitmap, pixel, number);

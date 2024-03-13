@@ -226,6 +226,7 @@ namespace WLS3200Gen2.Model
             //晶面檢查
             if (station == WaferProcessStatus.Select)
             {
+                await Feeder.Macro.GoInnerRingCheckPos();
                 await Feeder.TurnWafer(eFEMtionRecipe);
                 //委派到ui 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
@@ -238,11 +239,12 @@ namespace WLS3200Gen2.Model
             }
 
         }
-        private async Task MacroBackInspection(WaferProcessStatus station, int MacroBackStartPos)
+        private async Task MacroBackInspection(WaferProcessStatus station, double MacroBackStartPos)
         {
             //晶背檢查
             if (station == WaferProcessStatus.Select)
             {
+                await Feeder.Macro.GoOuterRingCheckPos();
                 //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
                 await Feeder.TurnBackWafer(MacroBackStartPos);
                 //委派到ui層 去執行macro人工檢
@@ -264,7 +266,7 @@ namespace WLS3200Gen2.Model
             var path = "D:\\WLS3200\\" + date;
             if (!Directory.Exists(path))
             {
-           
+
                 //新增資料夾
                 Directory.CreateDirectory(path);
             }
@@ -273,9 +275,7 @@ namespace WLS3200Gen2.Model
 
         private void MicroVacuumOn()
         {
-
             MicroDetection.TableVacuum.On();
-
         }
 
         private void SetWaferStatusToUI(Wafer currentWafer)

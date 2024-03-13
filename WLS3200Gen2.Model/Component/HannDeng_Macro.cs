@@ -651,8 +651,6 @@ namespace WLS3200Gen2.Model.Component
                         OuterRingLiftMotorStart.Off();
                         OuterRingLiftMotorM0.Off();
                         OuterRingLiftMotorM1.Off();
-                        System.Threading.Thread.Sleep(25);
-                        //看程式這邊有關掉真空 應該是可以不用動作，或者是要加把真空開著
                         System.Threading.Thread.Sleep(50);
                         OuterRingLiftMotorM1.On();
                         System.Threading.Thread.Sleep(25);
@@ -674,6 +672,8 @@ namespace WLS3200Gen2.Model.Component
                             System.Threading.Thread.Sleep(50);
                             if (i >= 200) throw new Exception($"外環 馬達異常Time out");
                         }
+                        InnerRingVacuum.Off();
+                        System.Threading.Thread.Sleep(50);
                         //上升第二段
                         OuterRingLiftMotorM0.On();
                         System.Threading.Thread.Sleep(25);

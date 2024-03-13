@@ -66,6 +66,8 @@ namespace WLS3200Gen2.Model.Component
         public double MoveTolerance { get; private set; } = 0;
         public double CassetteWaferPitch { get; set; } = 0;
         public int SpeedPercent { get; private set; } = 10;
+        public bool IsLockOK => GetInput(0);
+
         public void Initial()
         {
             try
@@ -711,7 +713,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                return Task.Run(async () =>
+                return Task.Run(() =>
                 {
                     RobotPoint robot_Point = new RobotPoint();
                     Vacuum(true);
@@ -738,23 +740,20 @@ namespace WLS3200Gen2.Model.Component
             }
         }
 
-        public Task<bool> IsLockOK()
-        {
-            try
-            {
-                return Task.Run(() =>
-               {
-                   bool isLockOK = false;
-                   ///確認一下 不然就只是GetOutput(0) 有開啟而已
-                   isLockOK = GetInput(0);
-                   return isLockOK;
-               });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Robot LockWafer:" + ex);
-            }
-        }
+        //private bool IsLockOK()
+        //{
+        //    try
+        //    {
+        //        bool isLockOK = false;
+        //        ///確認一下 不然就只是GetOutput(0) 有開啟而已
+        //        isLockOK = GetInput(0);
+        //        return isLockOK;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Robot LockWafer:" + ex);
+        //    }
+        //}
 
         public Task<bool> IsHavePiece()
         {
