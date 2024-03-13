@@ -20,7 +20,10 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsLockOK => false;
 
-        public double Position => 0;
+        public double InnerPitchXPosition => 0;
+        public double InnerRollYPosition => 0;
+        public double InnerYawTPosition => 0;
+        public double OuterRollYPosition => 0;
 
         public void FixWafer()
         {

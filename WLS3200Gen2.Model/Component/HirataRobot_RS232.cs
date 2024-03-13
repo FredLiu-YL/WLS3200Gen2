@@ -1163,9 +1163,8 @@ namespace WLS3200Gen2.Model.Component
             {
                 lock (lockObj)
                 {
-                    int delayTime = 200;
-                    int timeOut1 = 10 * 1000;
-                    int timeOut2 = 600 * 1000;
+                    int delayTime = 50;
+                    int timeOut1 = 60 * 1000;
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
                     serialPort.DiscardInBuffer();
@@ -1181,68 +1180,56 @@ namespace WLS3200Gen2.Model.Component
                     {
                         Thread.Sleep(delayTime);
                         readMessage1 = GetMessage();
-                        if (stopwatch.ElapsedMilliseconds > timeOut2)
+                        if (stopwatch.ElapsedMilliseconds > timeOut1)
                         {
                             throw new Exception("Robot SendGetMessage Time Out");
                         }
-                        if (checkType == CheckMessageType.Position)//要取得位置資訊的
+                        if (checkType == CheckMessageType.Position && readMessage1.Count > 0)//要取得位置資訊的
                         {
-                            if (readMessage1.Count > 0)
+                            foreach (var item in readMessage1)
                             {
-                                foreach (var item in readMessage1)
+                                string[] ss = item.Split(' ');
+                                if (ss.Length >= 5)
                                 {
-                                    string[] ss = item.Split(' ');
-                                    if (ss.Length >= 5)
-                                    {
-                                        returnMessage1.Clear();
-                                        returnMessage1.Add(item);
-                                        //foreach (var item2 in ss)
-                                        //{
-                                        //    returnMessage1.Add(item2);
-                                        //}
-                                        return returnMessage1;
-                                    }
+                                    returnMessage1.Clear();
+                                    returnMessage1.Add(item);
+                                    //foreach (var item2 in ss)
+                                    //{
+                                    //    returnMessage1.Add(item2);
+                                    //}
+                                    return returnMessage1;
                                 }
                             }
                         }
-                        else if (checkType == CheckMessageType.IO)//要取得IO資訊
+                        else if (checkType == CheckMessageType.IO && readMessage1.Count > 0)//要取得IO資訊
                         {
-                            if (readMessage1.Count > 0)
+                            foreach (var item in readMessage1)
                             {
-                                foreach (var item in readMessage1)
+                                string[] ss = item.Split(' ');
+                                if (ss.Length == 1 && ss[0].Length == 1)
                                 {
-                                    string[] ss = item.Split(' ');
-                                    if (ss.Length == 1 && ss[0].Length == 1)
-                                    {
-                                        returnMessage1.Clear();
-                                        returnMessage1.Add(ss[0]);
-                                        return returnMessage1;
-                                    }
+                                    returnMessage1.Clear();
+                                    returnMessage1.Add(ss[0]);
+                                    return returnMessage1;
                                 }
                             }
                         }
-                        else//取得狀態
+                        else if (readMessage1.Count > 0)//取得狀態
                         {
-                            if (readMessage1.Count > 0)
+                            foreach (var item in readMessage1)
                             {
-                                foreach (var item in readMessage1)
+                                string[] ss = item.Split(' ');
+                                if (ss.Length == 1 && ss[0].Length >= 4)
                                 {
-                                    string[] ss = item.Split(' ');
-                                    if (ss.Length == 1 && ss[0].Length >= 4)
+                                    returnMessage1.Clear();
+                                    returnMessage1.Add(ss[0]);
+                                    if (message.Contains("GP") && ss[0] == "4401")
                                     {
-                                        returnMessage1.Clear();
-                                        returnMessage1.Add(ss[0]);
-                                        if (message.Contains("GP"))
-                                        {
-                                            if (ss[0] == "4401")
-                                            {
-                                                return returnMessage1;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            return returnMessage1;
-                                        }
+                                        return returnMessage1;
+                                    }
+                                    else
+                                    {
+                                        return returnMessage1;
                                     }
                                 }
                             }

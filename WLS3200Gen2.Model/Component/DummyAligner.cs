@@ -8,6 +8,7 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyAligner : IAligner
     {
+        public int TimeOutRetryCount { get; set; } = 1;
         public Task AlarmReset()
         {
             return Task.CompletedTask;

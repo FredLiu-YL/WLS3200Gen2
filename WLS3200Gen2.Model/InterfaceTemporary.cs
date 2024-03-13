@@ -87,6 +87,10 @@ namespace WLS3200Gen2.Model
         /// </summary>
         bool?[] Slot { get; }
         /// <summary>
+        /// TimeOut重送次數
+        /// </summary>
+        int TimeOutRetryCount { get; set; }
+        /// <summary>
         /// 取得狀態
         /// </summary>
         /// <returns></returns>
@@ -96,8 +100,6 @@ namespace WLS3200Gen2.Model
         /// </summary>
         /// <returns></returns>
         Task<LoadPortParam> GetParam();
-
-
         /// <summary>
         /// 初始化
         /// </summary>
@@ -428,6 +430,10 @@ namespace WLS3200Gen2.Model
     public interface IAligner
     {
         /// <summary>
+        /// TimeOut重送次數
+        /// </summary>
+        int TimeOutRetryCount { get; set; }
+        /// <summary>
         /// 初始化
         /// </summary>
         void Initial();
@@ -510,9 +516,21 @@ namespace WLS3200Gen2.Model
         /// </summary>
         bool IsLockOK { get; }
         /// <summary>
-        /// 
+        /// 內環橫軸X
         /// </summary>
-        double Position { get; }
+        double InnerPitchXPosition { get; }
+        /// <summary>
+        /// 內環縱軸Y
+        /// </summary>
+        double InnerRollYPosition { get; }
+        /// <summary>
+        /// 內環旋轉T
+        /// </summary>
+        double InnerYawTPosition { get; }
+        /// <summary>
+        /// 外環縱軸Y
+        /// </summary>
+        double OuterRollYPosition { get; }
         /// <summary>
         /// 初始化
         /// </summary>

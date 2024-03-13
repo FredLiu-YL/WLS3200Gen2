@@ -17,6 +17,8 @@ namespace WLS3200Gen2.Model.Component
 
         public bool?[] Slot => throw new NotImplementedException();
 
+        public int TimeOutRetryCount { get; set; } = 1;
+
         public Task AlarmReset()
         {
             throw new NotImplementedException();
@@ -57,7 +59,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-       
+
 
     }
 }

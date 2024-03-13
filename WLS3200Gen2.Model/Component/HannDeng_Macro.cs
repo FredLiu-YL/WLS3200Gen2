@@ -178,7 +178,10 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsLockOK => InnerRingIsVacuumOn.IsSignal;
 
-        public double Position => 0;
+        public double InnerPitchXPosition { get; private set; }
+        public double InnerRollYPosition { get; private set; }
+        public double InnerYawTPosition { get; private set; }
+        public double OuterRollYPosition { get; private set; }
 
         public Task Home()
         {
@@ -231,18 +234,45 @@ namespace WLS3200Gen2.Model.Component
             {
                 while (true)
                 {
+                    await Task.Delay(1);
+
+                    //內環位置++
                     if (isInnerPitchXForward)
                     {
-
+                        InnerPitchXPosition++;
                     }
                     else if (isInnerPitchXBackward)
                     {
-
+                        InnerPitchXPosition--;
                     }
 
+                    if (isInnerRollYForward)
+                    {
+                        InnerRollYPosition++;
+                    }
+                    else if (isInnerRollYBackward)
+                    {
+                        InnerRollYPosition--;
+                    }
 
+                    if (isInnerYawTForward)
+                    {
+                        InnerYawTPosition++;
+                    }
+                    else if (isInnerYawTBackward)
+                    {
+                        InnerYawTPosition--;
+                    }
 
-                    await Task.Delay(1);
+                    //外環位置++
+                    if (isOuterRollYForward)
+                    {
+                        OuterRollYPosition++;
+                    }
+                    else if (isOuterRollYBackward)
+                    {
+                        OuterRollYPosition--;
+                    }
                 }
             }
             catch (Exception)
@@ -412,6 +442,8 @@ namespace WLS3200Gen2.Model.Component
             {
                 OuterRingRollYForward.Off();
                 OuterRingRollYBackward.Off();
+                isOuterRollYForward = false;
+                isOuterRollYBackward = false;
             }
             catch (Exception ex)
             {
@@ -479,6 +511,8 @@ namespace WLS3200Gen2.Model.Component
             {
                 InnerRingPitchXForward.Off();
                 InnerRingPitchXBackward.Off();
+                isInnerPitchXForward = false;
+                isInnerPitchXBackward = false;
             }
             catch (Exception ex)
             {
@@ -530,6 +564,8 @@ namespace WLS3200Gen2.Model.Component
             {
                 InnerRingRollYForward.Off();
                 InnerRingRollYBackward.Off();
+                isInnerRollYForward = false;
+                isInnerRollYBackward = false;
             }
             catch (Exception ex)
             {
@@ -582,6 +618,8 @@ namespace WLS3200Gen2.Model.Component
             {
                 InnerRingYawTForward.Off();
                 InnerRingYawTBackward.Off();
+                isInnerYawTForward = false;
+                isInnerYawTBackward = false;
             }
             catch (Exception ex)
             {

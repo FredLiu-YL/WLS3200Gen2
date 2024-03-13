@@ -8,8 +8,10 @@ namespace WLS3200Gen2.Model.Component
 {
     public class DummyLoadPort : ILoadPort
     {
-        private bool?[] slot ;
-        public bool?[] Slot => slot; 
+        private bool?[] slot;
+        public bool?[] Slot => slot;
+
+        public int TimeOutRetryCount { get; set; } = 1;
 
         public Task AlarmReset()
         {
@@ -24,8 +26,8 @@ namespace WLS3200Gen2.Model.Component
         public Task<LoadPortParam> GetParam()
         {
             return Task.Run(() => new LoadPortParam());
-  
-        } 
+
+        }
 
         public Task<LoadPortStatus> GetStatus()
         {
@@ -56,7 +58,7 @@ namespace WLS3200Gen2.Model.Component
             throw new NotImplementedException();
         }
 
-        
-        
+
+
     }
 }

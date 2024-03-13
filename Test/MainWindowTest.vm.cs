@@ -420,9 +420,6 @@ namespace Test
 
         public ICommand OpenBXFMACommand => new RelayCommand<string>(key =>
        {
-
-           BXFMA bXFMA = new BXFMA("COM24");
-           bXFMA.Initial();
        });
 
 
