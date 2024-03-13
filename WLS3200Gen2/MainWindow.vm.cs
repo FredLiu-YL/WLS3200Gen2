@@ -434,9 +434,9 @@ namespace WLS3200Gen2
                     {
                         double nowPos = 0;
                         nowPos = machine.MicroDetection.Microscope.Position;
-                        BXFMUIShow.FocusZ = Convert.ToInt32(nowPos);
-                        BXFMUIShow.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
-                        BXFMUIShow.LightValue = machine.MicroDetection.Microscope.LightValue;
+                        MicroscopeParam.Position = Convert.ToInt32(nowPos);
+                        MicroscopeParam.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
+                        MicroscopeParam.LightValue = machine.MicroDetection.Microscope.LightValue;
                     }
 
                     await Task.Delay(300);

@@ -81,7 +81,7 @@
             </Button>
 
             <Button Grid.Column="1" Grid.Row="0"  Width="60"  Height="60"   >
-                <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
+                <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y-"/>
@@ -92,7 +92,7 @@
                 </i:Interaction.Triggers>
             </Button>
             <Button Grid.Column="2" Grid.Row="1"  Width="60"  Height="60"   >
-                <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowRightBold" />
+                <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowRightBold" />
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="X+"/>
@@ -103,7 +103,7 @@
                 </i:Interaction.Triggers>
             </Button>
             <Button Grid.Column="1" Grid.Row="2"  Width="60"  Height="60"   >
-                <materialDesign:PackIcon Margin="-10,0,0,0" Width="50"  Height="50"  Kind="ArrowDownBold" />
+                <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowDownBold" />
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="PreviewMouseDown">
                         <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Y+"/>

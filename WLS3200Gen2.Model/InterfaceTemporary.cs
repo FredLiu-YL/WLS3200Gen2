@@ -485,15 +485,36 @@ namespace WLS3200Gen2.Model
     }
     public interface IMacro
     {
+        /// <summary>
+        /// 是否可以復歸
+        /// </summary>
         bool IsCanMoveAllHome { get; }
+        /// <summary>
+        /// 內環是否可以到起始位置
+        /// </summary>
         bool IsInnerCanMoveStartPos { get; }
+        /// <summary>
+        /// 內環是否正在使用
+        /// </summary>
         bool IsInnerUsing { get; }
+        /// <summary>
+        /// 外環是否可以到起始位置
+        /// </summary>
         bool IsOuterCanMoveStartPos { get; }
+        /// <summary>
+        /// 外環是否正在使用
+        /// </summary>
         bool IsOuterUsing { get; }
+        /// <summary>
+        /// Wafer是否鎖住
+        /// </summary>
         bool IsLockOK { get; }
-        double Position { get; }
         /// <summary>
         /// 
+        /// </summary>
+        double Position { get; }
+        /// <summary>
+        /// 初始化
         /// </summary>
         void Initial();
         /// <summary>

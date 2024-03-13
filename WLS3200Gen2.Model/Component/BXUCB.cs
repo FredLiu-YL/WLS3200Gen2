@@ -54,11 +54,17 @@ namespace WLS3200Gen2.Model.Component
         public int NEL { get => Convert.ToInt32(GetZNEL()); set => SetZNEL(value); }
         public int PEL { get => Convert.ToInt32(GetZPEL()); set => SetZPEL(value); }
 
-        public double AberationPosition => GetAberationPosition();
+        public int AberationPosition => GetAberationPosition();
 
         public int AFNEL { get => GetAFNEL(); set => SetAFNEL(value); }
         public int AFPEL { get => GetAFPEL(); set => SetAFPEL(value); }
         public int TimeOutRetryCount { get; set; } = 1;
+
+        public int LensIndex { get; private set; } = -1;
+        public int CubeIndex { get; private set; } = -1;
+        public int Filter1Index { get; private set; } = -1;
+        public int Filter2Index { get; private set; } = -1;
+        public int Filter3Index { get; private set; } = -1;
 
         public event Action<Exception> Error;
 
@@ -86,8 +92,8 @@ namespace WLS3200Gen2.Model.Component
                    await ChangeLensAsync(1);
                    await ChangeApertureAsync(0);
                    await ChangeLightAsync(0);
-                   await ChangeFilterAsync(1, 1);
-                   await ChangeFilterAsync(2, 1);
+                   await ChangeFilter1Async(1);
+                   await ChangeFilter2Async(1);
                });
             }
             catch (Exception ex)
@@ -401,6 +407,7 @@ namespace WLS3200Gen2.Model.Component
 
                             if (str.Contains("CUBE +"))
                             {
+                                CubeIndex = idx;
                                 break;
                             }
                             else if (str.Contains("CUBE !"))
@@ -426,41 +433,85 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-
-        public Task ChangeFilterAsync(int wheelIdx, int idx)
+        public Task ChangeFilter1Async(int idx)
         {
             try
             {
                 return Task.Run(() =>
                 {
-                    if (filterWheelIdx[wheelIdx] != idx)
+                    ChangeFilterAsync(1, idx);
+                    Filter1Index = idx;
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public Task ChangeFilter2Async(int idx)
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    ChangeFilterAsync(1, idx);
+                    Filter2Index = idx;
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public Task ChangeFilter3Async(int idx)
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    ChangeFilterAsync(1, idx);
+                    Filter3Index = idx;
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        private void ChangeFilterAsync(int wheelIdx, int idx)
+        {
+            try
+            {
+                if (filterWheelIdx[wheelIdx] != idx)
+                {
+                    filterWheelIdx[wheelIdx] = idx;
+                    int nowCount = 0;
+                    string str = "";
+                    while (true)
                     {
-                        filterWheelIdx[wheelIdx] = idx;
-                        int nowCount = 0;
-                        string str = "";
-                        while (true)
+                        str = SendGetMessage("1FW" + wheelIdx + " " + idx, 3);
+                        if (str.Contains("FW +"))
                         {
-                            str = SendGetMessage("1FW" + wheelIdx + " " + idx, 3);
-                            if (str.Contains("FW +"))
+                            break;
+                        }
+                        else if (str.Contains("FW !"))
+                        {
+                            string errorStr = str.Replace("1FW !,", "");
+                            throw new Exception("BXUCB ChangeFilter Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
                             {
-                                break;
-                            }
-                            else if (str.Contains("FW !"))
-                            {
-                                string errorStr = str.Replace("1FW !,", "");
-                                throw new Exception("BXUCB ChangeFilter Error:" + errorStr);
-                            }
-                            else
-                            {
-                                nowCount++;
-                                if (nowCount > TimeOutRetryCount)
-                                {
-                                    throw new Exception("BXUCB ChangeFilter Error:Retry " + TimeOutRetryCount + " Count");
-                                }
+                                throw new Exception("BXUCB ChangeFilter Error:Retry " + TimeOutRetryCount + " Count");
                             }
                         }
                     }
-                });
+                }
             }
             catch (Exception ex)
             {
@@ -612,6 +663,7 @@ namespace WLS3200Gen2.Model.Component
 
                             if (str.Contains("OB +"))
                             {
+                                LensIndex = idx;
                                 break;
                             }
                             else if (str.Contains("OB !"))
@@ -1184,7 +1236,7 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public double GetAberationPosition()
+        public int GetAberationPosition()
         {
             try
             {
