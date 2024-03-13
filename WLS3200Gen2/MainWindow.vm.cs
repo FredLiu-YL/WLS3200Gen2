@@ -325,7 +325,7 @@ namespace WLS3200Gen2
                 }
                
                 
-                bmp.Save(processDataPath + $"\\{number}.bmp");
+                bmp.Save(processDataPath + $"\\Fiducial-{number}.bmp");
             }
            
             

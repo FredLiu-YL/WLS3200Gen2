@@ -276,8 +276,8 @@ namespace WLS3200Gen2
         {
 
             //始終會切回到第一頁 LoadWafer 頁      
-            IsLoadwaferPageSelect = true;
-            IsLocatePageSelect = false;
+         //   IsLoadwaferPageSelect = true;
+         //   IsLocatePageSelect = false;
 
         }
 

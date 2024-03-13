@@ -482,7 +482,7 @@ namespace WLS3200Gen2
             var date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
            // var time = DateTime.Now.ToString("HH-mm-ss");
 
-            var path = $"D:\\WLS3200\\{date}\\";
+            var path = $"C:\\WLS3200\\{date}\\";
             if (!Directory.Exists(path))
             {
 
