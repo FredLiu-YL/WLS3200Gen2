@@ -108,7 +108,7 @@ namespace WLS3200Gen2.Model
 
                                 //wafer送到主設備內 
                                 Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
-                                currentWafer = await Feeder.LoadToMicroAsync(currentWafer);
+                                await Feeder.LoadToMicroAsync();// currentWafer = await Feeder.LoadToMicroAsync(currentWafer);
 
 
                                 nextWafer = SearchLoadWafer(processWafers);

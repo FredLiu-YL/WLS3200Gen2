@@ -407,17 +407,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        OuterRingRollYForward.On();
-                        OuterRingRollYBackward.Off();
                         isOuterRollYForward = true;
                         isOuterRollYBackward = false;
+                        OuterRingRollYForward.On();
+                        OuterRingRollYBackward.Off();
                     }
                     else
                     {
-                        OuterRingRollYForward.Off();
-                        OuterRingRollYBackward.On();
                         isOuterRollYForward = false;
                         isOuterRollYBackward = true;
+                        OuterRingRollYForward.Off();
+                        OuterRingRollYBackward.On();
                     }
 
                 }
@@ -478,17 +478,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        InnerRingPitchXBackward.Off();
-                        InnerRingPitchXForward.On();
                         isInnerPitchXForward = true;
                         isInnerPitchXBackward = false;
+                        InnerRingPitchXBackward.Off();
+                        InnerRingPitchXForward.On();
                     }
                     else
                     {
-                        InnerRingPitchXForward.Off();
-                        InnerRingPitchXBackward.On();
                         isInnerPitchXForward = false;
                         isInnerPitchXBackward = true;
+                        InnerRingPitchXForward.Off();
+                        InnerRingPitchXBackward.On();
                     }
 
                 }
@@ -509,10 +509,10 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                InnerRingPitchXForward.Off();
-                InnerRingPitchXBackward.Off();
                 isInnerPitchXForward = false;
                 isInnerPitchXBackward = false;
+                InnerRingPitchXForward.Off();
+                InnerRingPitchXBackward.Off();
             }
             catch (Exception ex)
             {
@@ -530,17 +530,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        InnerRingRollYBackward.Off();
-                        InnerRingRollYForward.On();
                         isInnerRollYForward = true;
                         isInnerRollYBackward = false;
+                        InnerRingRollYBackward.Off();
+                        InnerRingRollYForward.On();
                     }
                     else
                     {
-                        InnerRingRollYForward.Off();
-                        InnerRingRollYBackward.On();
                         isInnerRollYForward = false;
                         isInnerRollYBackward = true;
+                        InnerRingRollYForward.Off();
+                        InnerRingRollYBackward.On();
                     }
 
                 }
@@ -584,17 +584,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        InnerRingYawTBackward.Off();
-                        InnerRingYawTForward.On();
                         isInnerYawTForward = true;
                         isInnerYawTBackward = false;
+                        InnerRingYawTBackward.Off();
+                        InnerRingYawTForward.On();
                     }
                     else
                     {
-                        InnerRingYawTForward.Off();
-                        InnerRingYawTBackward.On();
                         isInnerYawTForward = false;
                         isInnerYawTBackward = true;
+                        InnerRingYawTForward.Off();
+                        InnerRingYawTBackward.On();
                     }
 
                 }
@@ -764,6 +764,7 @@ namespace WLS3200Gen2.Model.Component
                         IsInnerCanMoveStartPos = true;
                         IsOuterCanMoveStartPos = true;
                     }
+                    OuterRollYPosition = 0;
                 });
             }
             catch (Exception ex)
@@ -831,6 +832,9 @@ namespace WLS3200Gen2.Model.Component
                         IsInnerCanMoveStartPos = true;
                         IsOuterCanMoveStartPos = true;
                     }
+                    InnerPitchXPosition = 0;
+                    InnerRollYPosition = 0;
+                    InnerYawTPosition = 0;
                 });
 
             }

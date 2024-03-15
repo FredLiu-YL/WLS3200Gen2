@@ -362,8 +362,8 @@ namespace Test
                             RobotStaus.ErrorCode = robotStatus.ErrorCode;
                             RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
 
-                            RobotStaus.IsHavePiece = await Robot.IsHavePiece();
-                            RobotStaus.IsLockOK = await Robot.IsLockOK();
+                            RobotStaus.IsHavePiece = Robot.IsLockOK;
+                            RobotStaus.IsLockOK = Robot.IsLockOK;
                             //RobotUIIShow
                         }
 

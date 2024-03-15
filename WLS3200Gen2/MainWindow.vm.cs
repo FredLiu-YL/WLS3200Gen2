@@ -175,7 +175,11 @@ namespace WLS3200Gen2
                 TableR = machine.MicroDetection.AxisR;
                 RobotAxis = machine.Feeder.RobotAxis;
 
+                Robot = machine.Feeder.Robot;
                 Microscope = machine.MicroDetection.Microscope;
+                Macro = machine.Feeder.Macro;
+                Aligner = machine.Feeder.AlignerL;
+                LoadPort1 = machine.Feeder.LoadPortL;
 
                 DigitalInputs = machine.GetInputs();
                 DigitalOutputs = machine.GetOutputs();
@@ -456,9 +460,7 @@ namespace WLS3200Gen2
         private void CameraLive()
         {
             var camera = machine.MicroDetection.Camera;
-            var dis = machine.MicroDetection.Camera.Grab();
-
-
+            //var dis = machine.MicroDetection.Camera.Grab();
             try
             {
 

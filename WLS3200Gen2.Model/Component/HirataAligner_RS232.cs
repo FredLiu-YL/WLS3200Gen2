@@ -43,13 +43,14 @@ namespace WLS3200Gen2.Model.Component
         }
         public int TimeOutRetryCount { get; set; } = 1;
 
-        public bool IsLockOK => IsAlignerLockOK();
+        public bool IsLockOK { get; private set; }//=> IsAlignerLockOK();
 
         public void Initial()
         {
             try
             {
                 Open();
+                AlarmReset().Wait();
             }
             catch (Exception ex)
             {
@@ -114,7 +115,7 @@ namespace WLS3200Gen2.Model.Component
                     while (true)
                     {
                         AlignerItems alignerItems = new AlignerItems();
-                        alignerItems = Command_SetFindNotchPos(degree);
+                        alignerItems = Set_FindNotchPos(degree);
                         if (alignerItems.IsSetOK == true)
                         {
                             alignerItems = Command_MovFindNotch();
@@ -158,18 +159,27 @@ namespace WLS3200Gen2.Model.Component
                     {
                         AlignerItems alignerItems = new AlignerItems();
                         alignerItems = Command_MovVaccumON();
-                        if (alignerItems.IsMovOK == true)
+                        if (alignerItems.IsMovOK)
                         {
+                            IsLockOK = true;
                             break;
                         }
                         else if (alignerItems.IsMovOK == false)
                         {
-                            nowCount++;
-                            if (nowCount > TimeOutRetryCount)
+                            if (alignerItems.ErrorCode == "10")
                             {
-                                throw new Exception("FixWafer Error");
+                                IsLockOK = false;
+                                AlarmReset().Wait();
+                                break;
                             }
-
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
+                                {
+                                    throw new Exception("FixWafer Error");
+                                }
+                            }
                         }
                     }
                 });
@@ -190,7 +200,7 @@ namespace WLS3200Gen2.Model.Component
                     {
                         AlignerItems alignerItems = new AlignerItems();
                         alignerItems = Command_MovVaccumOFF();
-                        if (alignerItems.IsMovOK == true)
+                        if (alignerItems.IsMovOK)
                         {
                             break;
                         }
@@ -223,7 +233,7 @@ namespace WLS3200Gen2.Model.Component
                     while (true)
                     {
                         AlignerItems alignerItems = new AlignerItems();
-                        alignerItems = Command_SetReset();
+                        alignerItems = Set_Reset();
                         if (alignerItems.IsSetOK)
                         {
                             break;
@@ -309,16 +319,32 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("MOV:ORGN;", true);
+                bool isMovOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("MOV"))
                     {
-                        alignerItems.IsMovOK = true;
+                        isMovOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        alignerItems.IsDone = true;
+                        isINF = true;
                     }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
+                    }
+                }
+                if (isMovOK == true && isINF == true)
+                {
+                    alignerItems.IsMovOK = true;
                 }
                 return alignerItems;
             }
@@ -342,15 +368,17 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("MOV:ARLD;", true);
+                bool isMovOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("MOV"))
                     {
-                        alignerItems.IsMovOK = true;
+                        isMovOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        alignerItems.IsDone = true;
+                        isINF = true;
                     }
                     if (item.Contains("ABS"))
                     {
@@ -362,6 +390,10 @@ namespace WLS3200Gen2.Model.Component
                         alignerItems.ErrorCode = error_code;
                         alignerItems.IsError = true;
                     }
+                }
+                if (isMovOK == true && isINF == true)
+                {
+                    alignerItems.IsMovOK = true;
                 }
                 return alignerItems;
             }
@@ -534,16 +566,32 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("MOV:ACCL;", true);
+                bool isMovOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("MOV"))
                     {
-                        alignerItems.IsMovOK = true;
+                        isMovOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        alignerItems.IsDone = true;
+                        isINF = true;
                     }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
+                    }
+                }
+                if (isMovOK == true && isINF == true)
+                {
+                    alignerItems.IsMovOK = true;
                 }
                 return alignerItems;
             }
@@ -567,16 +615,32 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("MOV:ACOP;", true);
+                bool isMovOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("MOV"))
                     {
-                        alignerItems.IsMovOK = true;
+                        isMovOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        alignerItems.IsDone = true;
+                        isINF = true;
                     }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
+                    }
+                }
+                if (isMovOK == true && isINF == true)
+                {
+                    alignerItems.IsMovOK = true;
                 }
                 return alignerItems;
             }
@@ -591,7 +655,7 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public AlignerItems Command_SetFindNotchPos(double degree)
+        public AlignerItems Set_FindNotchPos(double degree)
         {
             try
             {
@@ -600,16 +664,32 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("SET:OFSE" + alignerItems.AlignerPos.FindNotchPos + ";", true);
+                bool isSetOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("SET"))
                     {
-                        alignerItems.IsSetOK = true;
+                        isSetOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        alignerItems.IsDone = true;
+                        isINF = true;
                     }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
+                    }
+                }
+                if (isSetOK == true && isINF == true)
+                {
+                    alignerItems.IsSetOK = true;
                 }
                 return alignerItems;
             }
@@ -634,16 +714,32 @@ namespace WLS3200Gen2.Model.Component
                     alignerItems.IsDone = false;
                     List<string> str3 = new List<string>();
                     str3 = SendGetMessage("SET:OFS2" + alignerItems.AlignerPos.IDReadPos + ";", true);
+                    bool isSetOK = false;
+                    bool isINF = false;
                     foreach (var item in str3)
                     {
                         if (item.Contains("SET"))
                         {
-                            alignerItems.IsMovOK = true;
+                            isSetOK = true;
                         }
                         if (item.Contains("INF"))
                         {
-                            alignerItems.IsDone = true;
+                            isINF = true;
                         }
+                        if (item.Contains("ABS"))
+                        {
+                            //abnormal finish 
+                            //取得error code
+                            //更新error狀態
+                            int error_code_idx = item.IndexOf("/");
+                            string error_code = item.Substring(error_code_idx + 1, 2);
+                            alignerItems.ErrorCode = error_code;
+                            alignerItems.IsError = true;
+                        }
+                    }
+                    if (isSetOK == true && isINF == true)
+                    {
+                        alignerItems.IsSetOK = true;
                     }
                 }
                 catch (Exception ex)
@@ -658,7 +754,7 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public AlignerItems Command_SetReset()
+        public AlignerItems Set_Reset()
         {
             try
             {
@@ -667,16 +763,32 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("SET:RSET;", true);
+                bool isSetOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("SET"))
                     {
-                        alignerItems.IsMovOK = true;
+                        isSetOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        alignerItems.IsDone = true;
+                        isINF = true;
                     }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
+                    }
+                }
+                if (isSetOK == true && isINF == true)
+                {
+                    alignerItems.IsSetOK = true;
                 }
                 return alignerItems;
             }

@@ -13,6 +13,8 @@ namespace WLS3200Gen2.Model.Component
 
         public int TimeOutRetryCount { get; set; } = 1;
 
+        public bool IsDoorOpen { get; private set; } = false;
+
         public Task AlarmReset()
         {
             throw new NotImplementedException();
@@ -36,6 +38,7 @@ namespace WLS3200Gen2.Model.Component
 
         public Task Home()
         {
+            IsDoorOpen = false;
             return Task.CompletedTask;
         }
 
@@ -50,6 +53,7 @@ namespace WLS3200Gen2.Model.Component
             slot = new bool?[] {true, true, null, null, null, null, true, true, true, true,
                                             true, true, true, true, true, true, true, true, true, true,
                                              null, null, null, null, true};
+            IsDoorOpen = true;
             return Task.CompletedTask;
         }
 

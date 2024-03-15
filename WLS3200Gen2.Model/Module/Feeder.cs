@@ -224,7 +224,7 @@ namespace WLS3200Gen2.Model.Module
         {
             Stopwatch stopwatchPitchX = new Stopwatch();
             stopwatchPitchX.Start();
-            Task startPitchX = Task.Run(() =>
+            Task startPitchX = Task.Run(async () =>
             {
                 if (Math.Abs(eFEMtionRecipe.MacroTopStartPitchX) > 0)
                 {
@@ -236,14 +236,17 @@ namespace WLS3200Gen2.Model.Module
                     {
                         Macro.InnerRingPitchX_Move(false);
                     }
+                    int countPitchX = 0;
                     stopwatchPitchX.Restart();
                     while (true)
                     {
-                        if (stopwatchPitchX.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartPitchX)
+                        countPitchX++;
+                        if (stopwatchPitchX.ElapsedMilliseconds >= eFEMtionRecipe.MacroTopStartPitchX)
                         {
                             Macro.InnerRingPitchX_Stop();
                             break;
                         }
+                        //await Task.Delay(1);
                     }
                     stopwatchPitchX.Stop();
                 }
@@ -251,7 +254,7 @@ namespace WLS3200Gen2.Model.Module
 
             Stopwatch stopwatchRollY = new Stopwatch();
             stopwatchRollY.Start();
-            Task startRollY = Task.Run(() =>
+            Task startRollY = Task.Run(async () =>
             {
                 if (Math.Abs(eFEMtionRecipe.MacroTopStartRollY) > 0)
                 {
@@ -263,14 +266,17 @@ namespace WLS3200Gen2.Model.Module
                     {
                         Macro.InnerRingRollY_Move(false);
                     }
+                    int countRollY = 0;
                     stopwatchRollY.Restart();
                     while (true)
                     {
+                        countRollY++;
                         if (stopwatchRollY.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartRollY)
                         {
                             Macro.InnerRingRollY_Stop();
                             break;
                         }
+                        //await Task.Delay(1);
                     }
                     stopwatchRollY.Stop();
                 }
@@ -290,14 +296,17 @@ namespace WLS3200Gen2.Model.Module
                     {
                         Macro.InnerRingYawT_Move(false);
                     }
+                    int countYawT = 0;
                     stopwatchYawT.Restart();
                     while (true)
                     {
+                        countYawT++;
                         if (stopwatchYawT.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartYawT)
                         {
                             Macro.InnerRingYawT_Stop();
                             break;
                         }
+                        //await Task.Delay(1);
                     }
                     stopwatchYawT.Stop();
                 }
@@ -354,6 +363,10 @@ namespace WLS3200Gen2.Model.Module
                 await WaferStandByToAligner();
                 station = WaferProcessStatus.Complate;
                 WriteLog?.Invoke("LoadToAligner  End");
+                if (tempAligner.IsLockOK == false)
+                {
+                    throw new Exception("LoadToAlignerAsync:AlignerFixWafer Error!!");
+                }
                 if (station == WaferProcessStatus.Select)
                 {
                     await tempAligner.Run(eFEMtionRecipe.AlignerWaferIDAngle);
@@ -375,6 +388,8 @@ namespace WLS3200Gen2.Model.Module
                 WriteLog?.Invoke("LoadToMicroReadyPos Start");
 
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
+                await tempAligner.Home();
+                await tempAligner.ReleaseWafer();
                 await WaferAlignerToStandBy();
                 WriteLog?.Invoke("LoadToMicroReadyPos  End");
             });
@@ -384,7 +399,7 @@ namespace WLS3200Gen2.Model.Module
         /// wafer放進主設備
         /// </summary>
         /// <returns></returns>
-        public async Task<Wafer> LoadToMicroAsync(Wafer wafer)
+        public async Task LoadToMicroAsync( )
         {
             //await WaferAlignerToStandBy();
             await Task.Run(async () =>
@@ -398,9 +413,6 @@ namespace WLS3200Gen2.Model.Module
                 await Robot.PutWafer_Retract(ArmStation.Micro);
                 await Robot.PutWafer_Safety(ArmStation.Micro);
             });
-
-
-            return wafer;
         }
 
         /// <summary>
@@ -425,11 +437,23 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         private async Task LoadWaferFromCassette(int cassetteIndex, bool isLoadPort1)
         {
-            if (isLoadPort1)
-                await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
-            else
-                await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition);
 
+            if (isLoadPort1)
+            {
+                if (LoadPortL.IsDoorOpen)
+                {
+                    throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
+                }
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
+            }
+            else
+            {
+                if (LoadPortR.IsDoorOpen)
+                {
+                    throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
+                }
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition);
+            }
             await WaferLoadPortToStandBy(cassetteIndex, ArmStation.Cassette1);
 
             //設定 Cassette內WAFER的狀態  
@@ -444,10 +468,21 @@ namespace WLS3200Gen2.Model.Module
         public async Task<Wafer> UnLoadWaferToCassette(Wafer wafer, bool isLoadPort1)
         {
             if (isLoadPort1)
+            {
+                if (LoadPortL.IsDoorOpen)
+                {
+                    throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
+                }
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
+            }
             else
+            {
+                if (LoadPortR.IsDoorOpen)
+                {
+                    throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
+                }
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition);
-
+            }
             await WaferStandByToLoadPort(wafer.CassetteIndex, ArmStation.Cassette1);
             wafer.ProcessStatus.Totally = WaferProcessStatus.Complate;
             //設定 Cassette內WAFER的狀態
@@ -464,12 +499,34 @@ namespace WLS3200Gen2.Model.Module
         {
             return Task.Run(async () =>
            {
-               await Robot.PutWafer_Standby(armStation, cassetteIndex);
-               await Robot.PutWafer_GoIn(armStation, cassetteIndex);
-               await Robot.ReleaseWafer();
-               await Robot.PutWafer_PutDown(armStation, cassetteIndex);
-               await Robot.PutWafer_Retract(armStation, cassetteIndex);
-               await Robot.PutWafer_Safety(armStation);
+
+               if (armStation == ArmStation.Cassette1 || armStation == ArmStation.Cassette2)
+               {
+                   if (armStation == ArmStation.Cassette1)
+                   {
+                       if (LoadPortL.IsDoorOpen)
+                       {
+                           throw new Exception("WaferStandByToLoadPort:LoadPortLNotOpen Error!!");
+                       }
+                   }
+                   else if (armStation == ArmStation.Cassette2)
+                   {
+                       if (LoadPortR.IsDoorOpen)
+                       {
+                           throw new Exception("WaferStandByToLoadPort:LoadPortRNotOpen Error!!");
+                       }
+                   }
+                   await Robot.PutWafer_Standby(armStation, cassetteIndex);
+                   await Robot.PutWafer_GoIn(armStation, cassetteIndex);
+                   await Robot.ReleaseWafer();
+                   await Robot.PutWafer_PutDown(armStation, cassetteIndex);
+                   await Robot.PutWafer_Retract(armStation, cassetteIndex);
+                   await Robot.PutWafer_Safety(armStation);
+               }
+               else
+               {
+                   throw new Exception("WaferStandByToLoadPort:Param Error!!");
+               }
            });
 
 
@@ -478,19 +535,40 @@ namespace WLS3200Gen2.Model.Module
         {
             return Task.Run(async () =>
             {
-                await Robot.PickWafer_Standby(armStation, cassetteIndex);
-                await Robot.PickWafer_GoIn(armStation, cassetteIndex);
-                await Robot.PickWafer_LiftUp(armStation, cassetteIndex);
-                await Robot.FixWafer();
-                if (Robot.IsLockOK == false)
+                if (armStation == ArmStation.Cassette1 || armStation == ArmStation.Cassette2)
                 {
-                    await Robot.ReleaseWafer();
-                    await Robot.PickWafer_GoIn(armStation, cassetteIndex);
+                    if (armStation == ArmStation.Cassette1)
+                    {
+                        if (LoadPortL.IsDoorOpen)
+                        {
+                            throw new Exception("WaferLoadPortToStandBy:LoadPortLNotOpen Error!!");
+                        }
+                    }
+                    else if (armStation == ArmStation.Cassette2)
+                    {
+                        if (LoadPortR.IsDoorOpen)
+                        {
+                            throw new Exception("WaferLoadPortToStandBy:LoadPortRNotOpen Error!!");
+                        }
+                    }
                     await Robot.PickWafer_Standby(armStation, cassetteIndex);
-                    throw new Exception("WaferLoadPortToStandBy:FixWafer Error!!");
+                    await Robot.PickWafer_GoIn(armStation, cassetteIndex);
+                    await Robot.PickWafer_LiftUp(armStation, cassetteIndex);
+                    await Robot.FixWafer();
+                    if (Robot.IsLockOK == false)
+                    {
+                        await Robot.ReleaseWafer();
+                        await Robot.PickWafer_GoIn(armStation, cassetteIndex);
+                        await Robot.PickWafer_Standby(armStation, cassetteIndex);
+                        throw new Exception("WaferLoadPortToStandBy:FixWafer Error!!");
+                    }
+                    await Robot.PickWafer_Retract(armStation, cassetteIndex);
+                    await Robot.PickWafer_Safety(armStation);
                 }
-                await Robot.PickWafer_Retract(armStation, cassetteIndex);
-                await Robot.PickWafer_Safety(armStation);
+                else
+                {
+                    throw new Exception("WaferLoadPortToStandBy:Param Error!!");
+                }
             });
 
         }

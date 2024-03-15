@@ -493,11 +493,11 @@ namespace WLS3200Gen2.Model.Component
                     while (true)
                     {
                         str = SendGetMessage("1FW" + wheelIdx + " " + idx, 3);
-                        if (str.Contains("FW +"))
+                        if (str.Contains("1FW" + wheelIdx + " +"))
                         {
                             break;
                         }
-                        else if (str.Contains("FW !"))
+                        else if (str.Contains("1FW" + wheelIdx + " !"))
                         {
                             string errorStr = str.Replace("1FW !,", "");
                             throw new Exception("BXUCB ChangeFilter Error:" + errorStr);

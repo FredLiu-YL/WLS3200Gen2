@@ -44,6 +44,9 @@ namespace WLS3200Gen2
         private IMicroscope microscope;
         private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
         private IMacro macro;
+        private IAligner aligner;
+        private ILoadPort loadPort1;
+        private IRobot robot;
         private MacroStatus macroStatus = new MacroStatus();
 
 
@@ -71,6 +74,10 @@ namespace WLS3200Gen2
         public YuanliCore.Model.MicroscopeParam MicroscopeParam { get => microscopeParam; set => SetValue(ref microscopeParam, value); }
         public IMacro Macro { get => macro; set => SetValue(ref macro, value); }
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
+        public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
+        public ILoadPort LoadPort1 { get => loadPort1; set => SetValue(ref loadPort1, value); }
+        public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
+
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -481,7 +488,7 @@ namespace WLS3200Gen2
         private string CreateProcessFolder()
         {
             var date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
-           // var time = DateTime.Now.ToString("HH-mm-ss");
+            // var time = DateTime.Now.ToString("HH-mm-ss");
 
             var path = $"C:\\WLS3200\\{date}\\";
             if (!Directory.Exists(path))

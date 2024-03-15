@@ -11,7 +11,6 @@ namespace WLS3200Gen2.Model.Component
 {
     public class HirataLoadPort_RS232 : ILoadPort
     {
-        private bool isMapping;
         private bool?[] slot;
 
         private int waferThickness, cassettePitch, starOffset, waferPitchTolerance, waferPositionTolerance;
@@ -58,7 +57,7 @@ namespace WLS3200Gen2.Model.Component
         public bool IsClamp { get; private set; }
         public bool IsSwitchDoor { get; private set; }
         public bool IsVaccum { get; private set; }
-        public bool IsDoorOpen { get; private set; }
+        public bool IsDoorOpen { get; private set; } = false;
         public bool IsSensorCheckDoorOpen { get; private set; }
         public bool IsDock { get; private set; }
         public int WaferThickness { get; private set; }
@@ -141,6 +140,7 @@ namespace WLS3200Gen2.Model.Component
             try
             {
                 Open();
+                AlarmReset().Wait();
             }
             catch (Exception ex)
             {
@@ -165,12 +165,26 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
+                    IsDoorOpen = false;
                     LoadPortItems loadPortItems = new LoadPortItems();
+                    loadPortItems = Set_Type(LoadPortFOUPType.TYPE_1);
+                    if (loadPortItems.IsSetOK == false)
+                    {
+                        throw new Exception("LoadPort SetType Error");
+                    }
+
+                    loadPortItems = Mov_UnLoad();
+                    loadPortItems.MappingWaferStatus.Clear();
+                    UpdateMapping(loadPortItems);
+                    if (loadPortItems.IsMovOK == false)
+                    {
+                        throw new Exception("LoadPort Home Error");
+                    }
                     //有門的開法
                     loadPortItems = Mov_Load();
                     if (loadPortItems.IsMovOK == false)
                     {
-                        throw new Exception("Load Error");
+                        throw new Exception("LoadPort Load Error");
                     }
 
                     ////沒有/有門的開法
@@ -242,11 +256,10 @@ namespace WLS3200Gen2.Model.Component
                     //{
                     //    throw new Exception("Load Error");
                     //}
-
-                    loadPortItems = Set_Type(LoadPortFOUPType.TYPE_1);
+                    loadPortItems = Get_FOUPParam(LoadPortFOUPType.TYPE_1);
                     loadPortItems = Get_Mapping(loadPortItems.FOUP_ParameterStatus.CassetteSlotCount);
                     UpdateMapping(loadPortItems);
-                    isMapping = true;
+                    IsDoorOpen = true;
                 });
             }
             catch (Exception ex)
@@ -263,13 +276,13 @@ namespace WLS3200Gen2.Model.Component
                     int nowCount = 0;
                     while (true)
                     {
+                        IsDoorOpen = false;
                         LoadPortItems loadPortItems = new LoadPortItems();
                         loadPortItems = Mov_UnLoad();
                         loadPortItems.MappingWaferStatus.Clear();
                         UpdateMapping(loadPortItems);
                         if (loadPortItems.IsMovOK)
                         {
-                            isMapping = false;
                             break;
                         }
                         else
@@ -410,15 +423,17 @@ namespace WLS3200Gen2.Model.Component
                 loadPortItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("MOV:FPML;", true);
+                bool isMovOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("MOV"))
                     {
-                        loadPortItems.IsMovOK = true;
+                        isMovOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        loadPortItems.IsDone = true;
+                        isINF = true;
                     }
                     if (item.Contains("ABS"))
                     {
@@ -431,7 +446,11 @@ namespace WLS3200Gen2.Model.Component
                         loadPortItems.IsError = true;
                     }
                 }
-                //await SendMessage(loadPortItems, "MOV:FPML;", LoadPortSendMessageType.Mov);
+                if (isMovOK == true && isINF == true)
+                {
+
+                    loadPortItems.IsMovOK = true;
+                }
                 return loadPortItems;
             }
             catch (Exception ex)
@@ -510,16 +529,33 @@ namespace WLS3200Gen2.Model.Component
                 loadPortItems.IsDone = false;
                 List<string> str3 = new List<string>();
                 str3 = SendGetMessage("MOV:ORGN;", true);
+                bool isMovOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("MOV"))
                     {
-                        loadPortItems.IsMovOK = true;
+                        isMovOK = true;
                     }
                     if (item.Contains("INF"))
                     {
-                        loadPortItems.IsDone = true;
+                        isINF = true;
                     }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
+                    }
+                }
+                if (isMovOK == true && isINF == true)
+                {
+
+                    loadPortItems.IsMovOK = true;
                 }
                 return loadPortItems;
             }

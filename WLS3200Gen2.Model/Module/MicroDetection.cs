@@ -39,11 +39,11 @@ namespace WLS3200Gen2.Model.Module
             AxisY = axes[1];
             AxisR = axes[3];
             AxisZ = axes[2];
-            TableVacuum = outputs[1];
+            TableVacuum = outputs[0];
             LiftPin = outputs[2];
             Camera = camera;
             ObservableDetection();
-            IsTableVacuum = inputs[0];
+            IsTableVacuum = inputs[5];
 
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.FiducialRecord += AlignRecord;

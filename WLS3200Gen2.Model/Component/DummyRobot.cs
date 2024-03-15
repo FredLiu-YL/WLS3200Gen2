@@ -23,6 +23,8 @@ namespace WLS3200Gen2.Model.Component
 
         public bool IsLockOK => false;
 
+        public int TimeOutRetryCount { get; set; } = 1;
+
         public Task Continue()
         {
             return Task.CompletedTask;

@@ -120,7 +120,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.WaferStandByToMicro();
+                await machine.Feeder.LoadToMicroAsync();
             }
             catch (Exception ex)
             {

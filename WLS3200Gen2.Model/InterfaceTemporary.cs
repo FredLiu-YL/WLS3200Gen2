@@ -83,6 +83,10 @@ namespace WLS3200Gen2.Model
     public interface ILoadPort
     {
         /// <summary>
+        /// LoadPort是否有開門
+        /// </summary>
+        bool IsDoorOpen { get; }
+        /// <summary>
         /// null:沒片子 true:有片子 false:片子異常 (陣列0是最上面那片)
         /// </summary>
         bool?[] Slot { get; }
@@ -218,6 +222,10 @@ namespace WLS3200Gen2.Model
         /// </summary>
         /// <returns></returns>
         bool IsLockOK { get; }
+        /// <summary>
+        /// TimeOut重送次數
+        /// </summary>
+        int TimeOutRetryCount { get; set; }
         /// <summary>
         /// 手臂初始化
         /// </summary>

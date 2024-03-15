@@ -178,8 +178,10 @@ namespace WLS3200Gen2
 
         public double MacroBackStartPos { get => macroBackStartPos; set => SetValue(ref macroBackStartPos, value); }
 
-
-        public Model.ArmStation LastArmStation { get => lastArmStation; set => SetValue(ref lastArmStation, value); }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Model.ArmStation RecipeLastArmStation { get => lastArmStation; set => SetValue(ref lastArmStation, value); }
 
         /// <summary>
         /// Load wafer已完成 (locate頁面功能需要判斷)
@@ -196,7 +198,26 @@ namespace WLS3200Gen2
         public BitmapSource LocateSampleImage2 { get => locateSampleImage2; set => SetValue(ref locateSampleImage2, value); }
         public BitmapSource LocateSampleImage3 { get => locateSampleImage3; set => SetValue(ref locateSampleImage3, value); }
         public ObservableCollection<WaferUIData> LoadPort1Wafers { get => loadPort1Wafers; set => SetValue(ref loadPort1Wafers, value); }
-        public int LoadPort1WaferSelect { get => loadPort1WaferSelect; set => SetValue(ref loadPort1WaferSelect, value); }
+        public int LoadPort1WaferSelect
+        {
+            get
+            {
+                if (!isInitialComplete) return loadPort1WaferSelect;
+
+                if (RecipeLastArmStation == Model.ArmStation.Cassette1 || RecipeLastArmStation == Model.ArmStation.Cassette2)
+                {
+
+                }
+                return loadPort1WaferSelect;
+            }
+            set
+            {
+                if (RecipeLastArmStation == Model.ArmStation.Cassette1 || RecipeLastArmStation == Model.ArmStation.Cassette2)
+                {
+                    SetValue(ref loadPort1WaferSelect, value);
+                }
+            }
+        }
         //  public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
         public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
@@ -253,8 +274,17 @@ namespace WLS3200Gen2
                 LoadPort1Wafers.Add(w);
             }
 
-
-
+            if (RecipeLastArmStation == Model.ArmStation.Cassette1 || RecipeLastArmStation == Model.ArmStation.Cassette2)
+            {
+                if (IsLoadport1)
+                {
+                    RecipeLastArmStation = Model.ArmStation.Cassette1;
+                }
+                else if (IsLoadport2)
+                {
+                    RecipeLastArmStation = Model.ArmStation.Cassette2;
+                }
+            }
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
             WriteLog("Enter the RecipePage");
@@ -283,6 +313,17 @@ namespace WLS3200Gen2
                 IsMainHomePageSelect = true;
                 return;
             }
+
+            TableWaferCatchPositionX = machineSetting.TableWaferCatchPosition.X;
+            TableWaferCatchPositionY = machineSetting.TableWaferCatchPosition.Y;
+            TableWaferCatchPositionZ = machineSetting.TableWaferCatchPositionZ;
+            TableWaferCatchPositionR = machineSetting.TableWaferCatchPositionR;
+            RobotAxisLoadPort1TakePosition = machineSetting.RobotAxisLoadPort1TakePosition;
+            RobotAxisLoadPort2TakePosition = machineSetting.RobotAxisLoadPort2TakePosition;
+            RobotAxisAligner1TakePosition = machineSetting.RobotAxisAlignTakePosition;
+            RobotAxisMacroTakePosition = machineSetting.RobotAxisMacroTakePosition;
+            RobotAxisMicroTakePosition = machineSetting.RobotAxisMicroTakePosition;
+
             WriteLog("Enter the SettingPage");
         }
         //離開recipe頁面會執行
@@ -564,9 +605,27 @@ namespace WLS3200Gen2
                 switch (key)
                 {
                     case "NotchAngle":
+                        await machine.Feeder.AlignerL.FixWafer();
+                        if (machine.Feeder.AlignerL.IsLockOK == false)
+                        {
+                            await Task.Delay(1000);
+                            if (machine.Feeder.AlignerL.IsLockOK == false)
+                            {
+                                throw new Exception("AlignerFixWafer Error!!");
+                            }
+                        }
                         await machine.Feeder.AlignerL.Run(AlignerMicroAngle);
                         break;
                     case "WaferIDAngle":
+                        await machine.Feeder.AlignerL.FixWafer();
+                        if (machine.Feeder.AlignerL.IsLockOK == false)
+                        {
+                            await Task.Delay(1000);
+                            if (machine.Feeder.AlignerL.IsLockOK == false)
+                            {
+                                throw new Exception("AlignerFixWafer Error!!");
+                            }
+                        }
                         await machine.Feeder.AlignerL.Run(AlignerWaferIDAngle);
                         break;
                     case "WaferIDTest":
@@ -575,133 +634,292 @@ namespace WLS3200Gen2
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                MessageBox.Show(ex.Message);
             }
         });
-
-        public ICommand EFEMTransCommand => new RelayCommand<string>(async key =>
+        public ICommand EFEMTransToLoadPortCommand => new RelayCommand<string>(async key =>
         {
             try
             {
                 await Task.Run(() =>
                 {
-                    lock (lockObjEFEMTrans)
+                    if (IsCanWorkEFEMTrans)
                     {
                         IsCanWorkEFEMTrans = false;
-                        string mesage = "";
-                        switch (LastArmStation)
+                        //是否執行移動片子訊息
+                        string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Micro);
+                        var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
                         {
-                            case Model.ArmStation.Cassette1:
-                                mesage = "Is Cassette1 Wafer Move To" + key.Replace("WaferTo", "");
-                                break;
-                            case Model.ArmStation.Cassette2:
-                                mesage = "Is Cassette2 Wafer Move To" + key.Replace("WaferTo", "");
-                                break;
-                            case Model.ArmStation.Align:
-                                mesage = "Is Aligner Wafer Move To" + key.Replace("WaferTo", "");
-                                break;
-                            case Model.ArmStation.Macro:
-                                mesage = "Is Macro Wafer Move To" + key.Replace("WaferTo", "");
-                                break;
-                            case Model.ArmStation.Micro:
-                                mesage = "Is Micro Wafer Move To" + key.Replace("WaferTo", "");
-                                break;
-                            default:
-                                throw new Exception("EFEMTransCommand 異常!");
+
+                            //片子上一個狀態先記錄起來
+                            Model.ArmStation oldArmStation = RecipeLastArmStation;
+                            //確認手臂有無片
+                            EFEMTransWaferBeforeCheckRobotHaveWafer();
+                            //將Wafer取出，退到安全位置
+                            EFEMTransWaferPick(oldArmStation);
+                            Wafer currentWafer;
+                            //將片子放下去
+                            if (processSetting.IsLoadport1)
+                            {
+                                RecipeLastArmStation = Model.ArmStation.Cassette1;
+                                currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
+                                machine.Feeder.UnLoadWaferToCassette(currentWafer, true).Wait();
+                            }
+                            else
+                            {
+                                RecipeLastArmStation = Model.ArmStation.Cassette2;
+                                currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
+                                machine.Feeder.UnLoadWaferToCassette(currentWafer, false).Wait();
+                            }
                         }
+                        IsCanWorkEFEMTrans = true;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+        });
+        public ICommand EFEMTransToAlignerCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (IsCanWorkEFEMTrans)
+                    {
+                        IsCanWorkEFEMTrans = false;
+                        //是否執行移動片子訊息
+                        string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Micro);
                         var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
                         if (result == MessageBoxResult.Yes)
                         {
                             //片子上一個狀態先記錄起來
-                            Model.ArmStation oldArmStation = LastArmStation;
-                            //確認可不可以執行取片動作，平台有無片確認
-                            machine.Feeder.Robot.FixWafer().Wait();
-                            if (machine.Feeder.Robot.IsLockOK)
-                            {
-                                throw new Exception("EFEMTransCommand 異常!有片子在Robot上面!");
-                            }
-                            else
-                            {
-                                machine.Feeder.Robot.ReleaseWafer().Wait();
-                            }
-
-
-                            //將片子取出退到安全位置
-                            switch (oldArmStation)
-                            {
-                                case Model.ArmStation.Cassette1:
-                                    RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition).Wait();
-                                    machine.Feeder.WaferLoadPortToStandBy(LoadPort1WaferSelect, Model.ArmStation.Cassette1).Wait();
-                                    break;
-                                case Model.ArmStation.Cassette2:
-                                    RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition).Wait();
-                                    machine.Feeder.WaferLoadPortToStandBy(LoadPort1WaferSelect, Model.ArmStation.Cassette2).Wait();
-                                    break;
-                                case Model.ArmStation.Align:
-                                    machine.Feeder.WaferAlignerToStandBy().Wait();
-                                    break;
-                                case Model.ArmStation.Macro:
-                                    machine.Feeder.WaferMacroToStandBy().Wait();
-                                    break;
-                                case Model.ArmStation.Micro:
-                                    machine.Feeder.WaferMicroToStandBy().Wait();
-                                    break;
-                                default:
-                                    throw new Exception("EFEMTransCommand 異常!");
-                            }
-
-                            Wafer currentWafer;
+                            Model.ArmStation oldArmStation = RecipeLastArmStation;
+                            //確認手臂有無片
+                            EFEMTransWaferBeforeCheckRobotHaveWafer();
+                            //將Wafer取出，退到安全位置
+                            EFEMTransWaferPick(oldArmStation);
                             //將片子放下去
-                            switch (key)
+                            RecipeLastArmStation = Model.ArmStation.Align;
+                            machine.Feeder.AlignerL.Home().Wait();
+                            machine.Feeder.WaferStandByToAligner().Wait();
+                            machine.Feeder.AlignerL.FixWafer().Wait();
+                            if (machine.Feeder.AlignerL.IsLockOK == false)
                             {
-                                case "WaferToLoadPort":
-                                    if (processSetting.IsLoadport1)
-                                    {
-                                        LastArmStation = Model.ArmStation.Cassette1;
-                                        currentWafer = new Wafer(LoadPort1WaferSelect);
-                                        machine.Feeder.UnLoadWaferToCassette(currentWafer, true).Wait();
-                                    }
-                                    else
-                                    {
-                                        LastArmStation = Model.ArmStation.Cassette2;
-                                        currentWafer = new Wafer(LoadPort1WaferSelect);
-                                        machine.Feeder.UnLoadWaferToCassette(currentWafer, false).Wait();
-                                    }
-                                    break;
-                                case "WaferToAligner":
-                                    LastArmStation = Model.ArmStation.Align;
-                                    machine.Feeder.AlignerL.FixWafer().Wait();
-                                    machine.Feeder.WaferStandByToAligner().Wait();
-                                    if (machine.Feeder.AlignerL.IsLockOK == false)
-                                    {
-                                        throw new Exception("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
-                                    }
-                                    break;
-                                case "WaferToMacro":
-                                    LastArmStation = Model.ArmStation.Macro;
-                                    machine.Feeder.Macro.FixWafer();
-                                    machine.Feeder.WaferStandByToMacro().Wait();
-                                    if (machine.Feeder.Macro.IsLockOK == false)
-                                    {
-                                        throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
-                                    }
-                                    break;
-                                case "WaferToMicro":
-                                    LastArmStation = Model.ArmStation.Micro;
-                                    machine.MicroDetection.TableVacuum.On();
-                                    //machine.Feeder.WaferStandByToMicro().Wait();
-                                    currentWafer = new Wafer(LoadPort1WaferSelect);
-                                    machine.Feeder.LoadToMicroAsync(currentWafer).Wait();
-                                    if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
-                                    {
-                                        throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
-                                    }
-                                    break;
-                                default:
-                                    throw new Exception("EFEMTransCommand 異常!");
+                                throw new Exception("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
+                            }
+                        }
+                        IsCanWorkEFEMTrans = true;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+        });
+        public ICommand EFEMTransToMacroCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (IsCanWorkEFEMTrans)
+                    {
+                        IsCanWorkEFEMTrans = false;
+                        //是否執行移動片子訊息
+                        string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Micro);
+                        var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            //片子上一個狀態先記錄起來
+                            Model.ArmStation oldArmStation = RecipeLastArmStation;
+                            //確認手臂有無片
+                            EFEMTransWaferBeforeCheckRobotHaveWafer();
+                            //將Wafer取出，退到安全位置
+                            EFEMTransWaferPick(oldArmStation);
+                            //將片子放下去
+                            RecipeLastArmStation = Model.ArmStation.Macro;
+                            machine.Feeder.Macro.FixWafer();
+                            machine.Feeder.WaferStandByToMacro().Wait();
+                            if (machine.Feeder.Macro.IsLockOK == false)
+                            {
+                                throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
+                            }
+                        }
+                        IsCanWorkEFEMTrans = true;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+        });
+        /// <summary>
+        /// 是否執行移動片子訊息
+        /// </summary>
+        /// <param name="lastArmStation"></param>
+        /// <param name="newArmStation"></param>
+        /// <returns></returns>
+        private string EFEMTransWaferMessage(Model.ArmStation lastArmStation, Model.ArmStation newArmStation)
+        {
+            try
+            {
+                string mesage = "";
+                string newPlace = "";
+                switch (newArmStation)
+                {
+                    case Model.ArmStation.Cassette1:
+                        newPlace = "Cassette1";
+                        break;
+                    case Model.ArmStation.Cassette2:
+                        newPlace = "Cassette2";
+                        break;
+                    case Model.ArmStation.Align:
+                        newPlace = "Aligner";
+                        break;
+                    case Model.ArmStation.Macro:
+                        newPlace = "Macro";
+                        break;
+                    case Model.ArmStation.Micro:
+                        newPlace = "Micro";
+                        break;
+                    default:
+                        throw new Exception("EFEMTransCommand Error!");
+                }
+                if (lastArmStation == newArmStation)
+                {
+                    throw new Exception("Wafer Is In " + newPlace + "!!");
+                }
+                switch (lastArmStation)
+                {
+                    case Model.ArmStation.Align:
+                        mesage = "Pick Wafer Aligner To " + newPlace + "?";
+                        break;
+                    case Model.ArmStation.Macro:
+                        mesage = "Pick Wafer Macro To " + newPlace + "?";
+                        break;
+                    case Model.ArmStation.Micro:
+                        mesage = "Pick Wafer Micro To " + newPlace + "?";
+                        break;
+                    case Model.ArmStation.Cassette1:
+                        mesage = "Pick Wafer Cassette1 To " + newPlace + "?";
+                        break;
+                    case Model.ArmStation.Cassette2:
+                        mesage = "Pick Wafer Cassette2 To " + newPlace + "?";
+                        break;
+                    default:
+                        throw new Exception("EFEMTransCommand Error!");
+                }
+                return mesage;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 確認手臂有無片
+        /// </summary>
+        private void EFEMTransWaferBeforeCheckRobotHaveWafer()
+        {
+            try
+            {
+                machine.Feeder.Robot.FixWafer().Wait();
+                Task.Delay(1000).Wait();
+                if (machine.Feeder.Robot.IsLockOK)
+                {
+                    throw new Exception("EFEMTransCommand Error!Robot Have Wafer!");
+                }
+                else
+                {
+                    machine.Feeder.Robot.ReleaseWafer().Wait();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 將Wafer取出，退到安全位置
+        /// </summary>
+        /// <param name="oldArmStation"></param>
+        private void EFEMTransWaferPick(Model.ArmStation oldArmStation)
+        {
+            try
+            {
+                switch (oldArmStation)
+                {
+                    case Model.ArmStation.Cassette1:
+                        RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition).Wait();
+                        machine.Feeder.WaferLoadPortToStandBy(LoadPort1WaferSelect, Model.ArmStation.Cassette1).Wait();
+                        break;
+                    case Model.ArmStation.Cassette2:
+                        RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition).Wait();
+                        machine.Feeder.WaferLoadPortToStandBy(LoadPort1WaferSelect, Model.ArmStation.Cassette2).Wait();
+                        break;
+                    case Model.ArmStation.Align:
+                        machine.Feeder.AlignerL.Home().Wait();
+                        machine.Feeder.AlignerL.ReleaseWafer().Wait();
+                        machine.Feeder.WaferAlignerToStandBy().Wait();
+                        break;
+                    case Model.ArmStation.Macro:
+                        machine.Feeder.WaferMacroToStandBy().Wait();
+                        break;
+                    case Model.ArmStation.Micro:
+                        machine.MicroDetection.TableVacuum.Off();
+                        machine.Feeder.WaferMicroToStandBy().Wait();
+                        break;
+                    default:
+                        throw new Exception("EFEMTransCommand 異常!");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        public ICommand EFEMTransToMicroCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    if (IsCanWorkEFEMTrans)
+                    {
+                        IsCanWorkEFEMTrans = false;
+                        //是否執行移動片子訊息
+                        string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Micro);
+                        var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            //片子上一個狀態先記錄起來
+                            Model.ArmStation oldArmStation = RecipeLastArmStation;
+                            //確認手臂有無片
+                            EFEMTransWaferBeforeCheckRobotHaveWafer();
+                            //將Wafer取出，退到安全位置
+                            EFEMTransWaferPick(oldArmStation);
+                            //將片子放下去
+                            RecipeLastArmStation = Model.ArmStation.Micro;
+                            machine.MicroDetection.TableVacuum.On();
+                            machine.Feeder.LoadToMicroAsync().Wait();
+                            if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
+                            {
+                                throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
                             }
                         }
                         IsCanWorkEFEMTrans = true;
@@ -718,21 +936,35 @@ namespace WLS3200Gen2
         {
             try
             {
-                if (lastArmStation == Model.ArmStation.Macro)
+                if (RecipeLastArmStation == Model.ArmStation.Macro)
                 {
+
                     switch (key)
                     {
                         case "TopMove":
-
-                            EFEMtionRecipe eFEMtionRecipe = new EFEMtionRecipe();
-                            eFEMtionRecipe.MacroTopStartPitchX = machine.Feeder.Macro.InnerPitchXPosition + MacroTopStartPitchX;
-                            eFEMtionRecipe.MacroTopStartRollY = machine.Feeder.Macro.InnerRollYPosition + MacroTopStartRollY;
-                            eFEMtionRecipe.MacroTopStartYawT = machine.Feeder.Macro.InnerYawTPosition + MacroTopStartYawT;
-                            await machine.Feeder.TurnWafer(eFEMtionRecipe);
+                            if (machine.Feeder.Macro.IsInnerUsing)
+                            {
+                                EFEMtionRecipe eFEMtionRecipe = new EFEMtionRecipe();
+                                eFEMtionRecipe.MacroTopStartPitchX = MacroTopStartPitchX - machine.Feeder.Macro.InnerPitchXPosition;
+                                eFEMtionRecipe.MacroTopStartRollY = MacroTopStartRollY - machine.Feeder.Macro.InnerRollYPosition;
+                                eFEMtionRecipe.MacroTopStartYawT = MacroTopStartYawT - machine.Feeder.Macro.InnerYawTPosition;
+                                await machine.Feeder.TurnWafer(eFEMtionRecipe);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Wafer Not In Top!!");
+                            }
                             break;
                         case "BackMove":
-                            double moveOffset = machine.Feeder.Macro.OuterRollYPosition + MacroBackStartPos;
-                            await machine.Feeder.TurnBackWafer(moveOffset);
+                            if (machine.Feeder.Macro.IsOuterUsing)
+                            {
+                                double moveOffset = MacroBackStartPos - machine.Feeder.Macro.OuterRollYPosition;
+                                await machine.Feeder.TurnBackWafer(moveOffset);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Wafer Not In Back!!");
+                            }
                             break;
                         default:
                             break;

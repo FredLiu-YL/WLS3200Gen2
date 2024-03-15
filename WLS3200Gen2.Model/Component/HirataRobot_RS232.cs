@@ -64,10 +64,10 @@ namespace WLS3200Gen2.Model.Component
         public CancellationTokenSource cancelToken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool IsOpen { get; private set; }
         public double MoveTolerance { get; private set; } = 0;
-        public double CassetteWaferPitch { get; set; } = 0;
+        public double CassetteWaferPitch { get; set; } = 10;
         public int SpeedPercent { get; private set; } = 10;
         public bool IsLockOK => GetInput(0);
-
+        public int TimeOutRetryCount { get; set; } = 1;
         public void Initial()
         {
             try
@@ -407,6 +407,7 @@ namespace WLS3200Gen2.Model.Component
 
                 task = MovAddress(1, 0);
 
+                task = MovAddress(0, 0);
                 return task;
             }
             catch (Exception ex)
@@ -938,13 +939,13 @@ namespace WLS3200Gen2.Model.Component
                 string paddedBinaryValue = binaryValue.PadLeft(bitCount, '0');
                 char[] paddedBinaryArray = paddedBinaryValue.ToCharArray();
 
-                if (paddedBinaryArray[(paddedBinaryArray.Length - 1) - id] == '1')
+                if (paddedBinaryArray[(paddedBinaryArray.Length - 1) - id] == '0')
                 {
-                    status = false;
+                    status = true;
                 }
                 else
                 {
-                    status = true;
+                    status = false;
                 }
                 return status;
             }
@@ -1162,79 +1163,94 @@ namespace WLS3200Gen2.Model.Component
             {
                 lock (lockObj)
                 {
-                    int delayTime = 50;
-                    int timeOut1 = 60 * 1000;
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    serialPort.DiscardInBuffer();
-                    serialPort.DiscardOutBuffer();
-                    string writestr = new string(CheckSumAdd_Analysis(message).ToArray());
-                    serialPort.Write(writestr);
-
-                    List<string> returnMessage1 = new List<string>();
-                    List<string> readMessage1 = new List<string>();
-                    List<string> readMessage2 = new List<string>();
-                    stopwatch.Restart();
-                    do
+                    int nowCount = 0;
+                    while (true)
                     {
-                        Thread.Sleep(delayTime);
-                        readMessage1 = GetMessage();
-                        if (stopwatch.ElapsedMilliseconds > timeOut1)
+                        try
                         {
-                            throw new Exception("Robot SendGetMessage Time Out");
-                        }
-                        if (checkType == CheckMessageType.Position && readMessage1.Count > 0)//要取得位置資訊的
-                        {
-                            foreach (var item in readMessage1)
-                            {
-                                string[] ss = item.Split(' ');
-                                if (ss.Length >= 5)
-                                {
-                                    returnMessage1.Clear();
-                                    returnMessage1.Add(item);
-                                    //foreach (var item2 in ss)
-                                    //{
-                                    //    returnMessage1.Add(item2);
-                                    //}
-                                    return returnMessage1;
-                                }
-                            }
-                        }
-                        else if (checkType == CheckMessageType.IO && readMessage1.Count > 0)//要取得IO資訊
-                        {
-                            foreach (var item in readMessage1)
-                            {
-                                string[] ss = item.Split(' ');
-                                if (ss.Length == 1 && ss[0].Length == 1)
-                                {
-                                    returnMessage1.Clear();
-                                    returnMessage1.Add(ss[0]);
-                                    return returnMessage1;
-                                }
-                            }
-                        }
-                        else if (readMessage1.Count > 0)//取得狀態
-                        {
-                            foreach (var item in readMessage1)
-                            {
-                                string[] ss = item.Split(' ');
-                                if (ss.Length == 1 && ss[0].Length >= 4)
-                                {
-                                    returnMessage1.Clear();
-                                    returnMessage1.Add(ss[0]);
-                                    if (message.Contains("GP") && ss[0] == "4401")
-                                    {
-                                        return returnMessage1;
-                                    }
-                                    else
-                                    {
-                                        return returnMessage1;
-                                    }
-                                }
-                            }
-                        }
-                    } while (true);
+                            int delayTime = 50;
+                            int timeOut1 = 60 * 1000;
+                            Stopwatch stopwatch = new Stopwatch();
+                            stopwatch.Start();
+                            serialPort.DiscardInBuffer();
+                            serialPort.DiscardOutBuffer();
+                            string writestr = new string(CheckSumAdd_Analysis(message).ToArray());
+                            serialPort.Write(writestr);
 
+                            List<string> returnMessage1 = new List<string>();
+                            List<string> readMessage1 = new List<string>();
+                            List<string> readMessage2 = new List<string>();
+                            stopwatch.Restart();
+                            while (true)
+                            {
+
+                                Thread.Sleep(delayTime);
+                                readMessage1 = GetMessage();
+                                if (stopwatch.ElapsedMilliseconds > timeOut1)
+                                {
+                                    throw new Exception("Robot SendGetMessage Time Out");
+                                }
+                                if (checkType == CheckMessageType.Position && readMessage1.Count > 0)//要取得位置資訊的
+                                {
+                                    foreach (var item in readMessage1)
+                                    {
+                                        string[] ss = item.Split(' ');
+                                        if (ss.Length >= 5)
+                                        {
+                                            returnMessage1.Clear();
+                                            returnMessage1.Add(item);
+                                            //foreach (var item2 in ss)
+                                            //{
+                                            //    returnMessage1.Add(item2);
+                                            //}
+                                            return returnMessage1;
+                                        }
+                                    }
+                                }
+                                else if (checkType == CheckMessageType.IO && readMessage1.Count > 0)//要取得IO資訊
+                                {
+                                    foreach (var item in readMessage1)
+                                    {
+                                        string[] ss = item.Split(' ');
+                                        if (ss.Length == 1 && ss[0].Length == 1)
+                                        {
+                                            returnMessage1.Clear();
+                                            returnMessage1.Add(ss[0]);
+                                            return returnMessage1;
+                                        }
+                                    }
+                                }
+                                else if (readMessage1.Count > 0)//取得狀態
+                                {
+                                    foreach (var item in readMessage1)
+                                    {
+                                        string[] ss = item.Split(' ');
+                                        if (ss.Length == 1 && ss[0].Length >= 4)
+                                        {
+                                            returnMessage1.Clear();
+                                            returnMessage1.Add(ss[0]);
+                                            if (message.Contains("GP") && ss[0] == "4401")
+                                            {
+                                                return returnMessage1;
+                                            }
+                                            else
+                                            {
+                                                return returnMessage1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
                     //return returnMessage1;
                 }
             }

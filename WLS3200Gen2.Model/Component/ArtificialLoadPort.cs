@@ -19,6 +19,8 @@ namespace WLS3200Gen2.Model.Component
 
         public int TimeOutRetryCount { get; set; } = 1;
 
+        public bool IsDoorOpen { get; private set; }
+
         public Task AlarmReset()
         {
             throw new NotImplementedException();

@@ -26,7 +26,7 @@ namespace YuanliCore.Model.UserControls
     /// </summary>
     public partial class CassetteStateUC : UserControl, INotifyPropertyChanged
     {
-        private int EarlierSelectIndex=-1;
+        private int EarlierSelectIndex = -1;
 
         public CassetteStateUC()
         {
@@ -109,14 +109,14 @@ namespace YuanliCore.Model.UserControls
                 if (item.WaferStates != WaferProcessStatus.None)
                     item.WaferStates = WaferProcessStatus.NotSelect;
             }
-            if (SelectIndex != -1 && LoadPortWafers[SelectIndex].WaferStates != WaferProcessStatus.None)
+            if (SelectIndex != -1 && (LoadPortWafers.Count - 1) >= SelectIndex && LoadPortWafers[SelectIndex].WaferStates != WaferProcessStatus.None)
             {
                 LoadPortWafers[SelectIndex].WaferStates = WaferProcessStatus.Select;
                 EarlierSelectIndex = SelectIndex;
             }
             else
             {
-                 SelectIndex = EarlierSelectIndex;
+                SelectIndex = EarlierSelectIndex;
             }
 
 

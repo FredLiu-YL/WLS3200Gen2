@@ -710,7 +710,7 @@
                                                         <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding WaferIDResult}" />
                                                         <Button Grid.Row="2"  Grid.Column="2" Content="Test"  Command="{Binding AlignerCommand}" CommandParameter="WaferIDTest"/>
 
-                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
+                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
                                                     </Grid>
                                                 </Grid>
                                             </GroupBox>
@@ -750,6 +750,7 @@
                                                         </Grid>
                                                     </GroupBox>
                                                     <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              IsEnabled="{Binding MacroStatus.IsProcessStop }"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource GroupBoxStyle}">
                                                         <Grid>
                                                             <Grid.RowDefinitions >
@@ -798,7 +799,7 @@
                                                                     <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
                                                                     <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
                                                                 </StackPanel>
-                                                                <Button Grid.Row="1" Content="WaferToMacro" Command="{Binding EFEMTransCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" />
+                                                                <Button Grid.Row="1" Content="WaferToMacro" Command="{Binding EFEMTransToMacroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" />
                                                             </Grid>
 
                                                         </Grid>
@@ -1259,30 +1260,30 @@
                                 </Border>
                                 <TextBlock  Text="Robot Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
 
-                                <Label Grid.Row="1"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Load Port1"/>
-                                <TextBox Grid.Row="1" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Label Grid.Row="1"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port1:"/>
+                                <TextBox Grid.Row="1" Text="{Binding RobotAxisLoadPort1TakePosition}"  Grid.Column="1" />
                                 <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
 
 
-                                <Label Grid.Row="2"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Load Port2"/>
-                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <Label Grid.Row="2"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port2:"/>
+                                <TextBox Grid.Row="2" Text="{Binding RobotAxisLoadPort2TakePosition}"  Grid.Column="1" />
                                 <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
 
-                                <Label Grid.Row="3"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Aligner1"/>
-                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
+                                <Label Grid.Row="3"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner1:"/>
+                                <TextBox Grid.Row="3" Text="{Binding RobotAxisAligner1TakePosition}"  Grid.Column="1" />
                                 <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
 
-                                <Label Grid.Row="4"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Aligner2"/>
-                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
+                                <Label Grid.Row="4"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner2:"/>
+                                <TextBox Grid.Row="4" Text="{Binding RobotAxisAligner2TakePosition}"  Grid.Column="1" />
                                 <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
 
-                                <Label Grid.Row="5"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Macro"/>
-                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.MacroPos}"  Grid.Column="1" />
+                                <Label Grid.Row="5"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Macro:"/>
+                                <TextBox Grid.Row="5" Text="{Binding RobotAxisMacroTakePosition}"  Grid.Column="1" />
                                 <Button Grid.Row="5"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Macro"/>
 
 
-                                <Label Grid.Row="6"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Move To Micro"/>
-                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.MicroPos}"  Grid.Column="1" />
+                                <Label Grid.Row="6"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Micro:"/>
+                                <TextBox Grid.Row="6" Text="{Binding RobotAxisMicroTakePosition}"  Grid.Column="1" />
                                 <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
 
                                 <TextBlock  Grid.Row="8" Grid.ColumnSpan="3"  Text="Micro Vacuum" FontWeight="Bold" Foreground="Teal" />
@@ -1341,11 +1342,11 @@
                                 <TextBlock  Text="Wafer Pick/Put Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
 
                                 <Label Grid.Row="1"  Grid.Column="0" Content="Axis X:" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="1" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="1" Text="{Binding TableWaferCatchPosition.X }"  Grid.Column="1" />
                                 <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
 
                                 <Label Grid.Row="2"  Grid.Column="0" Content="Axis Y:" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="2" Text="{Binding TableWaferCatchPosition.Y }"  Grid.Column="1" />
                                 <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="Axis Z:" FontSize="15" VerticalAlignment="Center"/>
@@ -1757,7 +1758,7 @@
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}"/>
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}"/>
 
                             </GroupBox>
                             <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"

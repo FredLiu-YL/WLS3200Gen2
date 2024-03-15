@@ -13,7 +13,7 @@ namespace WLS3200Gen2.Model
 {
     public class MachineSetting : AbstractRecipe
     {
-      
+
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();
         public AxisConfig TableYConfig { get; set; } = new AxisConfig();
         public AxisConfig TableZConfig { get; set; } = new AxisConfig();
@@ -23,11 +23,19 @@ namespace WLS3200Gen2.Model
         /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
         /// </summary>
         public IEnumerable<BincodeInfo> BincodeListDefault { get; set; }
-         
+
         /// <summary>
         /// 平台Robot取放料位置
         /// </summary>
         public Point TableWaferCatchPosition { get; set; }
+        /// <summary>
+        /// 平台Robot取放料Z軸位置
+        /// </summary>
+        public double TableWaferCatchPositionZ { get; set; }
+        /// <summary>
+        /// 平台Robot取放料T軸位置
+        /// </summary>
+        public double TableWaferCatchPositionR { get; set; }
         /// <summary>
         /// Robot 橫移軸 待機位置的座標
         /// </summary>
