@@ -92,6 +92,12 @@ namespace WLS3200Gen2
                 machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
                 machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
 
+
+                machineSetting.TableXConfig = TableXConfig;
+                machineSetting.TableYConfig = TableYConfig;
+                machineSetting.TableZConfig = TableZConfig;
+                machineSetting.TableRConfig = TableRConfig;
+                machineSetting.RobotAxisConfig = RobotAxisConfig;
                 machineSetting.Save(machineSettingPath);
                 Customers.Clear();
 

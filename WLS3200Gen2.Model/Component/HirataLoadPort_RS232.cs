@@ -500,14 +500,35 @@ namespace WLS3200Gen2.Model.Component
                 LoadPortItems loadPortItems = new LoadPortItems();
                 loadPortItems.IsSetOK = false;
                 List<string> str3 = new List<string>();
-                str3 = SendGetMessage("SET:RSET;", false);
+                str3 = SendGetMessage("SET:RSET;", true);
+                bool isSetOK = false;
+                bool isINF = false;
                 foreach (var item in str3)
                 {
                     if (item.Contains("SET"))
                     {
-                        loadPortItems.IsSetOK = true;
+                        isSetOK = true;
+                    }
+                    if (item.Contains("INF"))
+                    {
+                        isINF = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        loadPortItems.ErrorCode = error_code;
+                        loadPortItems.IsError = true;
                     }
                 }
+                if (isSetOK == true && isINF == true)
+                {
+                    loadPortItems.IsSetOK = true;
+                }
+
                 return loadPortItems;
             }
             catch (Exception ex)
@@ -649,13 +670,33 @@ namespace WLS3200Gen2.Model.Component
                     string H = ((int)fOUP_Parameter.SizeStatus).ToString("D2");
                     loadPortItems.IsSetOK = false;
                     List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("SET:MAPP" + A + B + C + D + E + F + G + H + ";", false);
+                    str3 = SendGetMessage("SET:MAPP" + A + B + C + D + E + F + G + H + ";", true);
+                    bool isSetOK = false;
+                    bool isINF = false;
                     foreach (var item in str3)
                     {
                         if (item.Contains("SET"))
                         {
-                            loadPortItems.IsSetOK = true;
+                            isSetOK = true;
                         }
+                        if (item.Contains("INF"))
+                        {
+                            isINF = true;
+                        }
+                        if (item.Contains("ABS"))
+                        {
+                            //abnormal finish 
+                            //取得error code
+                            //更新error狀態
+                            int error_code_idx = item.IndexOf("/");
+                            string error_code = item.Substring(error_code_idx + 1, 2);
+                            loadPortItems.ErrorCode = error_code;
+                            loadPortItems.IsError = true;
+                        }
+                    }
+                    if (isSetOK == true && isINF == true)
+                    {
+                        loadPortItems.IsSetOK = true;
                     }
                 }
                 return loadPortItems;
@@ -680,13 +721,33 @@ namespace WLS3200Gen2.Model.Component
                 {
                     loadPortItems.IsSetOK = false;
                     List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("SET:TYP" + ((int)fOUPType + 1) + ";", false);
+                    str3 = SendGetMessage("SET:TYP" + ((int)fOUPType + 1) + ";", true);
+                    bool isSetOK = false;
+                    bool isINF = false;
                     foreach (var item in str3)
                     {
                         if (item.Contains("SET"))
                         {
-                            loadPortItems.IsSetOK = true;
+                            isSetOK = true;
                         }
+                        if (item.Contains("INF"))
+                        {
+                            isINF = true;
+                        }
+                        if (item.Contains("ABS"))
+                        {
+                            //abnormal finish 
+                            //取得error code
+                            //更新error狀態
+                            int error_code_idx = item.IndexOf("/");
+                            string error_code = item.Substring(error_code_idx + 1, 2);
+                            loadPortItems.ErrorCode = error_code;
+                            loadPortItems.IsError = true;
+                        }
+                    }
+                    if (isSetOK == true && isINF == true)
+                    {
+                        loadPortItems.IsSetOK = true;
                     }
                     //await SendMessage(loadPortItems, "SET:TYP" + ((int)fOUPType + 1) + ";", LoadPortSendMessageType.Set);
                 }

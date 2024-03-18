@@ -65,8 +65,9 @@ namespace WLS3200Gen2.Model.Component.Adlink
         private int[] outputRealModID;
 
         private VelocityParams[] axesMovVel;
-        private double[] realLimitN; //模擬驅動器內的各軸的軟體極限
-        private double[] realLimitP; //模擬驅動器內的各軸的軟體極限
+        private double[] limitN;
+        private double[] limitP;
+        private AxisDirection[] direction;
 
         public Adlink7856(IEnumerable<AxisConfig> axisInfos, IEnumerable<string> doNames, IEnumerable<string> diNames)
         {
@@ -75,6 +76,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 List<double> axeslimitN = new List<double>();
                 List<double> axeslimitP = new List<double>();
                 List<double> axesPos = new List<double>();
+                List<AxisDirection> axesdirection = new List<AxisDirection>();
                 List<VelocityParams> axesVel = new List<VelocityParams>();
                 totalAxis = new int[2];
                 startAxis = new int[2];
@@ -122,6 +124,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                     axeslimitN.Add(axisInfosArray[i].LimitNEL);
                     axeslimitP.Add(axisInfosArray[i].LimitPEL);
                     axesVel.Add(axisInfosArray[i].MoveVel);
+                    axesdirection.Add(axisInfosArray[i].Direction);
                     axes[i].Ratio = axisInfosArray[i].Ratio;
                     axes[i].HomeVelocity = axisInfosArray[i].HomeVel;
                     axes[i].HomeMode = axisInfosArray[i].HomeMode;
@@ -129,11 +132,11 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 }
 
                 axesMovVel = axesVel.ToArray();
-                realLimitP = axeslimitP.ToArray();
-                realLimitN = axeslimitN.ToArray();
-
+                limitP = axeslimitP.ToArray();
+                limitN = axeslimitN.ToArray();
+                direction = axesdirection.ToArray();
                 OutputSignals = doNames.Select((n, i) => new DigitalOutput(i, this));
-                InputSignals = diNames.Select(n => new DigitalInput(n)).ToArray();
+                InputSignals = diNames.Select((n, i) => new DigitalInput(n, i, this)).ToArray();
             }
             catch (Exception)
             {
@@ -171,7 +174,6 @@ namespace WLS3200Gen2.Model.Component.Adlink
                             Axes[i].IsOpen = true;
                         }
                     }
-                    Task.Run(ReflashInput);
                 }
                 else
                 {
@@ -325,14 +327,14 @@ namespace WLS3200Gen2.Model.Component.Adlink
         }
         public AxisDirection GetAxisDirectionCommand(int id)
         {
-            throw new NotImplementedException();
+            return direction[id];
         }
         public void GetLimitCommand(int id, out double limitN, out double limitP)
         {
             try
             {
-                limitP = realLimitP[id];
-                limitN = realLimitN[id];
+                limitP = this.limitP[id];
+                limitN = this.limitN[id];
             }
             catch (Exception)
             {
@@ -491,8 +493,8 @@ namespace WLS3200Gen2.Model.Component.Adlink
         {
             try
             {
-                realLimitP[id] = maxPos;
-                realLimitN[id] = minPos;
+                limitP[id] = maxPos;
+                limitN[id] = minPos;
             }
             catch (Exception)
             {
@@ -1085,48 +1087,49 @@ namespace WLS3200Gen2.Model.Component.Adlink
         }
         private async Task ReflashInput()
         {
-            try
-            {
-                while (true)
-                {
-                    int inputIdx = 0;
-                    int[][] getInput = new int[inputRealModID.Length][];
-                    for (int i = 0; i < inputRealModID.Length; i++)
-                    {
-                        getInput[i] = APS168GetInput(i);
+            //try
+            //{
+            //    while (true)
+            //    {
+            //        int inputIdx = 0;
+            //        int[][] getInput = new int[inputRealModID.Length][];
+            //        for (int i = 0; i < inputRealModID.Length; i++)
+            //        {
+            //            getInput[i] = APS168GetInput(i);
 
-                        int[] getInput2 = APS168GetInput(i);
+            //            int[] getInput2 = APS168GetInput(i);
 
-                        for (int j = 0; j < getInput2.Length; j++)
-                        {
-                            if (getInput2[(getInput2.Length - 1) - j] == 0)
-                            {
-                                InputSignals[inputIdx].IsSignal = false;
-                            }
-                            else
-                            {
-                                InputSignals[inputIdx].IsSignal = true;
-                            }
-                            //if (getInput[i][j] == 0)
-                            //{
-                            //    InputSignals[inputIdx].IsSignal = false;
-                            //}
-                            //else
-                            //{
-                            //    InputSignals[inputIdx].IsSignal = true;
-                            //}
-                            inputIdx++;
-                        }
-                    }
-                    //Delay時間會影響IO變化的，判斷時機
-                    await Task.Delay(50);
-                }
-            }
-            catch (Exception ex)
-            {
+            //            for (int j = 0; j < getInput2.Length; j++)
+            //            {
+            //                if (getInput2[(getInput2.Length - 1) - j] == 0)
+            //                {
+            //                    InputSignals[inputIdx].IsSignal = false;
+            //                }
+            //                else
+            //                {
+            //                    InputSignals[inputIdx].IsSignal = true;
+            //                }
+            //                //if (getInput[i][j] == 0)
+            //                //{
+            //                //    InputSignals[inputIdx].IsSignal = false;
+            //                //}
+            //                //else
+            //                //{
+            //                //    InputSignals[inputIdx].IsSignal = true;
+            //                //}
+            //                inputIdx++;
+            //            }
+            //        }
+            //        //Delay時間會影響IO變化的，判斷時機
+            //        //System.Threading.Thread.Sleep(1);
+            //        await Task.Delay(20);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
 
-                throw ex;
-            }
+            //    throw ex;
+            //}
 
 
         }
@@ -1134,6 +1137,43 @@ namespace WLS3200Gen2.Model.Component.Adlink
         public void ResetAlarmCommand()
         {
             throw new NotImplementedException();
+        }
+
+        public bool GetInputCommand(int id)
+        {
+            try
+            {
+                int inputIdx = 0;
+                int[][] getInput = new int[inputRealModID.Length][];
+                for (int i = 0; i < inputRealModID.Length; i++)
+                {
+                    getInput[i] = APS168GetInput(i);
+
+                    int[] getInput2 = APS168GetInput(i);
+
+                    for (int j = 0; j < getInput2.Length; j++)
+                    {
+                        if (id == inputIdx)
+                        {
+                            if (getInput2[(getInput2.Length - 1) - j] == 0)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                return true;
+                            }
+                        }
+                        inputIdx++;
+                    }
+                }
+                throw new Exception("GetInputCommand Error!!");
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         private class AxisInfo

@@ -149,17 +149,32 @@ namespace WLS3200Gen2.Model.Component
                     double tolerance = MoveTolerance;
                     List<string> str = new List<string>();
                     str = SendGetMessage(" GP " + address + " ( 0 0 " + zShift + " 0)", CheckMessageType.Status);
-                    foreach (var item in str)
-                    {
-                        robotStatus = TransStatus(item);
-                    }
+                    //foreach (var item in str)
+                    //{
+                    //    robotStatus = TransStatus(item);
+                    //}
                     RobotPoint robotAddressPoint = new RobotPoint();
                     RobotPoint robotNowPoint = new RobotPoint();
                     robotAddressPoint = GetAddressPos(address);
+
+                    Stopwatch delayStopwatch = new Stopwatch();
+                    delayStopwatch.Start();
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    stopwatch.Restart();
+                    //確認位置是否正確了
                     while (true)
                     {
                         i++;
-                        await Task.Delay(50);
+                        delayStopwatch.Restart();
+                        while (true)
+                        {
+                            if (delayStopwatch.ElapsedMilliseconds > 10)
+                            {
+                                break;
+                            }
+                        }
+                        //await Task.Delay(50);
                         robotNowPoint = GetNowPos();
                         if (address == 1)
                         {
@@ -173,14 +188,48 @@ namespace WLS3200Gen2.Model.Component
                         {
                             if (Math.Abs(robotAddressPoint.X - robotNowPoint.X) <= tolerance &&
                             Math.Abs(robotAddressPoint.Y - robotNowPoint.Y) <= tolerance &&
-                            Math.Abs(robotAddressPoint.Z - robotNowPoint.Z) <= tolerance &&
+                            Math.Abs(robotAddressPoint.Z + zShift - robotNowPoint.Z) <= tolerance &&
                             Math.Abs(robotAddressPoint.W - robotNowPoint.W) <= tolerance)
                             {
                                 break;
                             }
                         }
-                        if (i >= 200) throw new Exception("Robot Move Time Out");
+                        if (stopwatch.ElapsedMilliseconds > 10 * 1000)//(i >= 200)
+                        {
+                            throw new Exception("Robot Move Time Out");
+                        }
                     }
+
+                    //確認是否已經沒有在執行了
+                    i = 0;
+                    stopwatch.Restart();
+                    while (true)
+                    {
+                        i++;
+                        delayStopwatch.Restart();
+                        while (true)
+                        {
+                            if (delayStopwatch.ElapsedMilliseconds > 10)
+                            {
+                                break;
+                            }
+                        }
+                        //await Task.Delay(50);
+                        robotStatus = new RobotStatus();
+                        robotStatus = await GetStatus();
+                        if (robotStatus.IsRunning == false && robotStatus.IsMovDoneSignal == true && robotStatus.IsCommandDoneSignal == true)
+                        {
+                            break;
+                        }
+                        if (stopwatch.ElapsedMilliseconds > 10 * 1000)//(i >= 200)
+                        {
+                            throw new Exception("Robot Move Time Out");
+                        }
+                    }
+
+
+
+
                 });
             }
             catch (Exception ex)
@@ -193,9 +242,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                Task task = Task.CompletedTask;
-                task = MovAddress(1, 0);
-                return task;
+                return Home();
             }
             catch (Exception ex)
             {
@@ -403,12 +450,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                Task task = Task.CompletedTask;
-
-                task = MovAddress(1, 0);
-
-                task = MovAddress(0, 0);
-                return task;
+                return Home();
             }
             catch (Exception ex)
             {

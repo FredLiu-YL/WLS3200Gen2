@@ -378,7 +378,6 @@ namespace WLS3200Gen2
 
                 while (isRefresh)
                 {
-
                     //var pos = atfMachine.Table_Module.GetPostion();
                     TablePosX = machine.MicroDetection.AxisX.Position;
                     TablePosY = machine.MicroDetection.AxisY.Position;
@@ -389,59 +388,60 @@ namespace WLS3200Gen2
 
                     //刷IO 得到EMO 軸停止
 
-
-                    if (machine.Feeder.LoadPortL != null)
+                    if (isMainSecurityPageSelect == true)
                     {
-                        LoadPortStatus loadPortStatus = new LoadPortStatus();
-                        loadPortStatus = await machine.Feeder.LoadPortL.GetStatus();
-                        LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
-                        LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
-                        LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
-                        LoadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
-                        LoadPortUIShow.IsClamp = loadPortStatus.IsClamp;
-                        LoadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
-                        LoadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
-                        LoadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
-                        LoadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
-                        LoadPortUIShow.IsDock = loadPortStatus.IsDock;
-                    }
-                    if (machine.Feeder.AlignerL != null)
-                    {
-                        AlignerStatus alignerStatus = new AlignerStatus();
-                        alignerStatus = await machine.Feeder.AlignerL.GetStatus();
-                        AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
-                        AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
-                        AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
-                        AlignerUIShow.IsWafer = alignerStatus.IsWafer;
-                        AlignerUIShow.IsOrg = alignerStatus.IsOrg;
-                        AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
-                    }
-                    if (machine.Feeder.Robot != null)
-                    {
-                        RobotStatus robotStatus = new RobotStatus();
-                        robotStatus = await machine.Feeder.Robot.GetStatus();
-                        RobotStaus.Mode = robotStatus.Mode;
-                        RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
-                        RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
-                        RobotStaus.IsCommandDoneSignal = robotStatus.IsCommandDoneSignal;
-                        RobotStaus.IsMovDoneSignal = robotStatus.IsMovDoneSignal;
-                        RobotStaus.IsRunning = robotStatus.IsRunning;
-                        RobotStaus.ErrorCode = robotStatus.ErrorCode;
-                        RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
+                        if (machine.Feeder.LoadPortL != null)
+                        {
+                            LoadPortStatus loadPortStatus = new LoadPortStatus();
+                            loadPortStatus = await machine.Feeder.LoadPortL.GetStatus();
+                            LoadPortUIShow.ErrorStatus = loadPortStatus.ErrorStatus;
+                            LoadPortUIShow.DeviceStatus = loadPortStatus.DeviceStatus;
+                            LoadPortUIShow.ErrorCode = loadPortStatus.ErrorCode;
+                            LoadPortUIShow.IsCassettePutOK = loadPortStatus.IsCassettePutOK;
+                            LoadPortUIShow.IsClamp = loadPortStatus.IsClamp;
+                            LoadPortUIShow.IsSwitchDoor = loadPortStatus.IsSwitchDoor;
+                            LoadPortUIShow.IsVaccum = loadPortStatus.IsVaccum;
+                            LoadPortUIShow.IsDoorOpen = loadPortStatus.IsDoorOpen;
+                            LoadPortUIShow.IsSensorCheckDoorOpen = loadPortStatus.IsSensorCheckDoorOpen;
+                            LoadPortUIShow.IsDock = loadPortStatus.IsDock;
+                        }
+                        if (machine.Feeder.AlignerL != null)
+                        {
+                            AlignerStatus alignerStatus = new AlignerStatus();
+                            alignerStatus = await machine.Feeder.AlignerL.GetStatus();
+                            AlignerUIShow.DeviceStatus = alignerStatus.DeviceStatus;
+                            AlignerUIShow.ErrorCode = alignerStatus.ErrorCode;
+                            AlignerUIShow.NotchStatus = alignerStatus.NotchStatus;
+                            AlignerUIShow.IsWafer = alignerStatus.IsWafer;
+                            AlignerUIShow.IsOrg = alignerStatus.IsOrg;
+                            AlignerUIShow.IsVaccum = alignerStatus.IsVaccum;
+                        }
+                        if (machine.Feeder.Robot != null)
+                        {
+                            RobotStatus robotStatus = new RobotStatus();
+                            robotStatus = await machine.Feeder.Robot.GetStatus();
+                            RobotStaus.Mode = robotStatus.Mode;
+                            RobotStaus.IsStopSignal = robotStatus.IsStopSignal;
+                            RobotStaus.IsEStopSignal = robotStatus.IsEStopSignal;
+                            RobotStaus.IsCommandDoneSignal = robotStatus.IsCommandDoneSignal;
+                            RobotStaus.IsMovDoneSignal = robotStatus.IsMovDoneSignal;
+                            RobotStaus.IsRunning = robotStatus.IsRunning;
+                            RobotStaus.ErrorCode = robotStatus.ErrorCode;
+                            RobotStaus.ErrorXYZWRC = Convert.ToInt32("" + robotStatus.ErrorX + robotStatus.ErrorY + robotStatus.ErrorZ + robotStatus.ErrorW + robotStatus.ErrorR + robotStatus.ErrorC);
 
-                        RobotStaus.IsLockOK = machine.Feeder.Robot.IsLockOK;
-                        //RobotUIIShow
-                    }
+                            RobotStaus.IsLockOK = machine.Feeder.Robot.IsLockOK;
+                            //RobotUIIShow
+                        }
 
-                    if (machine.MicroDetection.Microscope != null)
-                    {
-                        double nowPos = 0;
-                        nowPos = machine.MicroDetection.Microscope.Position;
-                        MicroscopeParam.Position = Convert.ToInt32(nowPos);
-                        MicroscopeParam.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
-                        MicroscopeParam.LightValue = machine.MicroDetection.Microscope.LightValue;
+                        if (machine.MicroDetection.Microscope != null)
+                        {
+                            double nowPos = 0;
+                            nowPos = machine.MicroDetection.Microscope.Position;
+                            MicroscopeParam.Position = Convert.ToInt32(nowPos);
+                            MicroscopeParam.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
+                            MicroscopeParam.LightValue = machine.MicroDetection.Microscope.LightValue;
+                        }
                     }
-
                     await Task.Delay(300);
                 }
 

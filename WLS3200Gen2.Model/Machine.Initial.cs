@@ -22,13 +22,13 @@ namespace WLS3200Gen2.Model
 
             try
             {
-                motionController = ControlEntity(isSimulate);
-                loadPort = LoadPortEntity(isSimulate);
+                motionController = ControlEntity();
+                loadPort = LoadPortEntity();
                 robot = RobotEntity(machineSetting.RobotsType);
-                aligner = AlignerEntity(isSimulate);
+                aligner = AlignerEntity();
                 camera = CameraEntity(machineSetting.CamerasType);
-                macro = MacrotEntity(isSimulate);
-                microscope = MicroEntity(isSimulate);
+                macro = MacrotEntity();
+                microscope = MicroEntity();
 
 
 
@@ -153,7 +153,7 @@ namespace WLS3200Gen2.Model
 
         }
 
-        private ILoadPort LoadPortEntity(bool isSimulate)
+        private ILoadPort LoadPortEntity()
         {
             WriteLog?.Invoke("loadPort Initial");
             ILoadPort loadPort = null;
@@ -181,7 +181,7 @@ namespace WLS3200Gen2.Model
             return loadPort;
         }
 
-        private IMotionController ControlEntity(bool isSimulate)
+        private IMotionController ControlEntity()
         {
             IMotionController motionController = null;
             if (isSimulate)
@@ -241,53 +241,73 @@ namespace WLS3200Gen2.Model
                     {
                         case 0:
                             AxisConfig axisXConfig = new AxisConfig();
-                            axisXConfig.AxisName = "AxisX";
-                            axisXConfig.AxisID = 0;
-                            axisXConfig.Ratio = 10;
-                            axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
-                            axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
-                            axisXConfig.HomeMode = HomeModes.ORGAndIndex;
+                            axisXConfig.AxisName = machineSetting.TableXConfig.AxisName;// "AxisX";
+                            axisXConfig.AxisID = machineSetting.TableXConfig.AxisID;//0
+                            axisXConfig.Ratio = machineSetting.TableXConfig.Ratio;//10
+                            axisXConfig.MoveVel = machineSetting.TableXConfig.MoveVel; //new VelocityParams(100000, 0.5);
+                            axisXConfig.Direction = machineSetting.TableXConfig.Direction;
+                            axisXConfig.HomeVel = machineSetting.TableXConfig.HomeVel;//new VelocityParams(10000, 0.8);
+                            axisXConfig.HomeMode = machineSetting.TableXConfig.HomeMode;//HomeModes.ORGAndIndex;
+                            axisXConfig.HomeDirection = machineSetting.TableXConfig.HomeDirection;
+                            axisXConfig.LimitPEL = machineSetting.TableXConfig.LimitPEL;
+                            axisXConfig.LimitNEL = machineSetting.TableXConfig.LimitNEL;
                             axisConfig.Add(axisXConfig);
                             break;
                         case 1:
                             AxisConfig axisYConfig = new AxisConfig();
-                            axisYConfig.AxisName = "AxisY";
-                            axisYConfig.AxisID = 1;
-                            axisYConfig.Ratio = 10;
-                            axisYConfig.MoveVel = new VelocityParams(100000, 0.5);
-                            axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
-                            axisYConfig.HomeMode = HomeModes.ORGAndIndex;
+                            axisYConfig.AxisName = machineSetting.TableYConfig.AxisName;// "AxisY";
+                            axisYConfig.AxisID = machineSetting.TableYConfig.AxisID;//1
+                            axisYConfig.Ratio = machineSetting.TableYConfig.Ratio;//10
+                            axisYConfig.MoveVel = machineSetting.TableYConfig.MoveVel; //new VelocityParams(100000, 0.5);
+                            axisYConfig.Direction = machineSetting.TableYConfig.Direction;
+                            axisYConfig.HomeVel = machineSetting.TableYConfig.HomeVel;//new VelocityParams(10000, 0.5);
+                            axisYConfig.HomeMode = machineSetting.TableYConfig.HomeMode;//HomeModes.ORGAndIndex;
+                            axisYConfig.HomeDirection = machineSetting.TableYConfig.HomeDirection;
+                            axisYConfig.LimitPEL = machineSetting.TableYConfig.LimitPEL;
+                            axisYConfig.LimitNEL = machineSetting.TableYConfig.LimitNEL;
                             axisConfig.Add(axisYConfig);
                             break;
                         case 2:
                             AxisConfig axisZInfo = new AxisConfig();
-                            axisZInfo.AxisName = "AxisZ";
-                            axisZInfo.AxisID = 2;
-                            axisZInfo.Ratio = 1;
-                            axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
-                            axisZInfo.HomeVel = new VelocityParams(50000, 0.5);
-                            axisZInfo.HomeMode = HomeModes.EL;
+                            axisZInfo.AxisName = machineSetting.TableZConfig.AxisName;// "AxisZ";
+                            axisZInfo.AxisID = machineSetting.TableZConfig.AxisID;//2
+                            axisZInfo.Ratio = machineSetting.TableZConfig.Ratio;//1
+                            axisZInfo.MoveVel = machineSetting.TableZConfig.MoveVel; //new VelocityParams(50000, 0.2);
+                            axisZInfo.Direction = machineSetting.TableZConfig.Direction;
+                            axisZInfo.HomeVel = machineSetting.TableZConfig.HomeVel;//new VelocityParams(5000, 0.5);
+                            axisZInfo.HomeMode = machineSetting.TableZConfig.HomeMode;//HomeModes.EL;
+                            axisZInfo.HomeDirection = machineSetting.TableZConfig.HomeDirection;
+                            axisZInfo.LimitPEL = machineSetting.TableZConfig.LimitPEL;
+                            axisZInfo.LimitNEL = machineSetting.TableZConfig.LimitNEL;
                             axisConfig.Add(axisZInfo);
                             break;
                         case 3:
                             AxisConfig axisRInfo = new AxisConfig();
-                            axisRInfo.AxisName = "AxisR";
-                            axisRInfo.AxisID = 3;
-                            axisRInfo.Ratio = 1;
-                            axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
-                            axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
-                            axisRInfo.HomeMode = HomeModes.ORG;
+                            axisRInfo.AxisName = machineSetting.TableRConfig.AxisName;//"AxisR";
+                            axisRInfo.AxisID = machineSetting.TableRConfig.AxisID;//3
+                            axisRInfo.Ratio = machineSetting.TableRConfig.Ratio;//1
+                            axisRInfo.MoveVel = machineSetting.TableRConfig.MoveVel; //new VelocityParams(45000, 0.2);
+                            axisRInfo.Direction = machineSetting.TableRConfig.Direction;
+                            axisRInfo.HomeVel = machineSetting.TableRConfig.HomeVel;//new VelocityParams(4500, 0.2);
+                            axisRInfo.HomeMode = machineSetting.TableRConfig.HomeMode;//HomeModes.ORG;
+                            axisRInfo.HomeDirection = machineSetting.TableRConfig.HomeDirection;
+                            axisRInfo.LimitPEL = machineSetting.TableRConfig.LimitPEL;
+                            axisRInfo.LimitNEL = machineSetting.TableRConfig.LimitNEL;
                             axisConfig.Add(axisRInfo);
 
                             break;
                         case 4:
                             AxisConfig axisRobotInfo = new AxisConfig();
-                            axisRobotInfo.AxisName = "RobotAxis";
-                            axisRobotInfo.AxisID = 4;
-                            axisRobotInfo.Ratio = 10;
-                            axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
-                            axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);
-                            axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
+                            axisRobotInfo.AxisName = machineSetting.RobotAxisConfig.AxisName;//"RobotAxis";
+                            axisRobotInfo.AxisID = machineSetting.RobotAxisConfig.AxisID;//4
+                            axisRobotInfo.Ratio = machineSetting.RobotAxisConfig.Ratio;//10
+                            axisRobotInfo.MoveVel = machineSetting.RobotAxisConfig.MoveVel; //new VelocityParams(300000, 0.2);
+                            axisRobotInfo.Direction = machineSetting.RobotAxisConfig.Direction;
+                            axisRobotInfo.HomeVel = machineSetting.RobotAxisConfig.HomeVel;//new VelocityParams(30000, 0.2);
+                            axisRobotInfo.HomeMode = machineSetting.RobotAxisConfig.HomeMode;//HomeModes.ORGAndIndex;
+                            axisRobotInfo.HomeDirection = machineSetting.RobotAxisConfig.HomeDirection;
+                            axisRobotInfo.LimitPEL = machineSetting.RobotAxisConfig.LimitPEL;
+                            axisRobotInfo.LimitNEL = machineSetting.RobotAxisConfig.LimitNEL;
                             axisConfig.Add(axisRobotInfo);
                             break;
                     }
@@ -317,8 +337,9 @@ namespace WLS3200Gen2.Model
                 }
                 else
                 {
-
                     camera = new ArtificialCamera();
+                    //camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera("");
+
                 }
 
                 return camera;
@@ -330,7 +351,7 @@ namespace WLS3200Gen2.Model
             }
 
         }
-        private IAligner AlignerEntity(bool isSimulate)
+        private IAligner AlignerEntity()
         {
             IAligner aligner = null;
             if (isSimulate)
@@ -345,7 +366,7 @@ namespace WLS3200Gen2.Model
             return aligner;
         }
 
-        private IMacro MacrotEntity(bool isSimulate)
+        private IMacro MacrotEntity()
         {
             IMacro macro = null;
             if (isSimulate)
@@ -361,7 +382,7 @@ namespace WLS3200Gen2.Model
             return macro;
 
         }
-        private IMicroscope MicroEntity(bool isSimulate)
+        private IMicroscope MicroEntity()
         {
             IMicroscope microscope = null;
             if (isSimulate)

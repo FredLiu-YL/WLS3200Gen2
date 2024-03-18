@@ -23,6 +23,9 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class DigitalInputUC : UserControl, INotifyPropertyChanged
     {
+        private bool isGetStatus = false;
+        private bool[] uIInputSignals = new bool[32];
+        private System.Windows.Threading.DispatcherTimer dispatcherTimerFeedback;
         public DigitalInputUC()
         {
             InitializeComponent();
@@ -34,16 +37,62 @@ namespace WLS3200Gen2.UserControls
             get => (DigitalInput[])GetValue(InputSignalsProperty);
             set => SetValue(InputSignalsProperty, value);
         }
+        
+        public bool[] UIInputSignals
+        {
+            get => uIInputSignals;
+            set => SetValue(ref uIInputSignals, value);
+        }
+        private void DigitalInput_loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //var c = Thread.CurrentThread;
+                //StartAxisStatus();
+                if (InputSignals == null) return;
+                dispatcherTimerFeedback = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimerFeedback.Tick += new EventHandler(dispatcherTimerFeedback_Tick);
+                dispatcherTimerFeedback.Interval = TimeSpan.FromMilliseconds(200);
+                dispatcherTimerFeedback.Start();
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    MessageBox.Show(ex.Message);
+                });
+            }
+        }
+        private void DigitalInput_Unloaded(object sender, RoutedEventArgs e)
+        {
+            isGetStatus = false;
 
+            if (dispatcherTimerFeedback != null)
+            {
+                dispatcherTimerFeedback.Stop();
+                dispatcherTimerFeedback.Tick -= new EventHandler(dispatcherTimerFeedback_Tick);
+            }
+        }
+        /// <summary>
+        /// Input狀態
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dispatcherTimerFeedback_Tick(object sender, EventArgs e)
+        {
+            Refresh();
+        }
 
-       
         private async Task Refresh()
         {
             try
             {
-
-    
-
+                bool[] signals = new bool[32];
+                for (int i = 0; i < signals.Length; i++)
+                {
+                    signals[i] = InputSignals[i].IsSignal;
+                }
+                UIInputSignals = signals;
             }
             catch (Exception ex)
             {
@@ -65,11 +114,6 @@ namespace WLS3200Gen2.UserControls
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        private void DigitalInput_Unloaded(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

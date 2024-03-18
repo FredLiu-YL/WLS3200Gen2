@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -232,46 +233,56 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
+                Stopwatch stopwatchReflash = new Stopwatch();
+                stopwatchReflash.Start();
                 while (true)
                 {
-                    await Task.Delay(1);
-
+                    //await Task.Delay(1);
+                    stopwatchReflash.Restart();
+                    while (true)
+                    {
+                        if (stopwatchReflash.ElapsedMilliseconds > 1)
+                        {
+                            break;
+                        }
+                    }
+                    //System.Threading.Thread.Sleep(1);
                     //內環位置++
                     if (isInnerPitchXForward)
                     {
-                        InnerPitchXPosition++;
+                        InnerPitchXPosition += 2;
                     }
                     else if (isInnerPitchXBackward)
                     {
-                        InnerPitchXPosition--;
+                        InnerPitchXPosition -= 2;
                     }
 
                     if (isInnerRollYForward)
                     {
-                        InnerRollYPosition++;
+                        InnerRollYPosition += 2;
                     }
                     else if (isInnerRollYBackward)
                     {
-                        InnerRollYPosition--;
+                        InnerRollYPosition -= 2;
                     }
 
                     if (isInnerYawTForward)
                     {
-                        InnerYawTPosition++;
+                        InnerYawTPosition += 2;
                     }
                     else if (isInnerYawTBackward)
                     {
-                        InnerYawTPosition--;
+                        InnerYawTPosition -= 2;
                     }
 
                     //外環位置++
                     if (isOuterRollYForward)
                     {
-                        OuterRollYPosition++;
+                        OuterRollYPosition += 2;
                     }
                     else if (isOuterRollYBackward)
                     {
-                        OuterRollYPosition--;
+                        OuterRollYPosition -= 2;
                     }
                 }
             }
@@ -407,17 +418,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        isOuterRollYForward = true;
-                        isOuterRollYBackward = false;
                         OuterRingRollYForward.On();
                         OuterRingRollYBackward.Off();
+                        isOuterRollYForward = true;
+                        isOuterRollYBackward = false;
                     }
                     else
                     {
-                        isOuterRollYForward = false;
-                        isOuterRollYBackward = true;
                         OuterRingRollYForward.Off();
                         OuterRingRollYBackward.On();
+                        isOuterRollYForward = false;
+                        isOuterRollYBackward = true;
                     }
 
                 }
@@ -478,17 +489,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        isInnerPitchXForward = true;
-                        isInnerPitchXBackward = false;
                         InnerRingPitchXBackward.Off();
                         InnerRingPitchXForward.On();
+                        isInnerPitchXForward = true;
+                        isInnerPitchXBackward = false;
                     }
                     else
                     {
-                        isInnerPitchXForward = false;
-                        isInnerPitchXBackward = true;
                         InnerRingPitchXForward.Off();
                         InnerRingPitchXBackward.On();
+                        isInnerPitchXForward = false;
+                        isInnerPitchXBackward = true;
                     }
 
                 }
@@ -530,17 +541,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        isInnerRollYForward = true;
-                        isInnerRollYBackward = false;
                         InnerRingRollYBackward.Off();
                         InnerRingRollYForward.On();
+                        isInnerRollYForward = true;
+                        isInnerRollYBackward = false;
                     }
                     else
                     {
-                        isInnerRollYForward = false;
-                        isInnerRollYBackward = true;
                         InnerRingRollYForward.Off();
                         InnerRingRollYBackward.On();
+                        isInnerRollYForward = false;
+                        isInnerRollYBackward = true;
                     }
 
                 }
@@ -584,17 +595,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     if (isForward == true)
                     {
-                        isInnerYawTForward = true;
-                        isInnerYawTBackward = false;
                         InnerRingYawTBackward.Off();
                         InnerRingYawTForward.On();
+                        isInnerYawTForward = true;
+                        isInnerYawTBackward = false;
                     }
                     else
                     {
-                        isInnerYawTForward = false;
-                        isInnerYawTBackward = true;
                         InnerRingYawTForward.Off();
                         InnerRingYawTBackward.On();
+                        isInnerYawTForward = false;
+                        isInnerYawTBackward = true;
                     }
 
                 }

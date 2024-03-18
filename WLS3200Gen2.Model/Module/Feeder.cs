@@ -22,7 +22,7 @@ namespace WLS3200Gen2.Model.Module
         private Cassette cassette; //由 ProcessInitial 決定是哪一個Loadport
         private ILoadPort tempLoadPort;
         private IAligner tempAligner;
-
+        private int vaccumDelay = 50;
         private PauseTokenSource pauseToken = new PauseTokenSource();
         private CancellationTokenSource cancelToken = new CancellationTokenSource();
         private MachineSetting machineSetting;
@@ -240,13 +240,13 @@ namespace WLS3200Gen2.Model.Module
                     stopwatchPitchX.Restart();
                     while (true)
                     {
-                        countPitchX++;
-                        if (stopwatchPitchX.ElapsedMilliseconds >= eFEMtionRecipe.MacroTopStartPitchX)
+                        if (stopwatchPitchX.ElapsedMilliseconds >= Math.Abs(eFEMtionRecipe.MacroTopStartPitchX))//if (stopwatchPitchX.ElapsedMilliseconds >= eFEMtionRecipe.MacroTopStartPitchX) countPitchX
                         {
                             Macro.InnerRingPitchX_Stop();
                             break;
                         }
-                        //await Task.Delay(1);
+                        countPitchX++;
+                        await Task.Delay(1);
                     }
                     stopwatchPitchX.Stop();
                 }
@@ -270,13 +270,12 @@ namespace WLS3200Gen2.Model.Module
                     stopwatchRollY.Restart();
                     while (true)
                     {
-                        countRollY++;
-                        if (stopwatchRollY.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartRollY)
+                        if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(eFEMtionRecipe.MacroTopStartRollY))
                         {
                             Macro.InnerRingRollY_Stop();
                             break;
                         }
-                        //await Task.Delay(1);
+                        countRollY++;
                     }
                     stopwatchRollY.Stop();
                 }
@@ -296,17 +295,14 @@ namespace WLS3200Gen2.Model.Module
                     {
                         Macro.InnerRingYawT_Move(false);
                     }
-                    int countYawT = 0;
                     stopwatchYawT.Restart();
                     while (true)
                     {
-                        countYawT++;
-                        if (stopwatchYawT.ElapsedMilliseconds > eFEMtionRecipe.MacroTopStartYawT)
+                        if (stopwatchYawT.ElapsedMilliseconds > Math.Abs(eFEMtionRecipe.MacroTopStartYawT))
                         {
                             Macro.InnerRingYawT_Stop();
                             break;
                         }
-                        //await Task.Delay(1);
                     }
                     stopwatchYawT.Stop();
                 }
@@ -330,14 +326,16 @@ namespace WLS3200Gen2.Model.Module
                    {
                        Macro.OuterRingRollY_Move(false);
                    }
+                   int countRollY = 0;
                    stopwatchRollY.Restart();
                    while (true)
                    {
-                       if (stopwatchRollY.ElapsedMilliseconds > MacroBackStartPos)
+                       if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(MacroBackStartPos))
                        {
                            Macro.OuterRingRollY_Stop();
                            break;
                        }
+                       countRollY++;
                    }
                    stopwatchRollY.Stop();
                }
@@ -399,7 +397,7 @@ namespace WLS3200Gen2.Model.Module
         /// wafer放進主設備
         /// </summary>
         /// <returns></returns>
-        public async Task LoadToMicroAsync( )
+        public async Task LoadToMicroAsync()
         {
             //await WaferAlignerToStandBy();
             await Task.Run(async () =>
@@ -440,7 +438,7 @@ namespace WLS3200Gen2.Model.Module
 
             if (isLoadPort1)
             {
-                if (LoadPortL.IsDoorOpen)
+                if (LoadPortL.IsDoorOpen == false)
                 {
                     throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
                 }
@@ -448,7 +446,7 @@ namespace WLS3200Gen2.Model.Module
             }
             else
             {
-                if (LoadPortR.IsDoorOpen)
+                if (LoadPortR.IsDoorOpen == false)
                 {
                     throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
                 }
@@ -469,7 +467,7 @@ namespace WLS3200Gen2.Model.Module
         {
             if (isLoadPort1)
             {
-                if (LoadPortL.IsDoorOpen)
+                if (LoadPortL.IsDoorOpen == false)
                 {
                     throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
                 }
@@ -477,7 +475,7 @@ namespace WLS3200Gen2.Model.Module
             }
             else
             {
-                if (LoadPortR.IsDoorOpen)
+                if (LoadPortR.IsDoorOpen == false)
                 {
                     throw new Exception("UnLoadWaferToCassette:LoadPortNotOpen Error!!");
                 }
@@ -504,14 +502,14 @@ namespace WLS3200Gen2.Model.Module
                {
                    if (armStation == ArmStation.Cassette1)
                    {
-                       if (LoadPortL.IsDoorOpen)
+                       if (LoadPortL.IsDoorOpen == false)
                        {
                            throw new Exception("WaferStandByToLoadPort:LoadPortLNotOpen Error!!");
                        }
                    }
                    else if (armStation == ArmStation.Cassette2)
                    {
-                       if (LoadPortR.IsDoorOpen)
+                       if (LoadPortR.IsDoorOpen == false)
                        {
                            throw new Exception("WaferStandByToLoadPort:LoadPortRNotOpen Error!!");
                        }
@@ -539,27 +537,29 @@ namespace WLS3200Gen2.Model.Module
                 {
                     if (armStation == ArmStation.Cassette1)
                     {
-                        if (LoadPortL.IsDoorOpen)
+                        if (LoadPortL.IsDoorOpen == false)
                         {
                             throw new Exception("WaferLoadPortToStandBy:LoadPortLNotOpen Error!!");
                         }
                     }
                     else if (armStation == ArmStation.Cassette2)
                     {
-                        if (LoadPortR.IsDoorOpen)
+                        if (LoadPortR.IsDoorOpen == false)
                         {
                             throw new Exception("WaferLoadPortToStandBy:LoadPortRNotOpen Error!!");
                         }
                     }
                     await Robot.PickWafer_Standby(armStation, cassetteIndex);
                     await Robot.PickWafer_GoIn(armStation, cassetteIndex);
-                    await Robot.PickWafer_LiftUp(armStation, cassetteIndex);
                     await Robot.FixWafer();
+                    await Robot.PickWafer_LiftUp(armStation, cassetteIndex);
+                    await Task.Delay(vaccumDelay);//等一下真空建立
                     if (Robot.IsLockOK == false)
                     {
                         await Robot.ReleaseWafer();
                         await Robot.PickWafer_GoIn(armStation, cassetteIndex);
                         await Robot.PickWafer_Standby(armStation, cassetteIndex);
+                        await Robot.PickWafer_Safety(armStation);
                         throw new Exception("WaferLoadPortToStandBy:FixWafer Error!!");
                     }
                     await Robot.PickWafer_Retract(armStation, cassetteIndex);
@@ -617,11 +617,13 @@ namespace WLS3200Gen2.Model.Module
                    await Robot.PickWafer_GoIn(ArmStation.Macro);
                    await Robot.FixWafer();
                    await Robot.PickWafer_LiftUp(ArmStation.Macro);
+                   await Task.Delay(vaccumDelay);//等一下真空建立
                    if (Robot.IsLockOK == false)
                    {
                        await Robot.ReleaseWafer();
                        await Robot.PickWafer_GoIn(ArmStation.Macro);
                        await Robot.PickWafer_Standby(ArmStation.Macro);
+                       await Robot.PickWafer_Safety(ArmStation.Macro);
                        throw new Exception("WaferMacroToStandBy:FixWafer Error!!");
                    }
                    await Robot.PickWafer_Retract(ArmStation.Macro);
@@ -679,11 +681,13 @@ namespace WLS3200Gen2.Model.Module
                    await Robot.PickWafer_GoIn(ArmStation.Align);
                    await Robot.FixWafer();
                    await Robot.PickWafer_LiftUp(ArmStation.Align);
+                   await Task.Delay(vaccumDelay);//等一下真空建立
                    if (Robot.IsLockOK == false)
                    {
                        await Robot.PickWafer_GoIn(ArmStation.Align);
                        await Robot.PickWafer_Standby(ArmStation.Align);
                        await Robot.ReleaseWafer();
+                       await Robot.PickWafer_Safety(ArmStation.Align);
                        throw new Exception("WaferAlignerToStandBy:FixWafer Error!!");
                    }
                    await Robot.PickWafer_Retract(ArmStation.Align);
@@ -722,11 +726,13 @@ namespace WLS3200Gen2.Model.Module
                 await Robot.PickWafer_GoIn(ArmStation.Micro);
                 await Robot.FixWafer();
                 await Robot.PickWafer_LiftUp(ArmStation.Micro);
+                await Task.Delay(vaccumDelay);//等一下真空建立
                 if (Robot.IsLockOK == false)
                 {
                     await Robot.ReleaseWafer();
                     await Robot.PickWafer_GoIn(ArmStation.Micro);
                     await Robot.PickWafer_Standby(ArmStation.Micro);
+                    await Robot.PickWafer_Safety(ArmStation.Micro);
                     throw new Exception("WaferMicroToStandBy:FixWafer Error!!");
                 }
                 await Robot.PickWafer_Retract(ArmStation.Micro);

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls" xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls;assembly=YuanliCore.Model"
              mc:Ignorable="d" 
               x:Name="DigitalInput"
-             d:DesignHeight="400" d:DesignWidth="600" Unloaded="DigitalInput_Unloaded">
+             d:DesignHeight="400" d:DesignWidth="600" Loaded="DigitalInput_loaded" Unloaded="DigitalInput_Unloaded">
     <Grid  DataContext="{Binding ElementName=DigitalInput}" Background="White"   >
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -37,98 +37,98 @@
             <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="0 EMO" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding  InputSignals[0].IsSignal }"  />
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding UIInputSignals[0] }"  />
                 </StackPanel>
             </Border>
             <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="1 POWER" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding  InputSignals[1].IsSignal }"  />
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding UIInputSignals[1] }"  />
                 </StackPanel>
             </Border>
             <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="2 電磁鎖" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding  InputSignals[2].IsSignal }"  />
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding UIInputSignals[2] }"  />
                 </StackPanel>
             </Border>
             <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="3 CDA" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[3].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[3] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="4 Chuck內環真空 8" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[4].IsSignal }"/>
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[4] }"/>
                 </StackPanel>
             </Border>
             <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="5 Chuck外環真空 12" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[5].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[5] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="6 Macro內環真空" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[6].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[6] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="7 Macro外環真空" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[7].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[7] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="8 " Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[8].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[8] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="9 " Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[9].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[9] }" />
                 </StackPanel>
             </Border>
 
             <Border Grid.Row="10" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="10 " Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[10].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[10] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="11" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="11" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[11].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[11] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="12" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="12" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[12].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[12] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="13" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="13" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[13].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[13] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="14" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="14" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[14].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[14] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="15" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="15" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[15].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[15] }" />
                 </StackPanel>
             </Border>
         </Grid>
@@ -155,98 +155,98 @@
             <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="16" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[16].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[16] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="17 外環翻轉ORG" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[17].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[17] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="2" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="18 外環翻轉馬達正常" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[18].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[18] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="3" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="19" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[19].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[19] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="4" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="20" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[20].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[20] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="5" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="21 內環Y傾斜HOME" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[21].IsSignal }"/>
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[21] }"/>
                 </StackPanel>
             </Border>
             <Border Grid.Row="6" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="22" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[22].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[22] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="7" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="23 內環X傾斜HOME" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding  InputSignals[23].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20" IsSignal="{Binding UIInputSignals[23] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="8" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="24 外環馬達正常" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[24].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  UIInputSignals[24] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="9" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="25 外環馬達運作完成" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[25].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[25] }" />
                 </StackPanel>
             </Border>
 
             <Border Grid.Row="10" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="26 外環在下位" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[26].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[26] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="11" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="27 內環馬達正常" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[27].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[27] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="12" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="28 內環馬達運作完成" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[28].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[28] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="13" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="29 內環在下位" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[29].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[29] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="14" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="30 T HOME?" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[30].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[30] }" />
                 </StackPanel>
             </Border>
             <Border Grid.Row="15" Grid.Column="0" BorderBrush="Black"  BorderThickness="1">
                 <StackPanel Orientation="Horizontal" >
                     <Label Content="31 光柵" Width="120"/>
-                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding  InputSignals[31].IsSignal }" />
+                    <usercontrols:SignalUC Width="20" Height="20"  IsSignal="{Binding UIInputSignals[31] }" />
                 </StackPanel>
             </Border>
         </Grid>

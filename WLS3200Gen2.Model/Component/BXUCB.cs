@@ -66,6 +66,8 @@ namespace WLS3200Gen2.Model.Component
         public int Filter2Index { get; private set; } = -1;
         public int Filter3Index { get; private set; } = -1;
 
+        public bool IsAFOk { get => GetAFIsOK(); }
+
         public event Action<Exception> Error;
 
         public void Initial()
@@ -88,6 +90,9 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                {
+                   bool sss = IsAFOk;
+                   SetZNEL(1);
+                   SetAFNEL(1);
                    await MoveToAsync(1);
                    await ChangeLensAsync(1);
                    await ChangeApertureAsync(0);
@@ -780,6 +785,10 @@ namespace WLS3200Gen2.Model.Component
                     while (true)
                     {
                         nowPos = this.Position;
+                        if (position <= 1)
+                        {
+                            position = 1;
+                        }
                         distance = position - nowPos;
                         if (distance > 0)
                         {
@@ -944,6 +953,10 @@ namespace WLS3200Gen2.Model.Component
                 int nowCount = 0;
                 while (true)
                 {
+                    if (position <= 1)
+                    {
+                        position = 1;
+                    }
                     str = SendGetMessage("2FARLMT " + position, 3);
 
                     if (str.Contains("2FARLMT +"))
@@ -1090,6 +1103,10 @@ namespace WLS3200Gen2.Model.Component
                 int nowCount = 0;
                 while (true)
                 {
+                    if (position <= 1)
+                    {
+                        position = 1;
+                    }
                     str = SendGetMessage("2AFFLMT " + position, 3);
 
                     if (str.Contains("2AFFLMT +"))
@@ -1198,7 +1215,58 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public bool GetAFIsOK()
+        {
+            try
+            {
+                string str = "";
+                int nowCount = 0;
+                bool isAFOk = false;
+                while (true)
+                {
+                    str = SendGetMessage("2AFSTS?", 3);
 
+                    if (str.Contains("2AFSTS !"))
+                    {
+                        string errorStr = str.Replace("2AFSTS !,", "");
+                        throw new Exception("BXUCB GetAFIsOK Error:" + errorStr);
+                    }
+                    else if (str.Contains("2AFSTS"))
+                    {
+
+                        if (str.Replace("2AFSTS ", "") == "OFF" || str.Replace("2AFSTS ", "") == "SRCH" ||
+                            str.Replace("2AFSTS ", "") == "SRCH" || str.Replace("2AFSTS ", "") == "TRACE")
+                        {
+                            isAFOk = false;
+                            break;
+                        }
+                        else if (str.Replace("2AFSTS ", "") == "FOCUS" || str.Replace("2AFSTS ", "") == "TRACE")
+                        {
+                            isAFOk = true;
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
+                        {
+                            throw new Exception("BXUCB GetAFNEL Error:Retry " + TimeOutRetryCount + " Count");
+                        }
+                    }
+                }
+                return isAFOk;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
         private double GetZPosition()
         {
             try

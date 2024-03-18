@@ -120,6 +120,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                await machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
                 await machine.Feeder.LoadToMicroAsync();
             }
             catch (Exception ex)
