@@ -24,6 +24,9 @@ namespace WLS3200Gen2.Model.Recipe
         /// 使用 2號 Loadport
         /// </summary>
         public bool IsLoadport2 { get; set; }
+        /// <summary>
+        /// 是否跑自動模式
+        /// </summary>
         public bool AutoSave { get; set; }
 
         public bool RemoteDefectPoint { get; set; }

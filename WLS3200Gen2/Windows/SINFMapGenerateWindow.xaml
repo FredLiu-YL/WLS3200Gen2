@@ -8,7 +8,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
         x:Name="SINFMapGenerate"
-        Title="SINFMapGenerateWindow" Height="1050" Width="1920">
+        Title="SINFMapGenerateWindow" Height="1050" Width="1920" Loaded="SINFMapGenerate_Loaded" Unloaded="SINFMapGenerate_Unloaded">
     <Grid DataContext="{Binding ElementName=SINFMapGenerate}">
         <Grid Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>

@@ -46,7 +46,7 @@ namespace WLS3200Gen2
         /// </summary>
         public MainViewModel()
         {
-            isSimulate = false;
+            isSimulate = true;
 
             //   machineSetting.Load();
 

@@ -17,8 +17,7 @@ namespace WLS3200Gen2.Model.Module
 {
     public class OpticalAlignment
     {
-
-        private AlignmentRecipe alignmentRecipe;
+        //private AlignmentRecipe alignmentRecipe;
         private Axis axisX, axisY;
         private ICamera camera;
         private ITransform affineTransform;
@@ -27,9 +26,9 @@ namespace WLS3200Gen2.Model.Module
 
         public OpticalAlignment(Axis axisX, Axis axisY, ICamera camera)
         {
-
             this.axisX = axisX;
             this.axisY = axisY;
+            this.camera = camera;
         }
 
 
@@ -40,20 +39,18 @@ namespace WLS3200Gen2.Model.Module
 
 
         public Action<string> WriteLog { get; set; }
-        public Action<BitmapSource ,Point? ,int  > FiducialRecord { get; set; }
+        public Action<BitmapSource, Point?, int> FiducialRecord { get; set; }
 
         public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
         {
-            BitmapSource image =null;
+            BitmapSource image = null;
             try
             {
-
-               
                 List<Point> targetPos = new List<Point>();
                 //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
                 foreach (LocateParam fiducial in fiducialDatas)
                 {
-                   int number =fiducialDatas.ToList().IndexOf(fiducial);
+                    int number = fiducialDatas.ToList().IndexOf(fiducial);
                     WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
                     await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
                     image = camera.GrabAsync();
@@ -70,7 +67,8 @@ namespace WLS3200Gen2.Model.Module
 
                 }
                 //獲得設計座標
-                Point[] designPos = ConvertDesignPos();
+                Point[] designPos = ConvertDesignPos(fiducialDatas);
+
 
                 //設計座標與實際座標做對應 ，計算出轉換矩陣       
                 affineTransform = new CogAffineTransform(designPos, targetPos);
@@ -80,7 +78,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-              
+
                 throw ex;
             }
         }
@@ -92,7 +90,7 @@ namespace WLS3200Gen2.Model.Module
         /// <param name="currentPosY"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY,int number)
+        public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY, int number)
         {
             MatchResult[] result = matcher.Find(image.ToByteFrame()).ToArray();
 
@@ -105,13 +103,13 @@ namespace WLS3200Gen2.Model.Module
 
                 CancelToken.Token.ThrowIfCancellationRequested();
                 await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-             
+
                 throw new Exception("搜尋失敗");
             }
 
             FiducialRecord?.Invoke(image, result[0].Center, number);
 
-            Point actualPos = await GetTargetPos(image, currentPosX, currentPosY, result[0].Center);
+            Point actualPos = GetTargetPos(image, currentPosX, currentPosY, result[0].Center);
             return actualPos;
         }
 
@@ -132,7 +130,7 @@ namespace WLS3200Gen2.Model.Module
 
         }
         //Pixel轉換成實際座標
-        private async Task<Point> GetTargetPos(BitmapSource image, double currentPosX, double currentPosY, Point objPixel)
+        private Point GetTargetPos(BitmapSource image, double currentPosX, double currentPosY, Point objPixel)
         {
             //目標-影像中心  * PixelSize   = 要移動的距離
             var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelSize.Width;
@@ -144,10 +142,10 @@ namespace WLS3200Gen2.Model.Module
 
         //因 Index 或 設計圖座標 與Table的 XY軸方向可能不一致 ，所以需要多一個轉換方法將設計座標轉換成與實際機台座標同方向
         //如果原先設計座標就是以機台本身取得的座標 則直接取出就好 (目前設計邏輯都是在UI端就定實際機台座標)
-        private Point[] ConvertDesignPos()
+        private Point[] ConvertDesignPos(LocateParam[] fiducialDatas)
         {
 
-            Point[] designPos = alignmentRecipe.FiducialDatas.Select(f => new Point(f.DesignPositionX, f.DesignPositionY)).ToArray();
+            Point[] designPos = fiducialDatas.Select(f => new Point(f.DesignPositionX, f.DesignPositionY)).ToArray();
             return designPos;
         }
 

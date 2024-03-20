@@ -11,7 +11,7 @@
              d:DesignHeight="300" d:DesignWidth="300" Loaded="MainGrid_Loaded">
    
     
-    <Grid DataContext="{Binding ElementName=Production}" >
+    <Grid DataContext="{Binding ElementName=Production}" Background="White"  >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.40*" />
             <ColumnDefinition Width="0.60*" />

@@ -43,6 +43,7 @@ namespace WLS3200Gen2
         private LocateParam locateParam3 = new LocateParam(103);//Locate pattern 從100號開始
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> mapDrawings = new ObservableCollection<ROIShape>();
+        private ObservableCollection<ROIShape> homeMapDrawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
         private LocateMode selectMode;
         private double alignOffsetX, alignOffsetY;
@@ -248,7 +249,7 @@ namespace WLS3200Gen2
         /// 取得或設定 shape 
         /// </summary>
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
-
+        public ObservableCollection<ROIShape> HomeMapDrawings { get => homeMapDrawings; set => SetValue(ref homeMapDrawings, value); }
         public ObservableCollection<ROIShape> MapDrawings { get => mapDrawings; set => SetValue(ref mapDrawings, value); }
 
 
@@ -448,10 +449,10 @@ namespace WLS3200Gen2
                 SINF_Path = dlg_image.FileName;
                 if (SINF_Path != "")
                 {
-                    var m_Sinf = new SinfWaferMapping("");
-                    (m_Sinf.Dies, m_Sinf.WaferSize) = m_Sinf.ReadWaferFile(SINF_Path);
+                    var m_Sinf = new SinfWaferMapping("", true, false);
+                    (m_Sinf.Dies, m_Sinf.WaferSize) = m_Sinf.ReadWaferFile(SINF_Path, true, false);
 
-                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
+                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("", true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
                     MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                     ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
@@ -469,27 +470,20 @@ namespace WLS3200Gen2
         {
             try
             {
-
-
-
-
                 SINFMapGenerateWindow sINFMapGenerateWindow = new SINFMapGenerateWindow();
                 sINFMapGenerateWindow.ShowDialog();
-
-
-                if (sINFMapGenerateWindow.Sinf != null && sINFMapGenerateWindow.Sinf.Dies != null && sINFMapGenerateWindow.Sinf.Dies.Length > 0)
-                {
-                    if (mainRecipe.DetectRecipe.WaferMap == null)
-                    {
-                        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
-                    }
-                    mainRecipe.DetectRecipe.WaferMap.Dies = sINFMapGenerateWindow.Sinf.Dies.ToArray();
-
-                    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                    ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
-                }
-
-
+                //if (sINFMapGenerateWindow.Sinf != null && sINFMapGenerateWindow.Sinf.Dies != null && sINFMapGenerateWindow.Sinf.Dies.Length > 0)
+                //{
+                //    if (mainRecipe.DetectRecipe.WaferMap == null)
+                //    {
+                //        mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("", true, false);
+                //    }
+                //    mainRecipe.DetectRecipe.WaferMap.Dies = sINFMapGenerateWindow.Sinf.Dies;
+                //    mainRecipe.DetectRecipe.WaferMap.ColumnCount = sINFMapGenerateWindow.Sinf.ColumnCount;
+                //    mainRecipe.DetectRecipe.WaferMap.RowCount = sINFMapGenerateWindow.Sinf.RowCount;
+                //    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+                //    ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                //}
             }
             catch (Exception)
             {
@@ -554,8 +548,8 @@ namespace WLS3200Gen2
                         Stroke = drawStroke,
                         StrokeThickness = strokeThickness,
                         Fill = drawFill,
-                        X = (item.PosX + item.DieSize.Width * 0.5) / showSize_X + offsetDraw,
-                        Y = (item.PosY + item.DieSize.Height * 0.5) / showSize_Y + offsetDraw,
+                        X = item.OperationPixalX / showSize_X + offsetDraw,
+                        Y = item.OperationPixalY / showSize_Y + offsetDraw,
                         LengthX = item.DieSize.Width / 2.5 / showSize_X,
                         LengthY = item.DieSize.Height / 2.5 / showSize_Y,
                         IsInteractived = true,
@@ -564,7 +558,7 @@ namespace WLS3200Gen2
                         IsRotateEnabled = false,
                         CenterCrossLength = crossThickness,
                         CenterCrossBrush = drawFill,
-                        ToolTip = "X:" + item.IndexX + " Y:" + item.IndexY + " X:" + item.PosX + " Y:" + item.PosY
+                        ToolTip = "X:" + item.IndexX + " Y:" + item.IndexY + " X:" + item.MapTransX + " Y:" + item.MapTransY
                     });
                 }
 
@@ -1042,11 +1036,7 @@ namespace WLS3200Gen2
         });
         public ICommand ParamConfirmCommand => new RelayCommand(() =>
         {
-
-
             SetLocateParamToRecipe();
-
-
         });
 
         public ICommand LocateRunCommand => new RelayCommand(async () =>
@@ -1062,6 +1052,8 @@ namespace WLS3200Gen2
                 //如果有需要調整檢測座標 ，需要重新做對位  ，對位後會重新建立新的map全部die座標 ，為了給後續檢測座標設定使用 
 
                 //依序轉換完對位前座標  ，轉換成對位後座標 塞回機械座標
+
+
                 foreach (Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
                 {
                     Point pos = transForm.TransPoint(new Point(die.PosX, die.PosY));

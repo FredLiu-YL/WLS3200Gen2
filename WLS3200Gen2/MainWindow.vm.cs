@@ -47,7 +47,7 @@ namespace WLS3200Gen2
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
-        private WriteableBitmap mainImage, mapImage;
+        private WriteableBitmap mainImage, mapImage, homeMapImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
@@ -90,6 +90,7 @@ namespace WLS3200Gen2
 
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
         public WriteableBitmap MapImage { get => mapImage; set => SetValue(ref mapImage, value); }
+        public WriteableBitmap HomeMapImage { get => homeMapImage; set => SetValue(ref homeMapImage, value); }
 
         public System.Windows.Point MapMousePixcel { get => mapmousePixcel; set => SetValue(ref mapmousePixcel, value); }
 
@@ -105,11 +106,18 @@ namespace WLS3200Gen2
         /// 清除 Shape
         /// </summary>
         public ICommand ClearShapeAction { get; set; }
-
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
+        public ICommand AddHomeMapShapeAction { get; set; }
         /// <summary>
         /// 新增 Shape
         /// </summary>
         public ICommand AddMapShapeAction { get; set; }
+        /// <summary>
+        /// 清除 Shape
+        /// </summary>
+        public ICommand ClearHomeMapShapeAction { get; set; }
         /// <summary>
         /// 清除 Shape
         /// </summary>

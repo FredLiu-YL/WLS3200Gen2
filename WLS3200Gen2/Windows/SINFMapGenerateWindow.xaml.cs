@@ -217,6 +217,31 @@ namespace WLS3200Gen2
 
 
         public string SinfPath { get => sinfPath; set => SetValue(ref sinfPath, value); }
+
+        private void SINFMapGenerate_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void SINFMapGenerate_Unloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         public string SinfSavePath { get => sinfSavePath; set => SetValue(ref sinfSavePath, value); }
         public string Sort_Classification_1 { get => sort_Classification_1; set => SetValue(ref sort_Classification_1, value); }
         public string Sort_Classification_2 { get => sort_Classification_2; set => SetValue(ref sort_Classification_2, value); }
@@ -318,10 +343,10 @@ namespace WLS3200Gen2
                 {
                     if (Sinf == null)
                     {
-                        Sinf = new SinfWaferMapping("");
+                        Sinf = new SinfWaferMapping("", true, false);
                     }
                     path = SINF_Path;
-                    (Sinf.Dies, Sinf.WaferSize) = Sinf.ReadWaferFile(path);
+                    (Sinf.Dies, Sinf.WaferSize) = Sinf.ReadWaferFile(path, true, false);
                     SinfPath = path;
                     Wafer_ID = Sinf.Lot_ID;
                     Wafer_Slot = Sinf.Wafer_Idx.ToString();
@@ -332,7 +357,7 @@ namespace WLS3200Gen2
                     Die_Origin = Sinf.Start_LeftX + "," + Sinf.Start_TopY;
                     DrawTotal_X = Sinf.Count_Column;
                     DrawTotal_Y = Sinf.Count_Row;
-
+                    MappingImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                     ShowMappingDrawings();
                 }
                 else
@@ -420,8 +445,8 @@ namespace WLS3200Gen2
                         Stroke = drawStroke,
                         StrokeThickness = this.StrokeThickness,
                         Fill = drawFill,
-                        X = (item.PosX + Sinf.DieSize_X / 2) / showSize_X + offsetDraw,
-                        Y = (item.PosY + Sinf.DieSize_Y / 2) / showSize_Y + offsetDraw,
+                        X = (item.OperationPixalX / showSize_X) + offsetDraw,
+                        Y = (item.OperationPixalY / showSize_Y) + offsetDraw,
                         LengthX = Sinf.DieSize_X / 2.5 / showSize_X,
                         LengthY = Sinf.DieSize_Y / 2.5 / showSize_Y,
                         IsInteractived = true,
@@ -430,7 +455,7 @@ namespace WLS3200Gen2
                         IsRotateEnabled = false,
                         CenterCrossLength = this.CrossThickness,
                         CenterCrossBrush = drawFill,
-                        ToolTip = "X:" + (item.IndexX + 1) + " Y:" + (item.IndexY + 1) + " X:" + item.PosX + " Y:" + item.PosY
+                        ToolTip = "X:" + (item.IndexX + 1) + " Y:" + (item.IndexY + 1)// + " X:" + item.MapTransX + " Y:" + item.MapTransY
                     });
                 }
 
@@ -461,8 +486,6 @@ namespace WLS3200Gen2
             try
             {
                 FormIsEnable = false;
-
-
                 System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
                 saveFileDialog.Title = "另存為";
                 saveFileDialog.Filter = "文件 (*.txt)|*.txt|所有文件 (*.*)|*.*";
@@ -489,10 +512,6 @@ namespace WLS3200Gen2
                         await SaveINI(saveFileDialog.FileName);
                     }
                 }
-
-
-
-
             }
             catch (Exception ex)
             {
@@ -782,7 +801,7 @@ namespace WLS3200Gen2
                     path = dlg_image.FileName;
                     if (Sinf == null)
                     {
-                        Sinf = new SinfWaferMapping("");
+                        Sinf = new SinfWaferMapping("", true, false);
                     }
                     Sinf.ReadBinCode(path);
                     BinCodeDrawDataGridList.Clear();
@@ -809,6 +828,7 @@ namespace WLS3200Gen2
 
                         count++;
                     }
+                    MappingImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                     ShowMappingDrawings();
                 }
 
@@ -1149,7 +1169,7 @@ namespace WLS3200Gen2
                 //m_WaferMapping.DrawRowCount = draw_CountY;
                 //m_WaferMapping.DieDrawInfo.Clear();
 
-                Sinf = new SinfWaferMapping("");
+                Sinf = new SinfWaferMapping("", true, false);
                 Sinf.Lot_ID = Wafer_ID;
                 Sinf.Unit = "MM";
                 Sinf.DieSize_X = dieSize_X;
@@ -1201,8 +1221,10 @@ namespace WLS3200Gen2
                         Sinf.Dies_result[x, y].IndexY = y;
                         Sinf.Dies_result[x, y].DieSizeX = dieSize_X;
                         Sinf.Dies_result[x, y].DieSizeY = dieSize_Y;
-                        Sinf.Dies_result[x, y].PositionX = dieSize_X * (x);
-                        Sinf.Dies_result[x, y].PositionY = dieSize_Y * (y);
+                        Sinf.Dies_result[x, y].PositionX = dieSize_X * (x + 0.5);
+                        Sinf.Dies_result[x, y].PositionY = dieSize_Y * (y + 0.5);
+                        Sinf.Dies_result[x, y].MapTransX = dieSize_X * (x + 0.5);
+                        Sinf.Dies_result[x, y].MapTransY = dieSize_Y * (y + 0.5);
 
                         if (waferMappingDrawType == MappingDrawType.Skip)
                         {
@@ -1243,15 +1265,17 @@ namespace WLS3200Gen2
                         {
                             IndexX = Sinf.Dies_result[i, j].IndexX,
                             IndexY = Sinf.Dies_result[i, j].IndexY,
-                            PosX = Sinf.Dies_result[i, j].PositionX,
-                            PosY = Sinf.Dies_result[i, j].PositionY,
+                            OperationPixalX = Sinf.Dies_result[i, j].PositionX,
+                            OperationPixalY = Sinf.Dies_result[i, j].PositionY,
+                            MapTransX = Sinf.Dies_result[i, j].PositionX,
+                            MapTransY = Sinf.Dies_result[i, j].PositionY,
                             BinCode = Sinf.Dies_result[i, j].DieData,
                             DieSize = new Size(dieSizeX, dieSizeY)
                         };
                         idx++;
                     }
                 }
-
+                MappingImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 ShowMappingDrawings();
 
                 //foreach (var item in m_WaferMapping.DieDrawInfo)

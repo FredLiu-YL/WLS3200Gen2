@@ -15,26 +15,22 @@ namespace WLS3200Gen2.Model.Recipe
     /// </summary>
     public abstract class WaferMapping
     {
-
-        public WaferMapping(string path)
+        public WaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror)
         {
-
-            var a = ReadWaferFile(path);
-
+            var a = ReadWaferFile(path, isMotionXMirror, isMotionYMirror);
             Dies = a.dies;
             WaferSize = a.waferSize;
-
         }
         /// <summary>
         /// Wafer 計算起點
         /// </summary>
         public System.Drawing.Point OriginPoint { get; set; }
         /// <summary>
-        /// Notch角度 0  90  180 270
+        /// Notch角度 0  90  180  270
         /// </summary>
         public double NotchDirection { get; set; }
         /// <summary>
-        /// Map 中心位置
+        /// Map 中心位置(畫出來的Map要是對稱性，偏邊的話此值對應會有問題)
         /// </summary>
         public Point MapCenterPoint { get; set; }
         /// <summary>
@@ -42,7 +38,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         public Die[] Dies { get; set; }
         /// <summary>
-        /// Wafer尺寸
+        /// Wafer尺寸(um)
         /// </summary>
         public Size WaferSize { get; set; }
         /// <summary>
@@ -55,11 +51,13 @@ namespace WLS3200Gen2.Model.Recipe
         public int RowCount { get; set; }
 
         /// <summary>
-        /// 讀取WaferMapping
+        /// 讀取WaferMapping path路徑 isMotionXMirror是否要映射X isMotionYMirror是否要映射Y
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="isMotionXMirror"></param>
+        /// <param name="isMotionYMirror"></param>
         /// <returns></returns>
-        public abstract (Die[] dies, Size waferSize) ReadWaferFile(string path);
+        public abstract (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror);
         /// <summary>
         /// 儲存WaferMapping
         /// </summary>
@@ -69,11 +67,24 @@ namespace WLS3200Gen2.Model.Recipe
 
     public class SinfWaferMapping : WaferMapping
     {
-        public SinfWaferMapping(string path) : base(path)
+        /// <summary>
+        /// path路徑 isMotionXMirror是否要映射X isMotionYMirror是否要映射Y
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="isMotionXMirror"></param>
+        /// <param name="isMotionYMirror"></param>
+        public SinfWaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror) : base(path, isMotionXMirror, isMotionYMirror)
         {
 
         }
-        public override (Die[] dies, Size waferSize) ReadWaferFile(string path)
+        /// <summary>
+        /// path路徑 isMotionXMirror是否要映射X isMotionYMirror是否要映射Y
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="isMotionXMirror"></param>
+        /// <param name="isMotionYMirror"></param>
+        /// <returns></returns>
+        public override (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
         {
             try
             {
@@ -104,7 +115,7 @@ namespace WLS3200Gen2.Model.Recipe
                 {
                     Dies_result = new DieDraw[0, 0];
                     ReadSinf(path);
-                    Dies_result = RotateMap(posDirection, Dies_result);
+                    Dies_result = RotateMap(posDirection, Dies_result, isMotionXMirror, isMotionYMirror);
                     if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
                     {
                         MapCenterPoint = new Point(mapCenter.X, mapCenter.Y);
@@ -113,8 +124,6 @@ namespace WLS3200Gen2.Model.Recipe
                     {
                         MapCenterPoint = new Point(mapCenter.Y, mapCenter.X);
                     }
-
-
                     die = new Die[Dies_result.GetLength(0) * Dies_result.GetLength(1)];
                     int idx = 0;
                     ColumnCount = Dies_result.GetLength(0);
@@ -123,32 +132,20 @@ namespace WLS3200Gen2.Model.Recipe
                     {
                         for (int j = 0; j < Dies_result.GetLength(1); j++)
                         {
-                            double dieSizeX = 0;
-                            double dieSizeY = 0;
-                            if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
-                            {
-                                dieSizeX = Dies_result[i, j].DieSizeX;
-                                dieSizeY = Dies_result[i, j].DieSizeY;
-                            }
-                            else
-                            {
-                                dieSizeX = Dies_result[i, j].DieSizeY;
-                                dieSizeY = Dies_result[i, j].DieSizeX;
-                            }
                             die[idx] = new Die
                             {
                                 IndexX = Dies_result[i, j].TransIndexX,
                                 IndexY = Dies_result[i, j].TransIndexY,
-                                PosX = Dies_result[i, j].TransPositionX,
-                                PosY = Dies_result[i, j].TransPositionY,
+                                OperationPixalX = Dies_result[i, j].TransPositionX,
+                                OperationPixalY = Dies_result[i, j].TransPositionY,
+                                MapTransX = Dies_result[i, j].MapTransX,
+                                MapTransY = Dies_result[i, j].MapTransY,
                                 BinCode = Dies_result[i, j].TransDieData,
-                                DieSize = new Size(dieSizeX, dieSizeY)
+                                DieSize = new Size(Dies_result[i, j].DieSizeX, Dies_result[i, j].DieSizeY)
                             };
                             idx++;
                         }
                     }
-
-
                 }
                 return (die, waferSize);
             }
@@ -418,16 +415,12 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
-        private DieDraw[,] RotateMap(Direction direction, DieDraw[,] die_Draw)
+        private DieDraw[,] RotateMap(Direction direction, DieDraw[,] die_Draw, bool isMotionXMirror, bool isMotionYMirror)
         {
             try
             {
                 int total_X = die_Draw.GetLength(0);
                 int total_Y = die_Draw.GetLength(1);
-                int newX;
-                int newX_idx = total_X - 1;
-                int newY;
-                int newX_idY = total_Y - 1;
                 double dieSizeX = 0;
                 double dieSizeY = 0;
                 if (direction == Direction.Right_Button || direction == Direction.Left_Top)
@@ -441,16 +434,32 @@ namespace WLS3200Gen2.Model.Recipe
                     dieSizeY = die_Draw[0, 0].DieSizeX;
                 }
 
-
+                int newX;
+                int newY;
+                int mapTransIndexX;
+                int mapTransIndexY;
+                int newX_idx = total_X - 1;
+                int newX_idY = total_Y - 1;
                 for (int i = 0; i <= total_X - 1; i++)
                 {
                     if (direction == Direction.Right_Button || direction == Direction.Right_Top)
                     {
                         newX = i;
+                        mapTransIndexX = i;
+                        if (isMotionXMirror)
+                        {
+                            mapTransIndexX = newX_idx;
+                        }
                     }
                     else
                     {
                         newX = newX_idx;
+                        mapTransIndexX = newX_idx;
+                        if (isMotionXMirror)
+                        {
+                            mapTransIndexX = i;
+
+                        }
                     }
                     for (int j = 0; j <= total_Y - 1; j++)
                     {
@@ -458,16 +467,28 @@ namespace WLS3200Gen2.Model.Recipe
                         if (direction == Direction.Right_Button || direction == Direction.Left_Button)
                         {
                             newY = j;
+                            mapTransIndexY = j;
+                            if (isMotionYMirror)
+                            {
+                                mapTransIndexY = newX_idY;
+                            }
                         }
                         else
                         {
                             newY = newX_idY;
+                            mapTransIndexY = newX_idY;
+                            if (isMotionYMirror)
+                            {
+                                mapTransIndexY = j;
+                            }
                         }
 
                         die_Draw[i, j].TransIndexX = newX;
                         die_Draw[i, j].TransIndexY = newY;
                         die_Draw[i, j].TransPositionX = dieSizeX / 2 + newX * dieSizeX;
                         die_Draw[i, j].TransPositionY = dieSizeY / 2 + newY * dieSizeY;
+                        die_Draw[i, j].MapTransX = dieSizeX / 2 + mapTransIndexX * dieSizeX;
+                        die_Draw[i, j].MapTransY = dieSizeY / 2 + mapTransIndexY * dieSizeY;
                         die_Draw[i, j].TransDieData = die_Draw[newX, newY].DieData;
 
                         newX_idY--;
@@ -475,6 +496,10 @@ namespace WLS3200Gen2.Model.Recipe
                     newX_idx--;
                     newX_idY = total_Y - 1;
                 }
+
+
+
+
                 return die_Draw;
             }
             catch (Exception ex)
@@ -642,6 +667,10 @@ namespace WLS3200Gen2.Model.Recipe
 
             public string TransDieData;
 
+            public double MapTransX;
+
+            public double MapTransY;
+
             public List<PictureInfo> DieDataList = new List<PictureInfo>();
 
             public List<PictureInfo> TransDieDataList = new List<PictureInfo>();
@@ -655,10 +684,10 @@ namespace WLS3200Gen2.Model.Recipe
     }
     public class KLAWaferMapping : WaferMapping
     {
-        public KLAWaferMapping(string path) : base(path)
+        public KLAWaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror) : base(path, isMotionXMirror, isMotionYMirror)
         {
         }
-        public override (Die[] dies, Size waferSize) ReadWaferFile(string path)
+        public override (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
         {
             throw new NotImplementedException();
         }

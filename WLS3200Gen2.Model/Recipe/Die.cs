@@ -10,8 +10,30 @@ namespace YuanliCore.Data
 {
     public class Die
     {
+        /// <summary>
+        /// 使用者操作的索引座標X
+        /// </summary>
         public int IndexX { get; set; }
+        /// <summary>
+        /// 使用者操作的索引座標Y
+        /// </summary>
         public int IndexY { get; set; }
+        /// <summary>
+        /// 使用者介面的圖像座標X
+        /// </summary>
+        public double OperationPixalX { get; set; }
+        /// <summary>
+        /// 使用者介面的圖像座標Y
+        /// </summary>
+        public double OperationPixalY { get; set; }
+        /// <summary>
+        /// 轉換後同象限座標X(因機台座標與Index象限可能不一致，轉換後同象限)
+        /// </summary>
+        public double MapTransX { get; set; }
+        /// <summary>
+        /// 轉換後同象限座標Y(因機台座標與Index象限可能不一致，轉換後同象限)
+        /// </summary>
+        public double MapTransY { get; set; }
         /// <summary>
         /// 機械座標x
         /// </summary>

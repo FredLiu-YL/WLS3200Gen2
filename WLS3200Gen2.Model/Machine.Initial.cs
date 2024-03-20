@@ -226,8 +226,10 @@ namespace WLS3200Gen2.Model
                     }
                 }
 
-                var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
-                var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                //var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                //var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
+                var doNames = new string[64];
+                var diNames = new string[32];
 
                 motionController = new SimulateMotionControllor(axisConfig, doNames, diNames);
                 motionController.InitializeCommand();

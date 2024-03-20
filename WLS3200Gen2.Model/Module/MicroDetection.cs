@@ -179,7 +179,7 @@ namespace WLS3200Gen2.Model.Module
                 var transPosition = transForm.TransPoint(point.Position);
 
                 await TableMoveToAsync(transPosition);
-                SetMicroscope(point);
+                await SetMicroscope(point);
 
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
@@ -258,9 +258,11 @@ namespace WLS3200Gen2.Model.Module
 
         }
 
-        private void SetMicroscope(DetectionPoint detectionPoint)
+        private async Task SetMicroscope(DetectionPoint detectionPoint)
         {
-
+            await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
+            await Microscope.ChangeLightAsync(detectionPoint.MicroscopeLightValue);
+            await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
 
         }
 
