@@ -48,7 +48,7 @@ namespace WLS3200Gen2
         private ILoadPort loadPort1;
         private IRobot robot;
         private MacroStatus macroStatus = new MacroStatus();
-
+        private bool isAutoSave, isWaferCirclePhoto, isDieAllPhoto;
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
@@ -59,6 +59,7 @@ namespace WLS3200Gen2
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
         public ProcessSetting ProcessSetting { get => processSetting; set => SetValue(ref processSetting, value); }
+
         public Visibility processVisibility = Visibility.Visible;
         public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
         public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
@@ -77,7 +78,9 @@ namespace WLS3200Gen2
         public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
         public ILoadPort LoadPort1 { get => loadPort1; set => SetValue(ref loadPort1, value); }
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
-
+        public bool IsAutoSave { get => isAutoSave; set => SetValue(ref isAutoSave, value); }
+        public bool IsWaferCirclePhoto { get => isWaferCirclePhoto; set => SetValue(ref isWaferCirclePhoto, value); }
+        public bool IsDieAllPhoto { get => isDieAllPhoto; set => SetValue(ref isDieAllPhoto, value); }
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -113,6 +116,10 @@ namespace WLS3200Gen2
                     ProcessSetting.IsLoadport2 = IsLoadport2;//暫時沒用到 都用IsLoadport1 判斷
                     //寫入每片Wafer的作業流程
                     ProcessSetting.ProcessStation = ProcessStations.ToArray();
+                    //運作模式
+                    ProcessSetting.IsAutoSave = IsAutoSave;
+                    ProcessSetting.IsWaferCirclePhoto = IsWaferCirclePhoto;
+                    ProcessSetting.IsDieAllPhoto = IsDieAllPhoto;
 
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
                     await machine.ProcessRunAsync(ProcessSetting);

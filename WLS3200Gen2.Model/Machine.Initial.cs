@@ -22,18 +22,16 @@ namespace WLS3200Gen2.Model
 
             try
             {
+                WriteLog?.Invoke("Initial");
+
                 motionController = ControlEntity();
                 loadPort = LoadPortEntity();
-                robot = RobotEntity(machineSetting.RobotsType);
+                robot = RobotEntity();
                 aligner = AlignerEntity();
-                camera = CameraEntity(machineSetting.CamerasType);
+                camera = CameraEntity();
                 macro = MacrotEntity();
                 microscope = MicroEntity();
 
-
-
-
-                WriteLog?.Invoke("Controller Initial");
                 motionController.InitializeCommand();
 
                 loadPort.Initial();
@@ -54,6 +52,8 @@ namespace WLS3200Gen2.Model
 
                 //將初始化後的元件 傳進模組內(分配io點位 以及 軸號)
                 AssignComponent();
+
+                WriteLog?.Invoke("Initial End");
             }
             catch (Exception ex)
             {
@@ -169,7 +169,7 @@ namespace WLS3200Gen2.Model
                 if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                 {
                     //loadPort = new ArtificialLoadPort();
-                    loadPort = new HirataLoadPort_RS232("COM2");
+                    loadPort = new HirataLoadPort_RS232(machineSetting.LoadPort1COM);//COM2
                 }
                 else
                 {
@@ -318,15 +318,14 @@ namespace WLS3200Gen2.Model
                 //var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 var doNames = new string[64];
                 var diNames = new string[32];
-
-
-                motionController = new Adlink7856(axisConfig, doNames, diNames);
+                
+                motionController = new Adlink7856(axisConfig, doNames, diNames, machineSetting.MotionSettingFileName);//"C:\\WLS3200-System\\Motion.xml"
             }
 
             return motionController;
 
         }
-        private ICamera CameraEntity(CameraType cameraType)
+        private ICamera CameraEntity()
         {
             try
             {
@@ -335,12 +334,11 @@ namespace WLS3200Gen2.Model
                 {
                     if (!File.Exists("9.bmp")) throw new Exception("模擬情境下需要放一張圖片到執行檔資料夾 取名9.bmp");
                     camera = new SimulateCamera("9.bmp");
-
                 }
                 else
                 {
-                    camera = new ArtificialCamera();
-                    //camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera("");
+                    //camera = new ArtificialCamera();
+                    camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
 
                 }
 
@@ -362,7 +360,7 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-                aligner = new HirataAligner_RS232("COM32");
+                aligner = new HirataAligner_RS232(machineSetting.AlignerCOM);//COM32
             }
 
             return aligner;
@@ -394,11 +392,11 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-                microscope = new BXUCB("COM24");
+                microscope = new BXUCB(machineSetting.MicroscopeCOM);//COM24
             }
             return microscope;
         }
-        private IEFEMRobot RobotEntity(RobotType robotType)
+        private IEFEMRobot RobotEntity()
         {
             IEFEMRobot robot = null;
             if (isSimulate)
@@ -408,10 +406,10 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-                if (robotType == RobotType.Hirata)
+                if (machineSetting.RobotsType == RobotType.Hirata)
                 {
                     //LoadPortCOM machineSetting.LoadPortCOM
-                    robot = new HirataRobot_RS232("COM5", 10, 2);
+                    robot = new HirataRobot_RS232(machineSetting.RobotsCOM, 10, 2);
 
                 }
             }

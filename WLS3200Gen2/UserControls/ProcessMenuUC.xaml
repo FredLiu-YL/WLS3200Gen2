@@ -43,7 +43,7 @@
                          Grid.Column="0"
                          Grid.Row ="1"
                          Margin="8,8,8,16"
-                         IsChecked="{Binding AutoSaveIsChecked}"
+                         IsChecked="{Binding IsAutoSave}"
                          Style="{StaticResource MaterialDesignSwitchToggleButton}"
                          Width="50"
                          ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
@@ -62,7 +62,7 @@
                          Grid.Column="0"
                          Grid.Row ="2"
                          Margin="8,8,8,16"
-                         IsChecked="{Binding CircleIsChecked}"
+                         IsChecked="{Binding IsWaferCirclePhoto}"
                          Style="{StaticResource MaterialDesignSwitchToggleButton}"
                          Width="50"
                          ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
@@ -80,7 +80,7 @@
                          Grid.Column="0"
                          Grid.Row ="3"
                          Margin="8,8,8,16"
-                         IsChecked="{Binding DieInsideAllChecked}"
+                         IsChecked="{Binding IsDieAllPhoto}"
                          Style="{StaticResource MaterialDesignSwitchToggleButton}"
                          Width="50"
                          ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
@@ -95,8 +95,8 @@
                 </ToggleButton>
 
                 <TextBlock Grid.Column="1" Grid.Row ="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AutoSave" FontSize="20"/>
-                <TextBlock Grid.Column="1" Grid.Row ="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Circle" FontSize="20"/>
-                <TextBlock Grid.Column="1" Grid.Row ="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="DieInsideAll" FontSize="20"/>
+                <TextBlock Grid.Column="1" Grid.Row ="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="WaferCirclePhoto" FontSize="20" Width="180"/>
+                <TextBlock Grid.Column="1" Grid.Row ="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="DieAllPhoto" FontSize="20"/>
 
             </Grid>
         </materialDesign:PopupBox>

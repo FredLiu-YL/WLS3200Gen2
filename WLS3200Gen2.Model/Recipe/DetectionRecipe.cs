@@ -46,14 +46,32 @@ namespace WLS3200Gen2.Model.Recipe
         /// 檢測位置的座標
         /// </summary>
         public Point Position { get => position; set => SetValue(ref position, value); }
-
-
         /// <summary>
-        /// 目前光強度
+        /// 鏡頭倍率
+        /// </summary>
+        public int LensIndex { get; set; }
+        /// <summary>
+        /// Cube在哪一槽
+        /// </summary>
+        public int CubeIndex { get; set; }
+        /// <summary>
+        /// 第一道濾片
+        /// </summary>
+        public int Filter1Index { get; set; }
+        /// <summary>
+        /// 第二道濾片
+        /// </summary>
+        public int Filter2Index { get; set; }
+        /// <summary>
+        /// 第三道濾片
+        /// </summary>
+        public int Filter3Index { get; set; }
+        /// <summary>
+        /// 光強度
         /// </summary>
         public int MicroscopeLightValue { get; set; }
         /// <summary>
-        /// 目前光圈
+        /// 光圈
         /// </summary>
         public int MicroscopeApertureValue { get; set; }
 

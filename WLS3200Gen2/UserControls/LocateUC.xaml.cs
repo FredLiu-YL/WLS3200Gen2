@@ -296,21 +296,21 @@ namespace WLS3200Gen2.UserControls
                 case "set1":
                     MatchParam1.GrabPositionX = CurrentPosX;
                     MatchParam1.GrabPositionY = CurrentPosY;
-                    MatchParam1.DesignPositionX = CurrentPosX;
-                    MatchParam1.DesignPositionY = CurrentPosY;
+                    //MatchParam1.DesignPositionX = CurrentPosX;
+                    //MatchParam1.DesignPositionY = CurrentPosY;
                     break;
                 case "set2":
                     MatchParam2.GrabPositionX = CurrentPosX;
                     MatchParam2.GrabPositionY = CurrentPosY;
-                    MatchParam2.DesignPositionX = CurrentPosX;
-                    MatchParam2.DesignPositionY = CurrentPosY;
+                    //MatchParam2.DesignPositionX = CurrentPosX;
+                    //MatchParam2.DesignPositionY = CurrentPosY;
 
                     break;
                 case "set3":
                     MatchParam3.GrabPositionX = CurrentPosX;
                     MatchParam3.GrabPositionY = CurrentPosY;
-                    MatchParam3.DesignPositionX = CurrentPosX;
-                    MatchParam3.DesignPositionY = CurrentPosY;
+                    //MatchParam3.DesignPositionX = CurrentPosX;
+                    //MatchParam3.DesignPositionY = CurrentPosY;
 
                     break;
                 default:

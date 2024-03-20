@@ -198,7 +198,9 @@ namespace WLS3200Gen2
                 TableRConfig = machineSetting.TableRConfig;
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
-
+                IsAutoSave = ProcessSetting.IsAutoSave;
+                IsWaferCirclePhoto = ProcessSetting.IsWaferCirclePhoto;
+                IsDieAllPhoto = ProcessSetting.IsDieAllPhoto;
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
@@ -468,7 +470,7 @@ namespace WLS3200Gen2
         private void CameraLive()
         {
             var camera = machine.MicroDetection.Camera;
-            //var dis = machine.MicroDetection.Camera.Grab();
+            var dis = machine.MicroDetection.Camera.Grab();
             try
             {
 

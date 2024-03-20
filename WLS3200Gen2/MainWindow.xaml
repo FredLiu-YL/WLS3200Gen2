@@ -211,7 +211,7 @@
                                 <materialDesign:PackIcon  Width="60" Height="60" Kind="Stop" />
                             </Button>
 
-                            <UserControlUC:ProcessMenuUC Grid.Column="4"  />
+                            <UserControlUC:ProcessMenuUC Grid.Column="4" IsAutoSave="{Binding IsAutoSave}" IsDieAllPhoto="{Binding IsDieAllPhoto}" IsWaferCirclePhoto="{Binding IsWaferCirclePhoto}"/>
                             <Border Grid.Column="5"    BorderBrush="DeepSkyBlue"  BorderThickness="2">
                                 <UserControlUC:MachineStateUC Status="{Binding Machinestatus}"/>
                             </Border>
@@ -835,7 +835,7 @@
                                                             <RowDefinition />
                                                         </Grid.RowDefinitions>
                                                         <UserControlUC:LocateUC MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
-                                                                                 MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}"   />
+                                                                                 MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}" CurrentPosX="{Binding TablePosX }" CurrentPosY="{Binding TablePosY }" />
                                                         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
                                                                 <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}"  />

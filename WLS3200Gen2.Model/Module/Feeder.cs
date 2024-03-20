@@ -132,9 +132,8 @@ namespace WLS3200Gen2.Model.Module
             }
         }
 
-        public async void ProcessInitial(InchType inchType, MachineSetting machineSetting, PauseTokenSource pauseToken, CancellationTokenSource cancellationToken)
+        public void ProcessInitial(InchType inchType, MachineSetting machineSetting, PauseTokenSource pauseToken, CancellationTokenSource cancellationToken)
         {
-
             this.pauseToken = pauseToken;
             this.cancelToken = cancellationToken;
             this.machineSetting = machineSetting;//重新將設定檔傳入
@@ -171,9 +170,6 @@ namespace WLS3200Gen2.Model.Module
 
                //判斷有WAFER的格子
                var waferuse = cassette.Wafers.Where(w => w != null); */
-
-
-
 
         }
 

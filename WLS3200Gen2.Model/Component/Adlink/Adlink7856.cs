@@ -11,6 +11,10 @@ namespace WLS3200Gen2.Model.Component.Adlink
     public class Adlink7856 : IMotionController
     {
         /// <summary>
+        /// 軸卡參數讀取路徑
+        /// </summary>
+        private string motionSettingFileName;
+        /// <summary>
         /// 軸卡參數
         /// </summary>
         private Axis[] axes;
@@ -69,7 +73,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
         private double[] limitP;
         private AxisDirection[] direction;
 
-        public Adlink7856(IEnumerable<AxisConfig> axisInfos, IEnumerable<string> doNames, IEnumerable<string> diNames)
+        public Adlink7856(IEnumerable<AxisConfig> axisInfos, IEnumerable<string> doNames, IEnumerable<string> diNames, string motionSettingFileName)
         {
             try
             {
@@ -137,6 +141,8 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 direction = axesdirection.ToArray();
                 OutputSignals = doNames.Select((n, i) => new DigitalOutput(i, this));
                 InputSignals = diNames.Select((n, i) => new DigitalInput(n, i, this)).ToArray();
+
+                this.motionSettingFileName = motionSettingFileName;
             }
             catch (Exception)
             {
@@ -156,6 +162,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
         {
             try
             {
+                if (!System.IO.File.Exists(motionSettingFileName)) throw new Exception("Motion Setting File Not Exists!!");
                 IsOpen = InitialCard();
                 foreach (var item in OutputSignals)
                 {
@@ -530,12 +537,6 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 throw ex;
             }
         }
-
-
-
-
-
-
         private bool InitialCard()
         {
             try
@@ -617,7 +618,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                                 }
                             }
                         }
-                        Function_Result(APS168Lib.APS_load_param_from_file("C:\\WLS3200-System\\Motion.xml"));//"C://" + "Motion.xml"
+                        Function_Result(APS168Lib.APS_load_param_from_file(motionSettingFileName));//"C:\\WLS3200-System\\Motion.xml"
                         if (!FunctionFail)
                         {
                             bool_APS_Status = true;

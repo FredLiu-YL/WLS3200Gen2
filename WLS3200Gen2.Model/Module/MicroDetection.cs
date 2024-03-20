@@ -173,12 +173,12 @@ namespace WLS3200Gen2.Model.Module
             //每一個座標需要檢查的座標
             foreach (DetectionPoint point in recipe.DetectionPoints)
             {
-
                 WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
                 //轉換成對位後實際座標
-                var transPosition = transForm.TransPoint(point.Position);
+                var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
+                var transPosition = transForm.TransPoint(newPos);
 
-                await TableMoveToAsync(transPosition);
+                await TableMoveToAsync(transPosition); //Offset
                 await SetMicroscope(point);
 
                 await Task.Delay(200);
@@ -263,7 +263,6 @@ namespace WLS3200Gen2.Model.Module
             await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
             await Microscope.ChangeLightAsync(detectionPoint.MicroscopeLightValue);
             await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
-
         }
 
 

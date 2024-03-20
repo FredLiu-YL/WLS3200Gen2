@@ -558,7 +558,7 @@ namespace WLS3200Gen2
                         IsRotateEnabled = false,
                         CenterCrossLength = crossThickness,
                         CenterCrossBrush = drawFill,
-                        ToolTip = "X:" + item.IndexX + " Y:" + item.IndexY + " X:" + item.MapTransX + " Y:" + item.MapTransY
+                        ToolTip = "X:" + (item.IndexX) + " Y:" + (item.IndexY) + " X:" + item.MapTransX + " Y:" + item.MapTransY
                     });
                 }
 
@@ -1112,7 +1112,7 @@ namespace WLS3200Gen2
                 {
                     if (this.selectShape != null)
                     {
-                        this.selectShape.Stroke = System.Windows.Media.Brushes.LightGreen;
+                        this.selectShape.Stroke = System.Windows.Media.Brushes.Black;
 
                     }
 
@@ -1148,14 +1148,23 @@ namespace WLS3200Gen2
                 point.IndexY = die.IndexY;
                 point.OffsetX = 0;
                 point.OffsetY = 0;
-                point.Position = new Point(die.PosX, die.PosY);
+                point.Position = new Point(die.MapTransX, die.MapTransY);
+
+                var newPos = new Point(TablePosX - point.Position.X, TablePosY - point.Position.Y);
+                var transPosition = transForm.TransPoint(newPos);
 
                 point.MicroscopeLightValue = Microscope.LightValue;
                 point.MicroscopeApertureValue = Microscope.ApertureValue;
                 point.MicroscopePosition = Microscope.Position;
                 point.MicroscopeAberationPosition = Microscope.AberationPosition;
-                DetectionPointList.Add(point);
 
+                point.LensIndex = Microscope.LensIndex;
+                point.CubeIndex = Microscope.CubeIndex;
+                point.Filter1Index = Microscope.Filter1Index;
+                point.Filter2Index = Microscope.Filter2Index;
+                point.Filter3Index = Microscope.Filter3Index;
+
+                DetectionPointList.Add(point);
             }
             catch (Exception ex)
             {
@@ -1197,40 +1206,60 @@ namespace WLS3200Gen2
         }
         private void SetLocateParamToRecipe()
         {
-            List<LocateParam> datas = new List<LocateParam>();
-
-            datas.Add(LocateParam1);
-            datas.Add(LocateParam2);
-            datas.Add(LocateParam3);
-
-            //需要做出一個轉換矩陣 對應index 與 機台座標
-            var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
-            var index2 = new Point(LocateParam2.IndexX, LocateParam2.IndexY);
-            var index3 = new Point(LocateParam3.IndexX, LocateParam3.IndexY);
-
-            var pos1 = new Point(LocateParam1.DesignPositionX, LocateParam1.DesignPositionY);
-            var pos2 = new Point(LocateParam2.DesignPositionX, LocateParam2.DesignPositionY);
-            var pos3 = new Point(LocateParam3.DesignPositionX, LocateParam3.DesignPositionY);
-
-            var indexs = new Point[] { index1, index2, index3 };
-            var poss = new Point[] { pos1, pos2, pos3 };
-            if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
-            var transform = new CogAffineTransform(indexs, poss);
-
-            //依序轉換完INDEX  塞回機械座標
-            foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
+            try
             {
-                Point pos = transform.TransPoint(new Point(die.IndexX, die.IndexY));
-                die.PosX = pos.X;
-                die.PosY = pos.Y;
+                List<LocateParam> datas = new List<LocateParam>();
+
+                datas.Add(LocateParam1);
+                datas.Add(LocateParam2);
+                datas.Add(LocateParam3);
+
+                //需要做出一個轉換矩陣 對應index 與 機台座標
+                var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
+                var index2 = new Point(LocateParam2.IndexX, LocateParam2.IndexY);
+                var index3 = new Point(LocateParam3.IndexX, LocateParam3.IndexY);
+
+                var posDesign1 = new Point(LocateParam1.DesignPositionX, LocateParam1.DesignPositionY);
+                var posDesign2 = new Point(LocateParam2.DesignPositionX, LocateParam2.DesignPositionY);
+                var posDesign3 = new Point(LocateParam3.DesignPositionX, LocateParam3.DesignPositionY);
+
+                var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
+                var pos2 = new Point(LocateParam2.GrabPositionX, LocateParam2.GrabPositionY);
+                var pos3 = new Point(LocateParam3.GrabPositionX, LocateParam3.GrabPositionY);
+
+                var indexs = new Point[] { index1, index2, index3 };
+                var posDesign = new Point[] { posDesign1, posDesign2, posDesign3 };
+                var poss = new Point[] { pos1, pos2, pos3 };
+                if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
+                var transform = new CogAffineTransform(posDesign, poss);
+
+
+                //依序轉換完INDEX  塞回機械座標
+                foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
+                {
+                    Point pos = transform.TransPoint(new Point(die.MapTransX, die.MapTransY));
+                    die.PosX = pos.X;
+                    die.PosY = pos.Y;
+                    Point posInvert = transform.TransInvertPoint(new Point(die.PosX, die.PosY));
+
+
+                    if ((die.IndexX == 0 && die.IndexY == 56) || (die.IndexX == 112 && die.IndexY == 56) || (die.IndexX == 113 && die.IndexY == 56) || (die.IndexX == 0 && die.IndexY == 66))
+                    {
+                        int ss2 = 0;
+                    }
+                }
+
+
+                mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
+                mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
+                mainRecipe.DetectRecipe.AlignRecipe.OffsetY = AlignOffsetY;
+                mainRecipe.DetectRecipe.AlignRecipe.FiducialDatas = datas.ToArray();
             }
+            catch (Exception ex)
+            {
 
-
-            mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
-            mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
-            mainRecipe.DetectRecipe.AlignRecipe.OffsetY = AlignOffsetY;
-            mainRecipe.DetectRecipe.AlignRecipe.FiducialDatas = datas.ToArray();
-
+                MessageBox.Show(ex.Message);
+            }
         }
         private void SetRecipeToLoadWaferParam(EFEMtionRecipe eFEMtionRecipe)
         {

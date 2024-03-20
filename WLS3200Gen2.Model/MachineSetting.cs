@@ -13,7 +13,7 @@ namespace WLS3200Gen2.Model
 {
     public class MachineSetting : AbstractRecipe
     {
-
+        public string MotionSettingFileName { get; set; }
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();
         public AxisConfig TableYConfig { get; set; } = new AxisConfig();
         public AxisConfig TableZConfig { get; set; } = new AxisConfig();
@@ -60,22 +60,31 @@ namespace WLS3200Gen2.Model
         /// Robot 橫移軸Micro位置的取放料座標
         /// </summary>
         public double RobotAxisMicroTakePosition { get; set; }
-
-
         /// <summary>
         /// Die 判定需給定BinCode
         /// </summary>
         public BinCode[] BinCodes { get; set; }
 
         public RobotType RobotsType { get; set; }
+        /// <summary>
+        /// 手臂RS232的COM
+        /// </summary>
         public string RobotsCOM { get; set; }
+        /// <summary>
+        /// 相機設定檔案路徑
+        /// </summary>
+        public string CamerasSettingFileName { get; set; }
         public CameraType CamerasType { get; set; }
         public LoadPortType LoadPortType { get; set; }
         public LoadPortQuantity LoadPortCount { get; set; }
         /// <summary>
-        /// LoadPortRS232的COM
+        /// LoadPort1RS232的COM
         /// </summary>
-        public string LoadPortCOM { get; set; }
+        public string LoadPort1COM { get; set; }
+        /// <summary>
+        /// LoadPort2RS232的COM
+        /// </summary>
+        public string LoadPort2COM { get; set; }
         /// <summary>
         /// AlignerRS232的COM
         /// </summary>
