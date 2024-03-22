@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using YuanliCore.Data;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2.Model.Recipe
 {
@@ -49,7 +50,10 @@ namespace WLS3200Gen2.Model.Recipe
         /// 列總數
         /// </summary>
         public int RowCount { get; set; }
-
+        /// <summary>
+        /// 樣本圖片 
+        /// </summary>
+        public Frame<byte[]> MapImage { get; set; }
         /// <summary>
         /// 讀取WaferMapping path路徑 isMotionXMirror是否要映射X isMotionYMirror是否要映射Y
         /// </summary>
@@ -63,6 +67,10 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         /// <param name="path"></param>
         public abstract void SaveWaferFile(string path);
+
+
+
+
     }
 
     public class SinfWaferMapping : WaferMapping
@@ -585,7 +593,6 @@ namespace WLS3200Gen2.Model.Recipe
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }

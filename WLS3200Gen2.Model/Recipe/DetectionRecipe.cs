@@ -29,23 +29,26 @@ namespace WLS3200Gen2.Model.Recipe
 
     public class DetectionPoint : INotifyPropertyChanged
     {
-        private int indexX, indexY;
+        private int indexX, indexY, subDieType;
         private double offsetX, offsetY;
         private Point position;
 
         /// <summary>
-        /// 檢測位置的Index 
+        /// 檢測位置的Index X
         /// </summary>
         public int IndexX { get => indexX; set => SetValue(ref indexX, value); }
-        public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
-
-        public double OffsetX { get => offsetX; set => SetValue(ref offsetX, value); }
-        public double OffsetY { get => offsetY; set => SetValue(ref offsetY, value); }
-
         /// <summary>
-        /// 檢測位置的座標
+        /// 檢測位置的Index Y
+        /// </summary>
+        public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
+        /// <summary>
+        /// 檢測位置的座標X Y
         /// </summary>
         public Point Position { get => position; set => SetValue(ref position, value); }
+        /// <summary>
+        /// 第幾組SubDie模式
+        /// </summary>
+        public int SubDieType { get => subDieType; set => SetValue(ref subDieType, value); }
         /// <summary>
         /// 鏡頭倍率
         /// </summary>

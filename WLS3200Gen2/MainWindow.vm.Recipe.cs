@@ -15,6 +15,7 @@ using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Account;
 using YuanliCore.AffineTransform;
+using YuanliCore.CameraLib;
 using YuanliCore.Data;
 using YuanliCore.ImageProcess.Match;
 using YuanliCore.Interface;
@@ -393,7 +394,7 @@ namespace WLS3200Gen2
 
 
        });
-        public ICommand LoadMappingCommand => new RelayCommand(() =>
+        public ICommand LoadMappingCommand => new RelayCommand(async () =>
         {
             //MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
             //ClearMapShapeAction.Execute(MapDrawings);
@@ -455,7 +456,9 @@ namespace WLS3200Gen2
                     mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("", true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
                     MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                    ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                    await ShowHomeMapImgae(mainRecipe.DetectRecipe.WaferMap);
+
 
                 }
             }
@@ -491,9 +494,35 @@ namespace WLS3200Gen2
                 throw;
             }
         });
+        public async Task ShowHomeMapImgae(WaferMapping waferMap)
+        {
+            try
+            {
+                //await Task.Delay(500);
+                //                return;
+                SaveMappingAction.Execute($"{systemPath}\\Map.bmp");
+                var bitmapImage = new BitmapImage();
+                string path = $"{systemPath}\\Map.bmp"; // "C://Users//zhengye_lin//Desktop//333output.bmp"
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = new Uri(path);//333output.bmp
+                bitmapImage.EndInit();
+                //ClearHomeMapShapeAction.Execute(true);
+                //HomeMapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+                //if (!(bitmapImage is null))
+                //{
+                //    HomeMapImage = new WriteableBitmap(bitmapImage);
+                //}
+                waferMap.MapImage = bitmapImage.FormatConvertTo(PixelFormats.Rgb24).ToByteFrame();
 
+            }
+            catch (Exception)
+            {
 
-        public void ShowMappingDrawings(Die[] dies, int columnCount, int rowCount, int mappingImageDrawSize)
+                throw;
+            }
+        }
+
+        public async Task ShowMappingDrawings(Die[] dies, int columnCount, int rowCount, int mappingImageDrawSize)
         {
             try
             {
@@ -529,8 +558,10 @@ namespace WLS3200Gen2
                     pBinCodes[1].CodeColor = Brushes.Red;
                     machineSetting.BinCodes = pBinCodes;
                 }
+                int count = 0;
                 foreach (var item in dies)
                 {
+                    count++;
                     Brush drawStroke = Brushes.Black;
                     Brush drawFill = Brushes.Gray;
                     //判斷要用什麼顏色
@@ -541,8 +572,11 @@ namespace WLS3200Gen2
                             drawFill = item2.CodeColor;
                         }
                     }
-
-
+                    if (count >= 50)
+                    {
+                        await Task.Delay(10);
+                        count = 0;
+                    }
                     AddMapShapeAction.Execute(new ROIRotatedRect
                     {
                         Stroke = drawStroke,
@@ -561,7 +595,7 @@ namespace WLS3200Gen2
                         ToolTip = "X:" + (item.IndexX) + " Y:" + (item.IndexY) + " X:" + item.MapTransX + " Y:" + item.MapTransY
                     });
                 }
-
+                await Task.Delay(500);
             }
             catch (Exception ex)
             {
@@ -1146,12 +1180,9 @@ namespace WLS3200Gen2
                 DetectionPoint point = new DetectionPoint();
                 point.IndexX = die.IndexX;
                 point.IndexY = die.IndexY;
-                point.OffsetX = 0;
-                point.OffsetY = 0;
-                point.Position = new Point(die.MapTransX, die.MapTransY);
 
-                var newPos = new Point(TablePosX - point.Position.X, TablePosY - point.Position.Y);
-                var transPosition = transForm.TransPoint(newPos);
+                var newPos = new Point(TablePosX, TablePosY);
+                point.Position = transForm.TransInvertPoint(newPos); ;
 
                 point.MicroscopeLightValue = Microscope.LightValue;
                 point.MicroscopeApertureValue = Microscope.ApertureValue;

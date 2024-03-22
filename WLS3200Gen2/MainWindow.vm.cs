@@ -59,6 +59,7 @@ namespace WLS3200Gen2
 
         private bool isRefresh, isInitialComplete, isWaferInSystem;
         private LoadPortQuantity loadportQuantity;
+        private bool mapIsMoveEnable = true;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
         {
@@ -122,6 +123,15 @@ namespace WLS3200Gen2
         /// 清除 Shape
         /// </summary>
         public ICommand ClearMapShapeAction { get; set; }
+        /// <summary>
+        /// 儲存 Shape
+        /// </summary>
+        public ICommand SaveMappingAction { get; set; }
+        public bool MapIsMoveEnable
+        {
+            get => mapIsMoveEnable;
+            set => SetValue(ref mapIsMoveEnable, value);
+        }
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
         {
@@ -234,6 +244,7 @@ namespace WLS3200Gen2
 
 
                 MapImage = new WriteableBitmap(bitmap);
+                HomeMapImage = new WriteableBitmap(bitmap);
                 //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
                 Customers = new ObservableCollection<RobotAddress>()

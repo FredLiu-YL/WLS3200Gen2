@@ -171,6 +171,7 @@ namespace WLS3200Gen2
         public ICommand AddShapeMappingAction { get; set; }
         public ICommand ClearShapeMappingAction { get; set; }
         public ICommand RemoveShapeMappingAction { get; set; }
+        public ICommand SaveMappingAction { get; set; }
         public int DataGridSelectedIndex { get => dataGridSelectedIndex; set => SetValue(ref dataGridSelectedIndex, value); }
         public ObservableCollection<Defect> DefectDataGridList { get => defectDataGridList; set => SetValue(ref defectDataGridList, value); }
         public ObservableCollection<BinCodeDraw> BinCodeDrawDataGridList { get => binCodeDrawDataGridList; set => SetValue(ref binCodeDrawDataGridList, value); }
@@ -511,6 +512,7 @@ namespace WLS3200Gen2
                     {
                         await SaveINI(saveFileDialog.FileName);
                     }
+                    MessageBox.Show("Save OK");
                 }
             }
             catch (Exception ex)
@@ -663,6 +665,7 @@ namespace WLS3200Gen2
                                     }
                                 }
                                 Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Tested;
+                                Sinf.Dies_result[idxX, idxY].DieData = mappingDrawBinCode_Tested;
                             }
                             else if (mappingDrawType == MappingDrawType.Ink)
                             {
@@ -682,6 +685,7 @@ namespace WLS3200Gen2
                                     }
                                 }
                                 Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Ink;
+                                Sinf.Dies_result[idxX, idxY].DieData = mappingDrawBinCode_Ink;
                             }
                             else if (mappingDrawType == MappingDrawType.Skip)
                             {
@@ -697,6 +701,7 @@ namespace WLS3200Gen2
                                     Test_Count = (test - 1).ToString();
                                 }
                                 Sinf.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).BinCode = mappingDrawBinCode_Skip;
+                                Sinf.Dies_result[idxX, idxY].DieData = mappingDrawBinCode_Skip; 
                             }
                         }
                         else
@@ -887,16 +892,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                MainTitle = title_Ver + "   " + "666666666666";
-                string sss = "123";
-                if (IsWaferSize_8 == true)
-                {
-                    sss = "777";
-                }
-                else if (IsWaferSize_12 == true)
-                {
-                    sss = "777";
-                }
+
                 //this.StrokeThickness = 10;
                 //ClearShapeMappingAction.Execute(true);
                 //MappingImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
@@ -918,6 +914,10 @@ namespace WLS3200Gen2
                 //    CenterCrossLength = 0,
                 //    ToolTip = "Circle"
                 //});
+
+                SaveMappingAction.Execute("C://Users//zhengye_lin//Desktop//20240321.bmp");
+
+
                 AddShapeMappingAction.Execute(new ROIRotatedRect
                 {
                     Stroke = Brushes.Green,
@@ -1219,6 +1219,8 @@ namespace WLS3200Gen2
                         Sinf.Dies_result[x, y] = new DieDraw();
                         Sinf.Dies_result[x, y].IndexX = x;
                         Sinf.Dies_result[x, y].IndexY = y;
+                        Sinf.Dies_result[x, y].TransIndexX = x;
+                        Sinf.Dies_result[x, y].TransIndexY = y;
                         Sinf.Dies_result[x, y].DieSizeX = dieSize_X;
                         Sinf.Dies_result[x, y].DieSizeY = dieSize_Y;
                         Sinf.Dies_result[x, y].PositionX = dieSize_X * (x + 0.5);

@@ -16,6 +16,7 @@ using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
 using YuanliCore.Data;
+using YuanliCore.Interface;
 using YuanliCore.Machine.Base;
 using YuanliCore.Model.Interface;
 using YuanliCore.Model.Microscope;
@@ -240,6 +241,31 @@ namespace WLS3200Gen2
                 {
                     var recipename = win.FileName;
                     mainRecipe.Load(path, recipename);
+                    //if (MapImage != null )
+                    //{
+                    //    // 假設 Frame<byte[]> 中的資料是 ARGB 格式的像素資料
+                    //    int width = 3000/* 設定影像的寬度 */;
+                    //    int height = 3000/* 設定影像的高度 */;
+                    //    int stride = width * 4; // ARGB 格式每個像素佔 4 bytes
+                    //    int imageDataLength = stride * height;
+                    //    // 建立一個新的 WriteableBitmap
+                    //     HomeMapImage = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+
+                    //    IntPtr imageDataPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(imageDataLength);
+                    //    System.Runtime.InteropServices.Marshal.Copy(mainRecipe.DetectRecipe.WaferMap.MapImage.ToArray(), 0, imageDataPtr, imageDataLength);
+                    //    // 將 Frame<byte[]> 中的資料寫入 WriteableBitmap
+                    //    HomeMapImage.WritePixels(new System.Windows.Int32Rect(0, 0, width, height), imageDataPtr, stride, 0);
+
+                    //    // 現在，writeableBitmap 中包含了 MapImage 資料的影像。
+                    //}
+
+                    //HomeMapImage = ConvertToWriteableBitmap(mainRecipe.DetectRecipe.WaferMap.MapImage);
+
+                    BitmapSource cxx = mainRecipe.DetectRecipe.WaferMap.MapImage.ToBitmapSource();
+
+                    HomeMapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+                    HomeMapImage.WritePixels(mainRecipe.DetectRecipe.WaferMap.MapImage);
+
                     SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
 

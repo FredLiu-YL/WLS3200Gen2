@@ -82,8 +82,10 @@ namespace WLS3200Gen2.Views
         public static readonly DependencyProperty ClearShapeActionProperty = DependencyProperty.Register(nameof(ClearShapeAction), typeof(ICommand), typeof(WaferMappingCanvas),
                                                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-
         public static readonly DependencyProperty ZoomFitActionProperty = DependencyProperty.Register(nameof(ZoomFitAction), typeof(ICommand), typeof(WaferMappingCanvas),
+                                                                                              new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty SaveActionProperty = DependencyProperty.Register(nameof(SaveAction), typeof(ICommand), typeof(WaferMappingCanvas),
                                                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty RValueProperty = DependencyProperty.Register(nameof(RValue), typeof(byte), typeof(WaferMappingCanvas),
@@ -112,7 +114,7 @@ namespace WLS3200Gen2.Views
             RemoveShapeAction = new RelayCommand<ROIShape>(key => MainCanvas.RemoveShape(key));
             ClearShapeAction = new RelayCommand(() => MainCanvas.ClearShape());
             ZoomFitAction = new RelayCommand(() => MainCanvas.ZoomFitParent());
-
+            SaveAction = new RelayCommand<string>(key => SaveAll(key));
         }
 
         private static void ShapesItemsChanged(DependencyObject obj, object sender, NotifyCollectionChangedEventArgs changedItemPack)
@@ -326,8 +328,8 @@ namespace WLS3200Gen2.Views
             MainCanvas.ZoomFitParent();
             try
             {
-                MyScrollViewer.ScrollToHorizontalOffset(0);
-                MyScrollViewer.ScrollToVerticalOffset(0);
+                //MyScrollViewer.ScrollToHorizontalOffset(0);
+                //MyScrollViewer.ScrollToVerticalOffset(0);
             }
             catch (Exception)
             {
@@ -379,6 +381,11 @@ namespace WLS3200Gen2.Views
             set => SetValue(ZoomFitActionProperty, value);
         }
 
+        public ICommand SaveAction
+        {
+            get => (ICommand)GetValue(SaveActionProperty);
+            set => SetValue(SaveActionProperty, value);
+        }
         /// <summary>
         /// 取得或設定 R值
         /// </summary>
@@ -489,8 +496,6 @@ namespace WLS3200Gen2.Views
             {
                 encoder.Save(stream);
             }
-
-            Console.WriteLine($"Bitmap saved to {filePath}");
         }
 
         public ICommand ClearCommand => new RelayCommand(() =>

@@ -114,17 +114,13 @@
 
                     </Grid>
                 </GroupBox>
-               
+
 
             </Grid>
-
-
-
             <GroupBox Grid.Row="0" Grid.Column="1"   Header="Mapping" FontSize="20" BorderBrush="Black"  BorderThickness="2">
-                
                 <views:WaferMappingCanvas Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"  Width="950" Height="980" Margin="3" ImageSource="{Binding MappingImage}"  ItemsSource="{Binding MappingDrawings}" 
                             MousePixcel="{Binding MappingMousePixel}" IsMoveEnable="{Binding MappingIsMoveEnable}"   RemoveShapeAction="{Binding RemoveShapeMappingAction}"  AddShapeAction="{Binding AddShapeMappingAction}" ClearShapeAction="{Binding ClearShapeMappingAction}"
-                                     
+                            SaveAction="{Binding SaveMappingAction}"         
                         Grid.ColumnSpan="2" IsShowBar="True"     >
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewMouseUp">
@@ -184,7 +180,7 @@
 
 
                             <Button Content="loadPicture" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="90" Background="LightSkyBlue" Command="{Binding BtnLoadPicture}" Visibility="Hidden"   />
-                            <Button Content="Test" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="90" Background="LightSkyBlue" Command="{Binding BtnTest}" Visibility="Hidden" />
+                            <Button Content="Test" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="90" Background="LightSkyBlue" Command="{Binding BtnTest}" Visibility="Visible"  />
 
 
 
