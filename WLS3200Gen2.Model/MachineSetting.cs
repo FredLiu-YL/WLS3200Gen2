@@ -23,7 +23,6 @@ namespace WLS3200Gen2.Model
         /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
         /// </summary>
         public IEnumerable<BincodeInfo> BincodeListDefault { get; set; }
-
         /// <summary>
         /// 平台Robot取放料位置
         /// </summary>
@@ -97,6 +96,11 @@ namespace WLS3200Gen2.Model
         /// DicRS232的COM
         /// </summary>
         public string DicCOM { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<MicroscopeLens> MicroscopeLensDefault { get; set; }
+
     }
 
 

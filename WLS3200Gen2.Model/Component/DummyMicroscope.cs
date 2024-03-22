@@ -30,7 +30,9 @@ namespace WLS3200Gen2.Model.Component
         public int Filter2Index { get; set; }
         public int Filter3Index { get; set; }
 
-        public bool IsAFOk { get; private set; } = true;
+        public bool IsAutoFocusOk { get; private set; } = true;
+
+        public bool IsAutoFocusTrace { get; private set; } = true;
 
         public Task AberrationMoveAsync(double distance)
         {

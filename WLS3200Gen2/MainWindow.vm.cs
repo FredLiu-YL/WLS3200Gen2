@@ -209,8 +209,7 @@ namespace WLS3200Gen2
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
                 IsAutoSave = ProcessSetting.IsAutoSave;
-                IsWaferCirclePhoto = ProcessSetting.IsWaferCirclePhoto;
-                IsDieAllPhoto = ProcessSetting.IsDieAllPhoto;
+                IsAutoFocus = ProcessSetting.IsAutoFocus;
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;

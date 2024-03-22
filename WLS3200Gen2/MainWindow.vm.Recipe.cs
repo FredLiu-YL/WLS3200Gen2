@@ -67,6 +67,7 @@ namespace WLS3200Gen2
 
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
+        private bool isDie, isDieSub, isDieInSideAll, isPosition;
         /// <summary>
         /// 切換到 主畫面 首頁頁面
         /// </summary>
@@ -253,7 +254,10 @@ namespace WLS3200Gen2
         public ObservableCollection<ROIShape> HomeMapDrawings { get => homeMapDrawings; set => SetValue(ref homeMapDrawings, value); }
         public ObservableCollection<ROIShape> MapDrawings { get => mapDrawings; set => SetValue(ref mapDrawings, value); }
 
-
+        public bool IsDie { get => isDie; set => SetValue(ref isDie, value); }
+        public bool IsDieSub { get => isDieSub; set => SetValue(ref isDieSub, value); }
+        public bool IsDieInSideAll { get => isDieInSideAll; set => SetValue(ref isDieInSideAll, value); }
+        public bool IsPosition { get => isPosition; set => SetValue(ref isPosition, value); }
 
         //Recipe進入會執行
         private void LoadRecipePage()
@@ -387,8 +391,6 @@ namespace WLS3200Gen2
         });
 
 
-
-
         public ICommand MappingEditCommand => new RelayCommand(() =>
        {
 
@@ -512,7 +514,7 @@ namespace WLS3200Gen2
                 //{
                 //    HomeMapImage = new WriteableBitmap(bitmapImage);
                 //}
-                waferMap.MapImage = bitmapImage.FormatConvertTo(PixelFormats.Rgb24).ToByteFrame();
+                waferMap.MapImage = bitmapImage.FormatConvertTo(PixelFormats.Bgr24).ToByteFrame();
 
             }
             catch (Exception)
@@ -521,18 +523,19 @@ namespace WLS3200Gen2
                 throw;
             }
         }
-
+        private double showSize_X;
+        private double showSize_Y;
+        private double offsetDraw;
         public async Task ShowMappingDrawings(Die[] dies, int columnCount, int rowCount, int mappingImageDrawSize)
         {
             try
             {
                 ClearMapShapeAction.Execute(true);
 
-                double showSize_X;
-                double showSize_Y;
+
                 double dieSizeX = dies[0].DieSize.Width;
                 double dieSizeY = dies[0].DieSize.Height;
-                double offsetDraw = mappingImageDrawSize / 150;
+                offsetDraw = mappingImageDrawSize / 150;
                 double scale = 1;
                 scale = Math.Max((columnCount + 2.5) * dieSizeX, (rowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
                 scale = Math.Max(columnCount * dieSizeX, rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
@@ -1147,9 +1150,7 @@ namespace WLS3200Gen2
                     if (this.selectShape != null)
                     {
                         this.selectShape.Stroke = System.Windows.Media.Brushes.Black;
-
                     }
-
                     tempselectShape.Stroke = System.Windows.Media.Brushes.Red;
                     this.selectShape = tempselectShape;
 
@@ -1181,15 +1182,15 @@ namespace WLS3200Gen2
                 point.IndexX = die.IndexX;
                 point.IndexY = die.IndexY;
 
-                var newPos = new Point(TablePosX, TablePosY);
-                point.Position = transForm.TransInvertPoint(newPos); ;
+                var newPos = transForm.TransInvertPoint(new Point(TablePosX, TablePosY));
+
+                point.Position = new Point(Math.Ceiling(newPos.X), Math.Ceiling(newPos.Y));
 
                 point.MicroscopeLightValue = Microscope.LightValue;
                 point.MicroscopeApertureValue = Microscope.ApertureValue;
-                point.MicroscopePosition = Microscope.Position;
-                point.MicroscopeAberationPosition = Microscope.AberationPosition;
-
                 point.LensIndex = Microscope.LensIndex;
+                point.MicroscopePosition = MicroscopeLensDefault[Microscope.LensIndex].AutoFocusPosition;
+                point.MicroscopeAberationPosition = MicroscopeLensDefault[Microscope.LensIndex].AberationPosition;
                 point.CubeIndex = Microscope.CubeIndex;
                 point.Filter1Index = Microscope.Filter1Index;
                 point.Filter2Index = Microscope.Filter2Index;
@@ -1206,9 +1207,65 @@ namespace WLS3200Gen2
 
         public ICommand RemoveDetectionCommand => new RelayCommand(() =>
         {
+            try
+            {
+                if (DetectionPointList.Count > SelectDetectionPointList)
+                {
+                    DetectionPointList.RemoveAt(SelectDetectionPointList);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        });
+        public ICommand DetectionPointListDoubleClickCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //顯示
+                int idxX = DetectionPointList[SelectDetectionPointList].IndexX;
+                int idxY = DetectionPointList[SelectDetectionPointList].IndexY;
+                var SelectMousePixel = new Point(mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).OperationPixalX / showSize_X + offsetDraw,
+                mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).OperationPixalX / showSize_Y + offsetDraw);
 
+                SelectMousePixel = transForm.TransInvertPoint(DetectionPointList[SelectDetectionPointList].Position);
 
+                ROIShape tempselectShape = MapDrawings.Select(shape =>
+                {
+                    var rectBegin = shape.LeftTop;
+                    var rectEnd = shape.RightBottom;
+                    var rect = new Rect(rectBegin, rectEnd);
+                    if (rect.Contains(SelectMousePixel))
+                        return shape;
+                    else
+                        return null;
+                }).Where(s => s != null).FirstOrDefault();
+                if (tempselectShape != null)
+                {
+                    if (this.selectShape != null)
+                    {
+                        this.selectShape.Stroke = System.Windows.Media.Brushes.Black;
+                    }
+                    tempselectShape.Stroke = System.Windows.Media.Brushes.Red;
+                    this.selectShape = tempselectShape;
 
+                    //從點選的ShapeROI  找出對應的die
+                    int listIndex = MapDrawings.IndexOf(selectShape);
+                    YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
+                    MoveIndexX = die.IndexX;
+                    MoveIndexY = die.IndexY;
+                }
+
+                //移動
+                Task taskTableX = TableX.MoveToAsync(DetectionPointList[SelectDetectionPointList].Position.X);//     Task taskLoad = Task.CompletedTask;
+                Task taskTableY = TableY.MoveToAsync(DetectionPointList[SelectDetectionPointList].Position.Y);
+                await Task.WhenAll(taskTableX, taskTableY);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         });
 
         private void SampleFindAction(CogMatcher matcher)
@@ -1264,7 +1321,7 @@ namespace WLS3200Gen2
                 if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
                 var transform = new CogAffineTransform(posDesign, poss);
 
-
+                this.transForm = new CogAffineTransform(posDesign, poss);
                 //依序轉換完INDEX  塞回機械座標
                 foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
                 {

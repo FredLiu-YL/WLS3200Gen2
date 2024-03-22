@@ -149,7 +149,7 @@ namespace WLS3200Gen2.Model.Module
         }
 
 
-        public async Task Run(DetectionRecipe recipe, bool isAutoSave, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(DetectionRecipe recipe, ProcessSetting processSetting, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             this.pauseToken = pst;
             this.cancelToken = ctk;
@@ -180,11 +180,13 @@ namespace WLS3200Gen2.Model.Module
 
                 await TableMoveToAsync(transPosition); //Offset
                 await SetMicroscope(point);
-
+                if (processSetting.IsAutoFocus)
+                {
+                    Microscope.AFTrace();
+                }
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
-
-                if (isAutoSave)
+                if (processSetting.IsAutoSave)
                 {
                     subject.OnNext(bmp);//AOI另外丟到其他執行續處理
                 }
@@ -260,12 +262,19 @@ namespace WLS3200Gen2.Model.Module
 
         private async Task SetMicroscope(DetectionPoint detectionPoint)
         {
-            await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
             await Microscope.ChangeLightAsync(detectionPoint.MicroscopeLightValue);
             await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
+            await Microscope.ChangeLensAsync(detectionPoint.LensIndex);
+            await Microscope.ChangeCubeAsync(detectionPoint.CubeIndex);
+            await Microscope.ChangeFilter1Async(detectionPoint.Filter1Index);
+            await Microscope.ChangeFilter2Async(detectionPoint.Filter2Index);
+            await Microscope.ChangeFilter3Async(detectionPoint.Filter3Index);
+            if (Microscope.IsAutoFocusTrace == false)
+            {
+                await Microscope.MoveToAsync(detectionPoint.MicroscopePosition);
+                await Microscope.AberrationMoveToAsync(detectionPoint.MicroscopeAberationPosition);
+            }
         }
-
-
         //預留拿到對位結果後 可以做其他事
         private void AlignRecord(BitmapSource bitmap, Point? pixel, int number)
         {

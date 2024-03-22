@@ -66,7 +66,8 @@ namespace WLS3200Gen2.Model.Component
         public int Filter2Index { get; private set; } = -1;
         public int Filter3Index { get; private set; } = -1;
 
-        public bool IsAFOk { get => GetAFIsOK(); }
+        public bool IsAutoFocusOk { get => GetAFIsOK(); }
+        public bool IsAutoFocusTrace { get; private set; }
 
         public event Action<Exception> Error;
 
@@ -90,7 +91,7 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                {
-                   bool sss = IsAFOk;
+                   bool sss = IsAutoFocusOk;
                    SetZNEL(1);
                    SetAFNEL(1);
                    await MoveToAsync(1);
@@ -1234,8 +1235,7 @@ namespace WLS3200Gen2.Model.Component
                     else if (str.Contains("2AFSTS"))
                     {
 
-                        if (str.Replace("2AFSTS ", "") == "OFF" || str.Replace("2AFSTS ", "") == "SRCH" ||
-                            str.Replace("2AFSTS ", "") == "SRCH" || str.Replace("2AFSTS ", "") == "TRACE")
+                        if (str.Replace("2AFSTS ", "") == "OFF" || str.Replace("2AFSTS ", "") == "SRCH")
                         {
                             isAFOk = false;
                             break;

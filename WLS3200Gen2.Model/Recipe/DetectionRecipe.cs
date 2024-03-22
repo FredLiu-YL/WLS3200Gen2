@@ -12,8 +12,10 @@ namespace WLS3200Gen2.Model.Recipe
 {
     public class DetectionRecipe
     {
+        /// <summary>
+        /// 檢查點
+        /// </summary>
         public IEnumerable<DetectionPoint> DetectionPoints { get; set; }
-
         /// <summary>
         /// 對位參數
         /// </summary>
@@ -22,9 +24,6 @@ namespace WLS3200Gen2.Model.Recipe
         /// MAP資訊
         /// </summary>
         public WaferMapping WaferMap { get; set; }
-
-
-
     }
 
     public class DetectionPoint : INotifyPropertyChanged
@@ -42,13 +41,9 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
         /// <summary>
-        /// 檢測位置的座標X Y
+        /// 檢測位置平台的座標X Y
         /// </summary>
         public Point Position { get => position; set => SetValue(ref position, value); }
-        /// <summary>
-        /// 第幾組SubDie模式
-        /// </summary>
-        public int SubDieType { get => subDieType; set => SetValue(ref subDieType, value); }
         /// <summary>
         /// 鏡頭倍率
         /// </summary>
@@ -82,7 +77,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// <summary>
         /// 目前Z軸位置
         /// </summary>
-        public int MicroscopePosition { get; set; }
+        public double MicroscopePosition { get; set; }
 
         /// <summary>
         /// 準焦位置

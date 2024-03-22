@@ -41,6 +41,8 @@ namespace WLS3200Gen2
         public double RobotAxisMacroTakePosition { get => robotAxisMacroTakePosition; set => SetValue(ref robotAxisMacroTakePosition, value); }
         public double RobotAxisMicroTakePosition { get => robotAxisMicroTakePosition; set => SetValue(ref robotAxisMicroTakePosition, value); }
 
+        public MicroscopeLens[] MicroscopeLensDefault { get; set; }
+
         public ICommand SaveSettingCommand => new RelayCommand(() =>
         {
             try

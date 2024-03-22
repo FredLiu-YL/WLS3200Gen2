@@ -221,8 +221,8 @@
                         </Grid>
                         <Grid Grid.Row="1" Margin="0">
                             <Grid.ColumnDefinitions >
-                                <ColumnDefinition Width="0.75*"/>
-                                <ColumnDefinition Width="0.25*"/>
+                                <ColumnDefinition Width="0.67*"/>
+                                <ColumnDefinition Width="0.33*"/>
                             </Grid.ColumnDefinitions>
                             <views:VirtualCanvas Margin="0,0,-2,-2" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding HomeMapImage}" ItemsSource="{Binding HomeMapDrawings}"   
                                                                               AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}"  >
@@ -872,48 +872,49 @@
                                         </TabItem.Header>
                                         <Grid>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="2*"/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="0.06*"/>
+                                                <RowDefinition Height="0.8*"/>
+                                                <RowDefinition Height="0.14*"/>
                                             </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1.5*"/>
-
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0"  Orientation="Vertical"   >
-                                                <StackPanel Grid.Column="1"  Orientation="Horizontal"   >
-                                                    <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="180"  Command="{Binding AddDetectionCommand}"  />
-                                                    <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="180"   Command="{Binding RemoveDetectionCommand}"  />
-                                                </StackPanel>
-
-                                                <StackPanel Grid.RowSpan="2" Grid.Column="1">
-                                                    <Border   Style="{StaticResource HorizontalDividerBorder}" />
-                                                    <StackPanel  Margin="1"  Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                        <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" Height="500"
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}"   >
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                                                                    <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                            <DataGrid.Columns >
-                                                                <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding IndexX}"    />
-                                                                <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding IndexY}"  />
-                                                                <DataGridTextColumn  Width="120"  Header="PosX"  Binding="{Binding Position.X}"  IsReadOnly="True" />
-                                                                <DataGridTextColumn  Width="120"  Header="PosY"  Binding="{Binding Position.Y}"  IsReadOnly="True"  />
-                                                                <DataGridTextColumn  Width="100"  Header="SubType"  Binding="{Binding SubDieType}"   IsReadOnly="True" />
-                                                            </DataGrid.Columns>
-
-
-                                                        </DataGrid>
-                                                    </StackPanel>
-
-                                                    <Border   Style="{StaticResource HorizontalDividerBorder}" />
-
-                                                </StackPanel>
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal"   >
+                                                <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="180"  Command="{Binding AddDetectionCommand}"  />
+                                                <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="180"   Command="{Binding RemoveDetectionCommand}"  />
                                             </StackPanel>
-
+                                            <StackPanel Grid.Row="1">
+                                                <Border   Style="{StaticResource HorizontalDividerBorder}" />
+                                                <StackPanel  Margin="1"  Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                    <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}" Height="795"  >
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                                                <i:InvokeCommandAction Command="{Binding DetectionPointListDoubleClickCommand}"/>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                        <DataGrid.Columns >
+                                                            <DataGridTextColumn  Width="70"  Header="Col"  Binding="{Binding IndexX}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="70"  Header="Row"  Binding="{Binding IndexY}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="120"  Header="PosX"  Binding="{Binding Position.X}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="120"  Header="PosY"  Binding="{Binding Position.Y}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="Lens"  Binding="{Binding LensIndex}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="Cube"  Binding="{Binding CubeIndex}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="Filter1"  Binding="{Binding Filter1Index}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="Filter2"  Binding="{Binding Filter2Index}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="Filter3"  Binding="{Binding Filter3Index}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="LightValue"  Binding="{Binding MicroscopeLightValue}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn  Width="100"  Header="ApertureValue"  Binding="{Binding MicroscopeApertureValue}" IsReadOnly="True"/>
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+                                                </StackPanel>
+                                                <Border   Style="{StaticResource HorizontalDividerBorder}" />
+                                            </StackPanel>
+                                            <GroupBox Grid.Row="2" Header="Die Trans" FontSize="20">
+                                                <StackPanel Margin="-5" Orientation="Horizontal">
+                                                    <Button Margin="5" FontSize="20" Height ="40" Content="TransOnlyDie" Command="{Binding TransOnlyDieCommand}"  />
+                                                    <Button Margin="5" FontSize="20" Height ="40" Content="TransDieInSideAll" Command="{Binding TransDieInSideAllCommand}"  />
+                                                    <Button Margin="5" FontSize="20" Height ="40" Content="TransDieSub" Command="{Binding TransDieSubCommand}"  />
+                                                </StackPanel>
+                                            </GroupBox>
                                         </Grid>
-
                                     </TabItem>
                                 </TabControl>
 
@@ -1387,19 +1388,19 @@
                                 <Label Grid.Row="1"  Grid.Column="1" Content="um/pixal" FontSize="15" VerticalAlignment="Bottom" />
 
                                 <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].Ratio }"  Grid.Column="1" />
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].Ratio}"  Grid.Column="1" />
 
                                 <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].Ratio}"  Grid.Column="1" />
 
                                 <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].Ratio}"  Grid.Column="1" />
 
                                 <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
+                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].Ratio}"  Grid.Column="1" />
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
@@ -1434,24 +1435,24 @@
                                 <Label Grid.Row="1"  Grid.Column="3" Content="Aberation Value" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="2" Text="123456"  Grid.Column="1"  VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AutoFocusPosition}"  Grid.Column="1"  VerticalAlignment="Bottom" />
+                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AberationPosition}"  Grid.Column="3" />
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                <TextBox Grid.Row="3" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AutoFocusPosition}"  Grid.Column="1" />
+                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AberationPosition}"  Grid.Column="3" />
 
                                 <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                <TextBox Grid.Row="4" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AutoFocusPosition}"  Grid.Column="1" />
+                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AberationPosition}"  Grid.Column="3" />
 
                                 <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                <TextBox Grid.Row="5" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AutoFocusPosition}"  Grid.Column="1" />
+                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AberationPosition}"  Grid.Column="3" />
 
                                 <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                <TextBox Grid.Row="6" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AutoFocusPosition}"  Grid.Column="1" />
+                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AberationPosition}"  Grid.Column="3" />
 
                                 <Border   Grid.Row="9" Grid.Column ="0" Grid.ColumnSpan="4" Grid.RowSpan="3" BorderBrush="Teal" BorderThickness="1" />
                                 <TextBlock Grid.Row="8"  Text="AF Limit" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />

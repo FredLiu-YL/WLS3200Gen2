@@ -130,6 +130,7 @@
     <Compile Include="Recipe\Die.cs" />
     <Compile Include="Recipe\EFEMtionRecipe.cs" />
     <Compile Include="Recipe\MainRecipe.cs" />
+    <Compile Include="Recipe\MicroscopeLens.cs" />
     <Compile Include="Recipe\ProcessSetting.cs" />
     <Compile Include="Recipe\Wafer.cs" />
     <Compile Include="Recipe\WaferMap.cs" />

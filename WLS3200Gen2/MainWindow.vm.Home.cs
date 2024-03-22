@@ -49,7 +49,7 @@ namespace WLS3200Gen2
         private ILoadPort loadPort1;
         private IRobot robot;
         private MacroStatus macroStatus = new MacroStatus();
-        private bool isAutoSave, isWaferCirclePhoto, isDieAllPhoto;
+        private bool isAutoSave, isAutoFocus;
 
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
@@ -80,8 +80,7 @@ namespace WLS3200Gen2
         public ILoadPort LoadPort1 { get => loadPort1; set => SetValue(ref loadPort1, value); }
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public bool IsAutoSave { get => isAutoSave; set => SetValue(ref isAutoSave, value); }
-        public bool IsWaferCirclePhoto { get => isWaferCirclePhoto; set => SetValue(ref isWaferCirclePhoto, value); }
-        public bool IsDieAllPhoto { get => isDieAllPhoto; set => SetValue(ref isDieAllPhoto, value); }
+        public bool IsAutoFocus { get => isAutoFocus; set => SetValue(ref isAutoFocus, value); }
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -119,8 +118,7 @@ namespace WLS3200Gen2
                     ProcessSetting.ProcessStation = ProcessStations.ToArray();
                     //運作模式
                     ProcessSetting.IsAutoSave = IsAutoSave;
-                    ProcessSetting.IsWaferCirclePhoto = IsWaferCirclePhoto;
-                    ProcessSetting.IsDieAllPhoto = IsDieAllPhoto;
+                    ProcessSetting.IsAutoFocus = IsAutoFocus;
 
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
                     await machine.ProcessRunAsync(ProcessSetting);
@@ -263,8 +261,8 @@ namespace WLS3200Gen2
 
                     BitmapSource cxx = mainRecipe.DetectRecipe.WaferMap.MapImage.ToBitmapSource();
 
-                    HomeMapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                    HomeMapImage.WritePixels(mainRecipe.DetectRecipe.WaferMap.MapImage);
+                    HomeMapImage = new WriteableBitmap(cxx);
+                    //HomeMapImage.WritePixels(mainRecipe.DetectRecipe.WaferMap.MapImage);
 
                     SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);

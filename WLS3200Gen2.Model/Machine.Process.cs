@@ -121,7 +121,7 @@ namespace WLS3200Gen2.Model
 
 
                                 //執行主設備動作 
-                                await MicroDetection.Run(recipe.DetectRecipe, processSetting.IsAutoSave, pts, cts);
+                                await MicroDetection.Run(recipe.DetectRecipe, processSetting, pts, cts);
                                 await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
                                 //退片
                                 await Feeder.MicroUnLoadToStandByAsync();
