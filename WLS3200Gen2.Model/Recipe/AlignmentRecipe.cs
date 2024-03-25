@@ -26,16 +26,10 @@ namespace YuanliCore.Model
         /// 對位方式  
         /// </summary>
         public LocateMode AlignmentMode { get; set; }
-        
         /// <summary>
         /// 定位點資訊
         /// </summary>
         public LocateParam[] FiducialDatas { get; set; }
-
-
-
-
-
     }
 
 

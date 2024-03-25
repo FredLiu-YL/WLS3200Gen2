@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.CameraLib;
+using YuanliCore.Data;
 using YuanliCore.Interface;
 using YuanliCore.Model;
 using YuanliCore.Model.Interface;
@@ -72,7 +73,10 @@ namespace WLS3200Gen2.Model.Module
         /// 檢測結果紀錄
         /// </summary>
         public event Action<BitmapSource> DetectionRecord;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MicroReady;
         public async Task Home()
         {
             try
@@ -149,7 +153,7 @@ namespace WLS3200Gen2.Model.Module
         }
 
 
-        public async Task Run(DetectionRecipe recipe, ProcessSetting processSetting, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(DetectionRecipe recipe, ProcessSetting processSetting, Wafer currentWafer, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             this.pauseToken = pst;
             this.cancelToken = ctk;
@@ -192,7 +196,8 @@ namespace WLS3200Gen2.Model.Module
                 }
                 else
                 {
-
+                    Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
+                    var cc = await micro;
                 }
                 DetectionRecord?.Invoke(bmp);
                 // pauseToken.IsPaused = true;

@@ -67,10 +67,6 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         /// <param name="path"></param>
         public abstract void SaveWaferFile(string path);
-
-
-
-
     }
 
     public class SinfWaferMapping : WaferMapping
@@ -208,23 +204,23 @@ namespace WLS3200Gen2.Model.Recipe
             }
         }
 
-        public SinfMode Mode { get; set; }
+        private SinfMode Mode { get; set; }
         /// <summary>
         /// FNLOC(Wafer的大小)
         /// </summary>
-        public string Wafer_Size { get; set; }
-        public string Device_Name { get; set; }
+        private string Wafer_Size { get; set; }
+        private string Device_Name { get; set; }
         public string Lot_ID { get; set; }
         public int Wafer_Idx { get; set; }
-        public double Notch_Degree { get; set; }
+        private double Notch_Degree { get; set; }
         public int Count_Row { get; set; }
         public int Count_Column { get; set; }
         /// <summary>
         /// BCEQU
         /// </summary>
-        public string Bin_Codes { get; set; }
-        public double Ref_PointX { get; set; }
-        public double Ref_PointY { get; set; }
+        private string Bin_Codes { get; set; }
+        private double Ref_PointX { get; set; }
+        private double Ref_PointY { get; set; }
         /// <summary>
         /// DUTMS(單位大小)
         /// </summary>
@@ -232,19 +228,18 @@ namespace WLS3200Gen2.Model.Recipe
         public double DieSize_X { get; set; }
         public double DieSize_Y { get; set; }
 
-
         public double Start_LeftX { get; set; }
         public double Start_TopY { get; set; }
-        public string Direction_X { get; set; }
-        public string Direction_Y { get; set; }
-        public double Total_Die { get; set; }
+        private string Direction_X { get; set; }
+        private string Direction_Y { get; set; }
+        private double Total_Die { get; set; }
 
-        public DieDraw[,] Dies_result { get; set; }
+        private DieDraw[,] Dies_result { get; set; }
 
-        public Direction posDirection;
+        private Direction posDirection;
 
-        public Point mapCenter;
-        public List<BinCode> BinCode_result { get; set; } = new List<BinCode>();
+        private Point mapCenter;
+        public List<BincodeInfo> BinCode_result { get; set; } = new List<BincodeInfo>();
 
         private void ReadSinf(string pfilePath)
         {
@@ -423,6 +418,20 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
+        public void NewDieDraw(DieDraw[,] newDieDraw)
+        {
+            try
+            {
+                Dies_result = newDieDraw;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
         private DieDraw[,] RotateMap(Direction direction, DieDraw[,] die_Draw, bool isMotionXMirror, bool isMotionYMirror)
         {
             try
@@ -526,14 +535,8 @@ namespace WLS3200Gen2.Model.Recipe
                 {
                     flattenedArray.FirstOrDefault(die => die.TransIndexX == item.IndexX && die.TransIndexY == item.IndexY).DieData = item.BinCode;
                 }
-
-
                 int cols = Dies_result.GetLength(0);
                 int rows = Dies_result.GetLength(1);
-                //star_X = 0;
-                //end_X = cols;
-                //star_Y = 0;
-                //end_Y = rows;
 
                 List<string> lines = new List<string>();
                 lines.Add("DEVICE:" + Device_Name);
@@ -554,11 +557,7 @@ namespace WLS3200Gen2.Model.Recipe
                 lines.Add("XDIES:" + DieSize_X / scale);
                 lines.Add("YDIES:" + DieSize_Y / scale);
 
-                if (Mode == SinfMode.Sinf_Sample)
-                {
-
-                }
-                else if (Mode == SinfMode.Sinf_Dir || Mode == SinfMode.Sinf_Dir_Total)
+                if (Mode == SinfMode.Sinf_Dir || Mode == SinfMode.Sinf_Dir_Total)
                 {
                     lines.Add("LEFT_X:" + Start_LeftX);
                     lines.Add("TOP_Y:" + Start_TopY);
@@ -574,7 +573,6 @@ namespace WLS3200Gen2.Model.Recipe
                     int indexX = Dies_result[star_X, j].IndexX;
                     int indexY = Dies_result[star_X, j].IndexY;
 
-                    //string rowString = Dies_result[star_X, j].DieData;
                     string rowString = flattenedArray.FirstOrDefault(die => die.IndexX == indexX && die.IndexY == indexY).DieData;
 
                     for (int i = star_X + 1; i <= end_X; i++)
@@ -585,10 +583,6 @@ namespace WLS3200Gen2.Model.Recipe
                     }
                     lines.Add("RowData:" + rowString);
                 }
-                string xlsxFilePath = "C:\\Users\\zhengye_lin\\Desktop\\979797.xlsx";
-                xlsxFilePath = pathFile;
-
-
                 System.IO.File.WriteAllLines(pathFile, lines);
             }
             catch (Exception ex)
@@ -611,7 +605,7 @@ namespace WLS3200Gen2.Model.Recipe
                     //{
                     //    nowBrush = colorBasic[count];
                     //}
-                    BinCode_result.Add(new BinCode { Code = splitLine[0], Describe = splitLine[1], CodeColor = nowBrush });
+                    BinCode_result.Add(new BincodeInfo { Code = splitLine[0], Describe = splitLine[1], Color = nowBrush });
                     count++;
                 }
 

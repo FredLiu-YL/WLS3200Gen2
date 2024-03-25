@@ -13,6 +13,10 @@ namespace WLS3200Gen2.Model.Recipe
     public class DetectionRecipe
     {
         /// <summary>
+        /// 檢查要下的Bincode清單
+        /// </summary>
+        public IEnumerable<BincodeInfo> BincodeList { get; set; }
+        /// <summary>
         /// 檢查點
         /// </summary>
         public IEnumerable<DetectionPoint> DetectionPoints { get; set; }
@@ -28,10 +32,9 @@ namespace WLS3200Gen2.Model.Recipe
 
     public class DetectionPoint : INotifyPropertyChanged
     {
-        private int indexX, indexY, subDieType;
-        private double offsetX, offsetY;
+        private int indexX, indexY;
         private Point position;
-
+        private String code;
         /// <summary>
         /// 檢測位置的Index X
         /// </summary>
@@ -44,6 +47,10 @@ namespace WLS3200Gen2.Model.Recipe
         /// 檢測位置平台的座標X Y
         /// </summary>
         public Point Position { get => position; set => SetValue(ref position, value); }
+        /// <summary>
+        /// 顯示目前的code是多少
+        /// </summary>
+        public string Code { get => code; set => SetValue(ref code, value); }
         /// <summary>
         /// 鏡頭倍率
         /// </summary>

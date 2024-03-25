@@ -187,6 +187,7 @@ namespace WLS3200Gen2
                 BincodeList.Add(bincode2);
                 BincodeList.Add(new BincodeInfo());
 
+                machine.MicroDetection.MicroReady += MicroOperate;
 
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
@@ -497,7 +498,6 @@ namespace WLS3200Gen2
                                  if (frame != null) MainImage.WritePixels(frame);
                                  //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
                              });
-
             }
             catch (Exception ex)
             {

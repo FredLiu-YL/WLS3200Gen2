@@ -329,7 +329,7 @@ namespace WLS3200Gen2
             RobotAxisAligner1TakePosition = machineSetting.RobotAxisAlignTakePosition;
             RobotAxisMacroTakePosition = machineSetting.RobotAxisMacroTakePosition;
             RobotAxisMicroTakePosition = machineSetting.RobotAxisMicroTakePosition;
-
+            MicroscopeLensDefault = machineSetting.MicroscopeLensDefault.ToArray();
             WriteLog("Enter the SettingPage");
         }
         //離開recipe頁面會執行
@@ -396,53 +396,9 @@ namespace WLS3200Gen2
 
 
        });
+
         public ICommand LoadMappingCommand => new RelayCommand(async () =>
         {
-            //MapImage = new WriteableBitmap(15000, 15000, 96, 96, machine.MicroDetection.Camera.PixelFormat, null);
-            //ClearMapShapeAction.Execute(MapDrawings);
-
-            //List<Die> dielist = new List<Die>();
-            //for (int x = 1; x <= 100; x++)
-            //{
-            //    for (int y = 1; y <= 100; y++)
-            //    {
-            //        var temp = new Die
-            //        {
-            //            IndexX = x,
-            //            IndexY = y,
-            //            PosX = 1000 + x * 100,
-            //            PosY = 1000 + y * 100,
-            //            DieSize = new Size(40, 40)
-            //        };
-
-            //        dielist.Add(temp);
-            //    }
-            //}
-
-            ////模擬  編輯完MAP圖後 資料存回mainRecipe內
-            //mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("");
-            //mainRecipe.DetectRecipe.WaferMap.Dies = dielist.ToArray();
-
-            ////將MAP圖資訊 轉換成顯示資訊
-            //mainRecipe.DetectRecipe.WaferMap.ReadWaferFile("");
-            //foreach (var item in mainRecipe.DetectRecipe.WaferMap.Dies)
-            //{
-
-            //    var center = new ROIRotatedRect
-            //    {
-            //        X = item.PosX,
-            //        Y = item.PosY,
-            //        LengthX = item.DieSize.Width,
-            //        LengthY = item.DieSize.Height,
-            //        StrokeThickness = 2,
-            //        Stroke = System.Windows.Media.Brushes.LightGreen,
-            //        IsInteractived = false,
-            //        ToolTip = $"X={item.IndexX} , Y={item.IndexY}",
-            //        IsCenterShow = false
-            //    };
-            //    AddMapShapeAction.Execute(center);
-            //}
-
             string SINF_Path = "";
             System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
             dlg_image.Filter = "TXT files (*.txt)|*.txt|SINF files (*.sinf)|*.sinf";
@@ -458,10 +414,8 @@ namespace WLS3200Gen2
                     mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("", true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
                     MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                     await ShowHomeMapImgae(mainRecipe.DetectRecipe.WaferMap);
-
-
                 }
             }
             else
@@ -526,13 +480,11 @@ namespace WLS3200Gen2
         private double showSize_X;
         private double showSize_Y;
         private double offsetDraw;
-        public async Task ShowMappingDrawings(Die[] dies, int columnCount, int rowCount, int mappingImageDrawSize)
+        public async Task ShowMappingDrawings(Die[] dies, IEnumerable<BincodeInfo> bincodeListDefault, int columnCount, int rowCount, int mappingImageDrawSize)
         {
             try
             {
                 ClearMapShapeAction.Execute(true);
-
-
                 double dieSizeX = dies[0].DieSize.Width;
                 double dieSizeY = dies[0].DieSize.Height;
                 offsetDraw = mappingImageDrawSize / 150;
@@ -548,18 +500,18 @@ namespace WLS3200Gen2
                 showSize_Y = (rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
 
 
-                if (machineSetting.BinCodes == null)
+                if (bincodeListDefault == null)
                 {
-                    Model.BinCode[] pBinCodes = new Model.BinCode[2];
-                    pBinCodes[0] = new Model.BinCode();
-                    pBinCodes[1] = new Model.BinCode();
+                    BincodeInfo[] pBinCodes = new BincodeInfo[2];
+                    pBinCodes[0] = new BincodeInfo();
+                    pBinCodes[1] = new BincodeInfo();
                     pBinCodes[0].Code = "000";
                     pBinCodes[0].Describe = "OK";
-                    pBinCodes[0].CodeColor = Brushes.Green;
+                    pBinCodes[0].Color = Brushes.Green;
                     pBinCodes[1].Code = "099";
                     pBinCodes[1].Describe = "NG";
-                    pBinCodes[1].CodeColor = Brushes.Red;
-                    machineSetting.BinCodes = pBinCodes;
+                    pBinCodes[1].Color = Brushes.Red;
+                    bincodeListDefault = pBinCodes;
                 }
                 int count = 0;
                 foreach (var item in dies)
@@ -568,11 +520,11 @@ namespace WLS3200Gen2
                     Brush drawStroke = Brushes.Black;
                     Brush drawFill = Brushes.Gray;
                     //判斷要用什麼顏色
-                    foreach (var item2 in machineSetting.BinCodes)
+                    foreach (var item2 in bincodeListDefault)
                     {
                         if (item.BinCode == item2.Code)
                         {
-                            drawFill = item2.CodeColor;
+                            drawFill = item2.Color;
                         }
                     }
                     if (count >= 50)
@@ -1117,9 +1069,9 @@ namespace WLS3200Gen2
                 //挑選出 對應index 的Die
                 YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
                 YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
-                if (die == null) throw new Exception("");
+                if (die == null) throw new Exception("No This Die");
                 //設計座標轉換對位後座標
-                Point transPos = transForm.TransPoint(new Point(die.PosX, die.PosY));
+                Point transPos = transForm.TransPoint(new Point(die.MapTransX, die.MapTransY));
 
                 await machine.MicroDetection.TableMoveToAsync(transPos);
             }
@@ -1189,8 +1141,8 @@ namespace WLS3200Gen2
                 point.MicroscopeLightValue = Microscope.LightValue;
                 point.MicroscopeApertureValue = Microscope.ApertureValue;
                 point.LensIndex = Microscope.LensIndex;
-                point.MicroscopePosition = MicroscopeLensDefault[Microscope.LensIndex].AutoFocusPosition;
-                point.MicroscopeAberationPosition = MicroscopeLensDefault[Microscope.LensIndex].AberationPosition;
+                point.MicroscopePosition = machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AutoFocusPosition;
+                point.MicroscopeAberationPosition = machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AberationPosition;
                 point.CubeIndex = Microscope.CubeIndex;
                 point.Filter1Index = Microscope.Filter1Index;
                 point.Filter2Index = Microscope.Filter2Index;
@@ -1298,18 +1250,37 @@ namespace WLS3200Gen2
             {
                 List<LocateParam> datas = new List<LocateParam>();
 
-                datas.Add(LocateParam1);
-                datas.Add(LocateParam2);
-                datas.Add(LocateParam3);
+
 
                 //需要做出一個轉換矩陣 對應index 與 機台座標
                 var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
                 var index2 = new Point(LocateParam2.IndexX, LocateParam2.IndexY);
                 var index3 = new Point(LocateParam3.IndexX, LocateParam3.IndexY);
 
+
+
                 var posDesign1 = new Point(LocateParam1.DesignPositionX, LocateParam1.DesignPositionY);
+                posDesign1.X = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransX);
+                posDesign1.Y = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransY);
+                LocateParam1.DesignPositionX = posDesign1.X;
+                LocateParam1.DesignPositionY = posDesign1.Y;
+
+
                 var posDesign2 = new Point(LocateParam2.DesignPositionX, LocateParam2.DesignPositionY);
+                posDesign2.X = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransX);
+                posDesign2.Y = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransY);
+                LocateParam2.DesignPositionX = posDesign2.X;
+                LocateParam2.DesignPositionY = posDesign2.Y;
+
                 var posDesign3 = new Point(LocateParam3.DesignPositionX, LocateParam3.DesignPositionY);
+                posDesign3.X = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransX);
+                posDesign3.Y = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransY);
+                LocateParam3.DesignPositionX = posDesign3.X;
+                LocateParam3.DesignPositionY = posDesign3.Y;
+
+                datas.Add(LocateParam1);
+                datas.Add(LocateParam2);
+                datas.Add(LocateParam3);
 
                 var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
                 var pos2 = new Point(LocateParam2.GrabPositionX, LocateParam2.GrabPositionY);
@@ -1318,25 +1289,22 @@ namespace WLS3200Gen2
                 var indexs = new Point[] { index1, index2, index3 };
                 var posDesign = new Point[] { posDesign1, posDesign2, posDesign3 };
                 var poss = new Point[] { pos1, pos2, pos3 };
-                if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
-                var transform = new CogAffineTransform(posDesign, poss);
-
-                this.transForm = new CogAffineTransform(posDesign, poss);
+                //if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
+                var transform = new CogAffineTransform(posDesign, poss);//(posDesign, poss);
                 //依序轉換完INDEX  塞回機械座標
                 foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
                 {
-                    Point pos = transform.TransPoint(new Point(die.MapTransX, die.MapTransY));
+                    Point posMap = new Point(die.MapTransX, die.MapTransY);
+                    Point pos = transform.TransPoint(posMap);
                     die.PosX = pos.X;
                     die.PosY = pos.Y;
-                    Point posInvert = transform.TransInvertPoint(new Point(die.PosX, die.PosY));
-
-
+                    Point posInvert = transform.TransInvertPoint(pos);
                     if ((die.IndexX == 0 && die.IndexY == 56) || (die.IndexX == 112 && die.IndexY == 56) || (die.IndexX == 113 && die.IndexY == 56) || (die.IndexX == 0 && die.IndexY == 66))
                     {
                         int ss2 = 0;
                     }
                 }
-
+                this.transForm = new CogAffineTransform(posDesign, poss);
 
                 mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
                 mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
@@ -1360,7 +1328,6 @@ namespace WLS3200Gen2
 
             MacroBackStartPos = eFEMtionRecipe.MacroBackStartPos;
         }
-
         private void SetRecipeToLocateParam(DetectionRecipe detectionRecipe)
         {
             if (detectionRecipe.AlignRecipe.FiducialDatas != null && detectionRecipe.AlignRecipe.FiducialDatas[0] != null)
@@ -1374,6 +1341,10 @@ namespace WLS3200Gen2
 
             AlignOffsetX = detectionRecipe.AlignRecipe.OffsetX;
             AlignOffsetY = detectionRecipe.AlignRecipe.OffsetY;
+        }
+        private void SetRecipeToDetectionParam(DetectionRecipe detectionRecipe)
+        {
+            DetectionPointList = (ObservableCollection<DetectionPoint>)detectionRecipe.DetectionPoints;
         }
     }
 

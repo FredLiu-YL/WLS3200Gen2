@@ -41,6 +41,7 @@ namespace WLS3200Gen2
         private double manualPosX, manualPosY;
         private MachineStates machinestatus = MachineStates.IDLE;
         private WaferProcessStatus macroJudgeOperation;
+        private WaferProcessStatus microJudgeOperation = WaferProcessStatus.Pass;
         private bool isLoadport1, isLoadport2;
         private IMicroscope microscope;
         private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
@@ -266,7 +267,7 @@ namespace WLS3200Gen2
 
                     SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
-
+                    SetRecipeToDetectionParam(mainRecipe.DetectRecipe);
                     WriteLog("Load Recipe :" + recipename);
                 }
 
@@ -516,6 +517,45 @@ namespace WLS3200Gen2
             {
             }
         });
+        private PauseTokenSource ptsTest = new PauseTokenSource();
+        private CancellationTokenSource ctsTest = new CancellationTokenSource();
+        public ICommand TestCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //List<MicroscopeLens> microscopeLenses = new List<MicroscopeLens>();
+                //for (int i = 0; i <= 5; i++)
+                //{
+                //    MicroscopeLens microscopeLens = new MicroscopeLens();
+                //    microscopeLenses.Add(microscopeLens);
+                //}
+                //machineSetting.MicroscopeLensDefault = microscopeLenses;
+
+
+                MainRecipe recipe = mainRecipe;
+                Wafer currentWafer = new Wafer(1);
+                currentWafer.Dies = recipe.DetectRecipe.WaferMap.Dies;
+                await machine.MicroDetection.Run(recipe.DetectRecipe, processSetting, currentWafer, ptsTest, ctsTest);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+        });
+        public ICommand Test1Command => new RelayCommand(async () =>
+        {
+            try
+            {
+                ptsTest.IsPaused = false;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+        });
+
         private string CreateProcessFolder()
         {
             var date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
@@ -544,8 +584,21 @@ namespace WLS3200Gen2
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
             return macroJudgeOperation;
-
         }
+        private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        {
+            pts.IsPaused = true;
+            //machine.ProcessPause();//暫停
 
+            //切到Micro 頁面
+            TabControlSelectedIndex = 3;
+            IsOperateUI = false;
+            cts.Token.ThrowIfCancellationRequested();
+            await pts.Token.WaitWhilePausedAsync(cts.Token);
+            //切到Infomation頁面
+            TabControlSelectedIndex = 0;
+            IsOperateUI = true;
+            return microJudgeOperation;
+        }
     }
 }

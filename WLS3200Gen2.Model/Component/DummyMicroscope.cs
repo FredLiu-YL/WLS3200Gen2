@@ -12,16 +12,16 @@ namespace WLS3200Gen2.Model.Component
         public int LightValue { get; set; }
         public int ApertureValue { get; set; }
 
-        public int Position => 0;
+        public double Position { get; private set; }
 
         public int NEL { get; set; }
         public int PEL { get; set; }
 
-        public int AberationPosition => 0;
+        public double AberationPosition { get; private set; }
 
         public int AFNEL { get; set; }
         public int AFPEL { get; set; }
-        public int TimeOutRetryCount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int TimeOutRetryCount { get; set; } = 1;
 
         public int LensIndex { get; set; }
 
@@ -36,57 +36,66 @@ namespace WLS3200Gen2.Model.Component
 
         public Task AberrationMoveAsync(double distance)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task AberrationMoveToAsync(double position)
         {
-            throw new NotImplementedException();
+            AberationPosition = position;
+            return Task.CompletedTask;
         }
 
         public void AFOff()
         {
-            throw new NotImplementedException();
+            IsAutoFocusOk = false;
+            IsAutoFocusTrace = false;
         }
 
         public Task AFOneShotAsync()
         {
-            throw new NotImplementedException();
+            IsAutoFocusOk = true;
+            IsAutoFocusTrace = false;
+            return Task.CompletedTask;
         }
 
         public void AFTrace()
         {
-            throw new NotImplementedException();
+            IsAutoFocusOk = true;
+            IsAutoFocusTrace = true;
         }
 
         public Task ChangeApertureAsync(int ApertureValue)
         {
-            throw new NotImplementedException();
+            this.ApertureValue = ApertureValue;
+            return Task.CompletedTask;
         }
 
         public Task ChangeCubeAsync(int idx)
         {
-            throw new NotImplementedException();
+            CubeIndex = idx;
+            return Task.CompletedTask;
         }
 
         public Task ChangeFilterAsync(int wheelIdx, int idx)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task ChangeLensAsync(int idx)
         {
-            throw new NotImplementedException();
+            LensIndex = idx;
+            return Task.CompletedTask;
         }
 
         public Task ChangeLightAsync(int LigntValue)
         {
-            throw new NotImplementedException();
+            LightValue = LigntValue;
+            return Task.CompletedTask;
         }
 
         public Task ChangeLightSpreadAsync(int idx)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task<double> GetAberationPosition()
@@ -132,52 +141,55 @@ namespace WLS3200Gen2.Model.Component
 
         public Task SetAFNEL(int position)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task SetAFPEL(int position)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public void SetSearchRange(double FirstZPos, double Range)
         {
-            throw new NotImplementedException();
         }
 
         public Task SetZNEL(int position)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task SetZPEL(int position)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task MoveAsync(double distance)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task MoveToAsync(double position)
         {
-            throw new NotImplementedException();
+            Position = position;
+            return Task.CompletedTask;
         }
 
         public Task ChangeFilter1Async(int idx)
         {
-            throw new NotImplementedException();
+            Filter1Index = idx;
+            return Task.CompletedTask;
         }
 
         public Task ChangeFilter2Async(int idx)
         {
-            throw new NotImplementedException();
+            Filter2Index = idx;
+            return Task.CompletedTask;
         }
 
         public Task ChangeFilter3Async(int idx)
         {
-            throw new NotImplementedException();
+            Filter3Index = idx;
+            return Task.CompletedTask;
         }
     }
 }

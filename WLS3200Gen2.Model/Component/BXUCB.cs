@@ -49,12 +49,12 @@ namespace WLS3200Gen2.Model.Component
         public int LightValue { get => lightValue; }
         public int ApertureValue { get => apertureValue; }
 
-        public int Position => Convert.ToInt32(GetZPosition());
+        public double Position => GetZPosition();
 
         public int NEL { get => Convert.ToInt32(GetZNEL()); set => SetZNEL(value); }
         public int PEL { get => Convert.ToInt32(GetZPEL()); set => SetZPEL(value); }
 
-        public int AberationPosition => GetAberationPosition();
+        public double AberationPosition => GetAberationPosition();
 
         public int AFNEL { get => GetAFNEL(); set => SetAFNEL(value); }
         public int AFPEL { get => GetAFPEL(); set => SetAFPEL(value); }
@@ -1304,13 +1304,13 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
-        public int GetAberationPosition()
+        public double GetAberationPosition()
         {
             try
             {
                 string str = "";
                 int nowCount = 0;
-                int nowPos = 0;
+                double nowPos = 0;
                 while (true)
                 {
                     str = SendGetMessage("2APOS? ", 3);

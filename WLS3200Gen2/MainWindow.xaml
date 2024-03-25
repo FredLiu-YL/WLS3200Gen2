@@ -300,7 +300,8 @@
                                             <Label Grid.Row="0" Grid.Column="3" BorderBrush="Black"  BorderThickness="1" />
                                             <Label Grid.Row="1" Grid.Column="3" BorderBrush="Black"  BorderThickness="1" />
 
-                                            <Button Grid.Row="2" Grid.Column="3" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
+                                            <Button Grid.Row="2" Grid.Column="3" Content="Test0TTT" FontSize="20" Height="50" Width="120" Grid.RowSpan="2" Command="{Binding TestCommand}" />
+                                            <Button Grid.Row="4" Grid.Column="3" Content="Test1TTT" FontSize="20" Height="50" Width="120" Grid.RowSpan="2" Command="{Binding Test1Command}" />
 
                                         </Grid>
                                     </Grid>
@@ -451,7 +452,9 @@
                                                         <DataGridTextColumn  Width="50"  Header="Idx"  Binding="{Binding IndexX}"  />
                                                         <DataGridTextColumn  Width="50"  Header="Col"  Binding="{Binding IndexX}"  />
                                                         <DataGridTextColumn  Width="55"  Header="Row"  Binding="{Binding IndexY}"  />
-                                                        <DataGridTextColumn  Width="120"  Header="Pos"  Binding="{Binding Position}"  />
+                                                        <DataGridTextColumn  Width="120"  Header="PositionX"  Binding="{Binding Position.X}"  />
+                                                        <DataGridTextColumn  Width="120"  Header="PositionY"  Binding="{Binding Position.Y}"  />
+                                                        <DataGridTextColumn  Width="80"  Header="BinCode"  Binding="{Binding Code}"  />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </Grid>
@@ -879,6 +882,7 @@
                                             <StackPanel Grid.Row="0" Orientation="Horizontal"   >
                                                 <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="180"  Command="{Binding AddDetectionCommand}"  />
                                                 <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="180"   Command="{Binding RemoveDetectionCommand}"  />
+                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="180"   Command="{Binding EditDetectionCommand}"  />
                                             </StackPanel>
                                             <StackPanel Grid.Row="1">
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
@@ -1388,19 +1392,19 @@
                                 <Label Grid.Row="1"  Grid.Column="1" Content="um/pixal" FontSize="15" VerticalAlignment="Bottom" />
 
                                 <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].Ratio }"  Grid.Column="1" />
+                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].Ratio }" VerticalAlignment="Bottom"  Grid.Column="1" />
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].Ratio}"  Grid.Column="1" />
+                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
 
                                 <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].Ratio}"  Grid.Column="1" />
+                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
 
                                 <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].Ratio}"  Grid.Column="1" />
+                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
 
                                 <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].Ratio}"  Grid.Column="1" />
+                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
@@ -1436,23 +1440,23 @@
 
                                 <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
                                 <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AutoFocusPosition}"  Grid.Column="1"  VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AberationPosition}"  Grid.Column="3" />
+                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom" />
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AutoFocusPosition}"  Grid.Column="1" />
-                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AberationPosition}"  Grid.Column="3" />
+                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom" />
 
                                 <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AutoFocusPosition}"  Grid.Column="1" />
-                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AberationPosition}"  Grid.Column="3" />
+                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AutoFocusPosition}"  Grid.Column="1" />
-                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AberationPosition}"  Grid.Column="3" />
+                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AutoFocusPosition}"  Grid.Column="1" />
-                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AberationPosition}"  Grid.Column="3" />
+                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
 
                                 <Border   Grid.Row="9" Grid.Column ="0" Grid.ColumnSpan="4" Grid.RowSpan="3" BorderBrush="Teal" BorderThickness="1" />
                                 <TextBlock Grid.Row="8"  Text="AF Limit" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
@@ -1461,8 +1465,8 @@
                                 <Label Grid.Row="9"  Grid.Column="3" Content="Negative Limit" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="10"  Grid.Column="0" Content="Z:" FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="10" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                <TextBox Grid.Row="10" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="3" />
+                                <TextBox Grid.Row="10" Text=" "  Grid.Column="1" />
+                                <TextBox Grid.Row="10" Text=" "  Grid.Column="3" />
                             </Grid>
                         </Grid>
                     </GroupBox>
