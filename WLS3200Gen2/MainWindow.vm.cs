@@ -114,7 +114,15 @@ namespace WLS3200Gen2
         /// <summary>
         /// 新增 Shape
         /// </summary>
+        public ICommand RemoveHomeMapShapeAction { get; set; }
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
         public ICommand AddMapShapeAction { get; set; }
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
+        public ICommand RemoveMapShapeAction { get; set; }
         /// <summary>
         /// 清除 Shape
         /// </summary>

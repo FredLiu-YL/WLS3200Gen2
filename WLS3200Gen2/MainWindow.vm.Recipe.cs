@@ -71,8 +71,18 @@ namespace WLS3200Gen2
         /// <summary>
         /// 切換到 主畫面 首頁頁面
         /// </summary>
-        public bool IsMainHomePageSelect { get => isMainHomePageSelect; set => SetValue(ref isMainHomePageSelect, value); }
-
+        public bool IsMainHomePageSelect
+        {
+            get
+            {
+                if (isMainHomePageSelect == true)
+                {
+                    ShowHomeMapImgae(mainRecipe.DetectRecipe);
+                }
+                return isMainHomePageSelect;
+            }
+            set => SetValue(ref isMainHomePageSelect, value);
+        }
         /// <summary>
         /// 切換到 主畫面Recipe 設定頁面
         /// </summary>
@@ -291,6 +301,7 @@ namespace WLS3200Gen2
                     RecipeLastArmStation = Model.ArmStation.Cassette2;
                 }
             }
+
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
             WriteLog("Enter the RecipePage");
@@ -391,9 +402,25 @@ namespace WLS3200Gen2
         });
 
 
-        public ICommand MappingEditCommand => new RelayCommand(() =>
+        public ICommand MappingEditCommand => new RelayCommand(async () =>
        {
+           try
+           {
+               //var dies = mainRecipe.DetectRecipe.WaferMap.Dies.ToList(); // 將Dies轉換為列表以便索引
+               //var foundDie = dies.FirstOrDefault(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY);
+               //int indexOfFoundDie = 0;
+               //if (foundDie != null)
+               //{
+               //    indexOfFoundDie = dies.IndexOf(foundDie);
+               //}
+               Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
 
+               MapDieColorChange(mainRecipe.DetectRecipe.WaferMap, die, Brushes.Purple);
+           }
+           catch (Exception ex)
+           {
+               MessageBox.Show(ex.Message);
+           }
 
        });
 
@@ -413,9 +440,10 @@ namespace WLS3200Gen2
 
                     mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("", true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
-                    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
+
                     await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
-                    await ShowHomeMapImgae(mainRecipe.DetectRecipe.WaferMap);
+                    await SaveHomeMapImgae(mainRecipe.DetectRecipe.WaferMap);
+                    ShowDetectionMapImgae(mainRecipe.DetectRecipe);
                 }
             }
             else
@@ -450,31 +478,245 @@ namespace WLS3200Gen2
                 throw;
             }
         });
-        public async Task ShowHomeMapImgae(WaferMapping waferMap)
+        /// <summary>
+        /// 顯示主畫面Map圖片
+        /// </summary>
+        /// <param name="detectionRecipe"></param>
+        public void ShowHomeMapImgae(DetectionRecipe detectionRecipe)
         {
             try
             {
-                //await Task.Delay(500);
-                //                return;
+                if (detectionRecipe.WaferMap != null && detectionRecipe.WaferMap.MapImage != null)
+                {
+                    HomeMapImage = new WriteableBitmap(mainRecipe.DetectRecipe.WaferMap.MapImage.ToBitmapSource());
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void ShowDetectionMapImgae(DetectionRecipe detectionRecipe)
+        {
+            try
+            {
+                foreach (var item in detectionRecipe.DetectionPoints)
+                {
+                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
+                    if (die != null)
+                    {
+                        MapDieColorChange(detectionRecipe.WaferMap, die, Brushes.Yellow);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void ClearDetectionMapImgae(DetectionRecipe detectionRecipe)
+        {
+            try
+            {
+                foreach (var item in detectionRecipe.DetectionPoints)
+                {
+                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
+                    if (die != null)
+                    {
+                        MapDieColorReturn(detectionRecipe.WaferMap, die, detectionRecipe.BincodeList);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+        public void MapDieColorChange(WaferMapping waferMapping, Die die, Brush brush)
+        {
+            try
+            {
+                int mappingImageDrawSize = 3000;
+                double dieSizeX = die.DieSize.Width;
+                double dieSizeY = die.DieSize.Height;
+                offsetDraw = mappingImageDrawSize / 150;
+                double scale = 1;
+                scale = Math.Max((waferMapping.ColumnCount + 2.5) * dieSizeX, (waferMapping.RowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                scale = Math.Max(waferMapping.ColumnCount * dieSizeX, waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                double strokeThickness = 1;
+                double crossThickness = 1;
+                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
+                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
+                showSize_X = (waferMapping.ColumnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
+                showSize_Y = (waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                var cc1 = die.OperationPixalX / showSize_X + offsetDraw;
+                var cc2 = die.OperationPixalY / showSize_Y + offsetDraw;
+                var cc3 = die.DieSize.Width / 2.5 / showSize_X;
+                var cc4 = die.DieSize.Height / 2.5 / showSize_Y;
+                var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
+
+
+                ROIShape tempselectShape = MapDrawings.Select(shape =>
+                {
+                    var rectBegin = shape.LeftTop;
+                    var rectEnd = shape.RightBottom;
+                    var rect = new Rect(rectBegin, rectEnd);
+                    if (rect.Contains(clearPoint))
+                        return shape;
+                    else
+                        return null;
+                }).Where(s => s != null).FirstOrDefault();
+
+                if (tempselectShape != null)
+                {
+                    //RemoveMapShapeAction.Execute(tempselectShape);
+                    tempselectShape.Fill = brush;
+                    tempselectShape.CenterCrossBrush = brush;
+                }
+                else
+                {
+                    AddMapShapeAction.Execute(new ROIRotatedRect
+                    {
+                        Stroke = Brushes.Black,
+                        StrokeThickness = strokeThickness,
+                        Fill = brush,
+                        X = die.OperationPixalX / showSize_X + offsetDraw,
+                        Y = die.OperationPixalY / showSize_Y + offsetDraw,
+                        LengthX = die.DieSize.Width / 2.5 / showSize_X,
+                        LengthY = die.DieSize.Height / 2.5 / showSize_Y,
+                        IsInteractived = true,
+                        IsMoveEnabled = false,
+                        IsResizeEnabled = false,
+                        IsRotateEnabled = false,
+                        CenterCrossLength = crossThickness,
+                        CenterCrossBrush = brush,
+                        ToolTip = "X:" + (die.IndexX) + " Y:" + (die.IndexY) + " X:" + die.MapTransX + " Y:" + die.MapTransY
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void MapDieColorReturn(WaferMapping waferMapping, Die die, IEnumerable<BincodeInfo> bincodeListDefault)
+        {
+            try
+            {
+                int mappingImageDrawSize = 3000;
+                double dieSizeX = die.DieSize.Width;
+                double dieSizeY = die.DieSize.Height;
+                offsetDraw = mappingImageDrawSize / 150;
+                double scale = 1;
+                scale = Math.Max((waferMapping.ColumnCount + 2.5) * dieSizeX, (waferMapping.RowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                scale = Math.Max(waferMapping.ColumnCount * dieSizeX, waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                double strokeThickness = 1;
+                double crossThickness = 1;
+                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
+                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
+                showSize_X = (waferMapping.ColumnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
+                showSize_Y = (waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
+                var cc1 = die.OperationPixalX / showSize_X + offsetDraw;
+                var cc2 = die.OperationPixalY / showSize_Y + offsetDraw;
+                var cc3 = die.DieSize.Width / 2.5 / showSize_X;
+                var cc4 = die.DieSize.Height / 2.5 / showSize_Y;
+                var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
+
+                ROIShape tempselectShape = MapDrawings.Select(shape =>
+                {
+                    var rectBegin = shape.LeftTop;
+                    var rectEnd = shape.RightBottom;
+                    var rect = new Rect(rectBegin, rectEnd);
+                    if (rect.Contains(clearPoint))
+                        return shape;
+                    else
+                        return null;
+                }).Where(s => s != null).FirstOrDefault();
+
+                if (bincodeListDefault == null)
+                {
+                    BincodeInfo[] pBinCodes = new BincodeInfo[2];
+                    pBinCodes[0] = new BincodeInfo();
+                    pBinCodes[1] = new BincodeInfo();
+                    pBinCodes[0].Code = "000";
+                    pBinCodes[0].Describe = "OK";
+                    pBinCodes[0].Color = Brushes.Green;
+                    pBinCodes[1].Code = "099";
+                    pBinCodes[1].Describe = "NG";
+                    pBinCodes[1].Color = Brushes.Red;
+                    bincodeListDefault = pBinCodes;
+                }
+                Brush drawFill = Brushes.Gray;
+                //判斷要用什麼顏色
+                foreach (var item2 in bincodeListDefault)
+                {
+                    if (die.BinCode == item2.Code)
+                    {
+                        drawFill = item2.Color;
+                    }
+                }
+
+                if (tempselectShape != null)
+                {
+                    //RemoveMapShapeAction.Execute(tempselectShape);
+                    tempselectShape.Fill = drawFill;
+                    tempselectShape.CenterCrossBrush = drawFill;
+                }
+                else
+                {
+                    AddMapShapeAction.Execute(new ROIRotatedRect
+                    {
+                        Stroke = Brushes.Black,
+                        StrokeThickness = strokeThickness,
+                        Fill = drawFill,
+                        X = die.OperationPixalX / showSize_X + offsetDraw,
+                        Y = die.OperationPixalY / showSize_Y + offsetDraw,
+                        LengthX = die.DieSize.Width / 2.5 / showSize_X,
+                        LengthY = die.DieSize.Height / 2.5 / showSize_Y,
+                        IsInteractived = true,
+                        IsMoveEnabled = false,
+                        IsResizeEnabled = false,
+                        IsRotateEnabled = false,
+                        CenterCrossLength = crossThickness,
+                        CenterCrossBrush = drawFill,
+                        ToolTip = "X:" + (die.IndexX) + " Y:" + (die.IndexY) + " X:" + die.MapTransX + " Y:" + die.MapTransY
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+
+
+
+        public async Task SaveHomeMapImgae(WaferMapping waferMap)
+        {
+            try
+            {
                 SaveMappingAction.Execute($"{systemPath}\\Map.bmp");
                 var bitmapImage = new BitmapImage();
                 string path = $"{systemPath}\\Map.bmp"; // "C://Users//zhengye_lin//Desktop//333output.bmp"
                 bitmapImage.BeginInit();
                 bitmapImage.UriSource = new Uri(path);//333output.bmp
                 bitmapImage.EndInit();
-                //ClearHomeMapShapeAction.Execute(true);
-                //HomeMapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                //if (!(bitmapImage is null))
-                //{
-                //    HomeMapImage = new WriteableBitmap(bitmapImage);
-                //}
                 waferMap.MapImage = bitmapImage.FormatConvertTo(PixelFormats.Bgr24).ToByteFrame();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw ex;
             }
         }
         private double showSize_X;
@@ -484,6 +726,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 ClearMapShapeAction.Execute(true);
                 double dieSizeX = dies[0].DieSize.Width;
                 double dieSizeY = dies[0].DieSize.Height;
@@ -1109,8 +1352,12 @@ namespace WLS3200Gen2
                     //從點選的ShapeROI  找出對應的die
                     int listIndex = MapDrawings.IndexOf(selectShape);
                     YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
-                    MoveIndexX = die.IndexX;
-                    MoveIndexY = die.IndexY;
+                    string tip = selectShape.ToolTip.ToString();
+                    string[] line = tip.Split(' ');
+                    int idxX = Convert.ToInt32(line[0].Split(':')[1]);
+                    int idxY = Convert.ToInt32(line[1].Split(':')[1]);
+                    MoveIndexX = idxX;
+                    MoveIndexY = idxY;
                 }
 
             }
@@ -1122,22 +1369,26 @@ namespace WLS3200Gen2
 
 
         });
-        public ICommand AddDetectionCommand => new RelayCommand(() =>
+        public ICommand AddDetectionCommand => new RelayCommand(async () =>
         {
             try
             {
                 //從點選的ShapeROI  找出對應的die
-                int listIndex = MapDrawings.IndexOf(selectShape);
-                YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
+                //int listIndex = MapDrawings.IndexOf(selectShape);
+                //YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
+                string tip = selectShape.ToolTip.ToString();
+                string[] line = tip.Split(' ');
+                int idxX = Convert.ToInt32(line[0].Split(':')[1]);
+                int idxY = Convert.ToInt32(line[1].Split(':')[1]);
+
 
                 DetectionPoint point = new DetectionPoint();
-                point.IndexX = die.IndexX;
-                point.IndexY = die.IndexY;
+                point.IndexX = idxX;
+                point.IndexY = idxY;
 
                 var newPos = transForm.TransInvertPoint(new Point(TablePosX, TablePosY));
 
                 point.Position = new Point(Math.Ceiling(newPos.X), Math.Ceiling(newPos.Y));
-
                 point.MicroscopeLightValue = Microscope.LightValue;
                 point.MicroscopeApertureValue = Microscope.ApertureValue;
                 point.LensIndex = Microscope.LensIndex;
@@ -1147,8 +1398,12 @@ namespace WLS3200Gen2
                 point.Filter1Index = Microscope.Filter1Index;
                 point.Filter2Index = Microscope.Filter2Index;
                 point.Filter3Index = Microscope.Filter3Index;
-
                 DetectionPointList.Add(point);
+                Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == idxX && d.IndexY == idxY).FirstOrDefault();
+                if (die != null)
+                {
+                    MapDieColorChange(mainRecipe.DetectRecipe.WaferMap, die, Brushes.Yellow);
+                }
             }
             catch (Exception ex)
             {
@@ -1157,13 +1412,21 @@ namespace WLS3200Gen2
             }
         });
 
-        public ICommand RemoveDetectionCommand => new RelayCommand(() =>
+        public ICommand RemoveDetectionCommand => new RelayCommand(async () =>
         {
             try
             {
                 if (DetectionPointList.Count > SelectDetectionPointList)
                 {
+                    int idxX = DetectionPointList[SelectDetectionPointList].IndexX;
+                    int idxY = DetectionPointList[SelectDetectionPointList].IndexY;
+                    int count = DetectionPointList.Count(d => d.IndexX == idxX && d.IndexY == idxY);
                     DetectionPointList.RemoveAt(SelectDetectionPointList);
+                    Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == idxX && d.IndexY == idxY).FirstOrDefault();
+                    if (die != null && count == 1)
+                    {
+                        MapDieColorReturn(mainRecipe.DetectRecipe.WaferMap, die, mainRecipe.DetectRecipe.BincodeList);
+                    }
                 }
             }
             catch (Exception ex)

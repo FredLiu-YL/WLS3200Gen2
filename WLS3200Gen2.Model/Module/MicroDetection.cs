@@ -145,11 +145,9 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task PutWaferPrepare(Point tableWaferCatchPosition)
         {
-
             await TableMoveToAsync(tableWaferCatchPosition);
             TableVacuum.Off();
             //如果有lift 或夾持機構 需要做處理
-
         }
 
 

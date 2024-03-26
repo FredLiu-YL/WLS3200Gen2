@@ -225,7 +225,7 @@
                                 <ColumnDefinition Width="0.33*"/>
                             </Grid.ColumnDefinitions>
                             <views:VirtualCanvas Margin="0,0,-2,-2" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding HomeMapImage}" ItemsSource="{Binding HomeMapDrawings}"   
-                                                                              AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}"  >
+                                                                              AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}"  >
 
                             </views:VirtualCanvas>
                             <GroupBox Grid.Column="1"  >
@@ -571,7 +571,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <viewsNew:WaferMappingCanvas Margin="0,0,0,0" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding MapImage}" ItemsSource="{Binding MapDrawings}"   
-                                                     IsMoveEnable="{Binding MapIsMoveEnable}"    MousePixcel="{Binding MapMousePixcel}"     AddShapeAction="{Binding AddMapShapeAction}" ClearShapeAction="{Binding ClearMapShapeAction}" SaveAction="{Binding SaveMappingAction}"  >
+                                                     IsMoveEnable="{Binding MapIsMoveEnable}"    MousePixcel="{Binding MapMousePixcel}"     AddShapeAction="{Binding AddMapShapeAction}" ClearShapeAction="{Binding ClearMapShapeAction}" RemoveShapeAction="{Binding RemoveMapShapeAction}" SaveAction="{Binding SaveMappingAction}"  >
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="PreviewMouseUp">
                                     <i:InvokeCommandAction Command="{Binding SelectMappingDieCommand}"/>
@@ -860,7 +860,7 @@
 
                                     </TabItem>
 
-                                    <TabItem Width="190" IsSelected="{Binding IsDetectionPageSelect}"  >
+                                    <TabItem Width="190" IsSelected="{Binding IsDetectionPageSelect}" >
                                         <TabItem.Header>
                                             <Grid Margin="-10" Width="190"  >
                                                 <Grid.ColumnDefinitions>
