@@ -29,7 +29,7 @@ namespace WLS3200Gen2.UserControls
         private bool isDragging;
         private Point lastMousePosition;
         private BitmapImage bitmapImage;
-        private Viewbox viewbox;
+   
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
         public MappingCanvasTest()
         {
@@ -38,23 +38,20 @@ namespace WLS3200Gen2.UserControls
 
             bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri("D:\\AA.bmp");
+            bitmapImage.UriSource = new Uri("D:\\10.bmp");
             bitmapImage.EndInit();
             myImage.Source = bitmapImage;
 
             // 初始化矩形的位置集合
 
 
-         
-            // 添加滑鼠左鍵拖曳事件
-            myCanvas.MouseLeftButtonDown += Canvas_MouseLeftButtonDown;
-            myCanvas.MouseLeftButtonUp += Canvas_MouseLeftButtonUp;
-            myCanvas.MouseMove += Canvas_MouseMove;
 
-         //   myCanvas.Width = bitmapImage.PixelWidth;
-         //   myCanvas.Height = bitmapImage.PixelHeight;
-         //   myGrid.Width = bitmapImage.PixelWidth;
-         //   myGrid.Height = bitmapImage.PixelHeight;
+            // 添加滑鼠左鍵拖曳事件
+            myGrid.MouseLeftButtonDown += Canvas_MouseLeftButtonDown;
+            myGrid.MouseLeftButtonUp += Canvas_MouseLeftButtonUp;
+            myGrid.MouseMove += Canvas_MouseMove;
+
+       
      
             DrawRectangles();
             //  DrawCross();
@@ -130,18 +127,18 @@ namespace WLS3200Gen2.UserControls
         private void DrawRectangles()
         {
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 30; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < 30; j++)
                 {
 
-             //        Rectangles.Add(new RectangleInfo { X = 70 + (60 * i), Y = 70 + (60 * j), Width = 50, Height = 50, Fill = Brushes.DarkSeaGreen });
+                     Rectangles.Add(new RectangleInfo { X = 70 + (60 * i), Y = 70 + (60 * j), Width = 50, Height = 50, Fill = Brushes.DarkSeaGreen });
                 }
             }
             
 
-            Rectangles.Add(new RectangleInfo { X = 200, Y =200, Width = 100, Height = 100, Fill = Brushes.Red });
-            Rectangles.Add(new RectangleInfo { X = 400, Y = 500, Width = 50, Height = 50, Fill = Brushes.Blue });
+          //  Rectangles.Add(new RectangleInfo { X = 200, Y =200, Width = 100, Height = 100, Fill = Brushes.Red });
+          //  Rectangles.Add(new RectangleInfo { X = 400, Y = 500, Width = 50, Height = 50, Fill = Brushes.Blue });
 
 
             // 添加更多矩形資訊
@@ -156,17 +153,17 @@ namespace WLS3200Gen2.UserControls
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             dragStartPoint = e.GetPosition(scrollViewer);
-            myImage.CaptureMouse();
+            myGrid.CaptureMouse();
         }
 
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            myImage.ReleaseMouseCapture();
+            myGrid.ReleaseMouseCapture();
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!myImage.IsMouseCaptured) return;
+            if (!myGrid.IsMouseCaptured) return;
 
             Point dragEndPoint = e.GetPosition(scrollViewer);
             double offsetX = dragEndPoint.X - dragStartPoint.X;

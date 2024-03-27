@@ -20,31 +20,29 @@
             <Button Content="-" Click="ZoomOut_Click"/>
         </StackPanel>
         <ScrollViewer  x:Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            
-                <Canvas x:Name="myCanvas"  Height="5000" Width="5000" >
-                  
-                        <Image x:Name="myImage"   
-                           MouseLeftButtonDown="Canvas_MouseLeftButtonDown"   
-                               MouseMove="Canvas_MouseMove"   MouseLeftButtonUp="Canvas_MouseLeftButtonUp"   />
-
-
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Viewbox Stretch="Uniform" Name="viewbox">
+                    <Grid x:Name="myGrid" > 
+                        <Image x:Name="myImage" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto"/>
                         <ItemsControl ItemsSource="{Binding Rectangles}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas  />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Rectangle  Canvas.Left="{Binding X}"  Canvas.Top="{Binding Y}"
-                                           Width="{Binding Width}" Height="{Binding Height}"
-                                           Fill="{Binding Fill}" Stroke="Black" StrokeThickness="2">
-
+                                    <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="{Binding Fill}">
+                                        <Rectangle.RenderTransform>
+                                            <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                                        </Rectangle.RenderTransform>
                                     </Rectangle>
-
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                    
-                </Canvas>
-
-
-            
+                    </Grid>
+                </Viewbox>
+            </ScrollViewer>
         </ScrollViewer>
         <!--<ScrollViewer   x:Name="scrollViewer" VerticalScrollBarVisibility="Hidden"  HorizontalScrollBarVisibility="Hidden"
               PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
