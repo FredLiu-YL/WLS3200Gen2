@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.MappingCanvasTest"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
+             mc:Ignorable="d" 
+               x:Name="Mapping"
+             d:DesignHeight="450" d:DesignWidth="600">
+    <UserControl.Resources>
+        <local:ImagePositionConverter x:Key="ImagePositionConverter"/>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding ElementName=Mapping}"   >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0.2*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1">
+            <Button Content="+" Click="ZoomIn_Click"/>
+            <Button Content="-" Click="ZoomOut_Click"/>
+        </StackPanel>
+        <ScrollViewer  x:Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Viewbox Stretch="Uniform" Name="viewbox">
+                    <Grid x:Name="myGrid" > 
+                        <Image x:Name="myImage" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto"/>
+                        <ItemsControl ItemsSource="{Binding Rectangles}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas  />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="{Binding Fill}">
+                                        <Rectangle.RenderTransform>
+                                            <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                                        </Rectangle.RenderTransform>
+                                    </Rectangle>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Viewbox>
+            </ScrollViewer>
+        </ScrollViewer>
+        <!--<ScrollViewer   x:Name="scrollViewer" VerticalScrollBarVisibility="Hidden"  HorizontalScrollBarVisibility="Hidden"
+              PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+            <Grid>
+                <Image x:Name="myImage"   MouseLeftButtonDown="Image_MouseLeftButtonDown"   MouseMove="Image_MouseMove"   MouseLeftButtonUp="Image_MouseLeftButtonUp">
+
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                 添加 TranslateTransform 用于拖动图像 
+                                <TranslateTransform x:Name="translateTransform"/>
+                                <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+
+                    </Image>
+                    -->
+        <!-- 透明的 Grid 覆盖在 Image 控件上 -->
+        <!--
+               
+            </Grid>
+        </ScrollViewer>-->
+    </Grid>
+</UserControl>

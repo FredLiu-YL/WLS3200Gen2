@@ -1121,7 +1121,7 @@
                                 <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" IsLoadPortParamReadOnly="True" />
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
-                                <UserControlUC:MappingCanvas />
+                                <UserControlUC:MappingCanvasTest />
                             </Grid>
                         </Grid>
                     </GroupBox>

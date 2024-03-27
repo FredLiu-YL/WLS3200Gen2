@@ -36,11 +36,11 @@ namespace WLS3200Gen2.UserControls
             InitializeComponent();
 
            
-            /*bitmapImage = new BitmapImage();
+            bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri("D:\\9.bmp");
             bitmapImage.EndInit();
-            myImage.Source = bitmapImage;*/
+            myImage.Source = bitmapImage;
            
             // 初始化矩形的位置集合
        
@@ -81,10 +81,10 @@ namespace WLS3200Gen2.UserControls
                 translateTransform.Y += offset.Y * (1 / scaleTransform.ScaleY);
 
                 // 移动图像
-                /*   double newX = scrollViewer.HorizontalOffset - offset.X;
+                   double newX = scrollViewer.HorizontalOffset - offset.X;
                    double newY = scrollViewer.VerticalOffset - offset.Y;
                    scrollViewer.ScrollToHorizontalOffset(newX);
-                   scrollViewer.ScrollToVerticalOffset(newY);*/
+                   scrollViewer.ScrollToVerticalOffset(newY);
 
                 lastMousePosition = mousePosition;
 
