@@ -32,6 +32,8 @@ namespace WLS3200Gen2.UserControls
                                                                                        new FrameworkPropertyMetadata(new ObservableCollection<WaferUIData>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty LoadPortUIShowProperty = DependencyProperty.Register(nameof(LoadPortUIShow), typeof(LoadPortUI), typeof(LoadPortUnitUC),
                                                                                      new FrameworkPropertyMetadata(new LoadPortUI(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsLoadPortParamReadOnlyProperty = DependencyProperty.Register(nameof(IsLoadPortParamReadOnly), typeof(bool), typeof(LoadPortUnitUC),
+                                                                                     new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         private bool isLoadPortEnabled = true;
         public LoadPortUnitUC()
         {
@@ -58,33 +60,38 @@ namespace WLS3200Gen2.UserControls
             get => isLoadPortEnabled;
             set => SetValue(ref isLoadPortEnabled, value);
         }
+        public bool IsLoadPortParamReadOnly
+        {
+            get => (bool)GetValue(IsLoadPortParamReadOnlyProperty);
+            set => SetValue(IsLoadPortParamReadOnlyProperty, value);
+        }
         public ICommand OpenCassetteLoad => new RelayCommand(async () =>
         {
             try
             {
-              /*  IsLoadPortEnabled = false;
-                await LoadPort.Load();
-                LoadPortWafers.Clear();
-                int i = 1;
-                if (LoadPort.Slot != null)
-                {
-                    foreach (var item in LoadPort.Slot)
-                    {
-                        if (item == null)
-                        {
-                            LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString() });
-                        }
-                        else if (item == true)
-                        {
-                            LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString() });
-                        }
-                        else
-                        {
-                            LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.Error, SN = (i + 1).ToString() });
-                        }
-                        i++;
-                    }
-                }*/
+                /*  IsLoadPortEnabled = false;
+                  await LoadPort.Load();
+                  LoadPortWafers.Clear();
+                  int i = 1;
+                  if (LoadPort.Slot != null)
+                  {
+                      foreach (var item in LoadPort.Slot)
+                      {
+                          if (item == null)
+                          {
+                              LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.None, SN = (i + 1).ToString() });
+                          }
+                          else if (item == true)
+                          {
+                              LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.Exist, SN = (i + 1).ToString() });
+                          }
+                          else
+                          {
+                              LoadPortWafers.Add(new WaferUIData { WaferStates = ExistStates.Error, SN = (i + 1).ToString() });
+                          }
+                          i++;
+                      }
+                  }*/
             }
             catch (Exception ex)
             {

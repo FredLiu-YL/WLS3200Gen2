@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using WLS3200Gen2.Model;
+using YuanliCore.Data;
 
 namespace WLS3200Gen2
 {
@@ -16,10 +17,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                await Task.Run(async () =>
-                {
-                    machine.Feeder.Robot.Home();
-                });
+                await machine.Feeder.Robot.Home();
             }
             catch (Exception ex)
             {
@@ -34,7 +32,8 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.WaferLoadPortToStandBy(0, ArmStation.Cassette1);
+                Wafer currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
+                await machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette1);
             }
             catch (Exception ex)
             {
@@ -48,6 +47,8 @@ namespace WLS3200Gen2
         {
             try
             {
+                await machine.Feeder.AlignerL.Home();
+                await machine.Feeder.AlignerL.ReleaseWafer();
                 await machine.Feeder.WaferAlignerToStandBy();
             }
             catch (Exception ex)
@@ -62,6 +63,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                machine.MicroDetection.TableVacuum.Off();
                 await machine.Feeder.WaferMicroToStandBy();
             }
             catch (Exception ex)
@@ -92,7 +94,9 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.WaferStandByToLoadPort(0, ArmStation.Cassette1);
+                RecipeLastArmStation = Model.ArmStation.Cassette1;
+                Wafer currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
+                await machine.Feeder.UnLoadWaferToCassette(currentWafer, true);
             }
             catch (Exception ex)
             {
@@ -107,6 +111,14 @@ namespace WLS3200Gen2
             try
             {
                 await machine.Feeder.WaferStandByToAligner();
+                RecipeLastArmStation = Model.ArmStation.Align;
+                machine.Feeder.AlignerL.Home().Wait();
+                machine.Feeder.WaferStandByToAligner().Wait();
+                machine.Feeder.AlignerL.FixWafer().Wait();
+                if (machine.Feeder.AlignerL.IsLockOK == false)
+                {
+                    throw new Exception("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
+                }
             }
             catch (Exception ex)
             {
@@ -120,8 +132,15 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
+                Task micro = machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
+                Task robot = machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
+                await Task.WhenAll(micro, robot);
+                machine.MicroDetection.TableVacuum.On();
                 await machine.Feeder.LoadToMicroAsync();
+                if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
+                {
+                    throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
+                }
             }
             catch (Exception ex)
             {
@@ -135,7 +154,13 @@ namespace WLS3200Gen2
         {
             try
             {
+                RecipeLastArmStation = Model.ArmStation.Macro;
+                machine.Feeder.Macro.FixWafer();
                 await machine.Feeder.WaferStandByToMacro();
+                if (machine.Feeder.Macro.IsLockOK == false)
+                {
+                    throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
+                }
             }
             catch (Exception ex)
             {
@@ -152,11 +177,13 @@ namespace WLS3200Gen2
                 switch (key)
                 {
 
-                    case "LoadPort":
-                        if (processSetting.IsLoadport1)
-                            await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
+                    case "LoadPort1":
+                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
                         break;
-                    case "Aligner":
+                    case "LoadPort2":
+                        await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition);
+                        break;
+                    case "Aligner1":
                         await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                         break;
                     case "Micro":

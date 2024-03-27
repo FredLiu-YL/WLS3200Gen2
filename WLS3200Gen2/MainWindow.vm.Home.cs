@@ -320,7 +320,6 @@ namespace WLS3200Gen2
                 //陣列第一個位置是第25片 ， cassette最上面是第25片 ， 所以要從上往下排
                 for (int i = 0; i < wafers.Length; i++)//陣列位置由第0個開始
                 {
-
                     var temp = new ProcessStation(wafers.Length - i); //但陣列第一個位置 是 cassette第25片  所以 index反過來給
                     if (!wafers[i].HasValue)
                     {
@@ -328,18 +327,12 @@ namespace WLS3200Gen2
                         temp.MacroBack = WaferProcessStatus.None;
                         temp.WaferID = WaferProcessStatus.None;
                         temp.Micro = WaferProcessStatus.None;
-
-
                     }
                     ProcessStations.Add(temp);
-
                 }
-
-
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -556,26 +549,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                int mappingImageDrawSize = 3000;
-                double dieSizeX = die.DieSize.Width;
-                double dieSizeY = die.DieSize.Height;
-                offsetDraw = mappingImageDrawSize / 150;
-                double scale = 1;
-                scale = Math.Max((waferMapping.ColumnCount + 2.5) * dieSizeX, (waferMapping.RowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                scale = Math.Max(waferMapping.ColumnCount * dieSizeX, waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                double strokeThickness = 1;
-                double crossThickness = 1;
-                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                showSize_X = (waferMapping.ColumnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
-                showSize_Y = (waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                var cc1 = die.OperationPixalX / showSize_X + offsetDraw;
-                var cc2 = die.OperationPixalY / showSize_Y + offsetDraw;
-                var cc3 = die.DieSize.Width / 2.5 / showSize_X;
-                var cc4 = die.DieSize.Height / 2.5 / showSize_Y;
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
-
-
                 ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
                 {
                     var rectBegin = shape.LeftTop;
@@ -624,25 +598,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                int mappingImageDrawSize = 3000;
-                double dieSizeX = die.DieSize.Width;
-                double dieSizeY = die.DieSize.Height;
-                offsetDraw = mappingImageDrawSize / 150;
-                double scale = 1;
-                scale = Math.Max((waferMapping.ColumnCount + 2.5) * dieSizeX, (waferMapping.RowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                scale = Math.Max(waferMapping.ColumnCount * dieSizeX, waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                double strokeThickness = 1;
-                double crossThickness = 1;
-                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                showSize_X = (waferMapping.ColumnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
-                showSize_Y = (waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                var cc1 = die.OperationPixalX / showSize_X + offsetDraw;
-                var cc2 = die.OperationPixalY / showSize_Y + offsetDraw;
-                var cc3 = die.DieSize.Width / 2.5 / showSize_X;
-                var cc4 = die.DieSize.Height / 2.5 / showSize_Y;
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
-
                 ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
                 {
                     var rectBegin = shape.LeftTop;

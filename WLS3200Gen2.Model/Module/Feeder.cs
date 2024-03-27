@@ -545,6 +545,7 @@ namespace WLS3200Gen2.Model.Module
                             throw new Exception("WaferLoadPortToStandBy:LoadPortRNotOpen Error!!");
                         }
                     }
+                    await RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition);
                     await Robot.PickWafer_Standby(armStation, cassetteIndex);
                     await Robot.PickWafer_GoIn(armStation, cassetteIndex);
                     await Robot.FixWafer();

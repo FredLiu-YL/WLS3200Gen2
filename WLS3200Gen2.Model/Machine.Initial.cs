@@ -193,75 +193,19 @@ namespace WLS3200Gen2.Model
                     switch (i)
                     {
                         case 0:
-                            AxisConfig axisXConfig = new AxisConfig();
-                            axisXConfig.AxisName = machineSetting.TableXConfig.AxisName;// "AxisX";
-                            axisXConfig.AxisID = machineSetting.TableXConfig.AxisID;//0
-                            axisXConfig.Ratio = machineSetting.TableXConfig.Ratio;//10
-                            axisXConfig.MoveVel = machineSetting.TableXConfig.MoveVel; //new VelocityParams(100000, 0.5);
-                            axisXConfig.Direction = machineSetting.TableXConfig.Direction;
-                            axisXConfig.HomeVel = machineSetting.TableXConfig.HomeVel;//new VelocityParams(10000, 0.8);
-                            axisXConfig.HomeMode = machineSetting.TableXConfig.HomeMode;//HomeModes.ORGAndIndex;
-                            axisXConfig.HomeDirection = machineSetting.TableXConfig.HomeDirection;
-                            axisXConfig.LimitPEL = machineSetting.TableXConfig.LimitPEL;
-                            axisXConfig.LimitNEL = machineSetting.TableXConfig.LimitNEL;
-                            axisConfig.Add(axisXConfig);
+                            axisConfig.Add(machineSetting.TableXConfig);
                             break;
                         case 1:
-                            AxisConfig axisYConfig = new AxisConfig();
-                            axisYConfig.AxisName = machineSetting.TableYConfig.AxisName;// "AxisY";
-                            axisYConfig.AxisID = machineSetting.TableYConfig.AxisID;//1
-                            axisYConfig.Ratio = machineSetting.TableYConfig.Ratio;//10
-                            axisYConfig.MoveVel = machineSetting.TableYConfig.MoveVel; //new VelocityParams(100000, 0.5);
-                            axisYConfig.Direction = machineSetting.TableYConfig.Direction;
-                            axisYConfig.HomeVel = machineSetting.TableYConfig.HomeVel;//new VelocityParams(10000, 0.5);
-                            axisYConfig.HomeMode = machineSetting.TableYConfig.HomeMode;//HomeModes.ORGAndIndex;
-                            axisYConfig.HomeDirection = machineSetting.TableYConfig.HomeDirection;
-                            axisYConfig.LimitPEL = machineSetting.TableYConfig.LimitPEL;
-                            axisYConfig.LimitNEL = machineSetting.TableYConfig.LimitNEL;
-                            axisConfig.Add(axisYConfig);
+                            axisConfig.Add(machineSetting.TableYConfig);
                             break;
                         case 2:
-                            AxisConfig axisZInfo = new AxisConfig();
-                            axisZInfo.AxisName = machineSetting.TableZConfig.AxisName;// "AxisZ";
-                            axisZInfo.AxisID = machineSetting.TableZConfig.AxisID;//2
-                            axisZInfo.Ratio = machineSetting.TableZConfig.Ratio;//1
-                            axisZInfo.MoveVel = machineSetting.TableZConfig.MoveVel; //new VelocityParams(50000, 0.2);
-                            axisZInfo.Direction = machineSetting.TableZConfig.Direction;
-                            axisZInfo.HomeVel = machineSetting.TableZConfig.HomeVel;//new VelocityParams(5000, 0.5);
-                            axisZInfo.HomeMode = machineSetting.TableZConfig.HomeMode;//HomeModes.EL;
-                            axisZInfo.HomeDirection = machineSetting.TableZConfig.HomeDirection;
-                            axisZInfo.LimitPEL = machineSetting.TableZConfig.LimitPEL;
-                            axisZInfo.LimitNEL = machineSetting.TableZConfig.LimitNEL;
-                            axisConfig.Add(axisZInfo);
+                            axisConfig.Add(machineSetting.TableZConfig);
                             break;
                         case 3:
-                            AxisConfig axisRInfo = new AxisConfig();
-                            axisRInfo.AxisName = machineSetting.TableRConfig.AxisName;//"AxisR";
-                            axisRInfo.AxisID = machineSetting.TableRConfig.AxisID;//3
-                            axisRInfo.Ratio = machineSetting.TableRConfig.Ratio;//1
-                            axisRInfo.MoveVel = machineSetting.TableRConfig.MoveVel; //new VelocityParams(45000, 0.2);
-                            axisRInfo.Direction = machineSetting.TableRConfig.Direction;
-                            axisRInfo.HomeVel = machineSetting.TableRConfig.HomeVel;//new VelocityParams(4500, 0.2);
-                            axisRInfo.HomeMode = machineSetting.TableRConfig.HomeMode;//HomeModes.ORG;
-                            axisRInfo.HomeDirection = machineSetting.TableRConfig.HomeDirection;
-                            axisRInfo.LimitPEL = machineSetting.TableRConfig.LimitPEL;
-                            axisRInfo.LimitNEL = machineSetting.TableRConfig.LimitNEL;
-                            axisConfig.Add(axisRInfo);
-
+                            axisConfig.Add(machineSetting.TableRConfig);
                             break;
                         case 4:
-                            AxisConfig axisRobotInfo = new AxisConfig();
-                            axisRobotInfo.AxisName = machineSetting.RobotAxisConfig.AxisName;//"RobotAxis";
-                            axisRobotInfo.AxisID = machineSetting.RobotAxisConfig.AxisID;//4
-                            axisRobotInfo.Ratio = machineSetting.RobotAxisConfig.Ratio;//10
-                            axisRobotInfo.MoveVel = machineSetting.RobotAxisConfig.MoveVel; //new VelocityParams(300000, 0.2);
-                            axisRobotInfo.Direction = machineSetting.RobotAxisConfig.Direction;
-                            axisRobotInfo.HomeVel = machineSetting.RobotAxisConfig.HomeVel;//new VelocityParams(30000, 0.2);
-                            axisRobotInfo.HomeMode = machineSetting.RobotAxisConfig.HomeMode;//HomeModes.ORGAndIndex;
-                            axisRobotInfo.HomeDirection = machineSetting.RobotAxisConfig.HomeDirection;
-                            axisRobotInfo.LimitPEL = machineSetting.RobotAxisConfig.LimitPEL;
-                            axisRobotInfo.LimitNEL = machineSetting.RobotAxisConfig.LimitNEL;
-                            axisConfig.Add(axisRobotInfo);
+                            axisConfig.Add(machineSetting.RobotAxisConfig);
                             break;
                     }
                     //switch (i)
@@ -316,75 +260,19 @@ namespace WLS3200Gen2.Model
                     switch (i)
                     {
                         case 0:
-                            AxisConfig axisXConfig = new AxisConfig();
-                            axisXConfig.AxisName = machineSetting.TableXConfig.AxisName;// "AxisX";
-                            axisXConfig.AxisID = machineSetting.TableXConfig.AxisID;//0
-                            axisXConfig.Ratio = machineSetting.TableXConfig.Ratio;//10
-                            axisXConfig.MoveVel = machineSetting.TableXConfig.MoveVel; //new VelocityParams(100000, 0.5);
-                            axisXConfig.Direction = machineSetting.TableXConfig.Direction;
-                            axisXConfig.HomeVel = machineSetting.TableXConfig.HomeVel;//new VelocityParams(10000, 0.8);
-                            axisXConfig.HomeMode = machineSetting.TableXConfig.HomeMode;//HomeModes.ORGAndIndex;
-                            axisXConfig.HomeDirection = machineSetting.TableXConfig.HomeDirection;
-                            axisXConfig.LimitPEL = machineSetting.TableXConfig.LimitPEL;
-                            axisXConfig.LimitNEL = machineSetting.TableXConfig.LimitNEL;
-                            axisConfig.Add(axisXConfig);
+                            axisConfig.Add(machineSetting.TableXConfig);
                             break;
                         case 1:
-                            AxisConfig axisYConfig = new AxisConfig();
-                            axisYConfig.AxisName = machineSetting.TableYConfig.AxisName;// "AxisY";
-                            axisYConfig.AxisID = machineSetting.TableYConfig.AxisID;//1
-                            axisYConfig.Ratio = machineSetting.TableYConfig.Ratio;//10
-                            axisYConfig.MoveVel = machineSetting.TableYConfig.MoveVel; //new VelocityParams(100000, 0.5);
-                            axisYConfig.Direction = machineSetting.TableYConfig.Direction;
-                            axisYConfig.HomeVel = machineSetting.TableYConfig.HomeVel;//new VelocityParams(10000, 0.5);
-                            axisYConfig.HomeMode = machineSetting.TableYConfig.HomeMode;//HomeModes.ORGAndIndex;
-                            axisYConfig.HomeDirection = machineSetting.TableYConfig.HomeDirection;
-                            axisYConfig.LimitPEL = machineSetting.TableYConfig.LimitPEL;
-                            axisYConfig.LimitNEL = machineSetting.TableYConfig.LimitNEL;
-                            axisConfig.Add(axisYConfig);
+                            axisConfig.Add(machineSetting.TableYConfig);
                             break;
                         case 2:
-                            AxisConfig axisZInfo = new AxisConfig();
-                            axisZInfo.AxisName = machineSetting.TableZConfig.AxisName;// "AxisZ";
-                            axisZInfo.AxisID = machineSetting.TableZConfig.AxisID;//2
-                            axisZInfo.Ratio = machineSetting.TableZConfig.Ratio;//1
-                            axisZInfo.MoveVel = machineSetting.TableZConfig.MoveVel; //new VelocityParams(50000, 0.2);
-                            axisZInfo.Direction = machineSetting.TableZConfig.Direction;
-                            axisZInfo.HomeVel = machineSetting.TableZConfig.HomeVel;//new VelocityParams(5000, 0.5);
-                            axisZInfo.HomeMode = machineSetting.TableZConfig.HomeMode;//HomeModes.EL;
-                            axisZInfo.HomeDirection = machineSetting.TableZConfig.HomeDirection;
-                            axisZInfo.LimitPEL = machineSetting.TableZConfig.LimitPEL;
-                            axisZInfo.LimitNEL = machineSetting.TableZConfig.LimitNEL;
-                            axisConfig.Add(axisZInfo);
+                            axisConfig.Add(machineSetting.TableZConfig);
                             break;
                         case 3:
-                            AxisConfig axisRInfo = new AxisConfig();
-                            axisRInfo.AxisName = machineSetting.TableRConfig.AxisName;//"AxisR";
-                            axisRInfo.AxisID = machineSetting.TableRConfig.AxisID;//3
-                            axisRInfo.Ratio = machineSetting.TableRConfig.Ratio;//1
-                            axisRInfo.MoveVel = machineSetting.TableRConfig.MoveVel; //new VelocityParams(45000, 0.2);
-                            axisRInfo.Direction = machineSetting.TableRConfig.Direction;
-                            axisRInfo.HomeVel = machineSetting.TableRConfig.HomeVel;//new VelocityParams(4500, 0.2);
-                            axisRInfo.HomeMode = machineSetting.TableRConfig.HomeMode;//HomeModes.ORG;
-                            axisRInfo.HomeDirection = machineSetting.TableRConfig.HomeDirection;
-                            axisRInfo.LimitPEL = machineSetting.TableRConfig.LimitPEL;
-                            axisRInfo.LimitNEL = machineSetting.TableRConfig.LimitNEL;
-                            axisConfig.Add(axisRInfo);
-
+                            axisConfig.Add(machineSetting.TableRConfig);
                             break;
                         case 4:
-                            AxisConfig axisRobotInfo = new AxisConfig();
-                            axisRobotInfo.AxisName = machineSetting.RobotAxisConfig.AxisName;//"RobotAxis";
-                            axisRobotInfo.AxisID = machineSetting.RobotAxisConfig.AxisID;//4
-                            axisRobotInfo.Ratio = machineSetting.RobotAxisConfig.Ratio;//10
-                            axisRobotInfo.MoveVel = machineSetting.RobotAxisConfig.MoveVel; //new VelocityParams(300000, 0.2);
-                            axisRobotInfo.Direction = machineSetting.RobotAxisConfig.Direction;
-                            axisRobotInfo.HomeVel = machineSetting.RobotAxisConfig.HomeVel;//new VelocityParams(30000, 0.2);
-                            axisRobotInfo.HomeMode = machineSetting.RobotAxisConfig.HomeMode;//HomeModes.ORGAndIndex;
-                            axisRobotInfo.HomeDirection = machineSetting.RobotAxisConfig.HomeDirection;
-                            axisRobotInfo.LimitPEL = machineSetting.RobotAxisConfig.LimitPEL;
-                            axisRobotInfo.LimitNEL = machineSetting.RobotAxisConfig.LimitNEL;
-                            axisConfig.Add(axisRobotInfo);
+                            axisConfig.Add(machineSetting.RobotAxisConfig);
                             break;
                     }
                 }
@@ -392,7 +280,7 @@ namespace WLS3200Gen2.Model
                 //var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 var doNames = new string[64];
                 var diNames = new string[32];
-                
+
                 motionController = new Adlink7856(axisConfig, doNames, diNames, machineSetting.MotionSettingFileName);//"C:\\WLS3200-System\\Motion.xml"
             }
 

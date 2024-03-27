@@ -24,7 +24,7 @@ namespace WLS3200Gen2
         private double tableWaferCatchPositionX, tableWaferCatchPositionY, tableWaferCatchPositionZ, tableWaferCatchPositionR;
         private double robotAxisStandbyPosition, robotAxisLoadPort1TakePosition, robotAxisLoadPort2TakePosition;
         private double robotAxisAligner1TakePosition, robotAxisAligner2TakePosition, robotAxisMacroTakePosition, robotAxisMicroTakePosition;
-        private MicroscopeLens[] microscopeLensDefault;
+        private MicroscopeLens[] microscopeLensDefault = new MicroscopeLens[6];
         //public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
         public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
