@@ -12,8 +12,14 @@ namespace WLS3200Gen2.Model.Recipe
 {
     public class DetectionRecipe
     {
+        /// <summary>
+        /// 檢查要下的Bincode清單
+        /// </summary>
+        public IEnumerable<BincodeInfo> BincodeList { get; set; }
+        /// <summary>
+        /// 檢查點
+        /// </summary>
         public IEnumerable<DetectionPoint> DetectionPoints { get; set; }
-
         /// <summary>
         /// 對位參數
         /// </summary>
@@ -22,30 +28,29 @@ namespace WLS3200Gen2.Model.Recipe
         /// MAP資訊
         /// </summary>
         public WaferMapping WaferMap { get; set; }
-
-
-
     }
 
     public class DetectionPoint : INotifyPropertyChanged
     {
         private int indexX, indexY;
-        private double offsetX, offsetY;
         private Point position;
-
+        private String code;
         /// <summary>
-        /// 檢測位置的Index 
+        /// 檢測位置的Index X
         /// </summary>
         public int IndexX { get => indexX; set => SetValue(ref indexX, value); }
-        public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
-
-        public double OffsetX { get => offsetX; set => SetValue(ref offsetX, value); }
-        public double OffsetY { get => offsetY; set => SetValue(ref offsetY, value); }
-
         /// <summary>
-        /// 檢測位置的座標
+        /// 檢測位置的Index Y
+        /// </summary>
+        public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
+        /// <summary>
+        /// 檢測位置平台的座標X Y
         /// </summary>
         public Point Position { get => position; set => SetValue(ref position, value); }
+        /// <summary>
+        /// 顯示目前的code是多少
+        /// </summary>
+        public string Code { get => code; set => SetValue(ref code, value); }
         /// <summary>
         /// 鏡頭倍率
         /// </summary>
@@ -79,7 +84,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// <summary>
         /// 目前Z軸位置
         /// </summary>
-        public int MicroscopePosition { get; set; }
+        public double MicroscopePosition { get; set; }
 
         /// <summary>
         /// 準焦位置

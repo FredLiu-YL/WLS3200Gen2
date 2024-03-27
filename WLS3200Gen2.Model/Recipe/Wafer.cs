@@ -38,7 +38,7 @@ namespace YuanliCore.Data
         public Die[] Dies { get; set; }
 
 
-        public ProcessStation ProcessStatus { get; set; }   
+        public ProcessStation ProcessStatus { get; set; }
     }
 
 
@@ -109,7 +109,5 @@ namespace YuanliCore.Data
         Reject,  // NG
         Pass,
         Complate//完成
-
-
     }
 }

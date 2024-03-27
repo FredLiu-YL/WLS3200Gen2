@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.CameraLib;
+using YuanliCore.Data;
 using YuanliCore.Interface;
 using YuanliCore.Model;
 using YuanliCore.Model.Interface;
@@ -72,7 +73,10 @@ namespace WLS3200Gen2.Model.Module
         /// 檢測結果紀錄
         /// </summary>
         public event Action<BitmapSource> DetectionRecord;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MicroReady;
         public async Task Home()
         {
             try
@@ -141,15 +145,13 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task PutWaferPrepare(Point tableWaferCatchPosition)
         {
-
             await TableMoveToAsync(tableWaferCatchPosition);
             TableVacuum.Off();
             //如果有lift 或夾持機構 需要做處理
-
         }
 
 
-        public async Task Run(DetectionRecipe recipe, bool isAutoSave, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(DetectionRecipe recipe, ProcessSetting processSetting, Wafer currentWafer, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             this.pauseToken = pst;
             this.cancelToken = ctk;
@@ -180,17 +182,20 @@ namespace WLS3200Gen2.Model.Module
 
                 await TableMoveToAsync(transPosition); //Offset
                 await SetMicroscope(point);
-
+                if (processSetting.IsAutoFocus)
+                {
+                    Microscope.AFTrace();
+                }
                 await Task.Delay(200);
                 BitmapSource bmp = Camera.GrabAsync();
-
-                if (isAutoSave)
+                if (processSetting.IsAutoSave)
                 {
                     subject.OnNext(bmp);//AOI另外丟到其他執行續處理
                 }
                 else
                 {
-
+                    Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
+                    var cc = await micro;
                 }
                 DetectionRecord?.Invoke(bmp);
                 // pauseToken.IsPaused = true;
@@ -260,12 +265,19 @@ namespace WLS3200Gen2.Model.Module
 
         private async Task SetMicroscope(DetectionPoint detectionPoint)
         {
-            await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
             await Microscope.ChangeLightAsync(detectionPoint.MicroscopeLightValue);
             await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
+            await Microscope.ChangeLensAsync(detectionPoint.LensIndex);
+            await Microscope.ChangeCubeAsync(detectionPoint.CubeIndex);
+            await Microscope.ChangeFilter1Async(detectionPoint.Filter1Index);
+            await Microscope.ChangeFilter2Async(detectionPoint.Filter2Index);
+            await Microscope.ChangeFilter3Async(detectionPoint.Filter3Index);
+            if (Microscope.IsAutoFocusTrace == false)
+            {
+                await Microscope.MoveToAsync(detectionPoint.MicroscopePosition);
+                await Microscope.AberrationMoveToAsync(detectionPoint.MicroscopeAberationPosition);
+            }
         }
-
-
         //預留拿到對位結果後 可以做其他事
         private void AlignRecord(BitmapSource bitmap, Point? pixel, int number)
         {

@@ -26,6 +26,9 @@ namespace WLS3200Gen2.Model
         public event Func<MainRecipe> ChangeRecipe;
 
         public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MacroReady;
+
+
+
         public event Action<Wafer> SetWaferStatus;
 
         public async Task ProcessRunAsync(ProcessSetting processSetting)
@@ -72,11 +75,11 @@ namespace WLS3200Gen2.Model
                             //避免未來會先讀MES的資訊 才決定要用哪個Recipe  ，預留擴充的機會
                             if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
                             MainRecipe recipe = ChangeRecipe.Invoke();
+                            InspectionReport report = new InspectionReport();
 
 
 
-
-
+                            currentWafer.Dies = recipe.DetectRecipe.WaferMap.Dies;
                             //晶面檢查
                             await MacroTopInspection(currentWafer.ProcessStatus.MacroTop, recipe.EFEMRecipe);
                             SetWaferStatusToUI(currentWafer);
@@ -121,7 +124,7 @@ namespace WLS3200Gen2.Model
 
 
                                 //執行主設備動作 
-                                await MicroDetection.Run(recipe.DetectRecipe, processSetting.IsAutoSave, pts, cts);
+                                await MicroDetection.Run(recipe.DetectRecipe, processSetting, currentWafer, pts, cts);
                                 await MicroDetection.PutWaferPrepare(machineSetting.TableWaferCatchPosition);
                                 //退片
                                 await Feeder.MicroUnLoadToStandByAsync();
@@ -131,7 +134,6 @@ namespace WLS3200Gen2.Model
                             {
                                 //退片
                                 await Feeder.AlignerToStandByAsync();
-
                             }
 
                             //退片
@@ -222,7 +224,6 @@ namespace WLS3200Gen2.Model
         }
         private async Task MacroTopInspection(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
-
             //晶面檢查
             if (station == WaferProcessStatus.Select)
             {
@@ -230,9 +231,8 @@ namespace WLS3200Gen2.Model
                 await Feeder.TurnWafer(eFEMtionRecipe);
                 //委派到ui 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
-                var judgeResult = macro.Result;
+                var judgeResult = await macro;
                 await Feeder.Macro.HomeInnerRing();
-
 
                 station = WaferProcessStatus.Complate;
 
@@ -249,7 +249,7 @@ namespace WLS3200Gen2.Model
                 await Feeder.TurnBackWafer(MacroBackStartPos);
                 //委派到ui層 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
-                var judgeResult = macro.Result;
+                var judgeResult = await macro;
 
                 //翻回來
                 await Feeder.Macro.HomeOuterRing();

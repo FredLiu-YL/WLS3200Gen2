@@ -30,14 +30,9 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         public bool IsAutoSave { get; set; }
         /// <summary>
-        /// 是否拍Wafer外圍一圈
+        /// 是否要自動對焦
         /// </summary>
-        public bool IsWaferCirclePhoto { get; set; }
-        /// <summary>
-        /// 是否自動運算拍一整個DIE
-        /// </summary>
-        public bool IsDieAllPhoto { get; set; }
-
+        public bool IsAutoFocus { get; set; } = true;
         public bool RemoteDefectPoint { get; set; }
         /// <summary>
         /// 晶圓檢查站點 //陣列0  是第25片 放在cassette最上面

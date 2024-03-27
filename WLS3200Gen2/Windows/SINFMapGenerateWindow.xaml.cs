@@ -171,6 +171,7 @@ namespace WLS3200Gen2
         public ICommand AddShapeMappingAction { get; set; }
         public ICommand ClearShapeMappingAction { get; set; }
         public ICommand RemoveShapeMappingAction { get; set; }
+        public ICommand SaveMappingAction { get; set; }
         public int DataGridSelectedIndex { get => dataGridSelectedIndex; set => SetValue(ref dataGridSelectedIndex, value); }
         public ObservableCollection<Defect> DefectDataGridList { get => defectDataGridList; set => SetValue(ref defectDataGridList, value); }
         public ObservableCollection<BinCodeDraw> BinCodeDrawDataGridList { get => binCodeDrawDataGridList; set => SetValue(ref binCodeDrawDataGridList, value); }
@@ -511,6 +512,7 @@ namespace WLS3200Gen2
                     {
                         await SaveINI(saveFileDialog.FileName);
                     }
+                    MessageBox.Show("Save OK");
                 }
             }
             catch (Exception ex)
@@ -585,7 +587,7 @@ namespace WLS3200Gen2
                 bool isEdit = false;
                 MappingDrawType mappingDrawType = MappingDrawType.None;
 
-                if (Sinf != null && Sinf.Dies_result.Length > 0)
+                if (Sinf != null && Sinf.Dies.Length > 0)
                 {
                     if (MappingIsMoveEnable == false)
                     {
@@ -725,66 +727,73 @@ namespace WLS3200Gen2
 
 
 
-        public ICommand SINFSort => new RelayCommand(async () =>
-        {
-            try
-            {
-                DefectDataGridList.Clear();
-                int pID = 0;
-                for (int i = 0; i < Sinf.Count_Column; i++)
-                {
-                    for (int j = 0; j < Sinf.Count_Row; j++)
-                    {
-                        if (Sinf.Dies_result[i, j].TransDieData != "__" && Sinf.Dies_result[i, j].TransDieData != "___")
-                        {
-                            if (Sort_Except == false)
-                            {
-                                if (Sinf.Dies_result[i, j].TransDieData != Sort_Classification_1 && Sinf.Dies_result[i, j].TransDieData != Sort_Classification_2 &&
-                                Sinf.Dies_result[i, j].TransDieData != Sort_Classification_3 && Sinf.Dies_result[i, j].TransDieData != Sort_Classification_4 &&
-                                Sinf.Dies_result[i, j].TransDieData != Sort_Classification_5)
-                                {
-                                    pID += 1;
-                                    Defect defect_result = new Defect
-                                    {
-                                        ID = pID,
-                                        Relative_X = Sinf.Dies_result[i, j].PositionX.ToString(),
-                                        Relative_Y = Sinf.Dies_result[i, j].PositionY.ToString(),
-                                        Index_X = Sinf.Dies_result[i, j].IndexX + 1,
-                                        Index_Y = Sinf.Dies_result[i, j].IndexY + 1,
-                                        Classification = Sinf.Dies_result[i, j].TransDieData
-                                    };
-                                    DefectDataGridList.Add(defect_result);
-                                }
-                            }
-                            else
-                            {
-                                if (Sinf.Dies_result[i, j].TransDieData == Sort_Classification_1 || Sinf.Dies_result[i, j].TransDieData == Sort_Classification_2 ||
-                                Sinf.Dies_result[i, j].TransDieData == Sort_Classification_3 || Sinf.Dies_result[i, j].TransDieData == Sort_Classification_4 ||
-                                Sinf.Dies_result[i, j].TransDieData == Sort_Classification_5)
-                                {
-                                    pID += 1;
-                                    Defect defect_result = new Defect
-                                    {
-                                        ID = pID,
-                                        Relative_X = Sinf.Dies_result[i, j].PositionX.ToString(),
-                                        Relative_Y = Sinf.Dies_result[i, j].PositionY.ToString(),
-                                        Index_X = Sinf.Dies_result[i, j].IndexX + 1,
-                                        Index_Y = Sinf.Dies_result[i, j].IndexY + 1,
-                                        Classification = Sinf.Dies_result[i, j].TransDieData
-                                    };
-                                    DefectDataGridList.Add(defect_result);
-                                }
-                            }
+        //public ICommand SINFSort => new RelayCommand(async () =>
+        //{
+        //    try
+        //    {
+        //        DefectDataGridList.Clear();
+        //        foreach (var dies in Sinf.Dies)
+        //        {
 
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        });
+        //        }
+
+
+
+        //        int pID = 0;
+        //        for (int i = 0; i < Sinf.Count_Column; i++)
+        //        {
+        //            for (int j = 0; j < Sinf.Count_Row; j++)
+        //            {
+        //                if (Sinf.Dies_result[i, j].TransDieData != "__" && Sinf.Dies_result[i, j].TransDieData != "___")
+        //                {
+        //                    if (Sort_Except == false)
+        //                    {
+        //                        if (Sinf.Dies_result[i, j].TransDieData != Sort_Classification_1 && Sinf.Dies_result[i, j].TransDieData != Sort_Classification_2 &&
+        //                        Sinf.Dies_result[i, j].TransDieData != Sort_Classification_3 && Sinf.Dies_result[i, j].TransDieData != Sort_Classification_4 &&
+        //                        Sinf.Dies_result[i, j].TransDieData != Sort_Classification_5)
+        //                        {
+        //                            pID += 1;
+        //                            Defect defect_result = new Defect
+        //                            {
+        //                                ID = pID,
+        //                                Relative_X = Sinf.Dies_result[i, j].PositionX.ToString(),
+        //                                Relative_Y = Sinf.Dies_result[i, j].PositionY.ToString(),
+        //                                Index_X = Sinf.Dies_result[i, j].IndexX + 1,
+        //                                Index_Y = Sinf.Dies_result[i, j].IndexY + 1,
+        //                                Classification = Sinf.Dies_result[i, j].TransDieData
+        //                            };
+        //                            DefectDataGridList.Add(defect_result);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        if (Sinf.Dies_result[i, j].TransDieData == Sort_Classification_1 || Sinf.Dies_result[i, j].TransDieData == Sort_Classification_2 ||
+        //                        Sinf.Dies_result[i, j].TransDieData == Sort_Classification_3 || Sinf.Dies_result[i, j].TransDieData == Sort_Classification_4 ||
+        //                        Sinf.Dies_result[i, j].TransDieData == Sort_Classification_5)
+        //                        {
+        //                            pID += 1;
+        //                            Defect defect_result = new Defect
+        //                            {
+        //                                ID = pID,
+        //                                Relative_X = Sinf.Dies_result[i, j].PositionX.ToString(),
+        //                                Relative_Y = Sinf.Dies_result[i, j].PositionY.ToString(),
+        //                                Index_X = Sinf.Dies_result[i, j].IndexX + 1,
+        //                                Index_Y = Sinf.Dies_result[i, j].IndexY + 1,
+        //                                Classification = Sinf.Dies_result[i, j].TransDieData
+        //                            };
+        //                            DefectDataGridList.Add(defect_result);
+        //                        }
+        //                    }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message);
+        //    }
+        //});
 
         public ICommand BINSelect => new RelayCommand(async () =>
         {
@@ -808,7 +817,6 @@ namespace WLS3200Gen2
                     int count = 0;
                     foreach (var bincodeLine in Sinf.BinCode_result)
                     {
-
                         if (count == 0)
                         {
                             BinCodeDrawDataGridList.Add(new BinCodeDraw { BinType = "Test", Description = bincodeLine.Describe, Code = bincodeLine.Code });
@@ -887,16 +895,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                MainTitle = title_Ver + "   " + "666666666666";
-                string sss = "123";
-                if (IsWaferSize_8 == true)
-                {
-                    sss = "777";
-                }
-                else if (IsWaferSize_12 == true)
-                {
-                    sss = "777";
-                }
+
                 //this.StrokeThickness = 10;
                 //ClearShapeMappingAction.Execute(true);
                 //MappingImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
@@ -918,6 +917,10 @@ namespace WLS3200Gen2
                 //    CenterCrossLength = 0,
                 //    ToolTip = "Circle"
                 //});
+
+                SaveMappingAction.Execute("C://Users//zhengye_lin//Desktop//20240321.bmp");
+
+
                 AddShapeMappingAction.Execute(new ROIRotatedRect
                 {
                     Stroke = Brushes.Green,
@@ -1057,37 +1060,31 @@ namespace WLS3200Gen2
                 binCodeDrawStartEnd.endDraw_X = -1;
                 binCodeDrawStartEnd.startDraw_Y = 9999999;
                 binCodeDrawStartEnd.endDraw_Y = -1;
-
-                int CountX = Sinf.Dies_result.GetLength(0);
-                int CountY = Sinf.Dies_result.GetLength(1);
-                for (int i = 0; i < CountX; i++)
+                foreach (var item in Sinf.Dies)
                 {
-                    for (int j = 0; j < CountY; j++)
+                    if (item.BinCode == mappingDrawBinCode_Ink || item.BinCode == mappingDrawBinCode_Tested)
                     {
-                        if (Sinf.Dies_result[i, j].DieData == mappingDrawBinCode_Ink || Sinf.Dies_result[i, j].DieData == mappingDrawBinCode_Tested)
+                        int i = item.IndexX;
+                        int j = item.IndexY;
+                        if (binCodeDrawStartEnd.startDraw_X > i)
                         {
-                            if (binCodeDrawStartEnd.startDraw_X > i)
-                            {
-                                binCodeDrawStartEnd.startDraw_X = i;
-                            }
-                            if (binCodeDrawStartEnd.endDraw_X < i)
-                            {
-                                binCodeDrawStartEnd.endDraw_X = i;
-                            }
+                            binCodeDrawStartEnd.startDraw_X = i;
+                        }
+                        if (binCodeDrawStartEnd.endDraw_X < i)
+                        {
+                            binCodeDrawStartEnd.endDraw_X = i;
+                        }
 
-                            if (binCodeDrawStartEnd.startDraw_Y > j)
-                            {
-                                binCodeDrawStartEnd.startDraw_Y = j;
-                            }
-                            if (binCodeDrawStartEnd.endDraw_Y < j)
-                            {
-                                binCodeDrawStartEnd.endDraw_Y = j;
-                            }
+                        if (binCodeDrawStartEnd.startDraw_Y > j)
+                        {
+                            binCodeDrawStartEnd.startDraw_Y = j;
+                        }
+                        if (binCodeDrawStartEnd.endDraw_Y < j)
+                        {
+                            binCodeDrawStartEnd.endDraw_Y = j;
                         }
                     }
                 }
-
-
                 return binCodeDrawStartEnd;
 
             }
@@ -1176,8 +1173,7 @@ namespace WLS3200Gen2
                 Sinf.DieSize_Y = dieSize_Y;
                 Sinf.Count_Column = draw_CountX;
                 Sinf.Count_Row = draw_CountY;
-                Sinf.Dies_result = new DieDraw[draw_CountX, draw_CountY];
-
+                DieDraw[,] newDieDraw = new DieDraw[draw_CountX, draw_CountY];
 
                 //畫圖的參數
                 scale = (Math.Max((draw_CountX * dieSize_X), (draw_CountY * dieSize_Y))) / mappingImageDrawSize;
@@ -1216,60 +1212,60 @@ namespace WLS3200Gen2
                         {
                             waferMappingDrawType = IsCircleTouchingRectangle_TotalType(circleCenter, circleRadius, rectangleTopLeft, rectangleBottomRight);
                         }
-                        Sinf.Dies_result[x, y] = new DieDraw();
-                        Sinf.Dies_result[x, y].IndexX = x;
-                        Sinf.Dies_result[x, y].IndexY = y;
-                        Sinf.Dies_result[x, y].DieSizeX = dieSize_X;
-                        Sinf.Dies_result[x, y].DieSizeY = dieSize_Y;
-                        Sinf.Dies_result[x, y].PositionX = dieSize_X * (x + 0.5);
-                        Sinf.Dies_result[x, y].PositionY = dieSize_Y * (y + 0.5);
-                        Sinf.Dies_result[x, y].MapTransX = dieSize_X * (x + 0.5);
-                        Sinf.Dies_result[x, y].MapTransY = dieSize_Y * (y + 0.5);
+                        newDieDraw[x, y] = new DieDraw();
+                        newDieDraw[x, y].IndexX = x;
+                        newDieDraw[x, y].IndexY = y;
+                        newDieDraw[x, y].TransIndexX = x;
+                        newDieDraw[x, y].TransIndexY = y;
+                        newDieDraw[x, y].DieSizeX = dieSize_X;
+                        newDieDraw[x, y].DieSizeY = dieSize_Y;
+                        newDieDraw[x, y].PositionX = dieSize_X * (x + 0.5);
+                        newDieDraw[x, y].PositionY = dieSize_Y * (y + 0.5);
+                        newDieDraw[x, y].MapTransX = dieSize_X * (x + 0.5);
+                        newDieDraw[x, y].MapTransY = dieSize_Y * (y + 0.5);
 
                         if (waferMappingDrawType == MappingDrawType.Skip)
                         {
-                            Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Skip;
-                            Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Skip;
+                            newDieDraw[x, y].DieData = mappingDrawBinCode_Skip;
+                            newDieDraw[x, y].TransDieData = mappingDrawBinCode_Skip;
                             //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Skip, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
                         }
                         else if (waferMappingDrawType == MappingDrawType.Ink)
                         {
-                            Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Ink;
-                            Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Ink;
+                            newDieDraw[x, y].DieData = mappingDrawBinCode_Ink;
+                            newDieDraw[x, y].TransDieData = mappingDrawBinCode_Ink;
                             //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Ink, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
                         }
                         else
                         {
-                            Sinf.Dies_result[x, y].DieData = mappingDrawBinCode_Tested;
-                            Sinf.Dies_result[x, y].TransDieData = mappingDrawBinCode_Tested;
+                            newDieDraw[x, y].DieData = mappingDrawBinCode_Tested;
+                            newDieDraw[x, y].TransDieData = mappingDrawBinCode_Tested;
                             //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Tested, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
                         }
                     }
                 }
-
-
-
-                Sinf.Dies = new Die[Sinf.Dies_result.GetLength(0) * Sinf.Dies_result.GetLength(1)];
-                Sinf.ColumnCount = Sinf.Dies_result.GetLength(0);
-                Sinf.RowCount = Sinf.Dies_result.GetLength(1);
+                Sinf.NewDieDraw(newDieDraw);
+                Sinf.Dies = new Die[newDieDraw.GetLength(0) * newDieDraw.GetLength(1)];
+                Sinf.ColumnCount = newDieDraw.GetLength(0);
+                Sinf.RowCount = newDieDraw.GetLength(1);
                 int idx = 0;
-                for (int i = 0; i < Sinf.Dies_result.GetLength(0); i++)
+                for (int i = 0; i < newDieDraw.GetLength(0); i++)
                 {
-                    for (int j = 0; j < Sinf.Dies_result.GetLength(1); j++)
+                    for (int j = 0; j < newDieDraw.GetLength(1); j++)
                     {
                         double dieSizeX = 0;
                         double dieSizeY = 0;
-                        dieSizeX = Sinf.Dies_result[i, j].DieSizeX;
-                        dieSizeY = Sinf.Dies_result[i, j].DieSizeY;
+                        dieSizeX = newDieDraw[i, j].DieSizeX;
+                        dieSizeY = newDieDraw[i, j].DieSizeY;
                         Sinf.Dies[idx] = new Die
                         {
-                            IndexX = Sinf.Dies_result[i, j].IndexX,
-                            IndexY = Sinf.Dies_result[i, j].IndexY,
-                            OperationPixalX = Sinf.Dies_result[i, j].PositionX,
-                            OperationPixalY = Sinf.Dies_result[i, j].PositionY,
-                            MapTransX = Sinf.Dies_result[i, j].PositionX,
-                            MapTransY = Sinf.Dies_result[i, j].PositionY,
-                            BinCode = Sinf.Dies_result[i, j].DieData,
+                            IndexX = newDieDraw[i, j].IndexX,
+                            IndexY = newDieDraw[i, j].IndexY,
+                            OperationPixalX = newDieDraw[i, j].PositionX,
+                            OperationPixalY = newDieDraw[i, j].PositionY,
+                            MapTransX = newDieDraw[i, j].PositionX,
+                            MapTransY = newDieDraw[i, j].PositionY,
+                            BinCode = newDieDraw[i, j].DieData,
                             DieSize = new Size(dieSizeX, dieSizeY)
                         };
                         idx++;

@@ -59,6 +59,7 @@ namespace WLS3200Gen2
 
         private bool isRefresh, isInitialComplete, isWaferInSystem;
         private LoadPortQuantity loadportQuantity;
+        private bool mapIsMoveEnable = true;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
         {
@@ -113,7 +114,15 @@ namespace WLS3200Gen2
         /// <summary>
         /// 新增 Shape
         /// </summary>
+        public ICommand RemoveHomeMapShapeAction { get; set; }
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
         public ICommand AddMapShapeAction { get; set; }
+        /// <summary>
+        /// 新增 Shape
+        /// </summary>
+        public ICommand RemoveMapShapeAction { get; set; }
         /// <summary>
         /// 清除 Shape
         /// </summary>
@@ -122,6 +131,15 @@ namespace WLS3200Gen2
         /// 清除 Shape
         /// </summary>
         public ICommand ClearMapShapeAction { get; set; }
+        /// <summary>
+        /// 儲存 Shape
+        /// </summary>
+        public ICommand SaveMappingAction { get; set; }
+        public bool MapIsMoveEnable
+        {
+            get => mapIsMoveEnable;
+            set => SetValue(ref mapIsMoveEnable, value);
+        }
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
         {
@@ -177,6 +195,7 @@ namespace WLS3200Gen2
                 BincodeList.Add(bincode2);
                 BincodeList.Add(new BincodeInfo());
 
+                machine.MicroDetection.MicroReady += MicroOperate;
 
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
@@ -199,8 +218,7 @@ namespace WLS3200Gen2
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
                 IsAutoSave = ProcessSetting.IsAutoSave;
-                IsWaferCirclePhoto = ProcessSetting.IsWaferCirclePhoto;
-                IsDieAllPhoto = ProcessSetting.IsDieAllPhoto;
+                IsAutoFocus = ProcessSetting.IsAutoFocus;
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
@@ -234,6 +252,7 @@ namespace WLS3200Gen2
 
 
                 MapImage = new WriteableBitmap(bitmap);
+                HomeMapImage = new WriteableBitmap(bitmap);
                 //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
                 Customers = new ObservableCollection<RobotAddress>()
@@ -487,7 +506,6 @@ namespace WLS3200Gen2
                                  if (frame != null) MainImage.WritePixels(frame);
                                  //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
                              });
-
             }
             catch (Exception ex)
             {

@@ -111,6 +111,7 @@
     <Compile Include="Component\HirataAligner_RS232.cs" />
     <Compile Include="Component\HirataLoadPort_RS232.cs" />
     <Compile Include="Component\HirataRobot_RS232.cs" />
+    <Compile Include="InspectionReport.cs" />
     <Compile Include="InterfaceTemporary.cs" />
     <Compile Include="Machine.Process.cs" />
     <Compile Include="Machine.Initial.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Recipe\Die.cs" />
     <Compile Include="Recipe\EFEMtionRecipe.cs" />
     <Compile Include="Recipe\MainRecipe.cs" />
+    <Compile Include="Recipe\MicroscopeLens.cs" />
     <Compile Include="Recipe\ProcessSetting.cs" />
     <Compile Include="Recipe\Wafer.cs" />
     <Compile Include="Recipe\WaferMap.cs" />

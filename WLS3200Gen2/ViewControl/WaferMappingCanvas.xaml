@@ -91,26 +91,15 @@
                     </Viewbox>
                 </UniformGrid>
             </Border>
-
-            <ScrollViewer x:Name="MyScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-              Width="{Binding ActualWidth, ElementName=MainGrid}" 
-              Height="{Binding ActualHeight, ElementName=MainGrid, Converter={StaticResource HeightMinus50Converter}}"
-              PreviewMouseDown="ScrollViewer_PreviewMouseDown"
-              PreviewMouseMove="ScrollViewer_PreviewMouseMove"
-              PreviewMouseUp="ScrollViewer_PreviewMouseUp">
-                <Grid  x:Name="ContentGrid" ClipToBounds="True" >
-                    <canvas:WaferMappingViewerCanvas
-                    
+            <Grid  x:Name="ContentGrid" ClipToBounds="True" >
+                <canvas:WaferMappingViewerCanvas
                         x:Name="MainCanvas" MousePixcel="{Binding MousePixcel}" IsMoveEnable="{Binding IsMoveEnable}" ImageSource="{Binding ImageSource}" ItemsSource="{Binding ItemsSource}" 
                              ControlCenterX="{Binding ControlCenterX}" ControlCenterY="{Binding ControlCenterY}" IsRederHorizontalMirror="{Binding IsRederHorizontalMirror}" 
                              IsRederVerticalMirror="{Binding IsRederVerticalMirror}" RValue="{Binding RValue}" GValue="{Binding GValue}" BValue="{Binding BValue}"
                              Distance="{Binding Distance}" DeltaX="{Binding DeltaX}" DeltaY="{Binding DeltaY}" Theta="{Binding Theta}" RulerEnabled="{Binding RulerEnabled}" 
                              AutoFitParent="{Binding AutoFitParent}" ClipToBounds="True" CanvasMouseDoubleClick="MainCanvas_MouseCanvasDoubleClick">
-                    </canvas:WaferMappingViewerCanvas >
-                </Grid>
-            </ScrollViewer>
-
+                </canvas:WaferMappingViewerCanvas >
+            </Grid>
         </StackPanel>
-
     </Grid>
 </UserControl>

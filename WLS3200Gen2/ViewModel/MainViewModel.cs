@@ -87,8 +87,8 @@ namespace WLS3200Gen2
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
             machine.MacroReady += MacroOperate;
+            
             machine.SetWaferStatus += UpdateCassetteUI;
-
         }
 
         private MainRecipe ChangeRecipe()

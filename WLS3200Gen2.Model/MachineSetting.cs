@@ -23,7 +23,6 @@ namespace WLS3200Gen2.Model
         /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
         /// </summary>
         public IEnumerable<BincodeInfo> BincodeListDefault { get; set; }
-
         /// <summary>
         /// 平台Robot取放料位置
         /// </summary>
@@ -60,11 +59,6 @@ namespace WLS3200Gen2.Model
         /// Robot 橫移軸Micro位置的取放料座標
         /// </summary>
         public double RobotAxisMicroTakePosition { get; set; }
-        /// <summary>
-        /// Die 判定需給定BinCode
-        /// </summary>
-        public BinCode[] BinCodes { get; set; }
-
         public RobotType RobotsType { get; set; }
         /// <summary>
         /// 手臂RS232的COM
@@ -97,6 +91,11 @@ namespace WLS3200Gen2.Model
         /// DicRS232的COM
         /// </summary>
         public string DicCOM { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<MicroscopeLens> MicroscopeLensDefault { get; set; }
+
     }
 
 
@@ -130,20 +129,7 @@ namespace WLS3200Gen2.Model
     {
         Single,
         Pair
-
     }
-
-
-    public class BinCode
-    {
-        public string Code { get; set; }
-        public string Describe { get; set; }
-
-        public Brush CodeColor { get; set; } = Brushes.White;
-
-
-    }
-
     public class RobotAddress
     {
         public string Name { get; set; }

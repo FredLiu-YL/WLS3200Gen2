@@ -303,7 +303,7 @@ namespace Test
                 var doNames = new string[64];
                 var diNames = new string[32];
 
-                motionController = new Adlink7856(axisConfig, doNames, diNames);
+                motionController = new Adlink7856(axisConfig, doNames, diNames, "C:\\WLS3200-System\\Motion.xml");
                 motionController.InitializeCommand();
                 return true;
             }
