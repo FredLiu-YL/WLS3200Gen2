@@ -43,23 +43,23 @@
             <TextBlock Grid.Row="4" FontSize="16" Margin="2"  Text="Param:" Background="Azure" />
             <StackPanel Grid.Row="5" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="WaferThickness:"  Width="110" />
-                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.WaferThickness}" />
+                <TextBox FontSize="18" Width="55" IsReadOnly="{Binding IsLoadPortParamReadOnly}" Text="{Binding LoadPortUIShow.WaferThickness}" />
             </StackPanel>
             <StackPanel Grid.Row="6" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="CassettePitch:"   Width="110" />
-                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.CassettePitch}" />
+                <TextBox FontSize="18" Width="55" IsReadOnly="{Binding IsLoadPortParamReadOnly}" Text="{Binding LoadPortUIShow.CassettePitch}" />
             </StackPanel>
             <StackPanel Grid.Row="7" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="12" Content="StarOffset:"  Width="110" />
-                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.StarOffset}" />
+                <TextBox FontSize="18" Width="55" IsReadOnly="{Binding IsLoadPortParamReadOnly}" Text="{Binding LoadPortUIShow.StarOffset}" />
             </StackPanel>
             <StackPanel Grid.Row="8" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="11" Content="WaferPitchTolerance:" Width="110" />
-                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.WaferPitchTolerance}" />
+                <TextBox FontSize="18" Width="55" IsReadOnly="{Binding IsLoadPortParamReadOnly}" Text="{Binding LoadPortUIShow.WaferPitchTolerance}" />
             </StackPanel>
             <StackPanel Grid.Row="9" Orientation="Horizontal">
                 <Label VerticalAlignment="Center" FontSize="11" Content="WaferPosTolerance:"  Width="110" />
-                <TextBox FontSize="18" Width="55" Text="{Binding LoadPortUIShow.WaferPositionTolerance}" />
+                <TextBox FontSize="18" Width="55" IsReadOnly="{Binding IsLoadPortParamReadOnly}" Text="{Binding LoadPortUIShow.WaferPositionTolerance}" />
             </StackPanel>
             <Button Grid.Row="10" Margin="2" Background="Tan" BorderBrush="Tan" Content="Param Set" Command="{Binding ParamSet}" IsEnabled="{Binding IsLoadPortEnabled}" />
         </Grid>

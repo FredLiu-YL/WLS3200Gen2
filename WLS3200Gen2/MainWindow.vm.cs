@@ -375,16 +375,12 @@ namespace WLS3200Gen2
         //Security進入會執行
         private void LoadSecurityPage()
         {
-
-
-
             if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
             {
                 IsMainSecurityPageSelect = false;
                 IsMainHomePageSelect = true;
                 return;
             }
-
             WriteLog("Enter the SecurityPage");
         }
 
@@ -416,8 +412,7 @@ namespace WLS3200Gen2
 
 
                     //刷IO 得到EMO 軸停止
-
-                    if (isMainSecurityPageSelect == true)
+                    if (IsMainSecurityPageSelect)
                     {
                         if (machine.Feeder.LoadPortL != null)
                         {

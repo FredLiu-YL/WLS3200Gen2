@@ -53,7 +53,7 @@ namespace WLS3200Gen2
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private bool isLocate;
         private int selectDetectionPointList;
-        private bool isMainHomePageSelect, isMainRecipePageSelect, isMainSettingPageSelect, isMainSecurityPageSelect;
+        private bool isMainHomePageSelect, isMainRecipePageSelect, isMainSettingPageSelect, isMainToolsPageSelect, isMainSecurityPageSelect;
         private bool isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
@@ -67,7 +67,8 @@ namespace WLS3200Gen2
 
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
-        private bool isDie, isDieSub, isDieInSideAll, isPosition;
+        private bool isDie, isDieSub, isDieInSideAll, isPosition, isRecipeAlignment = false;
+
         /// <summary>
         /// 切換到 主畫面 首頁頁面
         /// </summary>
@@ -100,7 +101,20 @@ namespace WLS3200Gen2
             }
             set => SetValue(ref isMainRecipePageSelect, value);
         }
+        public bool IsMainToolsPageSelect
+        {
+            get
+            {
+                if (!isInitialComplete) return isMainToolsPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
 
+                if (isMainToolsPageSelect)
+                    LoadToolsPage();
+                else if (!isMainToolsPageSelect)
+                    UnLoadToolsPage();
+                return isMainToolsPageSelect;
+            }
+            set => SetValue(ref isMainToolsPageSelect, value);
+        }
         /// <summary>
         /// 切換到 主畫面設定頁面
         /// </summary>
@@ -155,10 +169,9 @@ namespace WLS3200Gen2
         {
             get
             {
+                if (!isInitialComplete) return isLocatePageSelect;
                 if (isLocatePageSelect)
                     LoadLoactePage();
-
-
                 return isLocatePageSelect;
             }
             set => SetValue(ref isLocatePageSelect, value);
@@ -170,6 +183,7 @@ namespace WLS3200Gen2
         {
             get
             {
+                if (!isInitialComplete) return isDetectionPageSelect;
                 if (isDetectionPageSelect)
                     SetLocateParamToRecipe();
                 return isDetectionPageSelect;
@@ -317,6 +331,22 @@ namespace WLS3200Gen2
 
             //將檢測座標存入recipe
             mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
+        }
+        private void LoadToolsPage()
+        {
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            {
+                IsMainToolsPageSelect = false;
+                IsMainHomePageSelect = true;
+                return;
+            }
+
+            IsLoadwaferPageSelect = true;
+            WriteLog("Enter the ToolsPage");
+        }
+        private void UnLoadToolsPage()
+        {
+
         }
         //Recipe進入會執行
         private void LoadSettingPage()
@@ -547,26 +577,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                int mappingImageDrawSize = 3000;
-                double dieSizeX = die.DieSize.Width;
-                double dieSizeY = die.DieSize.Height;
-                offsetDraw = mappingImageDrawSize / 150;
-                double scale = 1;
-                scale = Math.Max((waferMapping.ColumnCount + 2.5) * dieSizeX, (waferMapping.RowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                scale = Math.Max(waferMapping.ColumnCount * dieSizeX, waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                double strokeThickness = 1;
-                double crossThickness = 1;
-                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                showSize_X = (waferMapping.ColumnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
-                showSize_Y = (waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                var cc1 = die.OperationPixalX / showSize_X + offsetDraw;
-                var cc2 = die.OperationPixalY / showSize_Y + offsetDraw;
-                var cc3 = die.DieSize.Width / 2.5 / showSize_X;
-                var cc4 = die.DieSize.Height / 2.5 / showSize_Y;
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
-
-
                 ROIShape tempselectShape = MapDrawings.Select(shape =>
                 {
                     var rectBegin = shape.LeftTop;
@@ -615,23 +626,6 @@ namespace WLS3200Gen2
         {
             try
             {
-                int mappingImageDrawSize = 3000;
-                double dieSizeX = die.DieSize.Width;
-                double dieSizeY = die.DieSize.Height;
-                offsetDraw = mappingImageDrawSize / 150;
-                double scale = 1;
-                scale = Math.Max((waferMapping.ColumnCount + 2.5) * dieSizeX, (waferMapping.RowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                scale = Math.Max(waferMapping.ColumnCount * dieSizeX, waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                double strokeThickness = 1;
-                double crossThickness = 1;
-                strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-                showSize_X = (waferMapping.ColumnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
-                showSize_Y = (waferMapping.RowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                var cc1 = die.OperationPixalX / showSize_X + offsetDraw;
-                var cc2 = die.OperationPixalY / showSize_Y + offsetDraw;
-                var cc3 = die.DieSize.Width / 2.5 / showSize_X;
-                var cc4 = die.DieSize.Height / 2.5 / showSize_Y;
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
 
                 ROIShape tempselectShape = MapDrawings.Select(shape =>
@@ -728,6 +722,8 @@ namespace WLS3200Gen2
         private double showSize_X;
         private double showSize_Y;
         private double offsetDraw;
+        private double strokeThickness = 1;
+        private double crossThickness = 1;
         public async Task ShowMappingDrawings(Die[] dies, IEnumerable<BincodeInfo> bincodeListDefault, int columnCount, int rowCount, int mappingImageDrawSize)
         {
             try
@@ -740,11 +736,8 @@ namespace WLS3200Gen2
                 double scale = 1;
                 scale = Math.Max((columnCount + 2.5) * dieSizeX, (rowCount + 2.5) * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
                 scale = Math.Max(columnCount * dieSizeX, rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
-                double strokeThickness = 1;
-                double crossThickness = 1;
                 strokeThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
                 crossThickness = Math.Min(dieSizeX / 2 / scale, dieSizeX / 2 / scale) / 4;
-
                 showSize_X = (columnCount * dieSizeX) / (mappingImageDrawSize - offsetDraw * 2);
                 showSize_Y = (rowCount * dieSizeY) / (mappingImageDrawSize - offsetDraw * 2);
 
@@ -1191,8 +1184,9 @@ namespace WLS3200Gen2
                                 EFEMTransWaferPick(oldArmStation);
                                 //將片子放下去
                                 RecipeLastArmStation = Model.ArmStation.Micro;
-                                machineSetting.TableWaferCatchPosition = new Point(-35000, 212500);
-                                await machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
+                                Task micro = machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
+                                Task robot = machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
+                                await Task.WhenAll(micro, robot);
                                 machine.MicroDetection.TableVacuum.On();
                                 await machine.Feeder.LoadToMicroAsync();
                                 if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
@@ -1285,7 +1279,7 @@ namespace WLS3200Gen2
                 SetLocateParamToRecipe();
                 //將die的map座標都轉換成 實際機台座標(解決片子更換後位置不對的問題 )
                 transForm = await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
-
+                isRecipeAlignment = true;
                 //將所有的Die 轉換成實際片子座標(如果建立樣本時的wafer 與 LocateRun 是一起建立的  那座標會一樣 ，主要Locate目的是針對換wafer以後要重新對位
                 //如果有需要調整檢測座標 ，需要重新做對位  ，對位後會重新建立新的map全部die座標 ，為了給後續檢測座標設定使用 
 
@@ -1315,13 +1309,13 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (isRecipeAlignment == false) return;//還沒對位，MAP點位不能移動
                 //挑選出 對應index 的Die
                 YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
                 YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
                 if (die == null) throw new Exception("No This Die");
                 //設計座標轉換對位後座標
                 Point transPos = transForm.TransPoint(new Point(die.MapTransX, die.MapTransY));
-
                 await machine.MicroDetection.TableMoveToAsync(transPos);
             }
             catch (Exception ex)
@@ -1330,7 +1324,7 @@ namespace WLS3200Gen2
                 MessageBox.Show(ex.Message);
             }
         });
-        public ICommand SelectMappingDieCommand => new RelayCommand(() =>
+        public ICommand SelectMappingDieCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -1356,14 +1350,24 @@ namespace WLS3200Gen2
                     this.selectShape = tempselectShape;
 
                     //從點選的ShapeROI  找出對應的die
-                    int listIndex = MapDrawings.IndexOf(selectShape);
-                    YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
+                    //int listIndex = MapDrawings.IndexOf(selectShape);
+                    //YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
                     string tip = selectShape.ToolTip.ToString();
                     string[] line = tip.Split(' ');
                     int idxX = Convert.ToInt32(line[0].Split(':')[1]);
                     int idxY = Convert.ToInt32(line[1].Split(':')[1]);
                     MoveIndexX = idxX;
                     MoveIndexY = idxY;
+
+                    if (isRecipeAlignment == false) return;//還沒對位，MAP點位不能移動
+                    //挑選出 對應index 的Die
+                    YuanliCore.Data.Die[] dies = mainRecipe.DetectRecipe.WaferMap.Dies;
+                    YuanliCore.Data.Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
+                    if (die == null) throw new Exception("No This Die");
+                    //設計座標轉換對位後座標
+                    Point transPos = transForm.TransPoint(new Point(die.MapTransX, die.MapTransY));
+
+                    await machine.MicroDetection.TableMoveToAsync(transPos);
                 }
 
             }
@@ -1450,7 +1454,7 @@ namespace WLS3200Gen2
                 var SelectMousePixel = new Point(mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).OperationPixalX / showSize_X + offsetDraw,
                 mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY).OperationPixalX / showSize_Y + offsetDraw);
 
-                SelectMousePixel = transForm.TransInvertPoint(DetectionPointList[SelectDetectionPointList].Position);
+                //SelectMousePixel = transForm.TransInvertPoint(DetectionPointList[SelectDetectionPointList].Position);
 
                 ROIShape tempselectShape = MapDrawings.Select(shape =>
                 {
@@ -1477,11 +1481,10 @@ namespace WLS3200Gen2
                     MoveIndexX = die.IndexX;
                     MoveIndexY = die.IndexY;
                 }
-
+                if (isRecipeAlignment == false) return;//還沒對位，MAP點位不能移動
                 //移動
-                Task taskTableX = TableX.MoveToAsync(DetectionPointList[SelectDetectionPointList].Position.X);//     Task taskLoad = Task.CompletedTask;
-                Task taskTableY = TableY.MoveToAsync(DetectionPointList[SelectDetectionPointList].Position.Y);
-                await Task.WhenAll(taskTableX, taskTableY);
+                var transPos = transForm.TransInvertPoint(new Point(DetectionPointList[SelectDetectionPointList].Position.X, DetectionPointList[SelectDetectionPointList].Position.Y));
+                await machine.MicroDetection.TableMoveToAsync(transPos);
             }
             catch (Exception ex)
             {

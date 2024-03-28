@@ -307,7 +307,7 @@
                                     </Grid>
                                 </GroupBox>
                             </TabItem>
-                            <TabItem Header="WaferID" Height="10">
+                            <TabItem Header="WaferID" Height="10" Visibility="{Binding InformationUCVisibility}" >
                                 <GroupBox Header="WaferID" FontSize="15">
 
                                 </GroupBox>
@@ -368,7 +368,7 @@
                                     </Grid>
                                 </Border>
                             </TabItem>
-                            <TabItem Header="Micro Judge" FontSize="10" Visibility="Visible"    Height="10"   >
+                            <TabItem Header="Micro Judge" FontSize="10" Visibility="{Binding InformationUCVisibility}" Height="10"   >
                                 <Grid>
                                     <Grid.ColumnDefinitions >
                                         <ColumnDefinition Width="0.19*" />
@@ -505,7 +505,7 @@
 
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="MacroJudge"  Visibility="Visible" Height="10"   >
+                            <TabItem Header="MacroJudge" Visibility="{Binding InformationUCVisibility}" Height="10"   >
                                 <Border  BorderBrush="{DynamicResource PrimaryHueMidBrush}"  BorderThickness="1">
                                     <Grid>
 
@@ -968,7 +968,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem  Margin="0,0,0,0"  Height="75" Background="White" >
+            <TabItem  Margin="0,0,0,0"  Height="75" Background="White" IsSelected="{Binding IsMainToolsPageSelect}">
                 <TabItem.Header>
                     <StackPanel   Width="auto"   Height="auto">
                         <materialDesign:PackIcon  Width="34"   Height="34"  HorizontalAlignment="Center"   Kind="Tools" />
@@ -980,9 +980,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
-                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="EFEM" FontSize="24" Grid.ColumnSpan="2" >
+                    <GroupBox Grid.Column="0" Header="UnLoadWafer" FontSize="24" Grid.ColumnSpan="2" >
                         <Grid >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -1018,9 +1017,9 @@
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Column="0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1.5*"/>
-                                            <ColumnDefinition  Width="0.7*" />
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="0.27*"/>
+                                            <ColumnDefinition Width="0.42*" />
+                                            <ColumnDefinition Width="0.31*"/>
 
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
@@ -1043,30 +1042,30 @@
 
                                         </Border>
                                         <TextBlock  Text="Axis Settings" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
-                                        <Label Grid.Row="1"  Grid.Column="0" Content="Move To Load Port1"/>
-                                        <TextBox Grid.Row="1" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                        <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                        <Label Grid.Row="1"  Grid.Column="0" Content="Load Port1:"/>
+                                        <TextBox Grid.Row="1" IsReadOnly="True"  Text="{Binding RobotAxisLoadPort1TakePosition}"  Grid.Column="1" />
+                                        <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort1"/>
 
 
-                                        <Label Grid.Row="2"  Grid.Column="0" Content="Move To Load Port2"/>
-                                        <TextBox Grid.Row="2" Text="{Binding FeederSetting.LoadPortPos}"  Grid.Column="1" />
-                                        <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                        <Label Grid.Row="2"  Grid.Column="0" Content="Load Port2:"/>
+                                        <TextBox Grid.Row="2" IsReadOnly="True" Text="{Binding RobotAxisLoadPort2TakePosition}"  Grid.Column="1" />
+                                        <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort2"/>
 
-                                        <Label Grid.Row="3"  Grid.Column="0" Content="Move To Aligner1"/>
-                                        <TextBox Grid.Row="3" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
-                                        <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+                                        <Label Grid.Row="3"  Grid.Column="0" Content="Aligner1:"/>
+                                        <TextBox Grid.Row="3" IsReadOnly="True" Text="{Binding RobotAxisAligner1TakePosition}"  Grid.Column="1" />
+                                        <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner1"/>
 
-                                        <Label Grid.Row="4"  Grid.Column="0" Content="Move To Aligner2"/>
-                                        <TextBox Grid.Row="4" Text="{Binding FeederSetting.AlignPos}"  Grid.Column="1" />
-                                        <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+                                        <Label Grid.Row="4"  Grid.Column="0" Content="Aligner2:"/>
+                                        <TextBox Grid.Row="4" IsReadOnly="True" Text="{Binding RobotAxisAligner2TakePosition}"  Grid.Column="1" />
+                                        <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner2"/>
 
-                                        <Label Grid.Row="5"  Grid.Column="0" Content="Move To Macro"/>
-                                        <TextBox Grid.Row="5" Text="{Binding FeederSetting.MacroPos}"  Grid.Column="1" />
+                                        <Label Grid.Row="5"  Grid.Column="0" Content="Macro:"/>
+                                        <TextBox Grid.Row="5" IsReadOnly="True" Text="{Binding RobotAxisAligner1TakePosition}"  Grid.Column="1" />
                                         <Button Grid.Row="5"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Macro"/>
 
 
-                                        <Label Grid.Row="6"  Grid.Column="0" Content="Move To Micro"/>
-                                        <TextBox Grid.Row="6" Text="{Binding FeederSetting.MicroPos}"  Grid.Column="1" />
+                                        <Label Grid.Row="6"  Grid.Column="0" Content="Micro:"/>
+                                        <TextBox Grid.Row="6" IsReadOnly="True" Text="{Binding RobotAxisMicroTakePosition}"  Grid.Column="1" />
                                         <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
 
                                         <TextBlock  Grid.Row="8" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
@@ -1115,64 +1114,11 @@
                                 </Grid>
 
                             </GroupBox>
-                            <GroupBox Grid.Row="1" materialDesign:ColorZoneAssist.Background="DarkGray"
+                            <GroupBox Grid.Column="1" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                     Header="Aligner" Style="{StaticResource MaterialDesignGroupBox}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Button Grid.Row="0"  Content="Aligner1 Run" Height="50"/>
-                                    <Button Grid.Row="1"  Content="Aligner2 Run" Height="50"/>
-                                    <Button Grid.Row="2" Content="OCR1 Read" Height="50"/>
-                                    <Button Grid.Row="3" Content="OCR2 Read" Height="50"/>
-                                    <TextBox  Grid.Row="2"  Grid.Column="1"/>
-                                    <TextBox  Grid.Row="3"  Grid.Column="1"/>
-                                </Grid>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="Load Port" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                      Style="{StaticResource MaterialDesignGroupBox}" >
-                                <Grid Margin="-5">
-                                    <Grid.ColumnDefinitions >
-                                        <ColumnDefinition />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Load1" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="Load2" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="UnLoad1" />
-                                        <Button Margin="5" Height="40" Background="Tan" BorderBrush="Tan" Content="UnLoad2" />
-                                        <StackPanel Grid.Column="0">
-                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 1" />
-                                            <Button Margin="5" Height="40" Background="CadetBlue" BorderBrush="CadetBlue" Content="Slot Mapping 2" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1">
-                                        <ListBox Grid.Column="0" Margin="0" ItemsSource="{Binding LoadPort1Wafers}">
-                                            <ListBox.ItemContainerStyle>
-                                                <Style TargetType="ListBoxItem">
-                                                    <Setter Property="Margin" Value="0"/>
-                                                </Style>
-                                            </ListBox.ItemContainerStyle>
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <!-- 這裡放置你的 UserControl -->
-                                                    <usercontrols1:ExistNotifyUC ExistState="{Binding WaferStates}" />
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-                                    </StackPanel>
-                                </Grid>
+                                      Style="{StaticResource MaterialDesignGroupBox}"  >
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" IsLoadPortParamReadOnly="True" />
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
                                 <!--<UserControlUC:MappingCanvasTest />-->
@@ -1180,9 +1126,6 @@
                         </Grid>
                     </GroupBox>
 
-                    <GroupBox Grid.Column="2" Header="Micro" FontSize="24" >
-
-                    </GroupBox>
                 </Grid>
             </TabItem>
 
@@ -1256,20 +1199,20 @@
 
                                 <Label Grid.Row="1"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port1:"/>
                                 <TextBox Grid.Row="1" Text="{Binding RobotAxisLoadPort1TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort1"/>
 
 
                                 <Label Grid.Row="2"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port2:"/>
                                 <TextBox Grid.Row="2" Text="{Binding RobotAxisLoadPort2TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort2"/>
 
                                 <Label Grid.Row="3"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner1:"/>
                                 <TextBox Grid.Row="3" Text="{Binding RobotAxisAligner1TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+                                <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner1"/>
 
                                 <Label Grid.Row="4"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner2:"/>
                                 <TextBox Grid.Row="4" Text="{Binding RobotAxisAligner2TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner"/>
+                                <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner2"/>
 
                                 <Label Grid.Row="5"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Macro:"/>
                                 <TextBox Grid.Row="5" Text="{Binding RobotAxisMacroTakePosition}"  Grid.Column="1" />
@@ -1752,14 +1695,14 @@
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}"/>
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" IsLoadPortParamReadOnly="False" />
 
                             </GroupBox>
                             <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" 
                                       Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}"/>
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}" IsLoadPortParamReadOnly="False" />
 
                             </GroupBox>
                         </Grid>
