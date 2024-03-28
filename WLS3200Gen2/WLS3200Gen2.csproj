@@ -161,6 +161,9 @@
     <Compile Include="UserControls\ProcessCassetteUnitUC.xaml.cs">
       <DependentUpon>ProcessCassetteUnitUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\MappingCanvasWindow.xaml.cs">
+      <DependentUpon>MappingCanvasWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\BincodeSettingWindow.xaml.cs">
       <DependentUpon>BincodeSettingWindow.xaml</DependentUpon>
     </Compile>
@@ -255,6 +258,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\ProcessCassetteUnitUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MappingCanvasWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

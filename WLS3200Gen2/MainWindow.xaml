@@ -598,7 +598,7 @@
                                     </Grid.RowDefinitions>
                                     <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
                                     <Button Grid.Column="1" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
-                                    <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingEditCommand}" />
+                                    <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
                                 </Grid>
 
                             </GroupBox>
@@ -1175,7 +1175,7 @@
                                 </Grid>
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
-                                <UserControlUC:MappingCanvasTest />
+                                <!--<UserControlUC:MappingCanvasTest />-->
                             </Grid>
                         </Grid>
                     </GroupBox>

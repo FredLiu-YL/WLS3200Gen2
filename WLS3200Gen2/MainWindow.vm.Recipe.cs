@@ -424,6 +424,12 @@ namespace WLS3200Gen2
 
        });
 
+        public ICommand MappingTestCommand => new RelayCommand(async () =>
+        {
+            MappingCanvasWindow win = new MappingCanvasWindow(20,20);
+            win.ShowDialog();
+        });
+
         public ICommand LoadMappingCommand => new RelayCommand(async () =>
         {
             string SINF_Path = "";

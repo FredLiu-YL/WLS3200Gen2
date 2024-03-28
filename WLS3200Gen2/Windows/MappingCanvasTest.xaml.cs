@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -28,19 +29,27 @@ namespace WLS3200Gen2.UserControls
 
         private bool isDragging;
         private Point lastMousePosition;
-        private BitmapImage bitmapImage;
-   
+        private BitmapSource bitmapImage;
+
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
+        public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
+                                                                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
+                                                               new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+
+
         public MappingCanvasTest()
         {
             InitializeComponent();
 
 
-            bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri("D:\\10.bmp");
-            bitmapImage.EndInit();
-            myImage.Source = bitmapImage;
+            //         bitmapImage = new BitmapImage();
+            //         bitmapImage.BeginInit();
+            //         bitmapImage.UriSource = new Uri("D:\\10.bmp");
+            //         bitmapImage.EndInit();
+            //         myImage.Source = bitmapImage;
 
             // 初始化矩形的位置集合
 
@@ -50,10 +59,11 @@ namespace WLS3200Gen2.UserControls
             myGrid.MouseLeftButtonDown += Canvas_MouseLeftButtonDown;
             myGrid.MouseLeftButtonUp += Canvas_MouseLeftButtonUp;
             myGrid.MouseMove += Canvas_MouseMove;
+            myGrid.MouseWheel += Window_PreviewMouseWheel;
 
-       
-     
-            DrawRectangles();
+
+
+
             //  DrawCross();
         }
         /*public ObservableCollection<Rectangle> Rectangles
@@ -62,8 +72,26 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(ref rectangles, value);
         }*/
 
+        public int Col
+        {
+            get => (int)GetValue(ColProperty);
+            set => SetValue(ColProperty, value);
+        }
+        public int Row
+        {
+            get => (int)GetValue(RowProperty);
+            set => SetValue(RowProperty, value);
+        }
+
+
+        public BitmapSource BitmapImage
+        {
+            get => bitmapImage;
+            set => SetValue(ref bitmapImage, value);
+        }
 
         #region MyRegion
+
 
         private const double ScaleRate = 0.1; // 縮放比率
         private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
@@ -74,11 +102,11 @@ namespace WLS3200Gen2.UserControls
             get => _lines;
             set => SetValue(ref _lines, value);
         }
-        private ObservableCollection<RectangleInfo> rectangles = new ObservableCollection<RectangleInfo>();
-        public ObservableCollection<RectangleInfo> Rectangles
+        private ObservableCollection<RectangleInfo> rectangles1 = new ObservableCollection<RectangleInfo>();
+        public ObservableCollection<RectangleInfo> Rectangles1
         {
-            get => rectangles;
-            set => SetValue(ref rectangles, value);
+            get => rectangles1;
+            set => SetValue(ref rectangles1, value);
         }
 
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
@@ -102,9 +130,39 @@ namespace WLS3200Gen2.UserControls
                 scaleDelta = 0.02;
             // 縮放
             viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
-       
-        }
 
+        }
+        private void CreateRetagle_Click(object sender, RoutedEventArgs e)
+        {
+            DrawRectangles();
+        }
+        private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+
+            if (e.Delta > 0)
+            {
+                if (viewbox.LayoutTransform.Value.M11 > 2) return;
+                // 放大因子
+                double scaleDelta = 0.05;
+                // 縮放
+                viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 + scaleDelta, viewbox.LayoutTransform.Value.M22 + scaleDelta);
+
+            }
+            else
+            {
+                if (viewbox.LayoutTransform.Value.M11 <= 0.04) return;
+
+                // 縮小因子
+                double scaleDelta = 0;
+                if (viewbox.LayoutTransform.Value.M11 > 0.3)
+                    scaleDelta = 0.1;
+                if (viewbox.LayoutTransform.Value.M11 <= 0.3)
+                    scaleDelta = 0.02;
+                // 縮放
+                viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
+
+            }
+        }
 
         private void DrawCross()
         {
@@ -126,19 +184,35 @@ namespace WLS3200Gen2.UserControls
 
         private void DrawRectangles()
         {
-
-            for (int i = 0; i < 30; i++)
+            Canvas canvas = new Canvas();
+            canvas.Width = 10000;
+            canvas.Height = 10000;
+            Rectangles1.Clear();
+            for (int i = 0; i < 300; i++)
             {
-                for (int j = 0; j < 30; j++)
+                for (int j = 0; j < 300; j++)
                 {
 
-                     Rectangles.Add(new RectangleInfo { X = 70 + (60 * i), Y = 70 + (60 * j), Width = 50, Height = 50, Fill = Brushes.DarkSeaGreen });
+                    //Rectangles1.Add(new RectangleInfo { X = 20 + (30 * i), Y = 20 + (30 * j), Width = 20, Height = 20, Fill = Brushes.DarkSeaGreen });
+
+                    canvas.Children.Add(CreateRectangle(20 + (30 * i), 20 + (30 * j), 20, 20, Brushes.DarkSeaGreen));
                 }
             }
-            
+            BitmapImage = CreateBitmap(canvas);
 
-          //  Rectangles.Add(new RectangleInfo { X = 200, Y =200, Width = 100, Height = 100, Fill = Brushes.Red });
-          //  Rectangles.Add(new RectangleInfo { X = 400, Y = 500, Width = 50, Height = 50, Fill = Brushes.Blue });
+
+            //// 将渲染的图像保存为 BMP 文件
+            //BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+            //encoder.Frames.Add(BitmapFrame.Create(bitmap));
+
+            //using (FileStream stream = new FileStream("D:\\WERT.bmp", FileMode.Create))
+            //{
+            //    encoder.Save(stream);
+            //}
+
+
+            //  Rectangles.Add(new RectangleInfo { X = 200, Y =200, Width = 100, Height = 100, Fill = Brushes.Red });
+            //  Rectangles.Add(new RectangleInfo { X = 400, Y = 500, Width = 50, Height = 50, Fill = Brushes.Blue });
 
 
             // 添加更多矩形資訊
@@ -174,107 +248,33 @@ namespace WLS3200Gen2.UserControls
 
             dragStartPoint = dragEndPoint;
         }
+
+        private Rectangle CreateRectangle(double x, double y, double width, double height, Brush fill)
+        {
+            Rectangle rectangle = new Rectangle();
+            rectangle.Width = width;
+            rectangle.Height = height;
+            rectangle.Fill = fill;
+            Canvas.SetLeft(rectangle, x);
+            Canvas.SetTop(rectangle, y);
+            return rectangle;
+        }
         #endregion
 
 
+        private BitmapSource CreateBitmap(Canvas canvas)
+        {
 
-        /*  private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-          {
-              isDragging = true;
-              lastMousePosition = e.GetPosition(null);
-              var x = lastMousePosition.X - bitmapImage.PixelWidth / 2;
-              var y = lastMousePosition.Y - bitmapImage.PixelHeight / 2;
-              Point imagePoint = new Point(lastMousePosition.X / scaleTransform.ScaleX, lastMousePosition.Y / scaleTransform.ScaleY);
+            // 测量和排列 Canvas
+            canvas.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            canvas.Arrange(new Rect(canvas.DesiredSize));
 
-              // 获取鼠标相对于图像的位置
-              Point imagePoint1 = e.GetPosition(myImage);
-
-
-
-              myImage.CaptureMouse();
-          }
-
-          private void Image_MouseMove(object sender, MouseEventArgs e)
-          {
-              if (isDragging)
-              {
-                  Point mousePosition = e.GetPosition(null);
-                  Vector offset = mousePosition - lastMousePosition;
-
-                  // 移动图像
-                  translateTransform.X += offset.X * (1 / scaleTransform.ScaleX);
-                  translateTransform.Y += offset.Y * (1 / scaleTransform.ScaleY);
-
-                  // 移动图像
-                     double newX = scrollViewer.HorizontalOffset - offset.X;
-                     double newY = scrollViewer.VerticalOffset - offset.Y;
-                     scrollViewer.ScrollToHorizontalOffset(newX);
-                     scrollViewer.ScrollToVerticalOffset(newY);
-
-                  lastMousePosition = mousePosition;
-
-
-              }
-          }
-
-          private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-          {
-              isDragging = false;
-              myImage.ReleaseMouseCapture();
-          }
-
-          private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-          {
-
-              {
-                  double zoom = e.Delta > 0 ? 1.1 : 0.9; // 根据滚轮方向计算缩放比例
-                  ScaleImage(zoom);
-                  e.Handled = true;
-              }
-          }
-
-          private void ScaleImage(double scale)
-          {
-              // 设置放大缩小的最小值和最大值
-              double minScale = 0.02;
-              double maxScale = 2;
-
-              // 计算新的缩放比例
-              double newScaleX = Math.Max(minScale, Math.Min(scaleTransform.ScaleX * scale, maxScale));
-              double newScaleY = Math.Max(minScale, Math.Min(scaleTransform.ScaleY * scale, maxScale));
-
-              // 应用新的缩放比例
-              scaleTransform.ScaleX = newScaleX;
-              scaleTransform.ScaleY = newScaleY;
-
-              // 更新滚动条的滑块长度
-              scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset * scale);
-              scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset * scale);
-
-              // 更新水平滚动条的滑块长度
-              scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset * scale);
-              scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset * scale);
-
-              // 更新垂直滚动条的滑块长度
-              var verticalScrollBar = scrollViewer.Template.FindName("PART_VerticalScrollBar", scrollViewer) as ScrollBar;
-              if (verticalScrollBar != null)
-              {
-                  verticalScrollBar.Maximum = verticalScrollBar.Maximum * scale;
-              }
-              // 更新水平滚动条的滑块长度
-              var horizontalScrollBar = scrollViewer.Template.FindName("PART_HorizontalScrollBar", scrollViewer) as ScrollBar;
-              if (horizontalScrollBar != null)
-              {
-                  horizontalScrollBar.Maximum = horizontalScrollBar.Maximum * scale;
-              }
-          }
-
-
-          */
-        private Point lastPosition;
-
-
-
+            // 渲染 Canvas 并保存为图像
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(canvas);
+           
+            return bitmap;
+        }
 
 
 

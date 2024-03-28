@@ -17,17 +17,18 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="1">
             <Button Content="+" Click="ZoomIn_Click"/>
-            <Button Content="-" Click="ZoomOut_Click"/>
+            <Button Content="-" Click="ZoomOut_Click" />
+            <Button Content="Create"  Click="CreateRetagle_Click"  />
         </StackPanel>
         <ScrollViewer  x:Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <Viewbox Stretch="Uniform" Name="viewbox">
-                    <Grid x:Name="myGrid" > 
-                        <Image x:Name="myImage" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto"/>
+                    <Grid x:Name="myGrid"  Width="10000" Height="10000">
+                        <Image   Source="{Binding BitmapImage}"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto"/>
                         <ItemsControl ItemsSource="{Binding Rectangles}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <Canvas  />
+                                    <Canvas/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
