@@ -161,6 +161,9 @@
     <Compile Include="UserControls\ProcessCassetteUnitUC.xaml.cs">
       <DependentUpon>ProcessCassetteUnitUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ReaderUnitUC.xaml.cs">
+      <DependentUpon>ReaderUnitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MappingCanvasWindow.xaml.cs">
       <DependentUpon>MappingCanvasWindow.xaml</DependentUpon>
     </Compile>
@@ -195,8 +198,8 @@
     <Compile Include="UserControls\DigitalOutputUC.xaml.cs">
       <DependentUpon>DigitalOutputUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\LightUnitUC.xaml.cs">
-      <DependentUpon>LightUnitUC.xaml</DependentUpon>
+    <Compile Include="UserControls\LampUnitUC.xaml.cs">
+      <DependentUpon>LampUnitUC.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\LoadPortUnitUC.xaml.cs">
       <DependentUpon>LoadPortUnitUC.xaml</DependentUpon>
@@ -261,6 +264,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UserControls\ReaderUnitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\MappingCanvasWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -289,7 +296,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UserControls\LightUnitUC.xaml">
+    <Page Include="UserControls\LampUnitUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

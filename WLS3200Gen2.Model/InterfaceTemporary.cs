@@ -80,6 +80,27 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public int WaferPositionTolerance { get; set; }
     }
+    public interface ILampControl
+    {
+        /// <summary>
+        /// 目前光強度
+        /// </summary>
+        int LightValue { get; }
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        void Initial();
+        /// <summary>
+        /// 關閉
+        /// </summary>
+        void Close();
+        /// <summary>
+        /// 更換光亮度
+        /// </summary>
+        /// <param name="LigntValue"></param>
+        /// <returns></returns>
+        Task ChangeLightAsync(int LigntValue);
+    }
     public interface ILoadPort
     {
         /// <summary>

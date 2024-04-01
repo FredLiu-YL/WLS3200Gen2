@@ -1,4 +1,4 @@
-﻿<UserControl  x:Class="WLS3200Gen2.UserControls.LightUnitUC"
+﻿<UserControl  x:Class="WLS3200Gen2.UserControls.LampUnitUC"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,11 +6,11 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
         mc:Ignorable="d"
-        x:Name="LightUnit" Height="30" Width="240">
-    <Grid DataContext="{Binding ElementName=LightUnit}">
+        x:Name="LampUnit" Height="30" Width="240">
+    <Grid DataContext="{Binding ElementName=LampUnit}">
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="4234" FontSize="20" Width="50" Margin="5,0,0,0"/>
-            <Slider Maximum="50" Minimum="0" Width="180" Value="35"   />
+            <TextBlock FontSize="20" Width="50" Margin="5,0,0,0" Text ="{Binding LampUIShow.LightValue}"/>
+            <Slider Maximum="50" Minimum="0" Width="180" Value="{Binding IntensitySliderValue}" />
         </StackPanel>
     </Grid>
 </UserControl>

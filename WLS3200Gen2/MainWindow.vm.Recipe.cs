@@ -61,14 +61,16 @@ namespace WLS3200Gen2
         private bool isLoadwaferComplete, isLocateComplete, isDetectionComplete;
 
         private double alignerMicroAngle, alignerWaferIDAngle;
-        private string waferIDResult;
         private double macroTopStartPitchX, macroTopStartRollY, macroTopStartYawT, macroBackStartPos;
         private Model.ArmStation lastArmStation = Model.ArmStation.Cassette1;
 
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
         private bool isDie, isDieSub, isDieInSideAll, isPosition, isRecipeAlignment = false;
-
+        /// <summary>
+        /// 畫圖的參數
+        /// </summary>
+        private double showSize_X, showSize_Y, offsetDraw, strokeThickness = 1, crossThickness = 1;
         /// <summary>
         /// 切換到 主畫面 首頁頁面
         /// </summary>
@@ -197,8 +199,6 @@ namespace WLS3200Gen2
 
         public double AlignerMicroAngle { get => alignerMicroAngle; set => SetValue(ref alignerMicroAngle, value); }
         public double AlignerWaferIDAngle { get => alignerWaferIDAngle; set => SetValue(ref alignerWaferIDAngle, value); }
-        public string WaferIDResult { get => waferIDResult; set => SetValue(ref waferIDResult, value); }
-
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
         public double MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
         public double MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
@@ -370,7 +370,10 @@ namespace WLS3200Gen2
             RobotAxisAligner1TakePosition = machineSetting.RobotAxisAlignTakePosition;
             RobotAxisMacroTakePosition = machineSetting.RobotAxisMacroTakePosition;
             RobotAxisMicroTakePosition = machineSetting.RobotAxisMicroTakePosition;
-            MicroscopeLensDefault = machineSetting.MicroscopeLensDefault.ToArray();
+            if (machineSetting.MicroscopeLensDefault != null)
+            {
+                MicroscopeLensDefault = machineSetting.MicroscopeLensDefault.ToArray();
+            }
             WriteLog("Enter the SettingPage");
         }
         //離開recipe頁面會執行
@@ -456,7 +459,7 @@ namespace WLS3200Gen2
 
         public ICommand MappingTestCommand => new RelayCommand(async () =>
         {
-            MappingCanvasWindow win = new MappingCanvasWindow(20,20);
+            MappingCanvasWindow win = new MappingCanvasWindow(20, 20);
             win.ShowDialog();
         });
 
@@ -719,11 +722,6 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-        private double showSize_X;
-        private double showSize_Y;
-        private double offsetDraw;
-        private double strokeThickness = 1;
-        private double crossThickness = 1;
         public async Task ShowMappingDrawings(Die[] dies, IEnumerable<BincodeInfo> bincodeListDefault, int columnCount, int rowCount, int mappingImageDrawSize)
         {
             try

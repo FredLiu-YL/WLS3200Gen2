@@ -300,8 +300,13 @@ namespace WLS3200Gen2.Model
                 else
                 {
                     //camera = new ArtificialCamera();
-                    camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
+                    if (machineSetting.CamerasSettingFileName == null)
+                    {
+                        machineSetting.CamerasSettingFileName = "";
+                    }
+                    //camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
 
+                    camera = new YuanliCore.CameraLib.IDS.UeyeCamera();
                 }
 
                 return camera;

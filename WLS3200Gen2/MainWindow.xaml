@@ -525,8 +525,8 @@
                                                 </StackPanel>
 
 
-                                                <UserControlUC:LightUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" Width="400"/>
-                                                <UserControlUC:LightUnitUC Margin="0,0,0,0" HorizontalAlignment="Left" Width="400"/>
+                                                <UserControlUC:LampUnitUC Margin="0,10,0,0" HorizontalAlignment="Left" Width="400"/>
+                                                <UserControlUC:LampUnitUC Margin="0,0,0,0" HorizontalAlignment="Left" Width="400"/>
 
                                             </StackPanel>
                                         </GroupBox>
@@ -682,6 +682,13 @@
                                             <GroupBox Header="Aligner"  Grid.Row="0" Grid.Column="1">
                                                 <Grid Margin="-5" >
                                                     <Grid >
+                                                        <Grid.Resources>
+                                                            <!-- 定義一個名為 GroupBoxStyle 的樣式 -->
+                                                            <Style TargetType="GroupBox" x:Key="GroupBoxStyle">
+                                                                <!-- 將 GroupBox 的背景顏色設置為白色 -->
+                                                                <Setter Property="Background" Value="White"/>
+                                                            </Style>
+                                                        </Grid.Resources>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition />
                                                             <RowDefinition />
@@ -702,11 +709,12 @@
                                                         <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerWaferIDAngle}"/>
                                                         <Button Grid.Row="1"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
 
-                                                        <TextBlock Grid.Row="2"  Grid.Column="0"  Text="Wafer ID Test:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <TextBox  Grid.Row="2"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding WaferIDResult}" />
-                                                        <Button Grid.Row="2"  Grid.Column="2" Content="Test"  Command="{Binding AlignerCommand}" CommandParameter="WaferIDTest"/>
-
-                                                        <Button Grid.Column="2" Grid.Row="3" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
+                                                        <Button Grid.Column="2" Grid.Row="2" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
+                                                        
+                                                        <GroupBox Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="WaferID Reader" Style="{StaticResource GroupBoxStyle}">
+                                                            <UserControlUC:ReaderUnitUC Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                                                        </GroupBox>
                                                     </Grid>
                                                 </Grid>
                                             </GroupBox>
@@ -741,8 +749,8 @@
                                                             </Grid.RowDefinitions>
                                                             <TextBlock Grid.Column="0" Grid.Row="0"   Text="Left" FontSize="15"  VerticalAlignment="Top"    HorizontalAlignment="Center" Margin="0,-5,0,-5"/>
                                                             <TextBlock Grid.Column="1" Grid.Row="0"   Text="Right" FontSize="15"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,-5,0,-5"/>
-                                                            <UserControlUC:LightUnitUC Grid.Column="0" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25" />
-                                                            <UserControlUC:LightUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
+                                                            <UserControlUC:LampUnitUC Grid.Column="0" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25" />
+                                                            <UserControlUC:LampUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
                                                         </Grid>
                                                     </GroupBox>
                                                     <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
