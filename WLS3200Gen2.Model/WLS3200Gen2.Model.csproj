@@ -111,7 +111,7 @@
     <Compile Include="Component\HirataAligner_RS232.cs" />
     <Compile Include="Component\HirataLoadPort_RS232.cs" />
     <Compile Include="Component\HirataRobot_RS232.cs" />
-    <Compile Include="Component\LampRS232.cs" />
+    <Compile Include="Component\StrongLampRS232.cs" />
     <Compile Include="InspectionReport.cs" />
     <Compile Include="InterfaceTemporary.cs" />
     <Compile Include="Machine.Process.cs" />

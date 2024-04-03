@@ -1404,7 +1404,6 @@ namespace WLS3200Gen2.Model.Component
             {
                 lock (lockObj)
                 {
-                    List<string> returnMessage1 = new List<string>();
                     serialPort.DiscardInBuffer();
                     serialPort.DiscardOutBuffer();
                     int retryCount = 0;
