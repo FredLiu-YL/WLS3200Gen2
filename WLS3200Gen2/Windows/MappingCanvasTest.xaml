@@ -6,64 +6,45 @@
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
              mc:Ignorable="d" 
                x:Name="Mapping"
-             d:DesignHeight="450" d:DesignWidth="600">
+             d:DesignHeight="650" d:DesignWidth="600">
     <UserControl.Resources>
         <local:ImagePositionConverter x:Key="ImagePositionConverter"/>
     </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=Mapping}"   >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="0.2*"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Fit" Click="ZoomFit_Click"/>
             <Button Content="+" Click="ZoomIn_Click"/>
             <Button Content="-" Click="ZoomOut_Click" />
             <Button Content="Create"  Click="CreateRetagle_Click"  />
+            <Button Content="Select" Click="SelectBtn_Click"    />
+            <Button Content="Touch"   Click="TouchBtn_Click"   />
+
         </StackPanel>
-        <ScrollViewer  x:Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <Viewbox Stretch="Uniform" Name="viewbox">
-                    <Grid x:Name="myGrid"  Width="10000" Height="10000">
-                        <Image   Source="{Binding BitmapImage}"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Height="Auto"/>
-                        <ItemsControl ItemsSource="{Binding Rectangles}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <Canvas/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Rectangle Width="{Binding Width}" Height="{Binding Height}" Fill="{Binding Fill}">
-                                        <Rectangle.RenderTransform>
-                                            <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
-                                        </Rectangle.RenderTransform>
-                                    </Rectangle>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Grid>
-                </Viewbox>
-            </ScrollViewer>
+        <ScrollViewer Grid.Row="1" x:Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+            <Viewbox Stretch="None"  Name="viewbox">
+                <Grid x:Name="myGrid" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                       
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        
+                    </Grid.RowDefinitions>
+                    <Image  Grid.Column="0" Grid.Row="0"  Source="{Binding BitmapImage}"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                    <Canvas  Grid.Column="0" Grid.Row="0" x:Name="canvas" >
+
+                    </Canvas>
+
+                </Grid>
+            </Viewbox>
+
         </ScrollViewer>
-        <!--<ScrollViewer   x:Name="scrollViewer" VerticalScrollBarVisibility="Hidden"  HorizontalScrollBarVisibility="Hidden"
-              PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-            <Grid>
-                <Image x:Name="myImage"   MouseLeftButtonDown="Image_MouseLeftButtonDown"   MouseMove="Image_MouseMove"   MouseLeftButtonUp="Image_MouseLeftButtonUp">
 
-                        <Image.RenderTransform>
-                            <TransformGroup>
-                                 添加 TranslateTransform 用于拖动图像 
-                                <TranslateTransform x:Name="translateTransform"/>
-                                <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1"/>
-                            </TransformGroup>
-                        </Image.RenderTransform>
-
-                    </Image>
-                    -->
-        <!-- 透明的 Grid 覆盖在 Image 控件上 -->
-        <!--
-               
-            </Grid>
-        </ScrollViewer>-->
     </Grid>
 </UserControl>

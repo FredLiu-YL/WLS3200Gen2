@@ -459,7 +459,7 @@ namespace WLS3200Gen2
 
         public ICommand MappingTestCommand => new RelayCommand(async () =>
         {
-            MappingCanvasWindow win = new MappingCanvasWindow(20, 20);
+            MappingCanvasWindow win = new MappingCanvasWindow(100, 100);
             win.ShowDialog();
         });
 

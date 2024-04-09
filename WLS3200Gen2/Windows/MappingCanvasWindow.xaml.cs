@@ -29,8 +29,8 @@ namespace WLS3200Gen2
         public MappingCanvasWindow(int column, int row)
         {
             InitializeComponent();
-            this.column = column;
-            this.row = row;
+            this.Column = column;
+            this.Row = row;
         }
 
 

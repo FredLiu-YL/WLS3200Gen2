@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using YuanliCore.CameraLib;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -27,9 +28,16 @@ namespace WLS3200Gen2.UserControls
     public partial class MappingCanvasTest : UserControl, INotifyPropertyChanged
     {
 
-        private bool isDragging;
+        private const double ScaleRate = 0.1; // 縮放比率
+        private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
+
+        private ObservableCollection<LineViewModel> _lines = new ObservableCollection<LineViewModel>();
+        private bool isDragging, isSelectMode, isTouchMode;
         private Point lastMousePosition;
-        private BitmapSource bitmapImage;
+        private Point dragStartPoint;
+        private WriteableBitmap bitmapImage;
+        private List<RectangleInfo> rectangles = new List<RectangleInfo>();
+        private ObservableCollection<RectangleInfo> rectangles1 = new ObservableCollection<RectangleInfo>();
 
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
         public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
@@ -44,33 +52,26 @@ namespace WLS3200Gen2.UserControls
         {
             InitializeComponent();
 
-
-            //         bitmapImage = new BitmapImage();
-            //         bitmapImage.BeginInit();
-            //         bitmapImage.UriSource = new Uri("D:\\10.bmp");
-            //         bitmapImage.EndInit();
-            //         myImage.Source = bitmapImage;
-
-            // 初始化矩形的位置集合
-
-
-
             // 添加滑鼠左鍵拖曳事件
             myGrid.MouseLeftButtonDown += Canvas_MouseLeftButtonDown;
             myGrid.MouseLeftButtonUp += Canvas_MouseLeftButtonUp;
             myGrid.MouseMove += Canvas_MouseMove;
             myGrid.MouseWheel += Window_PreviewMouseWheel;
+            myGrid.MouseEnter += Grid_MouseEnter;
+            myGrid.MouseLeave += Grid_MouseLeave;
 
 
+            isSelectMode = false;
+            isTouchMode = true;
 
 
             //  DrawCross();
         }
-        /*public ObservableCollection<Rectangle> Rectangles
+        public ObservableCollection<RectangleInfo> Rectangles1
         {
-            get => rectangles;
-            set => SetValue(ref rectangles, value);
-        }*/
+            get => rectangles1;
+            set => SetValue(ref rectangles1, value);
+        }
 
         public int Col
         {
@@ -84,7 +85,7 @@ namespace WLS3200Gen2.UserControls
         }
 
 
-        public BitmapSource BitmapImage
+        public WriteableBitmap BitmapImage
         {
             get => bitmapImage;
             set => SetValue(ref bitmapImage, value);
@@ -93,20 +94,10 @@ namespace WLS3200Gen2.UserControls
         #region MyRegion
 
 
-        private const double ScaleRate = 0.1; // 縮放比率
-        private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
-
-        private ObservableCollection<LineViewModel> _lines = new ObservableCollection<LineViewModel>();
         public ObservableCollection<LineViewModel> Lines
         {
             get => _lines;
             set => SetValue(ref _lines, value);
-        }
-        private ObservableCollection<RectangleInfo> rectangles1 = new ObservableCollection<RectangleInfo>();
-        public ObservableCollection<RectangleInfo> Rectangles1
-        {
-            get => rectangles1;
-            set => SetValue(ref rectangles1, value);
         }
 
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
@@ -132,9 +123,20 @@ namespace WLS3200Gen2.UserControls
             viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
 
         }
+        private void ZoomFit_Click(object sender, RoutedEventArgs e)
+        {
+            double scaleW = scrollViewer.ActualWidth / BitmapImage.Width;
+            double scaleH = scrollViewer.ActualHeight / BitmapImage.Height;
+            if (scaleW <= scaleH)//取最小比例來做縮放
+                viewbox.LayoutTransform = new ScaleTransform(scaleW, scaleW);
+            else
+                viewbox.LayoutTransform = new ScaleTransform(scaleH, scaleH);
+
+        }
+
         private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
-            DrawRectangles();
+            DrawRectangles(Col, Row);
         }
         private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -164,40 +166,36 @@ namespace WLS3200Gen2.UserControls
             }
         }
 
-        private void DrawCross()
+
+        private void DrawRectangles(int col, int row)
         {
+            int width = 20;
+            int height = 20;
+            Point startPoint = new Point(20, 20);
 
-
-            // 根據圖像大小設置十字線的位置和尺寸
-            double imageSize = 1000; // 圖像大小
-            double crossSize = 200; // 十字線大小
-
-            double centerX = imageSize / 2 - crossSize / 2;
-            double centerY = imageSize / 2 - crossSize / 2;
-
-            // 添加橫線
-            Lines.Add(new LineViewModel { X1 = 0, Y1 = centerY, X2 = imageSize, Y2 = centerY });
-
-            // 添加豎線
-            Lines.Add(new LineViewModel { X1 = centerX, Y1 = 0, X2 = centerX, Y2 = imageSize });
-        }
-
-        private void DrawRectangles()
-        {
             Canvas canvas = new Canvas();
-            canvas.Width = 10000;
-            canvas.Height = 10000;
-            Rectangles1.Clear();
-            for (int i = 0; i < 300; i++)
+            canvas.Width = col * (width + 3) + 10; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
+            canvas.Height = row * (height + 3) + 10;//數量 * 高度+線寬
+            canvas.Background = Brushes.White;
+
+            myGrid.Width = canvas.Width;
+            myGrid.Height = canvas.Height;
+            rectangles.Clear();
+            for (int i = 0; i < col; i++)
             {
-                for (int j = 0; j < 300; j++)
+                for (int j = 0; j < row; j++)
                 {
+                    var rect = new RectangleInfo(startPoint.X + ((width + 3) * i), startPoint.Y + ((height + 3) * j), width, height);
+                    rect.Fill = Brushes.Gray;
+                    rect.Row = j;
+                    rect.Col = i;
+                    rectangles.Add(rect);
 
-                    //Rectangles1.Add(new RectangleInfo { X = 20 + (30 * i), Y = 20 + (30 * j), Width = 20, Height = 20, Fill = Brushes.DarkSeaGreen });
-
-                    canvas.Children.Add(CreateRectangle(20 + (30 * i), 20 + (30 * j), 20, 20, Brushes.DarkSeaGreen));
+                    canvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, Brushes.Gray));
                 }
             }
+
+
             BitmapImage = CreateBitmap(canvas);
 
 
@@ -211,8 +209,8 @@ namespace WLS3200Gen2.UserControls
             //}
 
 
-            //  Rectangles.Add(new RectangleInfo { X = 200, Y =200, Width = 100, Height = 100, Fill = Brushes.Red });
-            //  Rectangles.Add(new RectangleInfo { X = 400, Y = 500, Width = 50, Height = 50, Fill = Brushes.Blue });
+            //  Rectangles1.Add(new RectangleInfo(200, 200, 100, 100) { Fill = Brushes.Red });
+            //  Rectangles1.Add(new RectangleInfo(400, 500, 50, 50) { Fill = Brushes.Blue });
 
 
             // 添加更多矩形資訊
@@ -220,21 +218,55 @@ namespace WLS3200Gen2.UserControls
             // 將集合繫結到 ItemsControl 的 ItemsSource 屬性
             //itemsControl.ItemsSource = Rectangles;
         }
-        private Grid mainGrid;
 
-        private Point dragStartPoint;
+
+
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            dragStartPoint = e.GetPosition(scrollViewer);
-            myGrid.CaptureMouse();
+            if (isTouchMode)
+            {
+                dragStartPoint = e.GetPosition(scrollViewer);
+                myGrid.CaptureMouse();
+            }
+            else if (isSelectMode)
+            {
+
+            }
         }
 
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            myGrid.ReleaseMouseCapture();
+            if (isTouchMode)
+            {
+                myGrid.ReleaseMouseCapture();
+            }
+            else if (isSelectMode)
+            {
+                Point pixel = e.GetPosition(myGrid);
+
+                var selectRect = rectangles.Where(rect => rect.Rectangle.Contains(pixel)).FirstOrDefault();
+                if (selectRect == null) return;
+
+                DrawRectangle(selectRect);
+
+
+
+
+            }
+        }
+        private void Grid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (isTouchMode)
+                Mouse.OverrideCursor = Cursors.Hand; // 更改滑鼠外型為手形
+            else
+                Mouse.OverrideCursor = null; // 恢復滑鼠外型為預設
         }
 
+        private void Grid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = null; // 恢復滑鼠外型為預設
+        }
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (!myGrid.IsMouseCaptured) return;
@@ -249,20 +281,20 @@ namespace WLS3200Gen2.UserControls
             dragStartPoint = dragEndPoint;
         }
 
-        private Rectangle CreateRectangle(double x, double y, double width, double height, Brush fill)
+        private Rectangle CreateRectangle(double centerX, double centerY, double width, double height, Brush fill)
         {
             Rectangle rectangle = new Rectangle();
             rectangle.Width = width;
             rectangle.Height = height;
             rectangle.Fill = fill;
-            Canvas.SetLeft(rectangle, x);
-            Canvas.SetTop(rectangle, y);
+            Canvas.SetLeft(rectangle, centerX - width / 2);
+            Canvas.SetTop(rectangle, centerY - height / 2);
             return rectangle;
         }
         #endregion
 
 
-        private BitmapSource CreateBitmap(Canvas canvas)
+        private WriteableBitmap CreateBitmap(Canvas canvas)
         {
 
             // 测量和排列 Canvas
@@ -272,10 +304,47 @@ namespace WLS3200Gen2.UserControls
             // 渲染 Canvas 并保存为图像
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(canvas);
-           
-            return bitmap;
+
+            return new WriteableBitmap(bitmap.FormatConvertTo(PixelFormats.Bgr32));
         }
 
+        /*private void DrawRectangle(Rect rect, Brush brush)
+        {
+
+
+            if (brush is SolidColorBrush solidColorBrush)
+            {
+                // 如果 brush 是 SolidColorBrush，您可以直接訪問其 Color 屬性來獲取顏色
+                Color color = solidColorBrush.Color;
+                // 現在您可以使用 color 來訪問顏色的 R、G、B、A 值，例如 color.R、color.G、color.B、color.A
+
+
+                // Lock the bitmap to modify its pixels
+                BitmapImage.Lock();
+
+                // Draw rectangle using WriteableBitmapEx library
+                BitmapImage.FillRectangle((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom, color);
+
+                // Unlock the bitmap
+                BitmapImage.Unlock();
+            }
+        }*/
+        private void DrawRectangle(RectangleInfo rectangleinfo)
+        {
+
+            Rectangle rectangle = new Rectangle();
+            rectangle.Width = rectangleinfo.Width;
+            rectangle.Height = rectangleinfo.Height;
+            rectangle.Fill = rectangleinfo.Fill; // 可以根據需要設置不同的顏色
+            rectangle.Stroke = Brushes.Red;
+            // 設置 Rectangle 的位置
+            Canvas.SetLeft(rectangle, rectangleinfo.CenterX - rectangleinfo.Width / 2); // 每個 Rectangle 的水平間距為 120
+            Canvas.SetTop(rectangle, rectangleinfo.CenterY - rectangleinfo.Height / 2); // 所有 Rectangle 的垂直位置相同
+
+            // 將 Rectangle 加入到 Canvas 中
+            canvas.Children.Add(rectangle);
+
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -286,10 +355,24 @@ namespace WLS3200Gen2.UserControls
             field = value;
             OnPropertyChanged(propertyName, oldValue, value);
         }
+
+
+
         protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void SelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            isSelectMode = true;
+            isTouchMode = false;
+        }
+        private void TouchBtn_Click(object sender, RoutedEventArgs e)
+        {
+            isSelectMode = false;
+            isTouchMode = true;
         }
 
 
@@ -323,10 +406,25 @@ namespace WLS3200Gen2.UserControls
 
     public class RectangleInfo
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
+
+        public RectangleInfo(double centerX, double centerY, double Width, double Height)
+        {
+            this.CenterX = centerX;
+            this.CenterY = centerY;
+            this.Width = Width;
+            this.Height = Height;
+            Rectangle = new Rect(centerX - Width / 2, centerY - Height / 2, Width, Height);
+
+
+        }
+        public int Col { get; set; }
+        public int Row { get; set; }
+        public double CenterX { get; }
+        public double CenterY { get; }
+        public double Width { get; }
+        public double Height { get; }
+        public Rect Rectangle { get; }
         public Brush Fill { get; set; }
+
     }
 }
