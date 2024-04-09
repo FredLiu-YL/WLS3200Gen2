@@ -34,6 +34,7 @@ namespace Test
         private IMacro macro;
         private IRobot robot;
         private IMicroscope micro;
+        private ILampControl lampControl;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
         private Axis tableY;
@@ -58,6 +59,7 @@ namespace Test
         private RobotUI robotStaus = new RobotUI();
 
         private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
+        private LampUI lampControlParam = new LampUI();
 
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
@@ -82,9 +84,12 @@ namespace Test
 
 
         public IMicroscope Micro { get => micro; set => SetValue(ref micro, value); }
-
-
         public YuanliCore.Model.MicroscopeParam MicroscopeParam { get => microscopeParam; set => SetValue(ref microscopeParam, value); }
+
+        public ILampControl LampControl { get => lampControl; set => SetValue(ref lampControl, value); }
+        public LampUI LampControlParam { get => lampControlParam; set => SetValue(ref lampControlParam, value); }
+
+
         //////////////////////////////////
         private WriteableBitmap mappingImage;
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
@@ -118,63 +123,65 @@ namespace Test
         {
             try
             {
-
                 MappingImage = new WriteableBitmap(15000, 15000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                BXUCB aa = new BXUCB("COM24");
-
-                aa.Error += (e) =>
-                {
-                    throw e;
-                };
-                Micro = aa;
-                Micro.Initial();
-
-                bool IsMotionInitOK = false;
-                IsMotionInitOK = MotionInit();
-
-                if (IsMotionInitOK == true)
-                {
-                    int idx = 4;
-                    TableX = motionController.Axes[idx];
-                    //TableY = motionController.Axes[1];
-                    //TableZ = motionController.Axes[2];
-                    //TableW = motionController.Axes[3];
-                    //RobotAxis = motionController.Axes[4];
-
-                    AxisConfig axis_TableXConfig = new AxisConfig();
-                    axis_TableXConfig.MoveVel = motionController.Axes[idx].AxisVelocity;
-                    axis_TableXConfig.HomeVel = motionController.Axes[idx].HomeVelocity;
-                    TableXConfig = axis_TableXConfig;
-
-                    DigitalOutputs = motionController.OutputSignals.ToArray();
-                    DigitalInputs = motionController.InputSignals.ToArray();
-
-                    Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
-                }
-
-
-                Robot = new HirataRobot_RS232("COM5", 10, 2);
-                Robot.Initial();
-
-
-                Aligner = new HirataAligner_RS232("COM32");
-                Aligner.Initial();
-
-
                 LoadPort1Wafers = new ObservableCollection<WaferUIData>();
-                LoadPort = new HirataLoadPort_RS232("COM2");
-                LoadPort.Initial();
-                if (LoadPort != null)
-                {
-                    LoadPortParam loadPortParam = new LoadPortParam();
-                    loadPortParam = await LoadPort.GetParam();
-                    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
-                    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
-                    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
-                    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
-                    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
-                    isRefresh = true;
-                }
+
+                //////////////////////Initial//////////////////////
+                LampControl = new StrongLampRS232("COM25");
+                LampControl.Initial();
+                //BXUCB aa = new BXUCB("COM24");
+
+                //aa.Error += (e) =>
+                //{
+                //    throw e;
+                //};
+                //Micro = aa;
+                //Micro.Initial();
+
+                //bool IsMotionInitOK = false;
+                //IsMotionInitOK = MotionInit();
+
+                //if (IsMotionInitOK == true)
+                //{
+                //    int idx = 4;
+                //    TableX = motionController.Axes[idx];
+                //    //TableY = motionController.Axes[1];
+                //    //TableZ = motionController.Axes[2];
+                //    //TableW = motionController.Axes[3];
+                //    //RobotAxis = motionController.Axes[4];
+
+                //    AxisConfig axis_TableXConfig = new AxisConfig();
+                //    axis_TableXConfig.MoveVel = motionController.Axes[idx].AxisVelocity;
+                //    axis_TableXConfig.HomeVel = motionController.Axes[idx].HomeVelocity;
+                //    TableXConfig = axis_TableXConfig;
+
+                //    DigitalOutputs = motionController.OutputSignals.ToArray();
+                //    DigitalInputs = motionController.InputSignals.ToArray();
+
+                //    Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+                //}
+
+
+                //Robot = new HirataRobot_RS232("COM5", 10, 2);
+                //Robot.Initial();
+
+
+                //Aligner = new HirataAligner_RS232("COM32");
+                //Aligner.Initial();
+
+                //LoadPort = new HirataLoadPort_RS232("COM2");
+                //LoadPort.Initial();
+                //if (LoadPort != null)
+                //{
+                //    LoadPortParam loadPortParam = new LoadPortParam();
+                //    loadPortParam = await LoadPort.GetParam();
+                //    LoadPortUIShow.WaferThickness = loadPortParam.WaferThickness;
+                //    LoadPortUIShow.CassettePitch = loadPortParam.CassettePitch;
+                //    LoadPortUIShow.StarOffset = loadPortParam.StarOffset;
+                //    LoadPortUIShow.WaferPitchTolerance = loadPortParam.WaferPitchTolerance;
+                //    LoadPortUIShow.WaferPositionTolerance = loadPortParam.WaferPositionTolerance;
+                //    isRefresh = true;
+                //}
 
 
 
@@ -373,6 +380,11 @@ namespace Test
                             MicroscopeParam.Position = Convert.ToInt32(nowPos);
                             MicroscopeParam.ApertureValue = Micro.ApertureValue;
                             MicroscopeParam.LightValue = Micro.LightValue;
+                        }
+
+                        if (LampControl != null)
+                        {
+                            LampControlParam.LightValue = LampControl.LightValue;
                         }
 
                         await Task.Delay(300);
