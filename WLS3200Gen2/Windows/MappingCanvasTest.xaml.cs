@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WLS3200Gen2.Model.Recipe;
 using YuanliCore.CameraLib;
+using YuanliCore.Data;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -46,7 +49,11 @@ namespace WLS3200Gen2.UserControls
         public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
                                                                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        public static readonly DependencyProperty DiesProperty = DependencyProperty.Register(nameof(Dies), typeof(Die[]), typeof(MappingCanvasTest),
+                                                           new FrameworkPropertyMetadata(new Die[] { }, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
 
+        public static readonly DependencyProperty BincodeInFomationProperty = DependencyProperty.Register(nameof(BincodeInFomation), typeof(BincodeInfo[]), typeof(MappingCanvasTest),
+                                                         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
 
         public MappingCanvasTest()
         {
@@ -82,6 +89,16 @@ namespace WLS3200Gen2.UserControls
         {
             get => (int)GetValue(RowProperty);
             set => SetValue(RowProperty, value);
+        }
+        public Die[] Dies
+        {
+            get => (Die[])GetValue(DiesProperty);
+            set => SetValue(DiesProperty, value);
+        }
+        public BincodeInfo[] BincodeInFomation
+        {
+            get => (BincodeInfo[])GetValue(BincodeInFomationProperty);
+            set => SetValue(BincodeInFomationProperty, value);
         }
 
 
@@ -136,7 +153,7 @@ namespace WLS3200Gen2.UserControls
 
         private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
-            DrawRectangles(Col, Row);
+            DrawRectangles(Col, Row, Dies, BincodeInFomation);
         }
         private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -167,56 +184,84 @@ namespace WLS3200Gen2.UserControls
         }
 
 
-        private void DrawRectangles(int col, int row)
+        private void DrawRectangles(int cols, int rows, Die[] dice, BincodeInfo[] bincodeInfo)
         {
-            int width = 20;
-            int height = 20;
+            Stopwatch stopwatch = new Stopwatch();
+            int width = 30;
+            int height = 30;
+            object lockObj = new object();
+
             Point startPoint = new Point(20, 20);
 
             Canvas canvas = new Canvas();
-            canvas.Width = col * (width + 3) + 10; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
-            canvas.Height = row * (height + 3) + 10;//數量 * 高度+線寬
+            canvas.Width = cols * (width + 3) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
+            canvas.Height = rows * (height + 3) + height;//數量 * 高度+線寬
             canvas.Background = Brushes.White;
-
+            
             myGrid.Width = canvas.Width;
             myGrid.Height = canvas.Height;
             rectangles.Clear();
-            for (int i = 0; i < col; i++)
+            canvas.Children.Clear();
+            var dieGroup = dice.OrderBy(d => d.IndexX).GroupBy(d => d.IndexX).ToArray();//先把X分類出來  加速後面搜尋速度
+            stopwatch.Start();
+            Parallel.For(0, cols, i =>
             {
-                for (int j = 0; j < row; j++)
+
+                Parallel.For(0, rows, j =>
                 {
+
                     var rect = new RectangleInfo(startPoint.X + ((width + 3) * i), startPoint.Y + ((height + 3) * j), width, height);
-                    rect.Fill = Brushes.Gray;
+
                     rect.Row = j;
                     rect.Col = i;
-                    rectangles.Add(rect);
+                    var die = dieGroup[i].Where(d => d.IndexY == j).FirstOrDefault();
+                    //   var die = dice.Where(d => d.IndexX == i && d.IndexY == j).FirstOrDefault();
 
-                    canvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, Brushes.Gray));
-                }
+                    if (die == null || bincodeInfo == null)//沒提供資訊 方框就畫灰色
+                        rect.Fill = Brushes.Gray;
+                    else
+                    {
+                        var bincode = bincodeInfo.Where(code => code.Code == die.BinCode).FirstOrDefault();
+                        if (bincode == null)//沒對應到的資訊 就畫灰色
+                            rect.Fill = Brushes.Gray;
+                        else
+                            rect.Fill = bincode.Color;
+
+                    }
+
+                    lock (lockObj)
+                    {
+                        rectangles.Add(rect);
+                    }
+
+                });
+            });
+
+            var count2 = stopwatch.ElapsedMilliseconds;
+
+            /*  var die = dice.Where(d => d.IndexX == i && d.IndexY == j).FirstOrDefault();
+              if (die == null || bincodeInfo == null)//沒提供資訊 方框就畫灰色
+                  rect.Fill = Brushes.Gray;
+              else
+              {
+                  var bincode = bincodeInfo.Where(code => code.Code == die.BinCode).FirstOrDefault();
+                  if (bincode == null)//沒對應到的資訊 就畫灰色
+                      rect.Fill = Brushes.Gray;
+                  else
+                      rect.Fill = bincode.Color;
+
+              }*/
+
+
+            foreach (var rect in rectangles)
+            {
+                canvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, rect.Fill));
+
             }
-
-
+            var count3 = stopwatch.ElapsedMilliseconds;
             BitmapImage = CreateBitmap(canvas);
+            var count4 = stopwatch.ElapsedMilliseconds;
 
-
-            //// 将渲染的图像保存为 BMP 文件
-            //BmpBitmapEncoder encoder = new BmpBitmapEncoder();
-            //encoder.Frames.Add(BitmapFrame.Create(bitmap));
-
-            //using (FileStream stream = new FileStream("D:\\WERT.bmp", FileMode.Create))
-            //{
-            //    encoder.Save(stream);
-            //}
-
-
-            //  Rectangles1.Add(new RectangleInfo(200, 200, 100, 100) { Fill = Brushes.Red });
-            //  Rectangles1.Add(new RectangleInfo(400, 500, 50, 50) { Fill = Brushes.Blue });
-
-
-            // 添加更多矩形資訊
-
-            // 將集合繫結到 ItemsControl 的 ItemsSource 屬性
-            //itemsControl.ItemsSource = Rectangles;
         }
 
 
@@ -345,6 +390,30 @@ namespace WLS3200Gen2.UserControls
             canvas.Children.Add(rectangle);
 
         }
+        private void SelectBtn_Click(object sender, RoutedEventArgs e)
+        {
+            isSelectMode = true;
+            isTouchMode = false;
+        }
+        private void TouchBtn_Click(object sender, RoutedEventArgs e)
+        {
+            isSelectMode = false;
+            isTouchMode = true;
+        }
+
+        private static void OnDiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var dp = d as MappingCanvasTest;
+            dp.DrawMapping();
+        }
+        private void DrawMapping()
+        {
+            if (Dies == null) return;
+            int col = Dies.Max(die => die.IndexX);
+            int row = Dies.Max(die => die.IndexY);
+            DrawRectangles(col + 1, row + 1, Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
+
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -364,16 +433,7 @@ namespace WLS3200Gen2.UserControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        private void SelectBtn_Click(object sender, RoutedEventArgs e)
-        {
-            isSelectMode = true;
-            isTouchMode = false;
-        }
-        private void TouchBtn_Click(object sender, RoutedEventArgs e)
-        {
-            isSelectMode = false;
-            isTouchMode = true;
-        }
+
 
 
     }

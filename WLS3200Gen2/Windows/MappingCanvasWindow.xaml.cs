@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WLS3200Gen2.Model.Recipe;
+using YuanliCore.Data;
 
 namespace WLS3200Gen2
 {
@@ -24,18 +25,24 @@ namespace WLS3200Gen2
     /// </summary>
     public partial class MappingCanvasWindow : Window, INotifyPropertyChanged
     {
-        private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
+        private BincodeInfo[] bincodeList  ;
         private int selectList, column, row;
+        private Die[] dieArray;
+
         public MappingCanvasWindow(int column, int row)
         {
             InitializeComponent();
             this.Column = column;
             this.Row = row;
+
+            CreateDummyBincode(Column, Row);
+
         }
 
 
 
-        public ObservableCollection<BincodeInfo> BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
+        public BincodeInfo[] BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
+        public Die[] DieArray { get => dieArray; set => SetValue(ref dieArray, value); }
         public int SelectList { get => selectList; set => SetValue(ref selectList, value); }
 
 
@@ -61,41 +68,65 @@ namespace WLS3200Gen2
         });
 
 
-        private void OpenPalette_Click(object sender, RoutedEventArgs e)
+        private void CreateDummyBincode(int col, int row)
         {
-            System.Windows.Forms.ColorDialog colorDialog = new System.Windows.Forms.ColorDialog();
-            //如果陣列數量沒有自動產生 需要防呆自動產生
-           /* var temp = SelectList;
-            if (BincodeList.Count == SelectList)
+            List<BincodeInfo> bincodeInfos = new List<BincodeInfo>();
+            List<Die> dies = new List<Die>();
+            object lockObj = new object();
+            int width = col; // 矩形寬度
+            int height = row; // 矩形高度
+            int centerX = col/2; // 中心點 X 座標
+            int centerY = row/2; // 中心點 Y 座標
+            int radius = col/2; // 圓形半徑
+            int radiusSquared = radius * radius; // 半徑的平方
+
+
+            Parallel.For(0, col, x =>
             {
-                BincodeList.Add(new BincodeInfo());
-                SelectList = temp;
-            }*/
 
-            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-
-
-
-                Color selectedColor = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
-
-                BincodeList[SelectList].Color = new SolidColorBrush(selectedColor);
-
-                // 使用選擇的顏色
-                // MessageBox.Show($"選擇的顏色是: {selectedColor.ToString()}");
-
-                if (BincodeList.Count == SelectList + 1)//點到最後一列  就自動增加一列
+                Parallel.For(0, row, y =>
                 {
-                    BincodeInfo bincode2 = new BincodeInfo
-                    {                     
-                        Color = Brushes.GreenYellow
-                    };
-                    BincodeList.Add(bincode2);
-                }
-                    
-            }
-        }
 
+                    // 計算矩形中心點到圓心的距離的平方
+                    int dx = x - centerX;
+                    int dy = y - centerY;
+                    int distanceSquared = dx * dx + dy * dy;
+
+                    // 如果距離的平方小於等於半徑的平方，則在圓形內
+                    if (distanceSquared <= radiusSquared)
+                    {
+                        Die die = new Die();
+                        die.IndexX = x;
+                        die.IndexY = y;
+                        if (x == 7)
+                            die.BinCode = "A1";
+                        else
+                            die.BinCode = "A0";
+
+                        lock (lockObj)
+                        {
+                            dies.Add(die);
+                        }
+                    }
+
+                });
+
+            });
+
+            
+            var info1 = new BincodeInfo();
+            info1.Code = "A0";
+            info1.Color = Brushes.Green;
+            bincodeInfos.Add(info1);
+
+            var info2 = new BincodeInfo();
+            info2.Code = "A1";
+            info2.Color = Brushes.Red;
+            bincodeInfos.Add(info2);
+
+            BincodeList= bincodeInfos.ToArray();
+            DieArray = dies.ToArray();
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;

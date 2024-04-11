@@ -9,6 +9,6 @@
         Title="MappingCanvasWindow" Height="800" Width="800">
     <Grid DataContext="{Binding ElementName=MappingCanvas}"  >
 
-        <usercontrols:MappingCanvasTest Col="{Binding Column}" Row="{Binding Row}" />
+        <usercontrols:MappingCanvasTest Col="{Binding Column}" Row="{Binding Row}" Dies="{Binding DieArray}" BincodeInFomation="{Binding BincodeList}" />
     </Grid>
 </Window>
