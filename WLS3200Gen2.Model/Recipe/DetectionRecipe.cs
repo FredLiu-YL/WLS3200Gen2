@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using YuanliCore.Interface;
 using YuanliCore.Model;
 
 namespace WLS3200Gen2.Model.Recipe
@@ -28,6 +29,11 @@ namespace WLS3200Gen2.Model.Recipe
         /// MAP資訊
         /// </summary>
         public WaferMapping WaferMap { get; set; }
+
+        /// <summary>
+        /// 暫放  等待WaferMapping  修正後應該存入WaferMapping
+        /// </summary>
+        public Frame<byte[]> MapImage { get; set; }
     }
 
     public class DetectionPoint : INotifyPropertyChanged

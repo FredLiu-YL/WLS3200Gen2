@@ -14,13 +14,13 @@ namespace WLS3200Gen2.Model.Recipe
     /// <summary>
     /// 紀錄Map圖 的全部座標
     /// </summary>
-    public abstract class WaferMapping
+    public class WaferMapping
     {
-        public WaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror)
+        public WaferMapping(bool isMotionXMirror, bool isMotionYMirror)
         {
-            var a = ReadWaferFile(path, isMotionXMirror, isMotionYMirror);
-            Dies = a.dies;
-            WaferSize = a.waferSize;
+            //  var a = ReadWaferFile(path, isMotionXMirror, isMotionYMirror);
+            //   Dies = a.dies;
+            //  WaferSize = a.waferSize;
         }
         /// <summary>
         /// Wafer 計算起點
@@ -38,10 +38,12 @@ namespace WLS3200Gen2.Model.Recipe
         /// 每個Die的資訊
         /// </summary>
         public Die[] Dies { get; set; }
+        
         /// <summary>
         /// Wafer尺寸(um)
         /// </summary>
         public Size WaferSize { get; set; }
+
         /// <summary>
         /// 行總數
         /// </summary>
@@ -54,19 +56,8 @@ namespace WLS3200Gen2.Model.Recipe
         /// 樣本圖片 
         /// </summary>
         public Frame<byte[]> MapImage { get; set; }
-        /// <summary>
-        /// 讀取WaferMapping path路徑 isMotionXMirror是否要映射X isMotionYMirror是否要映射Y
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="isMotionXMirror"></param>
-        /// <param name="isMotionYMirror"></param>
-        /// <returns></returns>
-        public abstract (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror);
-        /// <summary>
-        /// 儲存WaferMapping
-        /// </summary>
-        /// <param name="path"></param>
-        public abstract void SaveWaferFile(string path);
+
+
     }
 
     public class SinfWaferMapping : WaferMapping
@@ -77,7 +68,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// <param name="path"></param>
         /// <param name="isMotionXMirror"></param>
         /// <param name="isMotionYMirror"></param>
-        public SinfWaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror) : base(path, isMotionXMirror, isMotionYMirror)
+        public SinfWaferMapping(bool isMotionXMirror, bool isMotionYMirror) : base(isMotionXMirror, isMotionYMirror)
         {
 
         }
@@ -88,7 +79,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// <param name="isMotionXMirror"></param>
         /// <param name="isMotionYMirror"></param>
         /// <returns></returns>
-        public override (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
+        public (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
         {
             try
             {
@@ -158,7 +149,7 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
-        public override void SaveWaferFile(string path)
+        public void SaveWaferFile(string path)
         {
             try
             {
@@ -682,20 +673,38 @@ namespace WLS3200Gen2.Model.Recipe
             public int Row { get; set; }
             public string Data { get; set; }
         }
+
+        public static SinfWaferMapping Load(string filename)
+        {
+
+            throw new NotImplementedException();
+        }
     }
+
+
     public class KLAWaferMapping : WaferMapping
     {
-        public KLAWaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror) : base(path, isMotionXMirror, isMotionYMirror)
+        public KLAWaferMapping(string path, bool isMotionXMirror, bool isMotionYMirror) : base(isMotionXMirror, isMotionYMirror)
         {
         }
-        public override (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
+        public (Die[] dies, Size waferSize) ReadWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
         {
             throw new NotImplementedException();
         }
 
-        public override void SaveWaferFile(string path)
+        public void SaveWaferFile(string path)
         {
             throw new NotImplementedException();
         }
     }
+
+
+    public enum Direction
+    {
+        MirrorX,
+        MirrorY,
+        MirrorXY,
+
+    }
+
 }

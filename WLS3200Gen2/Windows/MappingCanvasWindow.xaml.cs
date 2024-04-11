@@ -28,7 +28,7 @@ namespace WLS3200Gen2
         private BincodeInfo[] bincodeList  ;
         private int selectList, column, row;
         private Die[] dieArray;
-
+        private WriteableBitmap mappingTable;
         public MappingCanvasWindow(int column, int row)
         {
             InitializeComponent();
@@ -40,7 +40,7 @@ namespace WLS3200Gen2
         }
 
 
-
+        public WriteableBitmap MappingTable { get => mappingTable; set => SetValue(ref mappingTable, value); }
         public BincodeInfo[] BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
         public Die[] DieArray { get => dieArray; set => SetValue(ref dieArray, value); }
         public int SelectList { get => selectList; set => SetValue(ref selectList, value); }

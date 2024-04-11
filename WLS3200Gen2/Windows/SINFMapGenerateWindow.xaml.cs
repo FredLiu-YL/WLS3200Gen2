@@ -344,7 +344,7 @@ namespace WLS3200Gen2
                 {
                     if (Sinf == null)
                     {
-                        Sinf = new SinfWaferMapping("", true, false);
+                        Sinf = new SinfWaferMapping( true, false);
                     }
                     path = SINF_Path;
                     (Sinf.Dies, Sinf.WaferSize) = Sinf.ReadWaferFile(path, true, false);
@@ -799,6 +799,8 @@ namespace WLS3200Gen2
         {
             try
             {
+                SinfWaferMapping aa =  SinfWaferMapping.Load("");
+
                 FormIsEnable = false;
                 System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
                 dlg_image.InitialDirectory = "D://晶圓檢測_AOI結果_sinf";
@@ -810,7 +812,7 @@ namespace WLS3200Gen2
                     path = dlg_image.FileName;
                     if (Sinf == null)
                     {
-                        Sinf = new SinfWaferMapping("", true, false);
+                        Sinf = new SinfWaferMapping(true, false);
                     }
                     Sinf.ReadBinCode(path);
                     BinCodeDrawDataGridList.Clear();
@@ -1166,7 +1168,7 @@ namespace WLS3200Gen2
                 //m_WaferMapping.DrawRowCount = draw_CountY;
                 //m_WaferMapping.DieDrawInfo.Clear();
 
-                Sinf = new SinfWaferMapping("", true, false);
+                Sinf = new SinfWaferMapping( true, false);
                 Sinf.Lot_ID = Wafer_ID;
                 Sinf.Unit = "MM";
                 Sinf.DieSize_X = dieSize_X;

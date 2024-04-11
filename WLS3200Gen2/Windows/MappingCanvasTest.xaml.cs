@@ -22,6 +22,7 @@ using System.Windows.Shapes;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.CameraLib;
 using YuanliCore.Data;
+using YuanliCore.Interface;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -38,7 +39,7 @@ namespace WLS3200Gen2.UserControls
         private bool isDragging, isSelectMode, isTouchMode;
         private Point lastMousePosition;
         private Point dragStartPoint;
-        private WriteableBitmap bitmapImage;
+
         private List<RectangleInfo> rectangles = new List<RectangleInfo>();
         private ObservableCollection<RectangleInfo> rectangles1 = new ObservableCollection<RectangleInfo>();
 
@@ -54,6 +55,10 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty BincodeInFomationProperty = DependencyProperty.Register(nameof(BincodeInFomation), typeof(BincodeInfo[]), typeof(MappingCanvasTest),
                                                          new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
+
+
+        public static readonly DependencyProperty BitmapImageProperty = DependencyProperty.Register(nameof(BitmapImage), typeof(WriteableBitmap), typeof(MappingCanvasTest),
+                                                              new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public MappingCanvasTest()
         {
@@ -104,11 +109,11 @@ namespace WLS3200Gen2.UserControls
 
         public WriteableBitmap BitmapImage
         {
-            get => bitmapImage;
-            set => SetValue(ref bitmapImage, value);
+            get => (WriteableBitmap)GetValue(BitmapImageProperty);
+            set => SetValue(BitmapImageProperty, value);
         }
 
-        #region MyRegion
+
 
 
         public ObservableCollection<LineViewModel> Lines
@@ -117,6 +122,8 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(ref _lines, value);
         }
 
+
+        #region 縮放
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
         {
             if (viewbox.LayoutTransform.Value.M11 > 2) return;
@@ -151,10 +158,6 @@ namespace WLS3200Gen2.UserControls
 
         }
 
-        private void CreateRetagle_Click(object sender, RoutedEventArgs e)
-        {
-            DrawRectangles(Col, Row, Dies, BincodeInFomation);
-        }
         private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
 
@@ -182,6 +185,10 @@ namespace WLS3200Gen2.UserControls
 
             }
         }
+        #endregion
+
+        #region 繪圖
+      
 
 
         private void DrawRectangles(int cols, int rows, Die[] dice, BincodeInfo[] bincodeInfo)
@@ -197,7 +204,7 @@ namespace WLS3200Gen2.UserControls
             canvas.Width = cols * (width + 3) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
             canvas.Height = rows * (height + 3) + height;//數量 * 高度+線寬
             canvas.Background = Brushes.White;
-            
+
             myGrid.Width = canvas.Width;
             myGrid.Height = canvas.Height;
             rectangles.Clear();
@@ -238,19 +245,7 @@ namespace WLS3200Gen2.UserControls
             });
 
             var count2 = stopwatch.ElapsedMilliseconds;
-
-            /*  var die = dice.Where(d => d.IndexX == i && d.IndexY == j).FirstOrDefault();
-              if (die == null || bincodeInfo == null)//沒提供資訊 方框就畫灰色
-                  rect.Fill = Brushes.Gray;
-              else
-              {
-                  var bincode = bincodeInfo.Where(code => code.Code == die.BinCode).FirstOrDefault();
-                  if (bincode == null)//沒對應到的資訊 就畫灰色
-                      rect.Fill = Brushes.Gray;
-                  else
-                      rect.Fill = bincode.Color;
-
-              }*/
+            stopwatch.Restart();
 
 
             foreach (var rect in rectangles)
@@ -259,14 +254,64 @@ namespace WLS3200Gen2.UserControls
 
             }
             var count3 = stopwatch.ElapsedMilliseconds;
+            stopwatch.Restart();
             BitmapImage = CreateBitmap(canvas);
-            var count4 = stopwatch.ElapsedMilliseconds;
 
+            /*
+            var cc=  BitmapImage.ToByteFrame();          
+            var bip=   cc.ToBitmapSource();        
+            WriteableBitmap aaa = new WriteableBitmap(bip);   
+            var count6 = stopwatch.ElapsedMilliseconds;
+           */
+
+        }
+
+        private Rectangle CreateRectangle(double centerX, double centerY, double width, double height, Brush fill)
+        {
+            Rectangle rectangle = new Rectangle();
+            rectangle.Width = width;
+            rectangle.Height = height;
+            rectangle.Fill = fill;
+            Canvas.SetLeft(rectangle, centerX - width / 2);
+            Canvas.SetTop(rectangle, centerY - height / 2);
+            return rectangle;
         }
 
 
 
+        private WriteableBitmap CreateBitmap(Canvas canvas)
+        {
 
+            // 测量和排列 Canvas
+            canvas.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            canvas.Arrange(new Rect(canvas.DesiredSize));
+
+            // 渲染 Canvas 并保存为图像
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(canvas);
+
+            return new WriteableBitmap(bitmap.FormatConvertTo(PixelFormats.Bgr32));
+        }
+
+        private void DrawRectangle(RectangleInfo rectangleinfo)
+        {
+
+            Rectangle rectangle = new Rectangle();
+            rectangle.Width = rectangleinfo.Width;
+            rectangle.Height = rectangleinfo.Height;
+            rectangle.Fill = rectangleinfo.Fill; // 可以根據需要設置不同的顏色
+            rectangle.Stroke = Brushes.Red;
+            // 設置 Rectangle 的位置
+            Canvas.SetLeft(rectangle, rectangleinfo.CenterX - rectangleinfo.Width / 2); // 每個 Rectangle 的水平間距為 120
+            Canvas.SetTop(rectangle, rectangleinfo.CenterY - rectangleinfo.Height / 2); // 所有 Rectangle 的垂直位置相同
+
+            // 將 Rectangle 加入到 Canvas 中
+            canvas.Children.Add(rectangle);
+
+        }
+        #endregion
+
+        #region 滑鼠事件
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (isTouchMode)
@@ -326,70 +371,24 @@ namespace WLS3200Gen2.UserControls
             dragStartPoint = dragEndPoint;
         }
 
-        private Rectangle CreateRectangle(double centerX, double centerY, double width, double height, Brush fill)
-        {
-            Rectangle rectangle = new Rectangle();
-            rectangle.Width = width;
-            rectangle.Height = height;
-            rectangle.Fill = fill;
-            Canvas.SetLeft(rectangle, centerX - width / 2);
-            Canvas.SetTop(rectangle, centerY - height / 2);
-            return rectangle;
-        }
         #endregion
 
-
-        private WriteableBitmap CreateBitmap(Canvas canvas)
+        static BitmapSource LoadBitmapSourceFromFile(string filePath)
         {
-
-            // 测量和排列 Canvas
-            canvas.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            canvas.Arrange(new Rect(canvas.DesiredSize));
-
-            // 渲染 Canvas 并保存为图像
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
-            bitmap.Render(canvas);
-
-            return new WriteableBitmap(bitmap.FormatConvertTo(PixelFormats.Bgr32));
+            // 從圖片檔案讀取 BitmapSource
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.UriSource = new Uri(filePath, UriKind.RelativeOrAbsolute);
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.EndInit();
+            return bitmapImage;
         }
 
-        /*private void DrawRectangle(Rect rect, Brush brush)
+        private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
-
-
-            if (brush is SolidColorBrush solidColorBrush)
-            {
-                // 如果 brush 是 SolidColorBrush，您可以直接訪問其 Color 屬性來獲取顏色
-                Color color = solidColorBrush.Color;
-                // 現在您可以使用 color 來訪問顏色的 R、G、B、A 值，例如 color.R、color.G、color.B、color.A
-
-
-                // Lock the bitmap to modify its pixels
-                BitmapImage.Lock();
-
-                // Draw rectangle using WriteableBitmapEx library
-                BitmapImage.FillRectangle((int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom, color);
-
-                // Unlock the bitmap
-                BitmapImage.Unlock();
-            }
-        }*/
-        private void DrawRectangle(RectangleInfo rectangleinfo)
-        {
-
-            Rectangle rectangle = new Rectangle();
-            rectangle.Width = rectangleinfo.Width;
-            rectangle.Height = rectangleinfo.Height;
-            rectangle.Fill = rectangleinfo.Fill; // 可以根據需要設置不同的顏色
-            rectangle.Stroke = Brushes.Red;
-            // 設置 Rectangle 的位置
-            Canvas.SetLeft(rectangle, rectangleinfo.CenterX - rectangleinfo.Width / 2); // 每個 Rectangle 的水平間距為 120
-            Canvas.SetTop(rectangle, rectangleinfo.CenterY - rectangleinfo.Height / 2); // 所有 Rectangle 的垂直位置相同
-
-            // 將 Rectangle 加入到 Canvas 中
-            canvas.Children.Add(rectangle);
-
+            DrawRectangles(Col, Row, Dies, BincodeInFomation);
         }
+
         private void SelectBtn_Click(object sender, RoutedEventArgs e)
         {
             isSelectMode = true;
@@ -401,14 +400,20 @@ namespace WLS3200Gen2.UserControls
             isTouchMode = true;
         }
 
+       
+
+
+        
         private static void OnDiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var dp = d as MappingCanvasTest;
             dp.DrawMapping();
         }
+
         private void DrawMapping()
         {
             if (Dies == null) return;
+            if (BitmapImage != null) return;
             int col = Dies.Max(die => die.IndexX);
             int row = Dies.Max(die => die.IndexY);
             DrawRectangles(col + 1, row + 1, Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來

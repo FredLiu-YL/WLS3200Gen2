@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -459,8 +460,27 @@ namespace WLS3200Gen2
 
         public ICommand MappingTestCommand => new RelayCommand(async () =>
         {
-            MappingCanvasWindow win = new MappingCanvasWindow(500, 500);
-            win.ShowDialog();
+            try
+            {
+
+
+                Stopwatch stopwatch = new Stopwatch();
+                MappingCanvasWindow win = new MappingCanvasWindow(200, 200);
+                stopwatch.Start();
+                if (mainRecipe.DetectRecipe.MapImage!=null)
+                    win.MappingTable = new WriteableBitmap(mainRecipe.DetectRecipe.MapImage.ToBitmapSource());
+                var t2 = stopwatch.ElapsedMilliseconds;
+                win.ShowDialog();
+
+                stopwatch.Restart();
+                mainRecipe.DetectRecipe.MapImage = win.MappingTable.ToByteFrame();
+                var t1 = stopwatch.ElapsedMilliseconds;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         });
 
         public ICommand LoadMappingCommand => new RelayCommand(async () =>
@@ -474,10 +494,10 @@ namespace WLS3200Gen2
                 SINF_Path = dlg_image.FileName;
                 if (SINF_Path != "")
                 {
-                    var m_Sinf = new SinfWaferMapping("", true, false);
+                    var m_Sinf = new SinfWaferMapping( true, false);
                     (m_Sinf.Dies, m_Sinf.WaferSize) = m_Sinf.ReadWaferFile(SINF_Path, true, false);
 
-                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping("", true, false);
+                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping( true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
 
                     await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
@@ -540,6 +560,8 @@ namespace WLS3200Gen2
         {
             try
             {
+           
+                if (detectionRecipe.DetectionPoints != null) return;
                 foreach (var item in detectionRecipe.DetectionPoints)
                 {
                     Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();

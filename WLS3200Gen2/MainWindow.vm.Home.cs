@@ -244,7 +244,8 @@ namespace WLS3200Gen2
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
                     SetRecipeToDetectionParam(mainRecipe.DetectRecipe);
                     ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
-                    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                    if (mainRecipe.DetectRecipe.WaferMap != null)
+                        await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                     ShowDetectionMapImgae(mainRecipe.DetectRecipe);
                     WriteLog("Load Recipe :" + recipename);
                 }
@@ -530,6 +531,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (detectionRecipe.DetectionPoints == null) return;
                 foreach (var item in detectionRecipe.DetectionPoints)
                 {
                     Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
