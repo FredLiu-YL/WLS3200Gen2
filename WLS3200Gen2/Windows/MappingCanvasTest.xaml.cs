@@ -44,12 +44,12 @@ namespace WLS3200Gen2.UserControls
         private ObservableCollection<RectangleInfo> rectangles1 = new ObservableCollection<RectangleInfo>();
 
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
-        public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
+    /*    public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
                                                                 new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
                                                                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
+    */
         public static readonly DependencyProperty DiesProperty = DependencyProperty.Register(nameof(Dies), typeof(Die[]), typeof(MappingCanvasTest),
                                                            new FrameworkPropertyMetadata(new Die[] { }, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
 
@@ -59,6 +59,10 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty BitmapImageProperty = DependencyProperty.Register(nameof(BitmapImage), typeof(WriteableBitmap), typeof(MappingCanvasTest),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty CreateImageProperty = DependencyProperty.Register(nameof(CreateImage), typeof(Action), typeof(MappingCanvasTest),
+                                                              new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
 
         public MappingCanvasTest()
         {
@@ -76,8 +80,13 @@ namespace WLS3200Gen2.UserControls
             isSelectMode = false;
             isTouchMode = true;
 
-
+        
             //  DrawCross();
+        }
+
+        private void Mapping_Loaded(object sender, RoutedEventArgs e)
+        {
+            CreateImage  = CreateMapping ;
         }
         public ObservableCollection<RectangleInfo> Rectangles1
         {
@@ -85,7 +94,7 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(ref rectangles1, value);
         }
 
-        public int Col
+       /* public int Col
         {
             get => (int)GetValue(ColProperty);
             set => SetValue(ColProperty, value);
@@ -94,7 +103,7 @@ namespace WLS3200Gen2.UserControls
         {
             get => (int)GetValue(RowProperty);
             set => SetValue(RowProperty, value);
-        }
+        }*/
         public Die[] Dies
         {
             get => (Die[])GetValue(DiesProperty);
@@ -113,9 +122,14 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(BitmapImageProperty, value);
         }
 
+        private Action createImage;
+        public Action CreateImage
+        {
+            get => (Action)GetValue(CreateImageProperty);
+            set => SetValue(CreateImageProperty, value);
+        }
 
-
-
+        
         public ObservableCollection<LineViewModel> Lines
         {
             get => _lines;
@@ -188,27 +202,33 @@ namespace WLS3200Gen2.UserControls
         #endregion
 
         #region 繪圖
-      
 
 
-        private void DrawRectangles(int cols, int rows, Die[] dice, BincodeInfo[] bincodeInfo)
+
+        private (List<RectangleInfo> rectangles, Canvas canvas) DrawRectangles(Die[] dice, BincodeInfo[] bincodeInfo)
         {
+            List<RectangleInfo> rects = new List<RectangleInfo>();
             Stopwatch stopwatch = new Stopwatch();
             int width = 30;
             int height = 30;
             object lockObj = new object();
 
+            int col = Dies.Max(die => die.IndexX);
+            int row = Dies.Max(die => die.IndexY);
+            int cols = col + 1;
+            int rows = row + 1;
+
             Point startPoint = new Point(20, 20);
 
-            Canvas canvas = new Canvas();
-            canvas.Width = cols * (width + 3) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
-            canvas.Height = rows * (height + 3) + height;//數量 * 高度+線寬
-            canvas.Background = Brushes.White;
+            Canvas imageCanvas = new Canvas();
+            imageCanvas.Width = cols * (width + 3) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
+            imageCanvas.Height = rows * (height + 3) + height;//數量 * 高度+線寬
+            imageCanvas.Background = Brushes.White;
 
-            myGrid.Width = canvas.Width;
-            myGrid.Height = canvas.Height;
-            rectangles.Clear();
-            canvas.Children.Clear();
+            myGrid.Width = imageCanvas.Width;
+            myGrid.Height = imageCanvas.Height;
+            rects.Clear();
+            imageCanvas.Children.Clear();
             var dieGroup = dice.OrderBy(d => d.IndexX).GroupBy(d => d.IndexX).ToArray();//先把X分類出來  加速後面搜尋速度
             stopwatch.Start();
             Parallel.For(0, cols, i =>
@@ -238,7 +258,7 @@ namespace WLS3200Gen2.UserControls
 
                     lock (lockObj)
                     {
-                        rectangles.Add(rect);
+                        rects.Add(rect);
                     }
 
                 });
@@ -248,23 +268,29 @@ namespace WLS3200Gen2.UserControls
             stopwatch.Restart();
 
 
-            foreach (var rect in rectangles)
-            {
-                canvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, rect.Fill));
-
-            }
-            var count3 = stopwatch.ElapsedMilliseconds;
-            stopwatch.Restart();
-            BitmapImage = CreateBitmap(canvas);
-
             /*
             var cc=  BitmapImage.ToByteFrame();          
             var bip=   cc.ToBitmapSource();        
             WriteableBitmap aaa = new WriteableBitmap(bip);   
             var count6 = stopwatch.ElapsedMilliseconds;
            */
-
+            return (rects, imageCanvas);
         }
+        private WriteableBitmap CreateBitmapImage(IEnumerable<RectangleInfo> rects, Canvas imageCanvas)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            foreach (var rect in rects)
+            {
+                imageCanvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, rect.Fill));
+
+            }
+            var count3 = stopwatch.ElapsedMilliseconds;
+            stopwatch.Restart();
+            var bitmapImage = CreateBitmap(imageCanvas);
+            var count4 = stopwatch.ElapsedMilliseconds;
+            return bitmapImage;
+        }
+
 
         private Rectangle CreateRectangle(double centerX, double centerY, double width, double height, Brush fill)
         {
@@ -290,7 +316,7 @@ namespace WLS3200Gen2.UserControls
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 96, 96, PixelFormats.Pbgra32);
             bitmap.Render(canvas);
 
-            return new WriteableBitmap(bitmap.FormatConvertTo(PixelFormats.Bgr32));
+            return new WriteableBitmap(bitmap.FormatConvertTo(PixelFormats.Bgr24));
         }
 
         private void DrawRectangle(RectangleInfo rectangleinfo)
@@ -341,8 +367,6 @@ namespace WLS3200Gen2.UserControls
                 DrawRectangle(selectRect);
 
 
-
-
             }
         }
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
@@ -373,20 +397,12 @@ namespace WLS3200Gen2.UserControls
 
         #endregion
 
-        static BitmapSource LoadBitmapSourceFromFile(string filePath)
-        {
-            // 從圖片檔案讀取 BitmapSource
-            BitmapImage bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(filePath, UriKind.RelativeOrAbsolute);
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.EndInit();
-            return bitmapImage;
-        }
+      
 
         private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
-            DrawRectangles(Col, Row, Dies, BincodeInFomation);
+
+            CreateMapping();
         }
 
         private void SelectBtn_Click(object sender, RoutedEventArgs e)
@@ -400,10 +416,14 @@ namespace WLS3200Gen2.UserControls
             isTouchMode = true;
         }
 
-       
+        private void CreateMapping()
+        {
 
+            var rects = DrawRectangles(Dies, BincodeInFomation);
+            rectangles = rects.rectangles;
+            BitmapImage = CreateBitmapImage(rects.rectangles, rects.canvas);
+        }
 
-        
         private static void OnDiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var dp = d as MappingCanvasTest;
@@ -414,14 +434,17 @@ namespace WLS3200Gen2.UserControls
         {
             if (Dies == null) return;
             if (BitmapImage != null) return;
-            int col = Dies.Max(die => die.IndexX);
-            int row = Dies.Max(die => die.IndexY);
-            DrawRectangles(col + 1, row + 1, Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
 
+            var rects = DrawRectangles(Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
+            rectangles = rects.rectangles;
+            //    BitmapImage = CreateBitmapImage(rects);
         }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+       
+
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return;

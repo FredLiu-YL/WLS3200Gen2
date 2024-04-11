@@ -31,7 +31,7 @@ namespace WLS3200Gen2.Model.Recipe
         public WaferMapping WaferMap { get; set; }
 
         /// <summary>
-        /// 暫放  等待WaferMapping  修正後應該存入WaferMapping
+        /// 暫放  等待WaferMapping  修正後應該存入WaferMapping  目前測試350*350可以 ，400*400檔案太大讀取會有問題
         /// </summary>
         public Frame<byte[]> MapImage { get; set; }
     }

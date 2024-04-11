@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
              mc:Ignorable="d" 
                x:Name="Mapping"
-             d:DesignHeight="650" d:DesignWidth="600">
+             d:DesignHeight="650" d:DesignWidth="600" Loaded="Mapping_Loaded">
     <UserControl.Resources>
         <local:ImagePositionConverter x:Key="ImagePositionConverter"/>
     </UserControl.Resources>

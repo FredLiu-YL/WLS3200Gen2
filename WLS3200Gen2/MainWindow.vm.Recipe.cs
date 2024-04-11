@@ -465,7 +465,7 @@ namespace WLS3200Gen2
 
 
                 Stopwatch stopwatch = new Stopwatch();
-                MappingCanvasWindow win = new MappingCanvasWindow(200, 200);
+                MappingCanvasWindow win = new MappingCanvasWindow(300, 300);
                 stopwatch.Start();
                 if (mainRecipe.DetectRecipe.MapImage!=null)
                     win.MappingTable = new WriteableBitmap(mainRecipe.DetectRecipe.MapImage.ToBitmapSource());
@@ -473,8 +473,15 @@ namespace WLS3200Gen2
                 win.ShowDialog();
 
                 stopwatch.Restart();
+              //  win.MappingTable.Save("D:\\1234");             
+             //   BitmapImage bitmap = new BitmapImage(new Uri("D:\\1234.bmp", UriKind.RelativeOrAbsolute));
+             //   var mapImage = new WriteableBitmap(bitmap);
+               
                 mainRecipe.DetectRecipe.MapImage = win.MappingTable.ToByteFrame();
                 var t1 = stopwatch.ElapsedMilliseconds;
+
+
+
             }
             catch (Exception ex)
             {
@@ -561,7 +568,7 @@ namespace WLS3200Gen2
             try
             {
            
-                if (detectionRecipe.DetectionPoints != null) return;
+                if (detectionRecipe.DetectionPoints == null) return;
                 foreach (var item in detectionRecipe.DetectionPoints)
                 {
                     Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();

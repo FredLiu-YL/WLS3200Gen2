@@ -36,7 +36,7 @@ namespace WLS3200Gen2
             this.Row = row;
 
             CreateDummyBincode(Column, Row);
-
+          
         }
 
 
@@ -44,7 +44,8 @@ namespace WLS3200Gen2
         public BincodeInfo[] BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
         public Die[] DieArray { get => dieArray; set => SetValue(ref dieArray, value); }
         public int SelectList { get => selectList; set => SetValue(ref selectList, value); }
-
+        public Action create;
+        public Action Create { get => create; set => SetValue(ref create, value); }
 
         public int Column { get => column; set => SetValue(ref column, value); }
         public int Row { get => row; set => SetValue(ref row, value); }
@@ -131,6 +132,10 @@ namespace WLS3200Gen2
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Create?.Invoke();
+        }
 
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
