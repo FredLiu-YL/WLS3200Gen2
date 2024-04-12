@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -29,8 +30,11 @@ namespace WLS3200Gen2.UserControls
     /// <summary>
     /// MappingCanvas.xaml 的互動邏輯
     /// </summary>
-    public partial class MappingCanvasTest : UserControl, INotifyPropertyChanged
+    public partial class MappingCanvas : UserControl, INotifyPropertyChanged
     {
+        private int width = 30 , height = 30;//定義繪圖方框的寬高 (PIXEL)
+        private int Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
+        private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
 
         private const double ScaleRate = 0.1; // 縮放比率
         private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
@@ -50,21 +54,24 @@ namespace WLS3200Gen2.UserControls
         public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
                                                                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
     */
-        public static readonly DependencyProperty DiesProperty = DependencyProperty.Register(nameof(Dies), typeof(Die[]), typeof(MappingCanvasTest),
+        public static readonly DependencyProperty DiesProperty = DependencyProperty.Register(nameof(Dies), typeof(Die[]), typeof(MappingCanvas),
                                                            new FrameworkPropertyMetadata(new Die[] { }, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
 
-        public static readonly DependencyProperty BincodeInFomationProperty = DependencyProperty.Register(nameof(BincodeInFomation), typeof(BincodeInfo[]), typeof(MappingCanvasTest),
-                                                         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
+        public static readonly DependencyProperty BincodeInFomationProperty = DependencyProperty.Register(nameof(BincodeInFomation), typeof(BincodeInfo[]), typeof(MappingCanvas),
+                                                         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
-        public static readonly DependencyProperty BitmapImageProperty = DependencyProperty.Register(nameof(BitmapImage), typeof(WriteableBitmap), typeof(MappingCanvasTest),
+        public static readonly DependencyProperty BitmapImageProperty = DependencyProperty.Register(nameof(BitmapImage), typeof(WriteableBitmap), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public static readonly DependencyProperty CreateImageProperty = DependencyProperty.Register(nameof(CreateImage), typeof(Action), typeof(MappingCanvasTest),
+        public static readonly DependencyProperty MappingImageOperateProperty = DependencyProperty.Register(nameof(MappingImageOperate), typeof(Action<MappingOperate>), typeof(MappingCanvas),
+                                                              new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        //col,row,背景色，線條
+        public static readonly DependencyProperty DrawingRectangleProperty = DependencyProperty.Register(nameof(DrawingRectangle), typeof(Action<int, int, Brush, Brush>), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
-        public MappingCanvasTest()
+        public MappingCanvas()
         {
             InitializeComponent();
 
@@ -86,7 +93,8 @@ namespace WLS3200Gen2.UserControls
 
         private void Mapping_Loaded(object sender, RoutedEventArgs e)
         {
-            CreateImage  = CreateMapping ;
+            MappingImageOperate = MapOperate;
+            DrawingRectangle = DrawMapRectangle;
         }
         public ObservableCollection<RectangleInfo> Rectangles1
         {
@@ -122,14 +130,22 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(BitmapImageProperty, value);
         }
 
-        private Action createImage;
-        public Action CreateImage
+   
+        public Action<MappingOperate> MappingImageOperate
         {
-            get => (Action)GetValue(CreateImageProperty);
-            set => SetValue(CreateImageProperty, value);
+            get => (Action<MappingOperate>)GetValue(MappingImageOperateProperty);
+            set => SetValue(MappingImageOperateProperty, value);
         }
-
+        /// <summary>
+        /// col,row,背景色，線條
+        /// </summary>
+        public Action<int,int,Brush ,Brush > DrawingRectangle
+        {
+            get => (Action<int, int, Brush, Brush>)GetValue(DrawingRectangleProperty);
+            set => SetValue(DrawingRectangleProperty, value);
+        }
         
+
         public ObservableCollection<LineViewModel> Lines
         {
             get => _lines;
@@ -161,7 +177,8 @@ namespace WLS3200Gen2.UserControls
             viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
 
         }
-        private void ZoomFit_Click(object sender, RoutedEventArgs e)
+       
+        private  void ZoomFit()
         {
             double scaleW = scrollViewer.ActualWidth / BitmapImage.Width;
             double scaleH = scrollViewer.ActualHeight / BitmapImage.Height;
@@ -171,7 +188,6 @@ namespace WLS3200Gen2.UserControls
                 viewbox.LayoutTransform = new ScaleTransform(scaleH, scaleH);
 
         }
-
         private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
 
@@ -205,24 +221,23 @@ namespace WLS3200Gen2.UserControls
 
 
 
-        private (List<RectangleInfo> rectangles, Canvas canvas) DrawRectangles(Die[] dice, BincodeInfo[] bincodeInfo)
+        private (List<RectangleInfo> rectangles, Canvas canvas) DrawCanvasRectangles(Die[] dice, BincodeInfo[] bincodeInfo)
         {
             List<RectangleInfo> rects = new List<RectangleInfo>();
             Stopwatch stopwatch = new Stopwatch();
-            int width = 30;
-            int height = 30;
+           
             object lockObj = new object();
 
             int col = Dies.Max(die => die.IndexX);
             int row = Dies.Max(die => die.IndexY);
-            int cols = col + 1;
+            int cols = col + 1;//因從0開始算 ，最大值會是總數量-1  ，要加回來
             int rows = row + 1;
 
-            Point startPoint = new Point(20, 20);
+            
 
             Canvas imageCanvas = new Canvas();
-            imageCanvas.Width = cols * (width + 3) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
-            imageCanvas.Height = rows * (height + 3) + height;//數量 * 高度+線寬
+            imageCanvas.Width = cols * (width + Cuttingline) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
+            imageCanvas.Height = rows * (height + Cuttingline) + height;//數量 * 高度+線寬
             imageCanvas.Background = Brushes.White;
 
             myGrid.Width = imageCanvas.Width;
@@ -237,7 +252,7 @@ namespace WLS3200Gen2.UserControls
                 Parallel.For(0, rows, j =>
                 {
 
-                    var rect = new RectangleInfo(startPoint.X + ((width + 3) * i), startPoint.Y + ((height + 3) * j), width, height);
+                    var rect = new RectangleInfo(startPoint.X + ((width + Cuttingline) * i), startPoint.Y + ((height + Cuttingline) * j), width, height);
 
                     rect.Row = j;
                     rect.Col = i;
@@ -276,7 +291,7 @@ namespace WLS3200Gen2.UserControls
            */
             return (rects, imageCanvas);
         }
-        private WriteableBitmap CreateBitmapImage(IEnumerable<RectangleInfo> rects, Canvas imageCanvas)
+        private WriteableBitmap CreateMappingImage(IEnumerable<RectangleInfo> rects, Canvas imageCanvas)
         {
             Stopwatch stopwatch = new Stopwatch();
             foreach (var rect in rects)
@@ -319,14 +334,16 @@ namespace WLS3200Gen2.UserControls
             return new WriteableBitmap(bitmap.FormatConvertTo(PixelFormats.Bgr24));
         }
 
-        private void DrawRectangle(RectangleInfo rectangleinfo)
+        private void DrawRectangle(RectangleInfo rectangleinfo, Brush fill, Brush stroke)
         {
+            
+         
 
             Rectangle rectangle = new Rectangle();
             rectangle.Width = rectangleinfo.Width;
             rectangle.Height = rectangleinfo.Height;
-            rectangle.Fill = rectangleinfo.Fill; // 可以根據需要設置不同的顏色
-            rectangle.Stroke = Brushes.Red;
+            rectangle.Fill = fill; // 可以根據需要設置不同的顏色
+            rectangle.Stroke = stroke;
             // 設置 Rectangle 的位置
             Canvas.SetLeft(rectangle, rectangleinfo.CenterX - rectangleinfo.Width / 2); // 每個 Rectangle 的水平間距為 120
             Canvas.SetTop(rectangle, rectangleinfo.CenterY - rectangleinfo.Height / 2); // 所有 Rectangle 的垂直位置相同
@@ -361,14 +378,35 @@ namespace WLS3200Gen2.UserControls
             {
                 Point pixel = e.GetPosition(myGrid);
 
-                var selectRect = rectangles.Where(rect => rect.Rectangle.Contains(pixel)).FirstOrDefault();
-                if (selectRect == null) return;
+                DrawMapRectangle(pixel);
 
-                DrawRectangle(selectRect);
-
+                 
 
             }
         }
+
+        private void DrawMapRectangle(Point pixel)
+        {
+
+            var selectRect = rectangles.Where(rect => rect.Rectangle.Contains(pixel)).FirstOrDefault();
+            if (selectRect == null) return;
+
+
+              DrawRectangle(selectRect, selectRect.Fill, Brushes.Red);
+          //  DrawMapRectangle(selectRect.Col, selectRect.Row, Brushes.DarkBlue, Brushes.MintCream);
+        }
+        
+        //col,row,背景色，線條
+        private void DrawMapRectangle(int indexX, int indexY, Brush fill, Brush stroke)
+        {
+            
+             var selectRect = rectangles.Where(rect => rect.Col== indexX&& rect.Row == indexY).FirstOrDefault();
+            if (selectRect == null) return;
+
+
+            DrawRectangle(selectRect, fill, stroke);
+        }
+
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             if (isTouchMode)
@@ -397,36 +435,92 @@ namespace WLS3200Gen2.UserControls
 
         #endregion
 
-      
 
+        public ICommand BtnOperateCommand => new RelayCommand<string>(par =>
+        {
+            try
+            {
+                switch (par)
+                {
+                    case "select":
+                        isSelectMode = true;
+                        isTouchMode = false;
+                        break;
+
+
+                    case "touch":
+                        isSelectMode = false;
+                        isTouchMode = true;
+                        break;
+
+                    case "createRetagle":
+                        MapOperate(MappingOperate.Create);
+                        break;
+                    case "fit":
+                        ZoomFit();
+                        break;
+                    case "clear":
+                        canvas.Children.Clear();
+                        break;
+
+                      
+                    default:
+                        break;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
+            }
+        });
         private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
 
-            CreateMapping();
+            MapOperate( MappingOperate.Create);
         }
 
-        private void SelectBtn_Click(object sender, RoutedEventArgs e)
-        {
-            isSelectMode = true;
-            isTouchMode = false;
-        }
-        private void TouchBtn_Click(object sender, RoutedEventArgs e)
-        {
-            isSelectMode = false;
-            isTouchMode = true;
-        }
+       
 
-        private void CreateMapping()
+        private void PixelToIndex(Point point)
         {
 
-            var rects = DrawRectangles(Dies, BincodeInFomation);
-            rectangles = rects.rectangles;
-            BitmapImage = CreateBitmapImage(rects.rectangles, rects.canvas);
+
+        }
+
+        private void MapOperate(MappingOperate operate)
+        {
+
+            switch (operate)
+            {
+                case MappingOperate.Create:
+                    var rects = DrawCanvasRectangles(Dies, BincodeInFomation);
+                    rectangles = rects.rectangles;
+                    BitmapImage = CreateMappingImage(rects.rectangles, rects.canvas);
+                    ZoomFit();
+                    break;
+                case MappingOperate.Fit:
+                    ZoomFit();
+                    break;
+                case MappingOperate.Clear:
+                    canvas.Children.Clear();
+                    break;
+                default:
+                    break;
+            }
+
+
+           
         }
 
         private static void OnDiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var dp = d as MappingCanvasTest;
+            var dp = d as MappingCanvas;
             dp.DrawMapping();
         }
 
@@ -435,7 +529,7 @@ namespace WLS3200Gen2.UserControls
             if (Dies == null) return;
             if (BitmapImage != null) return;
 
-            var rects = DrawRectangles(Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
+            var rects = DrawCanvasRectangles(Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
             rectangles = rects.rectangles;
             //    BitmapImage = CreateBitmapImage(rects);
         }
@@ -467,23 +561,24 @@ namespace WLS3200Gen2.UserControls
     }
 
 
-    //public class ImagePositionConverter : IValueConverter
-    //{
-    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        if (value is double imageSize && parameter is double offset)
-    //        {
-    //            return imageSize / 2 - offset / 2;
-    //        }
-    //        return Binding.DoNothing;
-    //    }
+ 
 
-    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
+    public class ImagePositionConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is double imageSize && parameter is double offset)
+            {
+                return imageSize / 2 - offset / 2;
+            }
+            return Binding.DoNothing;
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class LineViewModel
     {
         public double X1 { get; set; }
@@ -514,5 +609,12 @@ namespace WLS3200Gen2.UserControls
         public Rect Rectangle { get; }
         public Brush Fill { get; set; }
 
+    }
+
+    public enum MappingOperate
+    {
+        Create,
+        Fit,
+        Clear,
     }
 }

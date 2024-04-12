@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WLS3200Gen2.Model.Recipe;
+using WLS3200Gen2.UserControls;
 using YuanliCore.Data;
 
 namespace WLS3200Gen2
@@ -29,6 +30,8 @@ namespace WLS3200Gen2
         private int selectList, column, row;
         private Die[] dieArray;
         private WriteableBitmap mappingTable;
+        private Action<MappingOperate> create;
+        private Action<int, int, Brush, Brush> setRectangle;
         public MappingCanvasWindow(int column, int row)
         {
             InitializeComponent();
@@ -44,9 +47,9 @@ namespace WLS3200Gen2
         public BincodeInfo[] BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
         public Die[] DieArray { get => dieArray; set => SetValue(ref dieArray, value); }
         public int SelectList { get => selectList; set => SetValue(ref selectList, value); }
-        public Action create;
-        public Action Create { get => create; set => SetValue(ref create, value); }
-
+      
+        public Action<MappingOperate> MappingOp { get => create; set => SetValue(ref create, value); }
+        public Action<int, int, Brush, Brush> SetRectangle { get => setRectangle; set => SetValue(ref setRectangle, value); }
         public int Column { get => column; set => SetValue(ref column, value); }
         public int Row { get => row; set => SetValue(ref row, value); }
 
@@ -132,11 +135,24 @@ namespace WLS3200Gen2
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BtnCreate_Click(object sender, RoutedEventArgs e)
         {
-            Create?.Invoke();
+            MappingOp?.Invoke( MappingOperate.Create);
+        }
+        private void BtnClear_Click(object sender, RoutedEventArgs e)
+        {
+            MappingOp?.Invoke(MappingOperate.Clear);
+        }
+        private void BtnFit_Click(object sender, RoutedEventArgs e)
+        {
+            MappingOp?.Invoke(MappingOperate.Fit);
+        }
+        private void BtnSetRect_Click(object sender, RoutedEventArgs e)
+        {
+            SetRectangle?.Invoke(Column,Row,Brushes.Coral,Brushes.OrangeRed);
         }
 
+        
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return;

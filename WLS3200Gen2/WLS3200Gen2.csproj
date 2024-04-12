@@ -157,9 +157,6 @@
     <Compile Include="UserControls\MachineStateUC.xaml.cs">
       <DependentUpon>MachineStateUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\MappingCanvas.xaml.cs">
-      <DependentUpon>MappingCanvas.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\ProcessCassetteMenuUC.xaml.cs">
       <DependentUpon>ProcessCassetteMenuUC.xaml</DependentUpon>
     </Compile>
@@ -239,8 +236,8 @@
     <Compile Include="UserControls\WorkholderUC.xaml.cs">
       <DependentUpon>WorkholderUC.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MappingCanvasTest.xaml.cs">
-      <DependentUpon>MappingCanvasTest.xaml</DependentUpon>
+    <Compile Include="Windows\MappingCanvas.xaml.cs">
+      <DependentUpon>MappingCanvas.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\SINFMapGenerateWindow.xaml.cs">
       <DependentUpon>SINFMapGenerateWindow.xaml</DependentUpon>
@@ -254,10 +251,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MachineStateUC.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\MappingCanvas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -341,7 +334,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MappingCanvasTest.xaml">
+    <Page Include="Windows\MappingCanvas.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
