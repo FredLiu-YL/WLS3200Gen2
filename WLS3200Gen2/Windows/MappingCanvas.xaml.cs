@@ -36,18 +36,18 @@ namespace WLS3200Gen2.UserControls
         private int Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
         private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
 
-        private const double ScaleRate = 0.1; // 縮放比率
-        private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
+        //    private const double ScaleRate = 0.1; // 縮放比率
+        //    private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
 
         private ObservableCollection<LineViewModel> _lines = new ObservableCollection<LineViewModel>();
         private bool isDragging, isSelectMode, isTouchMode, isAdd, isDel;
-        private Point lastMousePosition;
+        //     private Point lastMousePosition;
         private Point dragStartPoint;
 
 
         private List<RectangleInfo> rectangles = new List<RectangleInfo>();
         private ObservableCollection<RectangleInfo> selectRectangles = new ObservableCollection<RectangleInfo>();
-        private ObservableCollection<Die> selectDies = new ObservableCollection<Die>();
+        //    private ObservableCollection<Die> selectDies = new ObservableCollection<Die>();
 
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
         /*    public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
@@ -65,6 +65,10 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty BitmapImageProperty = DependencyProperty.Register(nameof(BitmapImage), typeof(WriteableBitmap), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty SelectDiesProperty = DependencyProperty.Register(nameof(SelectDies), typeof(ObservableCollection<Die>), typeof(MappingCanvas),
+                                                       new FrameworkPropertyMetadata(new ObservableCollection<Die>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
 
         public static readonly DependencyProperty MappingImageOperateProperty = DependencyProperty.Register(nameof(MappingImageOperate), typeof(Action<MappingOperate>), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
@@ -100,9 +104,10 @@ namespace WLS3200Gen2.UserControls
         }
         public ObservableCollection<Die> SelectDies
         {
-            get => selectDies;
-            set => SetValue(ref selectDies, value);
+            get => (ObservableCollection<Die>)GetValue(SelectDiesProperty);
+            set => SetValue(SelectDiesProperty, value);
         }
+
 
         public ObservableCollection<RectangleInfo> SelectRectangles
         {
@@ -236,8 +241,8 @@ namespace WLS3200Gen2.UserControls
 
             object lockObj = new object();
 
-            int col = Dies.Max(die => die.IndexX);
-            int row = Dies.Max(die => die.IndexY);
+            int col = dice.Max(die => die.IndexX);
+            int row = dice.Max(die => die.IndexY);
             int cols = col + 1;//因從0開始算 ，最大值會是總數量-1  ，要加回來
             int rows = row + 1;
 
@@ -425,10 +430,23 @@ namespace WLS3200Gen2.UserControls
                             canvas.Children.RemoveAt(index);
                             SelectRectangles.RemoveAt(index);
                         }
-                           
+
 
                     }
                 }
+
+                //這樣數量一多會很慢 需要再改
+                SelectDies.Clear();
+                foreach (var item in SelectRectangles)
+                { 
+
+                    var die = Dies.Where(d => d.IndexX == item.Col && d.IndexY == item.Row).FirstOrDefault();
+                    SelectDies.Add(die);
+
+
+                }
+
+
                 // Point pixel = e.GetPosition(myGrid);
                 //  DrawMapRectangle(pixel);
 
@@ -623,6 +641,7 @@ namespace WLS3200Gen2.UserControls
         {
             if (Dies == null) return;
             if (BitmapImage != null) return;
+
 
             var rects = DrawCanvasRectangles(Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
             rectangles = rects.rectangles;
