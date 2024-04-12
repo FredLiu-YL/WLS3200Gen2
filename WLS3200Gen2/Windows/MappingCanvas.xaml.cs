@@ -32,7 +32,7 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class MappingCanvas : UserControl, INotifyPropertyChanged
     {
-        private int width = 30 , height = 30;//定義繪圖方框的寬高 (PIXEL)
+        private int width = 30, height = 30;//定義繪圖方框的寬高 (PIXEL)
         private int Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
         private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
 
@@ -40,20 +40,22 @@ namespace WLS3200Gen2.UserControls
         private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
 
         private ObservableCollection<LineViewModel> _lines = new ObservableCollection<LineViewModel>();
-        private bool isDragging, isSelectMode, isTouchMode;
+        private bool isDragging, isSelectMode, isTouchMode, isAdd, isDel;
         private Point lastMousePosition;
         private Point dragStartPoint;
 
+
         private List<RectangleInfo> rectangles = new List<RectangleInfo>();
-        private ObservableCollection<RectangleInfo> rectangles1 = new ObservableCollection<RectangleInfo>();
+        private ObservableCollection<RectangleInfo> selectRectangles = new ObservableCollection<RectangleInfo>();
+        private ObservableCollection<Die> selectDies = new ObservableCollection<Die>();
 
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
-    /*    public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
-                                                                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        /*    public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
+                                                                    new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
-                                                               new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-    */
+            public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
+                                                                   new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        */
         public static readonly DependencyProperty DiesProperty = DependencyProperty.Register(nameof(Dies), typeof(Die[]), typeof(MappingCanvas),
                                                            new FrameworkPropertyMetadata(new Die[] { }, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
 
@@ -87,7 +89,7 @@ namespace WLS3200Gen2.UserControls
             isSelectMode = false;
             isTouchMode = true;
 
-        
+
             //  DrawCross();
         }
 
@@ -96,22 +98,28 @@ namespace WLS3200Gen2.UserControls
             MappingImageOperate = MapOperate;
             DrawingRectangle = DrawMapRectangle;
         }
-        public ObservableCollection<RectangleInfo> Rectangles1
+        public ObservableCollection<Die> SelectDies
         {
-            get => rectangles1;
-            set => SetValue(ref rectangles1, value);
+            get => selectDies;
+            set => SetValue(ref selectDies, value);
         }
 
-       /* public int Col
+        public ObservableCollection<RectangleInfo> SelectRectangles
         {
-            get => (int)GetValue(ColProperty);
-            set => SetValue(ColProperty, value);
+            get => selectRectangles;
+            set => SetValue(ref selectRectangles, value);
         }
-        public int Row
-        {
-            get => (int)GetValue(RowProperty);
-            set => SetValue(RowProperty, value);
-        }*/
+
+        /* public int Col
+         {
+             get => (int)GetValue(ColProperty);
+             set => SetValue(ColProperty, value);
+         }
+         public int Row
+         {
+             get => (int)GetValue(RowProperty);
+             set => SetValue(RowProperty, value);
+         }*/
         public Die[] Dies
         {
             get => (Die[])GetValue(DiesProperty);
@@ -130,7 +138,7 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(BitmapImageProperty, value);
         }
 
-   
+
         public Action<MappingOperate> MappingImageOperate
         {
             get => (Action<MappingOperate>)GetValue(MappingImageOperateProperty);
@@ -139,12 +147,12 @@ namespace WLS3200Gen2.UserControls
         /// <summary>
         /// col,row,背景色，線條
         /// </summary>
-        public Action<int,int,Brush ,Brush > DrawingRectangle
+        public Action<int, int, Brush, Brush> DrawingRectangle
         {
             get => (Action<int, int, Brush, Brush>)GetValue(DrawingRectangleProperty);
             set => SetValue(DrawingRectangleProperty, value);
         }
-        
+
 
         public ObservableCollection<LineViewModel> Lines
         {
@@ -177,8 +185,8 @@ namespace WLS3200Gen2.UserControls
             viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
 
         }
-       
-        private  void ZoomFit()
+
+        private void ZoomFit()
         {
             double scaleW = scrollViewer.ActualWidth / BitmapImage.Width;
             double scaleH = scrollViewer.ActualHeight / BitmapImage.Height;
@@ -225,7 +233,7 @@ namespace WLS3200Gen2.UserControls
         {
             List<RectangleInfo> rects = new List<RectangleInfo>();
             Stopwatch stopwatch = new Stopwatch();
-           
+
             object lockObj = new object();
 
             int col = Dies.Max(die => die.IndexX);
@@ -233,7 +241,7 @@ namespace WLS3200Gen2.UserControls
             int cols = col + 1;//因從0開始算 ，最大值會是總數量-1  ，要加回來
             int rows = row + 1;
 
-            
+
 
             Canvas imageCanvas = new Canvas();
             imageCanvas.Width = cols * (width + Cuttingline) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
@@ -336,8 +344,8 @@ namespace WLS3200Gen2.UserControls
 
         private void DrawRectangle(RectangleInfo rectangleinfo, Brush fill, Brush stroke)
         {
-            
-         
+
+
 
             Rectangle rectangle = new Rectangle();
             rectangle.Width = rectangleinfo.Width;
@@ -355,6 +363,10 @@ namespace WLS3200Gen2.UserControls
         #endregion
 
         #region 滑鼠事件
+
+        private Point selectStartPoint;
+        private bool isSelectRange;
+        private Rectangle selectRange;
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (isTouchMode)
@@ -364,7 +376,18 @@ namespace WLS3200Gen2.UserControls
             }
             else if (isSelectMode)
             {
-
+                isSelectRange = true;
+                selectStartPoint = e.GetPosition(myGrid);
+                selectRange = new Rectangle
+                {
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 2,
+                    Width = 0,
+                    Height = 0
+                };
+                Canvas.SetLeft(selectRange, selectStartPoint.X);
+                Canvas.SetTop(selectRange, selectStartPoint.Y);
+                canvas.Children.Add(selectRange);
             }
         }
 
@@ -376,13 +399,76 @@ namespace WLS3200Gen2.UserControls
             }
             else if (isSelectMode)
             {
-                Point pixel = e.GetPosition(myGrid);
+                isSelectRange = false;
+                canvas.Children.RemoveAt(canvas.Children.Count - 1);//框選完清掉框框
 
-                DrawMapRectangle(pixel);
+                var selectRects = SelectRectInRange(selectRange, rectangles);
 
-                 
+
+                if (isAdd)
+                {
+                    foreach (var item in selectRects)
+                    {
+                        SelectRectangles.Add(item);
+                        DrawRectangle(item, item.Fill, Brushes.Red);
+                    }
+
+                }
+                else if (isDel)
+                {
+
+                    foreach (var item in selectRects)
+                    {
+                        int index = SelectRectangles.IndexOf(item);
+                        if (index >= 0)
+                        {
+                            canvas.Children.RemoveAt(index);
+                            SelectRectangles.RemoveAt(index);
+                        }
+                           
+
+                    }
+                }
+                // Point pixel = e.GetPosition(myGrid);
+                //  DrawMapRectangle(pixel);
 
             }
+        }
+        private void Canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+
+
+
+            if (isSelectMode && isSelectRange && selectRange != null)
+            {
+                Point currentPoint = e.GetPosition(canvas);
+                double width = currentPoint.X - selectStartPoint.X;
+                double height = currentPoint.Y - selectStartPoint.Y;
+                if (width <= 1)
+                    selectRange.Width = 1;
+                else
+                    selectRange.Width = width;
+
+                if (height <= 1)
+                    selectRange.Height = 1;
+                else
+                    selectRange.Height = height;
+
+
+            }
+            else
+            {
+                if (!myGrid.IsMouseCaptured) return;
+                Point dragEndPoint = e.GetPosition(scrollViewer);
+                double offsetX = dragEndPoint.X - dragStartPoint.X;
+                double offsetY = dragEndPoint.Y - dragStartPoint.Y;
+
+                scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - offsetX);
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - offsetY);
+
+                dragStartPoint = dragEndPoint;
+            }
+
         }
 
         private void DrawMapRectangle(Point pixel)
@@ -392,15 +478,15 @@ namespace WLS3200Gen2.UserControls
             if (selectRect == null) return;
 
 
-              DrawRectangle(selectRect, selectRect.Fill, Brushes.Red);
-          //  DrawMapRectangle(selectRect.Col, selectRect.Row, Brushes.DarkBlue, Brushes.MintCream);
+            DrawRectangle(selectRect, selectRect.Fill, Brushes.Red);
+            //  DrawMapRectangle(selectRect.Col, selectRect.Row, Brushes.DarkBlue, Brushes.MintCream);
         }
-        
+
         //col,row,背景色，線條
         private void DrawMapRectangle(int indexX, int indexY, Brush fill, Brush stroke)
         {
-            
-             var selectRect = rectangles.Where(rect => rect.Col== indexX&& rect.Row == indexY).FirstOrDefault();
+
+            var selectRect = rectangles.Where(rect => rect.Col == indexX && rect.Row == indexY).FirstOrDefault();
             if (selectRect == null) return;
 
 
@@ -419,19 +505,6 @@ namespace WLS3200Gen2.UserControls
         {
             Mouse.OverrideCursor = null; // 恢復滑鼠外型為預設
         }
-        private void Canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (!myGrid.IsMouseCaptured) return;
-
-            Point dragEndPoint = e.GetPosition(scrollViewer);
-            double offsetX = dragEndPoint.X - dragStartPoint.X;
-            double offsetY = dragEndPoint.Y - dragStartPoint.Y;
-
-            scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - offsetX);
-            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - offsetY);
-
-            dragStartPoint = dragEndPoint;
-        }
 
         #endregion
 
@@ -442,11 +515,18 @@ namespace WLS3200Gen2.UserControls
             {
                 switch (par)
                 {
-                    case "select":
+                    case "selectAdd":
                         isSelectMode = true;
                         isTouchMode = false;
+                        isAdd = true;
+                        isDel = false;
                         break;
-
+                    case "selectDel":
+                        isSelectMode = true;
+                        isTouchMode = false;
+                        isAdd = false;
+                        isDel = true;
+                        break;
 
                     case "touch":
                         isSelectMode = false;
@@ -459,11 +539,12 @@ namespace WLS3200Gen2.UserControls
                     case "fit":
                         ZoomFit();
                         break;
+
                     case "clear":
                         canvas.Children.Clear();
                         break;
 
-                      
+
                     default:
                         break;
                 }
@@ -482,15 +563,29 @@ namespace WLS3200Gen2.UserControls
         private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
 
-            MapOperate( MappingOperate.Create);
+            MapOperate(MappingOperate.Create);
         }
 
-       
 
-        private void PixelToIndex(Point point)
+
+        private IEnumerable<RectangleInfo> SelectRectInRange(Rectangle selectRange, IEnumerable<RectangleInfo> rectInfos)
         {
+            var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
+            IEnumerable<RectangleInfo> selectRects = new List<RectangleInfo>();
+            if (selectRange.Width <= width || selectRange.Height <= Height)
+            {
+                selectRects = rectInfos.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+
+            }
+            else
+            {
+                selectRects = rectInfos.Where(r => rect.Contains(r.Rectangle.TopLeft) || rect.Contains(r.Rectangle.BottomLeft)
+                                   || rect.Contains(r.Rectangle.BottomRight) || rect.Contains(r.Rectangle.TopRight));
 
 
+            }
+            return selectRects;
         }
 
         private void MapOperate(MappingOperate operate)
@@ -515,7 +610,7 @@ namespace WLS3200Gen2.UserControls
             }
 
 
-           
+
         }
 
         private static void OnDiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -537,7 +632,7 @@ namespace WLS3200Gen2.UserControls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-       
+
 
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
@@ -561,7 +656,7 @@ namespace WLS3200Gen2.UserControls
     }
 
 
- 
+
 
     public class ImagePositionConverter : IValueConverter
     {
