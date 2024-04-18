@@ -34,7 +34,7 @@ namespace WLS3200Gen2.Model.Module
 
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
-
+        public bool IsInitial { get; private set; } = false;
         public Size PixelSize { get; set; }
 
 

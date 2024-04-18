@@ -72,6 +72,10 @@ namespace WLS3200Gen2.Model
         public LoadPortType LoadPortType { get; set; }
         public LoadPortQuantity LoadPortCount { get; set; }
         /// <summary>
+        /// 有無DIC
+        /// </summary>
+        public bool IsHaveDIC { get; set; }
+        /// <summary>
         /// LoadPort1RS232的COM
         /// </summary>
         public string LoadPort1COM { get; set; }

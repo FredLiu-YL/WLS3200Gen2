@@ -287,7 +287,7 @@ namespace WLS3200Gen2
         //Recipe進入會執行
         private void LoadRecipePage()
         {
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right || Machinestatus == YuanliCore.Machine.Base.MachineStates.RUNNING)
             {
                 IsMainRecipePageSelect = false;
                 IsMainHomePageSelect = true;
@@ -467,16 +467,16 @@ namespace WLS3200Gen2
                 Stopwatch stopwatch = new Stopwatch();
                 MappingCanvasWindow win = new MappingCanvasWindow(300, 300);
                 stopwatch.Start();
-                if (mainRecipe.DetectRecipe.MapImage!=null)
+                if (mainRecipe.DetectRecipe.MapImage != null)
                     win.MappingTable = new WriteableBitmap(mainRecipe.DetectRecipe.MapImage.ToBitmapSource());
                 var t2 = stopwatch.ElapsedMilliseconds;
                 win.ShowDialog();
 
                 stopwatch.Restart();
-              //  win.MappingTable.Save("D:\\1234");             
-             //   BitmapImage bitmap = new BitmapImage(new Uri("D:\\1234.bmp", UriKind.RelativeOrAbsolute));
-             //   var mapImage = new WriteableBitmap(bitmap);
-               
+                //  win.MappingTable.Save("D:\\1234");             
+                //   BitmapImage bitmap = new BitmapImage(new Uri("D:\\1234.bmp", UriKind.RelativeOrAbsolute));
+                //   var mapImage = new WriteableBitmap(bitmap);
+
                 mainRecipe.DetectRecipe.MapImage = win.MappingTable.ToByteFrame();
                 var t1 = stopwatch.ElapsedMilliseconds;
 
@@ -501,10 +501,10 @@ namespace WLS3200Gen2
                 SINF_Path = dlg_image.FileName;
                 if (SINF_Path != "")
                 {
-                    var m_Sinf = new SinfWaferMapping( true, false);
+                    var m_Sinf = new SinfWaferMapping(true, false);
                     (m_Sinf.Dies, m_Sinf.WaferSize) = m_Sinf.ReadWaferFile(SINF_Path, true, false);
 
-                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping( true, false);
+                    mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping(true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
 
                     await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
@@ -567,7 +567,7 @@ namespace WLS3200Gen2
         {
             try
             {
-           
+
                 if (detectionRecipe.DetectionPoints == null) return;
                 foreach (var item in detectionRecipe.DetectionPoints)
                 {
@@ -900,7 +900,7 @@ namespace WLS3200Gen2
                 {
                     try
                     {
-                        if (IsCanWorkEFEMTrans)
+                        if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
                         {
                             IsCanWorkEFEMTrans = false;
                             //是否執行移動片子訊息
@@ -924,7 +924,10 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                EFEMTransWaferBeforeCheckRobotHaveWafer();
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                {
+                                    throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                                }
                                 //將Wafer取出，退到安全位置
                                 EFEMTransWaferPick(oldArmStation);
                                 Wafer currentWafer;
@@ -956,6 +959,11 @@ namespace WLS3200Gen2
                     }
                 });
             }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
@@ -970,7 +978,8 @@ namespace WLS3200Gen2
                 {
                     try
                     {
-                        if (IsCanWorkEFEMTrans)
+
+                        if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
                         {
                             IsCanWorkEFEMTrans = false;
                             //是否執行移動片子訊息
@@ -981,7 +990,10 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                EFEMTransWaferBeforeCheckRobotHaveWafer();
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                {
+                                    throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                                }
                                 //將Wafer取出，退到安全位置
                                 EFEMTransWaferPick(oldArmStation);
                                 //將片子放下去
@@ -991,11 +1003,16 @@ namespace WLS3200Gen2
                                 machine.Feeder.AlignerL.FixWafer().Wait();
                                 if (machine.Feeder.AlignerL.IsLockOK == false)
                                 {
-                                    throw new Exception("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
+                                    throw new FlowException("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
                                 }
                             }
                             IsCanWorkEFEMTrans = true;
                         }
+                    }
+                    catch (FlowException ex)
+                    {
+
+                        throw ex;
                     }
                     catch (Exception ex)
                     {
@@ -1003,6 +1020,11 @@ namespace WLS3200Gen2
                         throw ex;
                     }
                 });
+            }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -1018,7 +1040,7 @@ namespace WLS3200Gen2
                 {
                     try
                     {
-                        if (IsCanWorkEFEMTrans)
+                        if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
                         {
                             IsCanWorkEFEMTrans = false;
                             //是否執行移動片子訊息
@@ -1029,13 +1051,16 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                EFEMTransWaferBeforeCheckRobotHaveWafer();
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                {
+                                    throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                                }
                                 //將Wafer取出，退到安全位置
                                 EFEMTransWaferPick(oldArmStation);
                                 //將片子放下去
                                 RecipeLastArmStation = Model.ArmStation.Macro;
                                 machine.Feeder.Macro.FixWafer();
-                                machine.Feeder.WaferStandByToMacro().Wait();
+                                machine.Feeder.WaferStandByToMacroAsync().Wait();
                                 if (machine.Feeder.Macro.IsLockOK == false)
                                 {
                                     throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
@@ -1124,7 +1149,7 @@ namespace WLS3200Gen2
         /// <summary>
         /// 確認手臂有無片
         /// </summary>
-        private void EFEMTransWaferBeforeCheckRobotHaveWafer()
+        private bool EFEMTransWaferBeforeCheckRobotHaveWafer()
         {
             try
             {
@@ -1132,11 +1157,12 @@ namespace WLS3200Gen2
                 Task.Delay(1000).Wait();
                 if (machine.Feeder.Robot.IsLockOK)
                 {
-                    throw new Exception("EFEMTransCommand Error!Robot Have Wafer!");
+                    return false;
                 }
                 else
                 {
                     machine.Feeder.Robot.ReleaseWafer().Wait();
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -1177,7 +1203,7 @@ namespace WLS3200Gen2
                         machine.Feeder.WaferMicroToStandBy().Wait();
                         break;
                     default:
-                        throw new Exception("EFEMTransCommand 異常!");
+                        throw new FlowException("EFEMTransCommand 異常!");
                 }
             }
             catch (Exception ex)
@@ -1195,7 +1221,7 @@ namespace WLS3200Gen2
                 {
                     try
                     {
-                        if (IsCanWorkEFEMTrans)
+                        if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
                         {
                             IsCanWorkEFEMTrans = false;
                             //是否執行移動片子訊息
@@ -1206,7 +1232,10 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                EFEMTransWaferBeforeCheckRobotHaveWafer();
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                {
+                                    throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                                }
                                 //將Wafer取出，退到安全位置
                                 EFEMTransWaferPick(oldArmStation);
                                 //將片子放下去

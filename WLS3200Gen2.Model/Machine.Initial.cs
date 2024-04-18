@@ -359,7 +359,7 @@ namespace WLS3200Gen2.Model
             }
             else
             {
-                microscope = new BXUCB(machineSetting.MicroscopeCOM);//COM24
+                microscope = new BXUCB(machineSetting.MicroscopeCOM, machineSetting.IsHaveDIC);//COM24
             }
             return microscope;
         }

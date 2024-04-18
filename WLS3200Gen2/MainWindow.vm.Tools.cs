@@ -110,10 +110,10 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.WaferStandByToAligner();
+                await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                 RecipeLastArmStation = Model.ArmStation.Align;
                 machine.Feeder.AlignerL.Home().Wait();
-                machine.Feeder.WaferStandByToAligner().Wait();
+                await machine.Feeder.WaferStandByToAligner();
                 machine.Feeder.AlignerL.FixWafer().Wait();
                 if (machine.Feeder.AlignerL.IsLockOK == false)
                 {
@@ -156,7 +156,7 @@ namespace WLS3200Gen2
             {
                 RecipeLastArmStation = Model.ArmStation.Macro;
                 machine.Feeder.Macro.FixWafer();
-                await machine.Feeder.WaferStandByToMacro();
+                await machine.Feeder.WaferStandByToMacroAsync();
                 if (machine.Feeder.Macro.IsLockOK == false)
                 {
                     throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");

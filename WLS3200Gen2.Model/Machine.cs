@@ -37,6 +37,6 @@ namespace WLS3200Gen2.Model
         public Feeder Feeder { get; private set; }
         public MicroDetection MicroDetection { get; private set; }
 
-        public StackLight  StackLight { get; private set; }
+        public StackLight StackLight { get; private set; }
     }
 }
