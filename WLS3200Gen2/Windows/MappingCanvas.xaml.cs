@@ -50,12 +50,12 @@ namespace WLS3200Gen2.UserControls
         //    private ObservableCollection<Die> selectDies = new ObservableCollection<Die>();
 
         //  private ObservableCollection<Rectangle> rectangles = new ObservableCollection<Rectangle>();
-        /*    public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvasTest),
-                                                                    new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ColProperty = DependencyProperty.Register(nameof(Col), typeof(int), typeof(MappingCanvas),
+                                                                new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-            public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvasTest),
-                                                                   new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        */
+        public static readonly DependencyProperty RowProperty = DependencyProperty.Register(nameof(Row), typeof(int), typeof(MappingCanvas),
+                                                               new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
         public static readonly DependencyProperty DiesProperty = DependencyProperty.Register(nameof(Dies), typeof(Die[]), typeof(MappingCanvas),
                                                            new FrameworkPropertyMetadata(new Die[] { }, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnDiesChanged)));
 
@@ -115,16 +115,16 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(ref selectRectangles, value);
         }
 
-        /* public int Col
-         {
-             get => (int)GetValue(ColProperty);
-             set => SetValue(ColProperty, value);
-         }
-         public int Row
-         {
-             get => (int)GetValue(RowProperty);
-             set => SetValue(RowProperty, value);
-         }*/
+        public int Col
+        {
+            get => (int)GetValue(ColProperty);
+            set => SetValue(ColProperty, value);
+        }
+        public int Row
+        {
+            get => (int)GetValue(RowProperty);
+            set => SetValue(RowProperty, value);
+        }
         public Die[] Dies
         {
             get => (Die[])GetValue(DiesProperty);
@@ -381,6 +381,7 @@ namespace WLS3200Gen2.UserControls
             }
             else if (isSelectMode)
             {
+                //畫出選取紅框
                 isSelectRange = true;
                 selectStartPoint = e.GetPosition(myGrid);
                 selectRange = new Rectangle
@@ -405,7 +406,7 @@ namespace WLS3200Gen2.UserControls
             else if (isSelectMode)
             {
                 isSelectRange = false;
-                canvas.Children.RemoveAt(canvas.Children.Count - 1);//框選完清掉框框
+                canvas.Children.RemoveAt(canvas.Children.Count - 1);//框選完清掉選取框框
 
                 var selectRects = SelectRectInRange(selectRange, rectangles);
 
@@ -438,7 +439,7 @@ namespace WLS3200Gen2.UserControls
                 //這樣數量一多會很慢 需要再改
                 SelectDies.Clear();
                 foreach (var item in SelectRectangles)
-                { 
+                {
 
                     var die = Dies.Where(d => d.IndexX == item.Col && d.IndexY == item.Row).FirstOrDefault();
                     SelectDies.Add(die);
@@ -455,11 +456,11 @@ namespace WLS3200Gen2.UserControls
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
 
+            Point currentPoint = e.GetPosition(canvas);
 
-
-            if (isSelectMode && isSelectRange && selectRange != null)
+            if (isSelectMode && isSelectRange && selectRange != null)//如果選取模式下
             {
-                Point currentPoint = e.GetPosition(canvas);
+                //變更畫出的選取紅框
                 double width = currentPoint.X - selectStartPoint.X;
                 double height = currentPoint.Y - selectStartPoint.Y;
                 if (width <= 1)
@@ -473,11 +474,13 @@ namespace WLS3200Gen2.UserControls
                     selectRange.Height = height;
 
 
+               
             }
-            else
+            else if (myGrid.IsMouseCaptured) //拖曳移動功能
             {
-                if (!myGrid.IsMouseCaptured) return;
+              //  if (!myGrid.IsMouseCaptured) return;
                 Point dragEndPoint = e.GetPosition(scrollViewer);
+          
                 double offsetX = dragEndPoint.X - dragStartPoint.X;
                 double offsetY = dragEndPoint.Y - dragStartPoint.Y;
 
@@ -485,8 +488,16 @@ namespace WLS3200Gen2.UserControls
                 scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - offsetY);
 
                 dragStartPoint = dragEndPoint;
-            }
 
+                
+            }
+            //計算當下滑鼠指向哪一顆
+            var dieIndwx = rectangles.Where(r => r.Rectangle.Contains(currentPoint)).FirstOrDefault();
+            if (dieIndwx != null)
+            {
+                Col = dieIndwx.Col;
+                Row = dieIndwx.Row;
+            }
         }
 
         private void DrawMapRectangle(Point pixel)
@@ -517,6 +528,9 @@ namespace WLS3200Gen2.UserControls
                 Mouse.OverrideCursor = Cursors.Hand; // 更改滑鼠外型為手形
             else
                 Mouse.OverrideCursor = null; // 恢復滑鼠外型為預設
+
+
+            
         }
 
         private void Grid_MouseLeave(object sender, MouseEventArgs e)

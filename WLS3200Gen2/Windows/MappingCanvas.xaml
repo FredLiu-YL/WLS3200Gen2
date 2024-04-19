@@ -11,10 +11,10 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=Mapping}"   >
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.05*"/>
+            <RowDefinition Height="30"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
+        <StackPanel Grid.Row="0" Orientation="Horizontal"  Visibility="Visible"   >
             <Button Content="Fit"  Command="{Binding BtnOperateCommand}"  CommandParameter="fit" Cursor="Hand"  />
             <Button Content="+" Click="ZoomIn_Click"/>
             <Button Content="-" Click="ZoomOut_Click" />
@@ -23,7 +23,8 @@
             <Button Content="SelectDel"  Command="{Binding BtnOperateCommand}" CommandParameter="selectDel"     />
             <Button Content="Touch"   Command="{Binding BtnOperateCommand}" CommandParameter="touch"    />
             <Button Content="Clear"    Command="{Binding BtnOperateCommand}" CommandParameter="clear"  />
-
+            <TextBlock Width="30" Text="{Binding Col}" FontSize="16" />
+            <TextBlock Width="30" Text="{Binding Row}"   FontSize="16" />
         </StackPanel>
         <ScrollViewer Grid.Row="1" x:Name="scrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 
