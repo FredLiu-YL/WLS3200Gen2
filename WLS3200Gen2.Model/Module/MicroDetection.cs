@@ -49,6 +49,7 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.FiducialRecord += AlignRecord;
         }
+        public bool IsInitial { get; private set; } = false;
         public ICamera Camera { get; }
         public Axis AxisX { get; }
         public Axis AxisY { get; }
@@ -123,6 +124,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 await TableMoveToAsync(tableWaferCatchPosition);
             }
             catch (Exception ex)
@@ -145,81 +147,109 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task PutWaferPrepare(Point tableWaferCatchPosition)
         {
-            await TableMoveToAsync(tableWaferCatchPosition);
-            TableVacuum.Off();
-            //如果有lift 或夾持機構 需要做處理
+            try
+            {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                await TableMoveToAsync(tableWaferCatchPosition);
+                TableVacuum.Off();
+                //如果有lift 或夾持機構 需要做處理
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
         public async Task Run(DetectionRecipe recipe, ProcessSetting processSetting, Wafer currentWafer, PauseTokenSource pst, CancellationTokenSource ctk)
         {
-            this.pauseToken = pst;
-            this.cancelToken = ctk;
-            opticalAlignment.CancelToken = cancelToken;
-            opticalAlignment.PauseToken = pauseToken;
-
-            //入料準備?
-            //await subject.ToTask();
-
-            cancelToken.Token.ThrowIfCancellationRequested();
-            await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
-
-
-            //對位
-            //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
-            ITransform transForm = await Alignment(recipe.AlignRecipe);
-            cancelToken.Token.ThrowIfCancellationRequested();
-            await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
-            //每一個座標需要檢查的座標
-            foreach (DetectionPoint point in recipe.DetectionPoints)
+            try
             {
-                WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
-                //轉換成對位後實際座標
-                var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
-                var transPosition = transForm.TransPoint(newPos);
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                this.pauseToken = pst;
+                this.cancelToken = ctk;
+                opticalAlignment.CancelToken = cancelToken;
+                opticalAlignment.PauseToken = pauseToken;
 
-                await TableMoveToAsync(transPosition); //Offset
-                await SetMicroscope(point);
-                if (processSetting.IsAutoFocus)
-                {
-                    Microscope.AFTrace();
-                }
-                await Task.Delay(200);
-                BitmapSource bmp = Camera.GrabAsync();
-                if (processSetting.IsAutoSave)
-                {
-                    subject.OnNext(bmp);//AOI另外丟到其他執行續處理
-                }
-                else
-                {
-                    Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
-                    var cc = await micro;
-                }
-                DetectionRecord?.Invoke(bmp);
-                // pauseToken.IsPaused = true;
+                //入料準備?
+                //await subject.ToTask();
 
                 cancelToken.Token.ThrowIfCancellationRequested();
                 await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 
+                //對位
+                //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
+                ITransform transForm = await Alignment(recipe.AlignRecipe);
+                cancelToken.Token.ThrowIfCancellationRequested();
+                await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+
+                //每一個座標需要檢查的座標
+                foreach (DetectionPoint point in recipe.DetectionPoints)
+                {
+                    WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
+                    //轉換成對位後實際座標
+                    var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
+                    var transPosition = transForm.TransPoint(newPos);
+
+                    await TableMoveToAsync(transPosition); //Offset
+                    await SetMicroscope(point);
+                    if (processSetting.IsAutoFocus)
+                    {
+                        Microscope.AFTrace();
+                    }
+                    await Task.Delay(200);
+                    BitmapSource bmp = Camera.GrabAsync();
+                    if (processSetting.IsAutoSave)
+                    {
+                        subject.OnNext(bmp);//AOI另外丟到其他執行續處理
+                    }
+                    else
+                    {
+                        Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
+                        var cc = await micro;
+                    }
+                    DetectionRecord?.Invoke(bmp);
+                    // pauseToken.IsPaused = true;
+
+                    cancelToken.Token.ThrowIfCancellationRequested();
+                    await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+
+                }
             }
+            catch (Exception ex)
+            {
 
-
-
+                throw ex;
+            }
         }
 
 
 
         public async Task TableMoveToAsync(Point pos)
         {
-            await Task.WhenAll(AxisX.MoveToAsync(pos.X),
-                    AxisY.MoveToAsync(pos.Y));
+            try
+            {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                await Task.WhenAll(AxisX.MoveToAsync(pos.X), AxisY.MoveToAsync(pos.Y));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
         public async Task TableMoveAsync(Vector distance)
         {
-            await Task.WhenAll(AxisX.MoveAsync(distance.X),
-                    AxisY.MoveAsync(distance.Y));
+            try
+            {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                await Task.WhenAll(AxisX.MoveAsync(distance.X), AxisY.MoveAsync(distance.Y));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
 
@@ -247,14 +277,19 @@ namespace WLS3200Gen2.Model.Module
         /// <returns></returns>
         public async Task<ITransform> Alignment(AlignmentRecipe recipe)
         {
-            opticalAlignment.WriteLog = WriteLog;
-            WriteLog?.Invoke("Wafer Alignment Start");
-            ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
-
-            WriteLog?.Invoke("Wafer Alignment End");
-            return transForm;
-
-
+            try
+            {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                opticalAlignment.WriteLog = WriteLog;
+                WriteLog?.Invoke("Wafer Alignment Start");
+                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
+                WriteLog?.Invoke("Wafer Alignment End");
+                return transForm;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)

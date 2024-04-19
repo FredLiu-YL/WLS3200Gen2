@@ -303,6 +303,8 @@ namespace WLS3200Gen2
                     throw new Exception("Loadport Wrong choice");
                 }
 
+                SwitchStates(MachineStates.RUNNING);
+
                 if (IsLoadport1)
                 {
 
@@ -331,6 +333,7 @@ namespace WLS3200Gen2
                     }
                     ProcessStations.Add(temp);
                 }
+                SwitchStates(MachineStates.IDLE);
             }
             catch (Exception ex)
             {
@@ -711,6 +714,21 @@ namespace WLS3200Gen2
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
             return microJudgeOperation;
+        }
+        private async Task<String> WaferIDOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        {
+            pts.IsPaused = true;
+            //machine.ProcessPause();//暫停
+
+            //切到Micro 頁面
+            TabControlSelectedIndex = 1;
+            IsOperateUI = false;
+            cts.Token.ThrowIfCancellationRequested();
+            await pts.Token.WaitWhilePausedAsync(cts.Token);
+            //切到Infomation頁面
+            TabControlSelectedIndex = 0;
+            IsOperateUI = true;
+            return "";
         }
     }
 }

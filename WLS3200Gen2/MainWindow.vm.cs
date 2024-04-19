@@ -196,7 +196,7 @@ namespace WLS3200Gen2
                 BincodeList.Add(new BincodeInfo());
 
                 machine.MicroDetection.MicroReady += MicroOperate;
-
+                machine.Feeder.WaferIDReady += WaferIDOperate;
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
@@ -505,14 +505,19 @@ namespace WLS3200Gen2
                                  //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
                              });
             }
+            catch (FlowException ex2)
+            {
+
+            }
             catch (Exception ex)
             {
 
 
             }
+
         }
     }
-
+ 
 
     /// <summary>
     /// 如果是雙Port 就把loadport有關功能打開

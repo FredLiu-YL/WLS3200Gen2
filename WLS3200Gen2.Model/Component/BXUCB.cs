@@ -22,8 +22,8 @@ namespace WLS3200Gen2.Model.Component
         private int lens = -1;
         private int lightValue = -1;
         private int lightSpreadIdx = -1;
-
-        public BXUCB(string comPort)
+        private bool isHaveDIC;
+        public BXUCB(string comPort, bool isHaveDIC)
         {
             try
             {
@@ -37,6 +37,7 @@ namespace WLS3200Gen2.Model.Component
                 serialPort.WriteTimeout = 3000;
                 serialPort.ReadTimeout = 3000;
                 microscope_Terminator = "\r\n";
+                this.isHaveDIC = isHaveDIC;
                 //serialPort.DataReceived += DataReceived;
                 tcsReceived = new TaskCompletionSource<string>();
             }
@@ -98,8 +99,11 @@ namespace WLS3200Gen2.Model.Component
                    await ChangeLensAsync(1);
                    await ChangeApertureAsync(0);
                    await ChangeLightAsync(0);
-                   await ChangeFilter1Async(1);
-                   await ChangeFilter2Async(1);
+                   if (isHaveDIC)
+                   {
+                       await ChangeFilter1Async(1);
+                       await ChangeFilter2Async(1);
+                   }
                });
             }
             catch (Exception ex)
