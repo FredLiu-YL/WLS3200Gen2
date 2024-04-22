@@ -49,6 +49,9 @@ namespace WLS3200Gen2
             isSimulate = true;
 
             //   machineSetting.Load();
+            if(!Directory.Exists(systemPath))
+                Directory.CreateDirectory(systemPath);
+      
 
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
 
