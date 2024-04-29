@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -47,7 +49,7 @@ namespace Test
         private DigitalOutput[] digitalOutputs;
         private MacroStatus macroStatus = new MacroStatus();
         //private MacroDetection macroDetection1;
-
+        private LoadPortQuantity loadPortCount = LoadPortQuantity.Pair;
 
 
         //public MacroDetection MacroDetection1 { get => macroDetection1; set => SetValue(ref macroDetection1, value); }
@@ -59,6 +61,9 @@ namespace Test
         private RobotUI robotStaus = new RobotUI();
 
         private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
+
+        private AFAberationUI aFAberation = new AFAberationUI();
+
         private LampUI lampControlParam = new LampUI();
 
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
@@ -86,6 +91,7 @@ namespace Test
         public IMicroscope Micro { get => micro; set => SetValue(ref micro, value); }
         public YuanliCore.Model.MicroscopeParam MicroscopeParam { get => microscopeParam; set => SetValue(ref microscopeParam, value); }
 
+        public AFAberationUI AFAberation { get => aFAberation; set => SetValue(ref aFAberation, value); }
         public ILampControl LampControl { get => lampControl; set => SetValue(ref lampControl, value); }
         public LampUI LampControlParam { get => lampControlParam; set => SetValue(ref lampControlParam, value); }
 
@@ -119,6 +125,11 @@ namespace Test
         private bool isOutputSwitchEnable = true;
         public bool IsOutputSwitchEnable { get => isOutputSwitchEnable; set => SetValue(ref isOutputSwitchEnable, value); }
 
+        public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
+        private WriteableBitmap mainImage;
+        private IDisposable camlive;
+        private ICamera MachineCamera = null;
+
         public ICommand LoadedCommand => new RelayCommand<string>(async key =>
         {
             try
@@ -127,40 +138,59 @@ namespace Test
                 LoadPort1Wafers = new ObservableCollection<WaferUIData>();
 
                 //////////////////////Initial//////////////////////
-                LampControl = new StrongLampRS232("COM25");
-                LampControl.Initial();
-                //BXUCB aa = new BXUCB("COM24");
+                //LampControl = new StrongLampRS232("COM25");
+                //LampControl.Initial();
+                if (loadPortCount == LoadPortQuantity.Single)
+                {
+                    BXUCB aa = new BXUCB("COM4", false);
+                    aa.Error += (e) =>
+                    {
+                        throw e;
+                    };
+                    Micro = aa;
+                }
+                else
+                {
+                    BXUCB aa = new BXUCB("COM24", false);
+                    aa.Error += (e) =>
+                    {
+                        throw e;
+                    };
+                    Micro = aa;
+                }
 
-                //aa.Error += (e) =>
-                //{
-                //    throw e;
-                //};
-                //Micro = aa;
-                //Micro.Initial();
+                Micro.Initial();
 
-                //bool IsMotionInitOK = false;
-                //IsMotionInitOK = MotionInit();
 
-                //if (IsMotionInitOK == true)
-                //{
-                //    int idx = 4;
-                //    TableX = motionController.Axes[idx];
-                //    //TableY = motionController.Axes[1];
-                //    //TableZ = motionController.Axes[2];
-                //    //TableW = motionController.Axes[3];
-                //    //RobotAxis = motionController.Axes[4];
+                bool IsMotionInitOK = false;
+                IsMotionInitOK = MotionInit();
 
-                //    AxisConfig axis_TableXConfig = new AxisConfig();
-                //    axis_TableXConfig.MoveVel = motionController.Axes[idx].AxisVelocity;
-                //    axis_TableXConfig.HomeVel = motionController.Axes[idx].HomeVelocity;
-                //    TableXConfig = axis_TableXConfig;
+                if (IsMotionInitOK == true)
+                {
+                    int idx = 2;//0
+                    TableX = motionController.Axes[idx];
+                    //TableY = motionController.Axes[1];
+                    //TableZ = motionController.Axes[2];
+                    //TableW = motionController.Axes[3];
+                    //RobotAxis = motionController.Axes[4];
 
-                //    DigitalOutputs = motionController.OutputSignals.ToArray();
-                //    DigitalInputs = motionController.InputSignals.ToArray();
+                    AxisConfig axis_TableXConfig = new AxisConfig();
+                    axis_TableXConfig.MoveVel = motionController.Axes[idx].AxisVelocity;
+                    axis_TableXConfig.HomeVel = motionController.Axes[idx].HomeVelocity;
+                    TableXConfig = axis_TableXConfig;
 
-                //    Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
-                //}
+                    DigitalOutputs = motionController.OutputSignals.ToArray();
+                    DigitalInputs = motionController.InputSignals.ToArray();
 
+                    Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
+                }
+
+                await Micro.HomeAsync();
+
+
+                //MachineCamera = new YuanliCore.CameraLib.IDS.UeyeCamera();
+                //MachineCamera.Open();
+                //CameraLive();
 
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
@@ -248,69 +278,141 @@ namespace Test
                 }
 
                 List<AxisConfig> axisConfig = new List<AxisConfig>();
-                for (int i = 0; i <= 4; i++)
+                if (loadPortCount == LoadPortQuantity.Single)
                 {
-                    switch (i)
+                    for (int i = 0; i <= 3; i++)
                     {
-                        case 0:
-                            AxisConfig axisXConfig = new AxisConfig();
-                            axisXConfig.AxisName = "AxisX";
-                            axisXConfig.AxisID = 0;
-                            axisXConfig.Ratio = 10;
-                            axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
-                            axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
-                            axisXConfig.HomeMode = HomeModes.ORGAndIndex;
-                            axisConfig.Add(axisXConfig);
-                            break;
-                        case 1:
-                            AxisConfig axisYConfig = new AxisConfig();
-                            axisYConfig.AxisName = "AxisY";
-                            axisYConfig.AxisID = 1;
-                            axisYConfig.Ratio = 10;
-                            axisYConfig.MoveVel = new VelocityParams(100000, 0.5);
-                            axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
-                            axisYConfig.HomeMode = HomeModes.ORGAndIndex;
-                            axisConfig.Add(axisYConfig);
-                            break;
-                        case 2:
-                            AxisConfig axisZInfo = new AxisConfig();
-                            axisZInfo.AxisName = "AxisZ";
-                            axisZInfo.AxisID = 2;
-                            axisZInfo.Ratio = 1;
-                            axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
-                            axisZInfo.HomeVel = new VelocityParams(50000, 0.5);
-                            axisZInfo.HomeMode = HomeModes.EL;
-                            axisZInfo.HomeDirection = HomeDirection.Backward;
-                            axisConfig.Add(axisZInfo);
-                            break;
-                        case 3:
-                            AxisConfig axisRInfo = new AxisConfig();
-                            axisRInfo.AxisName = "AxisR";
-                            axisRInfo.AxisID = 3;
-                            axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
-                            axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
-                            axisRInfo.HomeMode = HomeModes.ORG;
-                            axisConfig.Add(axisRInfo);
+                        switch (i)
+                        {
+                            case 0:
+                                AxisConfig axisXConfig = new AxisConfig();
+                                axisXConfig.AxisName = "AxisX";
+                                axisXConfig.AxisID = 0;
+                                axisXConfig.Ratio = 10;
+                                axisXConfig.MoveVel = new VelocityParams(50000, 0.5);
+                                axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
+                                axisXConfig.HomeMode = HomeModes.ORGAndIndex;
+                                axisConfig.Add(axisXConfig);
+                                break;
+                            case 1:
+                                AxisConfig axisYConfig = new AxisConfig();
+                                axisYConfig.AxisName = "AxisY";
+                                axisYConfig.AxisID = 1;
+                                axisYConfig.Ratio = 10;
+                                axisYConfig.MoveVel = new VelocityParams(50000, 0.5);
+                                axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
+                                axisYConfig.HomeMode = HomeModes.ORGAndIndex;
+                                axisConfig.Add(axisYConfig);
+                                break;
+                            case 2:
+                                AxisConfig axisZInfo = new AxisConfig();
+                                axisZInfo.AxisName = "AxisZ";
+                                axisZInfo.AxisID = 2;
+                                axisZInfo.Ratio = 10;
+                                axisZInfo.MoveVel = new VelocityParams(10000, 1);
+                                axisZInfo.HomeVel = new VelocityParams(5000, 1);
+                                axisZInfo.HomeMode = HomeModes.EL;
+                                axisZInfo.HomeDirection = HomeDirection.Backward;
+                                axisConfig.Add(axisZInfo);
+                                break;
+                            case 3:
+                                AxisConfig axisRInfo = new AxisConfig();
+                                axisRInfo.AxisName = "AxisR";
+                                axisRInfo.AxisID = 3;
+                                axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
+                                axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
+                                axisRInfo.HomeMode = HomeModes.ORG;
+                                axisConfig.Add(axisRInfo);
+                                break;
 
-                            break;
-                        case 4:
-                            AxisConfig axisRobotInfo = new AxisConfig();
-                            axisRobotInfo.AxisName = "RobotAxis";
-                            axisRobotInfo.AxisID = 4;
-                            axisRobotInfo.Ratio = 10;
-                            axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
-                            axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);
-                            axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
-                            axisConfig.Add(axisRobotInfo);
-                            break;
+                            case 4:
+                                AxisConfig axisRobotInfo = new AxisConfig();
+                                axisRobotInfo.AxisName = "RobotAxis";
+                                axisRobotInfo.AxisID = 4;
+                                axisRobotInfo.Ratio = 10;
+                                axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
+                                axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);
+                                axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
+                                axisConfig.Add(axisRobotInfo);
+                                break;
+                        }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                AxisConfig axisXConfig = new AxisConfig();
+                                axisXConfig.AxisName = "AxisX";
+                                axisXConfig.AxisID = 0;
+                                axisXConfig.Ratio = 10;
+                                axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
+                                axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
+                                axisXConfig.HomeMode = HomeModes.ORGAndIndex;
+                                axisConfig.Add(axisXConfig);
+                                break;
+                            case 1:
+                                AxisConfig axisYConfig = new AxisConfig();
+                                axisYConfig.AxisName = "AxisY";
+                                axisYConfig.AxisID = 1;
+                                axisYConfig.Ratio = 10;
+                                axisYConfig.MoveVel = new VelocityParams(100000, 0.5);
+                                axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
+                                axisYConfig.HomeMode = HomeModes.ORGAndIndex;
+                                axisConfig.Add(axisYConfig);
+                                break;
+                            case 2:
+                                AxisConfig axisZInfo = new AxisConfig();
+                                axisZInfo.AxisName = "AxisZ";
+                                axisZInfo.AxisID = 2;
+                                axisZInfo.Ratio = 1;
+                                axisZInfo.MoveVel = new VelocityParams(50000, 0.2);
+                                axisZInfo.HomeVel = new VelocityParams(50000, 0.5);
+                                axisZInfo.HomeMode = HomeModes.EL;
+                                axisZInfo.HomeDirection = HomeDirection.Backward;
+                                axisConfig.Add(axisZInfo);
+                                break;
+                            case 3:
+                                AxisConfig axisRInfo = new AxisConfig();
+                                axisRInfo.AxisName = "AxisR";
+                                axisRInfo.AxisID = 3;
+                                axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
+                                axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
+                                axisRInfo.HomeMode = HomeModes.ORG;
+                                axisConfig.Add(axisRInfo);
+
+                                break;
+                            case 4:
+                                AxisConfig axisRobotInfo = new AxisConfig();
+                                axisRobotInfo.AxisName = "RobotAxis";
+                                axisRobotInfo.AxisID = 4;
+                                axisRobotInfo.Ratio = 10;
+                                axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
+                                axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);
+                                axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
+                                axisConfig.Add(axisRobotInfo);
+                                break;
+                        }
+                    }
+                }
+
+
                 //var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 //var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 var doNames = new string[64];
                 var diNames = new string[32];
 
-                motionController = new Adlink7856(axisConfig, doNames, diNames, "C:\\WLS3200-System\\Motion.xml");
+                if (loadPortCount == LoadPortQuantity.Single)
+                {
+                    motionController = new Adlink7856(axisConfig, doNames, diNames, "C:\\Motion.xml");
+                }
+                else
+                {
+                    motionController = new Adlink7856(axisConfig, doNames, diNames, "C:\\WLS3200-System\\Motion.xml");
+                }
                 motionController.InitializeCommand();
                 return true;
             }
@@ -380,6 +482,8 @@ namespace Test
                             MicroscopeParam.Position = Convert.ToInt32(nowPos);
                             MicroscopeParam.ApertureValue = Micro.ApertureValue;
                             MicroscopeParam.LightValue = Micro.LightValue;
+
+                            AFAberation.AberationValue = Convert.ToInt32(Micro.AberationPosition);
                         }
 
                         if (LampControl != null)
@@ -435,6 +539,34 @@ namespace Test
        });
 
 
+        private void CameraLive()
+        {
+            var camera = MachineCamera;
+            var dis = MachineCamera.Grab();
+            try
+            {
+
+
+                MainImage = new WriteableBitmap(camera.Width, camera.Height, 96, 96, camera.PixelFormat, null);
+
+
+                camlive = camera.Frames.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
+                             .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
+                             .Subscribe(frame =>
+                             {
+
+                                 var a = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                                 if (frame != null) MainImage.WritePixels(frame);
+                                 //  Image = new WriteableBitmap(frame.Width, frame.Height, frame.dP, double dpiY, PixelFormat pixelFormat, BitmapPalette palette);
+                             });
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+
+        }
 
         private bool isFirst = true;
         public ICommand OutputSwitchCommand => new RelayCommand<string>(async key =>
@@ -451,24 +583,28 @@ namespace Test
                         await Micro.MoveToAsync(10);
                         break;
                     case "btn0":
+                        await Micro.HomeAsync();
+                        //bool tt = Micro.IsAutoFocusOk;
                         double aberationNow = 0;
+                        Micro.AFOff();
+                        isFirst = true;
                         if (isFirst)
                         {
-                            await Micro.ChangeLightAsync(65);
+                            await Micro.ChangeLightAsync(44);
 
-                            await Micro.ChangeApertureAsync(500);
+                            await Micro.ChangeApertureAsync(700);
 
                             double zNow = Micro.AFPEL;
 
                             aberationNow = Micro.AFNEL;
 
-                            Micro.SetSearchRange(585827, 5000);
+                            Micro.SetSearchRange(584120, 100000);
                             isFirst = false;
                         }
 
-
                         await Micro.AFOneShotAsync();
-
+                        Micro.AFTrace();
+                        Micro.MoveToAsync(584120);
 
                         //Micro.Z_PositionPEL = 851110;
                         //Micro.Z_PositionNEL = 1;

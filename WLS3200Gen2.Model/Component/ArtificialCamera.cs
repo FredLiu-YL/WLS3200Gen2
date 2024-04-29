@@ -21,8 +21,8 @@ namespace WLS3200Gen2.Model.Component
             isGrabbing = false;
         }
 
-        public double ExposureTime { get  ; set  ; }
-        public double Gain { get  ; set  ; }
+        public double ExposureTime { get; set; }
+        public double Gain { get; set; }
 
         public bool IsGrabbing => isGrabbing;
 
@@ -36,7 +36,7 @@ namespace WLS3200Gen2.Model.Component
 
         public void Close()
         {
-             
+
         }
 
         public IDisposable Grab()
@@ -51,21 +51,21 @@ namespace WLS3200Gen2.Model.Component
         }
 
 
-        
+
 
         public void Open()
         {
-            throw new NotImplementedException();
+
         }
 
         public void Stop()
         {
-            
+
         }
 
         BitmapSource ICamera.GrabAsync()
         {
-            return   bitmapSource;
+            return bitmapSource;
         }
     }
 }

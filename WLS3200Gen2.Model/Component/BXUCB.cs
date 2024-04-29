@@ -92,10 +92,17 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(async () =>
                {
-                   bool sss = IsAutoFocusOk;
-                   SetZNEL(1);
+                   //bool sss = IsAutoFocusOk;
+                   AFOff();
+                   await A2MORG();
+                   AFOff();
+                   SetZPEL(851110);
+                   SetZNEL(1);//851110
+                   SetAFPEL(710000);
                    SetAFNEL(1);
-                   await MoveToAsync(1);
+                   await MoveToAsync(100000);//100000
+                   SetAFTBL(22);
+                   await AberrationMoveToAsync(480);
                    await ChangeLensAsync(1);
                    await ChangeApertureAsync(0);
                    await ChangeLightAsync(0);
@@ -295,7 +302,7 @@ namespace WLS3200Gen2.Model.Component
                 {
                     while (true)
                     {
-                        str = SendGetMessage("2AF SHOT", 3);
+                        str = SendGetMessage("2AF SHOT", 10);
                         if (str.Contains("AF +"))
                         {
                             break;
@@ -331,7 +338,7 @@ namespace WLS3200Gen2.Model.Component
                 string str = "";
                 while (true)
                 {
-                    str = SendGetMessage("2AF REAL", 3);
+                    str = SendGetMessage("2AF REAL", 10);
                     if (str.Contains("AF +"))
                     {
                         break;
@@ -722,6 +729,16 @@ namespace WLS3200Gen2.Model.Component
                 {
                     setZNEL = z_PositionNEL;
                 }
+                if (setZPEL <= 0)
+                {
+                    setZPEL = 1;
+                }
+                if (setZNEL <= 0)
+                {
+                    setZNEL = 1;
+                }
+                //setZPEL = 710000;
+                //setZNEL = 350000;
                 SetAFPEL(Convert.ToInt32(setZPEL));//710000
                 SetAFNEL(Convert.ToInt32(setZNEL));//350000
             }
@@ -930,7 +947,15 @@ namespace WLS3200Gen2.Model.Component
                     }
                     else if (str.Contains("2FARLMT"))
                     {
-                        nowPos = Convert.ToDouble(str.Replace("2FARLMT ", ""));
+                        string value = str.Replace("2FARLMT ", "");
+                        if (value == "X")
+                        {
+                            nowPos = 0;
+                        }
+                        else
+                        {
+                            nowPos = Convert.ToInt32(value);
+                        }
                         break;
                     }
                     else
@@ -1007,7 +1032,15 @@ namespace WLS3200Gen2.Model.Component
                     }
                     else if (str.Contains("2NEARLMT"))
                     {
-                        nowPos = Convert.ToDouble(str.Replace("2NEARLMT ", ""));
+                        string value = str.Replace("2NEARLMT ", "");
+                        if (value == "X")
+                        {
+                            nowPos = 0;
+                        }
+                        else
+                        {
+                            nowPos = Convert.ToInt32(value);
+                        }
                         break;
                     }
                     else
@@ -1080,7 +1113,15 @@ namespace WLS3200Gen2.Model.Component
                     }
                     else if (str.Contains("2AFFLMT"))
                     {
-                        nowPos = Convert.ToInt32(str.Replace("2AFFLMT ", ""));
+                        string value = str.Replace("2AFFLMT ", "");
+                        if (value == "X")
+                        {
+                            nowPos = 0;
+                        }
+                        else
+                        {
+                            nowPos = Convert.ToInt32(value);
+                        }
                         break;
                     }
                     else
@@ -1139,6 +1180,70 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public Task A2MORG()
+        {
+            try
+            {
+                return Task.Run(async () =>
+                {
+                    string str = "";
+                    int nowCount = 0;
+                    while (true)
+                    {
+                        str = SendGetMessage("2INITRET OFF", 3);
+
+                        if (str.Contains("2INITRET +"))
+                        {
+                            break;
+                        }
+                        else if (str.Contains("2INITRET !"))
+                        {
+                            string errorStr = str.Replace("2INITRET !,", "");
+                            throw new Exception("BXUCB A2MORG Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("BXUCB A2MORG Error:Retry " + TimeOutRetryCount + " Count");
+                            }
+                        }
+
+                    }
+                    await Task.Delay(1000);
+                    while (true)
+                    {
+                        str = SendGetMessage("2INITORG", 20);
+
+                        if (str.Contains("2INITORG +"))
+                        {
+                            break;
+                        }
+                        else if (str.Contains("2INITORG !"))
+                        {
+                            string errorStr = str.Replace("2INITORG !,", "");
+                            throw new Exception("BXUCB A2MORG Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("BXUCB A2MORG Error:Retry " + TimeOutRetryCount + " Count");
+                            }
+                        }
+
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
         /// <summary>
         /// 取得AFPEL值
         /// </summary>
@@ -1161,7 +1266,15 @@ namespace WLS3200Gen2.Model.Component
                     }
                     else if (str.Contains("2AFNLMT "))
                     {
-                        nowPos = Convert.ToInt32(str.Replace("2AFNLMT ", ""));
+                        string value = str.Replace("2AFNLMT ", "");
+                        if (value == "X")
+                        {
+                            nowPos = 0;
+                        }
+                        else
+                        {
+                            nowPos = Convert.ToInt32(value);
+                        }
                         break;
                     }
                     else
@@ -1210,6 +1323,87 @@ namespace WLS3200Gen2.Model.Component
                         if (nowCount > TimeOutRetryCount)
                         {
                             throw new Exception("BXUCB SetAFPEL Error:Retry " + TimeOutRetryCount + " Count");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public int GetAFTBL()
+        {
+            try
+            {
+                string str = "";
+                int nowCount = 0;
+                int nowPos = 0;
+                while (true)
+                {
+                    str = SendGetMessage("2AFTBL?", 3);
+
+                    if (str.Contains("2AFTBL !"))
+                    {
+                        string errorStr = str.Replace("2AFTBL !,", "");
+                        throw new Exception("BXUCB GetAFTBL Error:" + errorStr);
+                    }
+                    else if (str.Contains("2AFTBL "))
+                    {
+                        string value = str.Replace("2AFTBL ", "");
+                        if (value == "X")
+                        {
+                            nowPos = 0;
+                        }
+                        else
+                        {
+                            nowPos = Convert.ToInt32(value);
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
+                        {
+                            throw new Exception("BXUCB GetAFNEL Error:Retry " + TimeOutRetryCount + " Count");
+                        }
+                    }
+                }
+                return nowPos;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void SetAFTBL(int tableNumber)
+        {
+            try
+            {
+                string str = "";
+                int nowCount = 0;
+                while (true)
+                {
+                    str = SendGetMessage("2AFTBL " + tableNumber, 3);
+
+                    if (str.Contains("2AFTBL +"))
+                    {
+                        break;
+                    }
+                    else if (str.Contains("2AFTBL !"))
+                    {
+                        string errorStr = str.Replace("2AFTBL !,", "");
+                        throw new Exception("BXUCB SetAFTBL Error:" + errorStr);
+                    }
+                    else
+                    {
+                        nowCount++;
+                        if (nowCount > TimeOutRetryCount)
+                        {
+                            throw new Exception("BXUCB SetAFTBL Error:Retry " + TimeOutRetryCount + " Count");
                         }
                     }
                 }

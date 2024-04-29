@@ -149,7 +149,7 @@ namespace WLS3200Gen2.Model.Component
             OuterRingLiftMotorStop = outputs[18];
             ////Input
             ///
-            InnerRingIsVacuumOn = inputs[5];
+            InnerRingIsVacuumOn = inputs[6];
 
             InnerRingPitchXIsORG = inputs[23];
             InnerRingRollYIsORG = inputs[21];
@@ -655,7 +655,8 @@ namespace WLS3200Gen2.Model.Component
                     if (isFirstHome == true)
                     {
                         i = 0;
-                        if (OuterRingLiftMotorIsORG.IsSignal != true || OuterRingLiftMotorIsMoveOK.IsSignal != true)
+                        OuterRingLiftMotorStart.Off();
+                        if (OuterRingLiftMotorIsORG.IsSignal != true)
                         {
                             throw new Exception($"外環 不在下方，請工程師確認!!");
                         }
@@ -718,7 +719,7 @@ namespace WLS3200Gen2.Model.Component
                     {
                         i++;
                         System.Threading.Thread.Sleep(50);
-                        if (i >= 200) throw new Exception($"外環 翻轉馬達復歸異常Time out");
+                        if (i >= 400) throw new Exception($"外環 翻轉馬達復歸異常Time out");
                     }
                     OuterRingRollYOrg.Off();
                     System.Threading.Thread.Sleep(25);

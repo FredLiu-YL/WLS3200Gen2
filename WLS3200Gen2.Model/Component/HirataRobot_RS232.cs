@@ -242,7 +242,9 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                return Home();
+                Task task = Task.CompletedTask;
+                task = MovAddress(1, 0);
+                return task;
             }
             catch (Exception ex)
             {
@@ -450,7 +452,9 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                return Home();
+                Task task = Task.CompletedTask;
+                task = MovAddress(1, 0);
+                return task;
             }
             catch (Exception ex)
             {
@@ -660,7 +664,7 @@ namespace WLS3200Gen2.Model.Component
                 return Task.Run(async () =>
                 {
                     int motionPercent = this.SpeedPercent;
-                    if (motionPercent <= 0) { motionPercent = 0; }
+                    if (motionPercent <= 0) { motionPercent = 1; }
                     if (motionPercent >= 100) { motionPercent = 100; }
                     this.SpeedPercent = motionPercent;
                     SetMovSpeed(motionPercent, motionPercent);
@@ -983,11 +987,11 @@ namespace WLS3200Gen2.Model.Component
 
                 if (paddedBinaryArray[(paddedBinaryArray.Length - 1) - id] == '0')
                 {
-                    status = true;
+                    status = true;//false
                 }
                 else
                 {
-                    status = false;
+                    status = false;//true
                 }
                 return status;
             }

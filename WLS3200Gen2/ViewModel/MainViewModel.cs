@@ -46,12 +46,12 @@ namespace WLS3200Gen2
         /// </summary>
         public MainViewModel()
         {
-            isSimulate = true;
+            isSimulate = false;
 
             //   machineSetting.Load();
-            if(!Directory.Exists(systemPath))
+            if (!Directory.Exists(systemPath))
                 Directory.CreateDirectory(systemPath);
-      
+
 
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
 
@@ -90,7 +90,7 @@ namespace WLS3200Gen2
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
             machine.MacroReady += MacroOperate;
-            
+
             machine.SetWaferStatus += UpdateCassetteUI;
         }
 

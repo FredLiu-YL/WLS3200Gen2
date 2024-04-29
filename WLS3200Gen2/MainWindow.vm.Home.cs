@@ -243,10 +243,10 @@ namespace WLS3200Gen2
                     SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
                     SetRecipeToDetectionParam(mainRecipe.DetectRecipe);
-                    ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
-                    if (mainRecipe.DetectRecipe.WaferMap != null)
-                        await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
-                    ShowDetectionMapImgae(mainRecipe.DetectRecipe);
+                    //ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
+                    //if (mainRecipe.DetectRecipe.WaferMap != null)
+                    //    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                    //ShowDetectionMapImgae(mainRecipe.DetectRecipe);
                     WriteLog("Load Recipe :" + recipename);
                 }
 

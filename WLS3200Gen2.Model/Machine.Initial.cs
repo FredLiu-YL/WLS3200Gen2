@@ -75,7 +75,16 @@ namespace WLS3200Gen2.Model
             DigitalInput[] dis = motionController.InputSignals.ToArray();
             DigitalOutput[] dos = motionController.OutputSignals.ToArray();
 
-            Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4], machineSetting);
+            if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+            {
+                Feeder = new Feeder(robot, loadPort, null, macro, aligner, null, machineSetting);
+            }
+            else
+            {
+                Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4], machineSetting);
+            }
+
+
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
             StackLight = new StackLight(dos);
 
@@ -138,11 +147,12 @@ namespace WLS3200Gen2.Model
             try
             {
                 //顯示是否要復歸
+
+
                 Task feedHome = Feeder.Home();
                 await Task.Delay(500); //先暫停500ms 避免判定還沒出現就過了 WaitEFEMonSafe
                 await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
                 Task microHome = MicroDetection.Home();
-                //Task macroHome = macro.Home();
                 await Task.WhenAll(feedHome, microHome);
             }
             catch (Exception ex)
@@ -173,7 +183,7 @@ namespace WLS3200Gen2.Model
                 }
                 else
                 {
-
+                    loadPort = new HirataLoadPort_RS232(machineSetting.LoadPort1COM);//COM2
                 }
             }
 
@@ -255,27 +265,52 @@ namespace WLS3200Gen2.Model
             else
             {
                 List<AxisConfig> axisConfig = new List<AxisConfig>();
-                for (int i = 0; i <= 4; i++)
+                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                 {
-                    switch (i)
+                    for (int i = 0; i <= 3; i++)
                     {
-                        case 0:
-                            axisConfig.Add(machineSetting.TableXConfig);
-                            break;
-                        case 1:
-                            axisConfig.Add(machineSetting.TableYConfig);
-                            break;
-                        case 2:
-                            axisConfig.Add(machineSetting.TableZConfig);
-                            break;
-                        case 3:
-                            axisConfig.Add(machineSetting.TableRConfig);
-                            break;
-                        case 4:
-                            axisConfig.Add(machineSetting.RobotAxisConfig);
-                            break;
+                        switch (i)
+                        {
+                            case 0:
+                                axisConfig.Add(machineSetting.TableXConfig);
+                                break;
+                            case 1:
+                                axisConfig.Add(machineSetting.TableYConfig);
+                                break;
+                            case 2:
+                                axisConfig.Add(machineSetting.TableZConfig);
+                                break;
+                            case 3:
+                                axisConfig.Add(machineSetting.TableRConfig);
+                                break;
+                        }
                     }
                 }
+                else
+                {
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                axisConfig.Add(machineSetting.TableXConfig);
+                                break;
+                            case 1:
+                                axisConfig.Add(machineSetting.TableYConfig);
+                                break;
+                            case 2:
+                                axisConfig.Add(machineSetting.TableZConfig);
+                                break;
+                            case 3:
+                                axisConfig.Add(machineSetting.TableRConfig);
+                                break;
+                            case 4:
+                                axisConfig.Add(machineSetting.RobotAxisConfig);
+                                break;
+                        }
+                    }
+                }
+
                 //var doNames = new string[] { "do1", "do2", "do3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 //var diNames = new string[] { "di1", "di2", "di3", "di1", "di2", "di3", "di1", "di2", "di3" };
                 var doNames = new string[64];
@@ -299,14 +334,27 @@ namespace WLS3200Gen2.Model
                 }
                 else
                 {
-                    //camera = new ArtificialCamera();
-                    if (machineSetting.CamerasSettingFileName == null)
+                    if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                     {
-                        machineSetting.CamerasSettingFileName = "";
+                        if (machineSetting.CamerasSettingFileName == null)
+                        {
+                            machineSetting.CamerasSettingFileName = "";
+                        }
+                        camera = new YuanliCore.CameraLib.IDS.UeyeCamera();
                     }
-                    //camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
+                    else
+                    {
+                        if (machineSetting.CamerasSettingFileName == null)
+                        {
+                            machineSetting.CamerasSettingFileName = "";
+                        }
+                        camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
+                    }
+                    //camera = new ArtificialCamera();
 
-                    camera = new YuanliCore.CameraLib.IDS.UeyeCamera();
+
+
+
                 }
 
                 return camera;

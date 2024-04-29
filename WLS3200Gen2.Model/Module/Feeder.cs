@@ -619,7 +619,7 @@ namespace WLS3200Gen2.Model.Module
         private async Task MicroUnLoadToStandByTwoPortAsync()
         {
             WriteLog?.Invoke("UnLoad Wafer Start ");
-            await RobotAxis.MoveAsync(machineSetting.RobotAxisMicroTakePosition);
+            await RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
             await WaferMicroToStandBy();
             WriteLog?.Invoke("UnLoad Wafer End ");
         }
@@ -1325,7 +1325,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                await RobotAxis.MoveAsync(machineSetting.RobotAxisMicroTakePosition);
+                await RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
                 await Robot.PickWafer_Standby(ArmStation.Micro);
                 await Robot.PickWafer_GoIn(ArmStation.Micro);
                 await Robot.FixWafer();

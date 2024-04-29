@@ -1094,6 +1094,7 @@ namespace WLS3200Gen2
             {
                 string mesage = "";
                 string newPlace = "";
+                //machine.Feeder.Robot.SetSpeedPercentCommand(50);
                 switch (newArmStation)
                 {
                     case Model.ArmStation.Cassette1:
@@ -1182,16 +1183,31 @@ namespace WLS3200Gen2
                 {
                     case Model.ArmStation.Cassette1:
                         Wafer currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
-                        RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition).Wait();
-                        machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette1).Wait();
+                        if (machineSetting.LoadPortCount == Model.LoadPortQuantity.Single)
+                        {
+                            machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette1).Wait();
+                        }
+                        else
+                        {
+                            RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort1TakePosition).Wait();
+                            machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette1).Wait();
+                        }
                         break;
                     case Model.ArmStation.Cassette2:
                         currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
-                        RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition).Wait();
-                        machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette2).Wait();
+                        if (machineSetting.LoadPortCount == Model.LoadPortQuantity.Single)
+                        {
+                            machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette2).Wait();
+                        }
+                        else
+                        {
+                            RobotAxis.MoveToAsync(machineSetting.RobotAxisLoadPort2TakePosition).Wait();
+                            machine.Feeder.WaferLoadPortToStandBy(currentWafer.CassetteIndex, Model.ArmStation.Cassette2).Wait();
+                        }
+
                         break;
                     case Model.ArmStation.Align:
-                        machine.Feeder.AlignerL.Home().Wait();
+                        //machine.Feeder.AlignerL.Home().Wait();
                         machine.Feeder.AlignerL.ReleaseWafer().Wait();
                         machine.Feeder.WaferAlignerToStandBy().Wait();
                         break;
@@ -1241,8 +1257,15 @@ namespace WLS3200Gen2
                                 //將片子放下去
                                 RecipeLastArmStation = Model.ArmStation.Micro;
                                 Task micro = machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
-                                Task robot = machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
-                                await Task.WhenAll(micro, robot);
+                                if (machineSetting.LoadPortCount == Model.LoadPortQuantity.Single)
+                                {
+                                    await Task.WhenAll(micro);
+                                }
+                                else
+                                {
+                                    Task robot = machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
+                                    await Task.WhenAll(micro, robot);
+                                }
                                 machine.MicroDetection.TableVacuum.On();
                                 await machine.Feeder.LoadToMicroAsync();
                                 if (machine.MicroDetection.IsTableVacuum.IsSignal == false)

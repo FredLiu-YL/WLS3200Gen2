@@ -101,8 +101,10 @@ namespace WLS3200Gen2.Model.Module
 
                 Task microscopeHome1 = Microscope.HomeAsync();
 
-                await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
+                Camera.Open();
 
+                await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
+                IsInitial = true;
                 WriteLog?.Invoke("Micro Homing End");
             }
             catch (Exception ex)
