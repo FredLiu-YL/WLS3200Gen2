@@ -39,7 +39,7 @@ namespace WLS3200Gen2
         private Task taskRefresh1 = Task.CompletedTask;
         private UserAccount account;
         private string version;
-        private Axis tableX, tableY, tableR;
+        private Axis tableX, tableY, tableR, tableZ;
         private Axis robotAxis;
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
         private double tablePosX, tablePosY, tablePosR;
@@ -71,11 +71,12 @@ namespace WLS3200Gen2
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
         public Axis TableR { get => tableR; set => SetValue(ref tableR, value); }
+        public Axis TableZ { get => tableZ; set => SetValue(ref tableZ, value); }
         public Axis RobotAxis { get => robotAxis; set => SetValue(ref robotAxis, value); }
         public AxisConfig TableXConfig { get => tableXConfig; set => SetValue(ref tableXConfig, value); }
         public AxisConfig TableYConfig { get => tableYConfig; set => SetValue(ref tableYConfig, value); }
-        public AxisConfig TableZConfig { get => tableZConfig; set => SetValue(ref tableZConfig, value); }
         public AxisConfig TableRConfig { get => tableRConfig; set => SetValue(ref tableRConfig, value); }
+        public AxisConfig TableZConfig { get => tableZConfig; set => SetValue(ref tableZConfig, value); }
         public AxisConfig RobotAxisConfig { get => robotAxisConfig; set => SetValue(ref robotAxisConfig, value); }
         public DigitalInput[] DigitalInputs { get => digitalInputs; set => SetValue(ref digitalInputs, value); }
         public DigitalOutput[] DigitalOutputs { get => digitalOutputs; set => SetValue(ref digitalOutputs, value); }
@@ -200,6 +201,7 @@ namespace WLS3200Gen2
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
+                TableZ = machine.MicroDetection.AxisZ;
                 RobotAxis = machine.Feeder.RobotAxis;
 
                 Robot = machine.Feeder.Robot;
@@ -213,8 +215,8 @@ namespace WLS3200Gen2
 
                 TableXConfig = machineSetting.TableXConfig;
                 TableYConfig = machineSetting.TableYConfig;
-                TableZConfig = machineSetting.TableZConfig;
                 TableRConfig = machineSetting.TableRConfig;
+                TableZConfig = machineSetting.TableZConfig;
                 RobotAxisConfig = machineSetting.RobotAxisConfig;
 
                 IsAutoSave = ProcessSetting.IsAutoSave;
@@ -296,7 +298,11 @@ namespace WLS3200Gen2
                     return;
 
                 }
-
+                if (machine.MicroDetection != null && machine.MicroDetection.Camera != null)
+                {
+                    machine.MicroDetection.Camera.Stop();
+                }
+   
 
 
                 // 如果使用者選擇 "是"，則允許視窗關閉
@@ -517,7 +523,7 @@ namespace WLS3200Gen2
 
         }
     }
- 
+
 
     /// <summary>
     /// 如果是雙Port 就把loadport有關功能打開

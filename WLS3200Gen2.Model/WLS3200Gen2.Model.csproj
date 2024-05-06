@@ -32,6 +32,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cognex.InSight, Version=6.5.6.0, Culture=neutral, PublicKeyToken=6b9774afddb09935, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Common Files\Cognex\In-Sight\6.5.6.0\Cognex.InSight.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognex.InSight.Controls.Display, Version=6.5.6.0, Culture=neutral, PublicKeyToken=6b9774afddb09935, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Common Files\Cognex\In-Sight\6.5.6.0\Cognex.InSight.Controls.Display.dll</HintPath>
+    </Reference>
     <Reference Include="Nito.AsyncEx.Context, Version=5.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nito.AsyncEx.Context.5.1.2\lib\net461\Nito.AsyncEx.Context.dll</HintPath>
     </Reference>
@@ -102,10 +110,13 @@
     <Compile Include="Component\ArtificialCamera.cs" />
     <Compile Include="Component\ArtificialLoadPort.cs" />
     <Compile Include="Component\BXUCB.cs" />
+    <Compile Include="Component\CognexWaferID.cs" />
     <Compile Include="Component\DummyAligner.cs" />
+    <Compile Include="Component\DummyLampControl.cs" />
     <Compile Include="Component\DummyLoadPort.cs" />
     <Compile Include="Component\DummyMacro.cs" />
     <Compile Include="Component\DummyMicroscope.cs" />
+    <Compile Include="Component\DummyReader.cs" />
     <Compile Include="Component\DummyRobot.cs" />
     <Compile Include="Component\HannDeng_Macro.cs" />
     <Compile Include="Component\HirataAligner_RS232.cs" />

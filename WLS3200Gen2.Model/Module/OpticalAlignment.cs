@@ -34,8 +34,7 @@ namespace WLS3200Gen2.Model.Module
 
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
-        public bool IsInitial { get; private set; } = false;
-        public Size PixelSize { get; set; }
+        public Size PixelSize { get; set; } = new Size(1.45, 1.44);
 
 
         public Action<string> WriteLog { get; set; }
@@ -50,21 +49,41 @@ namespace WLS3200Gen2.Model.Module
                 //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
                 foreach (LocateParam fiducial in fiducialDatas)
                 {
+                    PixelSize = new Size(0.75, 0.75);
                     int number = fiducialDatas.ToList().IndexOf(fiducial);
                     WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
-                    await TableMoveToAsync(fiducial.GrabPositionX, fiducial.GrabPositionY);
-                    image = camera.GrabAsync();
+
+                    int retryCount = 5;
+                    Point movePos = new Point(fiducial.GrabPositionX, fiducial.GrabPositionY);
+                    Point actualPos = new Point(fiducial.GrabPositionX, fiducial.GrabPositionY);
 
                     //Pattern match參數傳入 蒐尋器內
                     matcher.RunParams = fiducial.MatchParam;
+                    if (retryCount <= 1)
+                    {
+                        retryCount = 1;
+                    }
+                    for (int count = 1; count <= retryCount; count++)
+                    {
+                        //移動到取像位子
+                        await TableMoveToAsync(movePos.X, movePos.Y);
+                        await Task.Delay(500);
+                        //移動到位取像
+                        image = camera.GrabAsync();
 
-                    var actualPos = await FindFiducial(image, fiducial.GrabPositionX, fiducial.GrabPositionY, number);
+                        actualPos = await FindFiducial(image, movePos.X, movePos.Y, number);
 
+                        movePos = actualPos;
+                    }
+                    //移動到中心
+                    await TableMoveToAsync(actualPos.X, actualPos.Y);
                     targetPos.Add(actualPos);
 
-                    CancelToken.Token.ThrowIfCancellationRequested();
-                    await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-
+                    if (CancelToken != null && PauseToken != null)
+                    {
+                        CancelToken.Token.ThrowIfCancellationRequested();
+                        await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                    }
                 }
                 //獲得設計座標
                 Point[] designPos = ConvertDesignPos(fiducialDatas);
@@ -100,10 +119,11 @@ namespace WLS3200Gen2.Model.Module
                 WriteLog($"Search failed ");
                 //沒搜尋到  要做些處置(目前沒做事)
 
-
-                CancelToken.Token.ThrowIfCancellationRequested();
-                await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-
+                if (CancelToken != null && PauseToken != null)
+                {
+                    CancelToken.Token.ThrowIfCancellationRequested();
+                    await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                }
                 throw new Exception("搜尋失敗");
             }
 
@@ -132,12 +152,19 @@ namespace WLS3200Gen2.Model.Module
         //Pixel轉換成實際座標
         private Point GetTargetPos(BitmapSource image, double currentPosX, double currentPosY, Point objPixel)
         {
-            //目標-影像中心  * PixelSize   = 要移動的距離
-            var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelSize.Width;
-            var deltaY = (objPixel.Y - image.PixelHeight / 2) * PixelSize.Height;
+            try
+            {
+                //目標-影像中心  * PixelSize   = 要移動的距離
+                var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelSize.Width * -1;
+                var deltaY = (objPixel.Y - image.PixelHeight / 2) * PixelSize.Height;
 
-            //當前位置+要移動的距離  = 目標實際機台座標
-            return new Point(currentPosX + deltaX, currentPosY + deltaY);
+                //當前位置+要移動的距離  = 目標實際機台座標
+                return new Point(currentPosX + deltaX, currentPosY + deltaY);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         //因 Index 或 設計圖座標 與Table的 XY軸方向可能不一致 ，所以需要多一個轉換方法將設計座標轉換成與實際機台座標同方向

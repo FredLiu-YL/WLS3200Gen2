@@ -598,6 +598,8 @@
                                     </Grid.RowDefinitions>
                                     <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
                                     <Button Grid.Column="1" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
+
+                                    <Button Grid.Column="0" Grid.Row="2" Content="WaferToLoadPort" Command="{Binding EFEMTransToLoadPortCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" />
                                     <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
                                 </Grid>
 
@@ -709,6 +711,7 @@
                                                         <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerWaferIDAngle}"/>
                                                         <Button Grid.Row="1"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
 
+                                                        
                                                         <Button Grid.Column="2" Grid.Row="2" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
                                                         
                                                         <GroupBox Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
@@ -725,9 +728,9 @@
                                                         <ColumnDefinition/>
                                                     </Grid.ColumnDefinitions>
                                                     <Grid.RowDefinitions >
-                                                        <RowDefinition Height="0.20*"/>
-                                                        <RowDefinition Height="0.3*"/>
-                                                        <RowDefinition Height="0.50*"/>
+                                                        <RowDefinition Height="0.12*"/>
+                                                        <RowDefinition Height="0.40*"/>
+                                                        <RowDefinition Height="0.48*"/>
                                                     </Grid.RowDefinitions>
                                                     <Grid.Resources>
                                                         <!-- 定義一個名為 GroupBoxStyle 的樣式 -->
@@ -753,38 +756,74 @@
                                                             <UserControlUC:LampUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25"/>
                                                         </Grid>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                    <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.75*"/>
+                                                            <ColumnDefinition Width="0.25*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <GroupBox Grid.Column="0" Grid.Row="1"  Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
                                                               IsEnabled="{Binding MacroStatus.IsProcessStop }"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start Position" Style="{StaticResource GroupBoxStyle}">
-                                                        <Grid>
-                                                            <Grid.RowDefinitions >
-                                                                <RowDefinition />
-                                                                <RowDefinition />
-                                                                <RowDefinition />
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions >
-                                                                <ColumnDefinition Width="0.15*"/>
-                                                                <ColumnDefinition Width="0.15*"/>
-                                                                <ColumnDefinition Width="0.15*"/>
-                                                                <ColumnDefinition Width="0.15*"/>
-                                                                <ColumnDefinition Width="0.40*"/>
-                                                            </Grid.ColumnDefinitions>
+                                                            <Grid>
+                                                                <Grid.RowDefinitions >
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                </Grid.RowDefinitions>
+                                                                <Grid.ColumnDefinitions >
+                                                                    <ColumnDefinition Width="0.19*"/>
+                                                                    <ColumnDefinition Width="0.19*"/>
+                                                                    <ColumnDefinition Width="0.19*"/>
+                                                                    <ColumnDefinition Width="0.19*"/>
+                                                                    <ColumnDefinition Width="0.24*"/>
+                                                                </Grid.ColumnDefinitions>
 
-                                                            <TextBlock Grid.Column="0" Grid.Row="0"   Text="Pitch X:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding MacroTopStartPitchX}"   FontSize="20"  Width="70" VerticalAlignment="Center"   />
-                                                            <TextBlock Grid.Column="2" Grid.Row="0"   Text="Roll Y:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <TextBlock Grid.Column="0" Grid.Row="0"   Text="Pitch X:" FontSize="20"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding MacroTopStartPitchX}"   FontSize="20"  Width="70" VerticalAlignment="Center"   />
+                                                                <TextBlock Grid.Column="2" Grid.Row="0"   Text="Roll Y:" FontSize="20"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                                <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                                <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
 
-                                                            <TextBlock Grid.Column="0" Grid.Row="2"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
-                                                            <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                            <Button Grid.Column="4" Grid.Row="2" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <TextBlock Grid.Column="0" Grid.Row="3"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
+                                                                <Button Grid.Column="4" Grid.Row="3" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
-                                                        </Grid>
-                                                    </GroupBox>
+                                                            </Grid>
+                                                        </GroupBox>
+                                                        <GroupBox Grid.Column="1" Grid.Row="1"  Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              IsEnabled="{Binding MacroStatus.IsProcessStop }"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Start LightValue" Style="{StaticResource GroupBoxStyle}">
+                                                            <Grid >
+                                                                <Grid.RowDefinitions >
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                </Grid.RowDefinitions>
+                                                                <Grid.ColumnDefinitions >
+                                                                    <ColumnDefinition/>
+                                                                    <ColumnDefinition/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0" Grid.Row="0"   Text="Top L:" FontSize="15"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding MacroTopLeftLightValue}"   FontSize="20"  Width="70" VerticalAlignment="Center"/>
+
+                                                                <TextBlock Grid.Column="0" Grid.Row="1"   Text="Top R:" FontSize="15"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding MacroTopRightLightValue}"   FontSize="20"  Width="70" VerticalAlignment="Center"/>
+
+                                                                <TextBlock Grid.Column="0" Grid.Row="2"   Text="Back L:" FontSize="15"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MacroBackLeftLightValue}"   FontSize="20"  Width="70" VerticalAlignment="Center"/>
+
+                                                                <TextBlock Grid.Column="0" Grid.Row="3"   Text="Back R:" FontSize="15"  VerticalAlignment="Center" />
+                                                                <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding MacroBackRightLightValue}"   FontSize="20"  Width="70" VerticalAlignment="Center"/>
+                                                                
+                                                            </Grid>
+                                                        </GroupBox>
+                                                    </Grid>
+                                                   
                                                     <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,0"  Style="{StaticResource GroupBoxStyle}"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="14" Header="Control"  >
                                                         <Grid >
@@ -846,6 +885,7 @@
                                                             <RowDefinition Height="650" />
                                                             <RowDefinition />
                                                             <RowDefinition />
+                                                            <RowDefinition />
                                                         </Grid.RowDefinitions>
                                                        
                                                         <UserControlUC:LocateUC Grid.Row="0" MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
@@ -859,6 +899,7 @@
 
                                                         </Border>
                                                         <Button Grid.Row="2" Content="WaferToMicro" Command="{Binding EFEMTransToMicroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="5" />
+                                                        <Button Grid.Row="3" Grid.Column="2" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding TableTestCommand}" Cursor="Hand" />
                                                     </Grid>
 
 
@@ -968,8 +1009,13 @@
                                         <Button Content="Move" Height="50" FontSize="20" VerticalAlignment="Top"   Width="100"  Command="{Binding LocatedMoveDieCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
                                     </StackPanel>
                                 </Border>
-
-                                <UserControlUC:WorkholderUC Grid.Row="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="350" Height="200" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.35*"/>
+                                        <ColumnDefinition Width="0.65*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <UserControlUC:WorkholderUC Grid.Column ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="350" Height="200" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                </Grid>
                             </Grid>
                         </GroupBox>
                     </Grid>
@@ -1618,6 +1664,7 @@
                                     <motion:AxisMotionUC Axis="{Binding TableX}"  AxisSetConfig="{Binding TableXConfig}"   />
                                     <motion:AxisMotionUC Axis="{Binding TableY}"  AxisSetConfig="{Binding TableYConfig}"/>
                                     <motion:AxisMotionUC Axis="{Binding TableR}"  AxisSetConfig="{Binding TableRConfig}"/>
+                                    <motion:AxisMotionUC Axis="{Binding TableZ}"  AxisSetConfig="{Binding TableZConfig}"/>
                                     <motion:AxisMotionUC Axis="{Binding RobotAxis}" AxisSetConfig="{Binding RobotAxisConfig}" />
                                     <Grid Height="480">
                                         <Grid.ColumnDefinitions>
@@ -1634,9 +1681,6 @@
                                 </StackPanel>
 
                             </Grid>
-                            <Button HorizontalAlignment="Left" Margin="284,106,0,134" Grid.Row="1" Width="75"    Command="{Binding TESTCommand}" />
-                            <Button Content="Button" HorizontalAlignment="Left" Margin="439,106,0,134" Grid.Row="1" Width="75"  Command="{Binding TEST1Command}" />
-
                         </Grid>
                     </TabItem>
                     <TabItem >

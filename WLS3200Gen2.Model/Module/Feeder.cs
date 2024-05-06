@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.Data;
+using YuanliCore.Model.Interface.Component;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model.Module
@@ -40,7 +41,7 @@ namespace WLS3200Gen2.Model.Module
         /// <param name="macro">巨觀檢查機構 </param>
         /// <param name="aligner">晶圓定位機</param>
         /// <param name="axis">乘載機械手臂的移動軸</param>
-        public Feeder(IEFEMRobot robot, ILoadPort loadPortL, ILoadPort loadPortR, IMacro macro, IAligner aligner, Axis axis, MachineSetting machineSetting)
+        public Feeder(IEFEMRobot robot, ILoadPort loadPortL, ILoadPort loadPortR, IMacro macro, IAligner aligner, ILampControl lampControl1, ILampControl lampControl2, IReader reader, Axis axis, MachineSetting machineSetting)
         {
             this.Robot = robot;
             this.Macro = macro;
@@ -48,7 +49,9 @@ namespace WLS3200Gen2.Model.Module
             this.RobotAxis = axis;
             this.LoadPortL = loadPortL;
             this.LoadPortR = loadPortR;
-
+            this.LampControl1 = lampControl1;
+            this.LampControl2 = lampControl2;
+            this.Reader = reader;
             this.machineSetting = machineSetting;
         }
         public bool IsInitial { get; private set; } = false;
@@ -67,6 +70,10 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         public ILoadPort LoadPortL { get; }
         public ILoadPort LoadPortR { get; }
+
+        public ILampControl LampControl1 { get; }
+        public ILampControl LampControl2 { get; }
+        public IReader Reader { get; }
         public Cassette Cassette { get => cassette; }
         public bool IsCassetteDone { get => isCassetteDone; }
         public string WaferID { get; }
@@ -123,10 +130,17 @@ namespace WLS3200Gen2.Model.Module
 
                 Task macroHome = Macro.Home();
 
+                Task lamp1Home = LampControl1.ChangeLightAsync(0);
+
+                Task lamp2Home = Task.CompletedTask;
+                if (LampControl2 != null)
+                {
+                    lamp2Home = LampControl2.ChangeLightAsync(0);
+                }
                 await Task.WhenAll(aligner8Home, aligner12Home);
                 await Task.WhenAll(loadPort8Home, loadPort12Home);
                 await Task.WhenAll(robotAxisHome);
-                await Task.WhenAll(macroHome);
+                await Task.WhenAll(macroHome, lamp1Home, lamp2Home);
                 IsInitial = true;
                 WriteLog?.Invoke("EFEM Homing End");
             }
@@ -321,34 +335,35 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
+
                 Stopwatch stopwatchRollY = new Stopwatch();
                 stopwatchRollY.Start();
                 await Task.Run(() =>
-                {
-                    if (Math.Abs(MacroBackStartPos) > 0)
-                    {
-                        if (MacroBackStartPos > 0)
-                        {
-                            Macro.OuterRingRollY_Move(true);
-                        }
-                        else
-                        {
-                            Macro.OuterRingRollY_Move(false);
-                        }
-                        int countRollY = 0;
-                        stopwatchRollY.Restart();
-                        while (true)
-                        {
-                            if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(MacroBackStartPos))
-                            {
-                                Macro.OuterRingRollY_Stop();
-                                break;
-                            }
-                            countRollY++;
-                        }
-                        stopwatchRollY.Stop();
-                    }
-                });
+               {
+                   if (Math.Abs(MacroBackStartPos) > 0)
+                   {
+                       if (MacroBackStartPos > 0)
+                       {
+                           Macro.OuterRingRollY_Move(true);
+                       }
+                       else
+                       {
+                           Macro.OuterRingRollY_Move(false);
+                       }
+                       int countRollY = 0;
+                       stopwatchRollY.Restart();
+                       while (true)
+                       {
+                           if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(MacroBackStartPos))
+                           {
+                               Macro.OuterRingRollY_Stop();
+                               break;
+                           }
+                           countRollY++;
+                       }
+                       stopwatchRollY.Stop();
+                   }
+               });
             }
             catch (Exception ex)
             {
@@ -405,6 +420,7 @@ namespace WLS3200Gen2.Model.Module
                     {
                         await tempAligner.Run(eFEMtionRecipe.AlignerWaferIDAngle);
                         //WaferID讀取   
+                        string result = await Reader.ReadAsync();
                         //如果讀取失敗自己KeyIn
                         if (false)
                         {

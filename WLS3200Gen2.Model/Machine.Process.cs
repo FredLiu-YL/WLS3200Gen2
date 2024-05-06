@@ -94,9 +94,11 @@ namespace WLS3200Gen2.Model
                                 SetWaferStatusToUI(currentWafer);
 
                                 //晶背檢查
-                                await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe.MacroBackStartPos);
+                                await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe);
                                 SetWaferStatusToUI(currentWafer);
 
+                                //關閉光源
+                                await CloseLampControl();
 
                                 //到Align
                                 await Feeder.LoadMacroToAlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
@@ -260,8 +262,11 @@ namespace WLS3200Gen2.Model
             //晶面檢查
             if (station == WaferProcessStatus.Select)
             {
+                Task taskLampControl1 = Feeder.LampControl1.ChangeLightAsync(eFEMtionRecipe.MacroTopLeftLightValue);
+                Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(eFEMtionRecipe.MacroTopRightLightValue);
                 await Feeder.Macro.GoInnerRingCheckPos();
                 await Feeder.TurnWafer(eFEMtionRecipe);
+                await Task.WhenAll(taskLampControl1, taskLampControl2);
                 //委派到ui 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
                 var judgeResult = await macro;
@@ -272,25 +277,31 @@ namespace WLS3200Gen2.Model
             }
 
         }
-        private async Task MacroBackInspection(WaferProcessStatus station, double MacroBackStartPos)
+        private async Task MacroBackInspection(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
+            //eFEMtionRecipe.MacroBackStartPos
             //晶背檢查
             if (station == WaferProcessStatus.Select)
             {
+                Task taskLampControl1 = Feeder.LampControl1.ChangeLightAsync(eFEMtionRecipe.MacroBackLeftLightValue);
+                Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(eFEMtionRecipe.MacroBackRightLightValue);
                 await Feeder.Macro.GoOuterRingCheckPos();
                 //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
-                await Feeder.TurnBackWafer(MacroBackStartPos);
+                await Feeder.TurnBackWafer(eFEMtionRecipe.MacroBackStartPos);
+                await Task.WhenAll(taskLampControl1, taskLampControl2);
                 //委派到ui層 去執行macro人工檢
                 Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
                 var judgeResult = await macro;
-
                 //翻回來
                 await Feeder.Macro.HomeOuterRing();
-
                 station = WaferProcessStatus.Complate;
             }
-
-
+        }
+        private async Task CloseLampControl()
+        {
+            Task taskLampControl1 = Feeder.LampControl1.ChangeLightAsync(0);
+            Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(0);
+            await Task.WhenAll(taskLampControl1, taskLampControl2);
         }
 
         private void CreateProcessFolder()

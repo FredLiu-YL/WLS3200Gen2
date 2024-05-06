@@ -17,15 +17,19 @@ namespace WLS3200Gen2.Model.Recipe
         private double macroTopStartRollY;
         private double macroTopStartYawT;
         private double macroBackStartPos;
-
+        private int macroTopLeftLightValue, macroTopRightLightValue;
+        private int macroBackLeftLightValue, macroBackRightLightValue;
         public double AlignerMicroAngle { get => alignerMicroAngle; set => SetValue(ref alignerMicroAngle, value); }
         public double AlignerWaferIDAngle { get => alignerWaferIDAngle; set => SetValue(ref alignerWaferIDAngle, value); }
         public double AlignerLoadPortAngle { get => alignerLoadPortAngle; set => SetValue(ref alignerLoadPortAngle, value); }
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
         public double MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
         public double MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
-
+        public int MacroTopLeftLightValue { get => macroTopLeftLightValue; set => SetValue(ref macroTopLeftLightValue, value); }
+        public int MacroTopRightLightValue { get => macroTopRightLightValue; set => SetValue(ref macroTopRightLightValue, value); }
         public double MacroBackStartPos { get => macroBackStartPos; set => SetValue(ref macroBackStartPos, value); }
+        public int MacroBackLeftLightValue { get => macroBackLeftLightValue; set => SetValue(ref macroBackLeftLightValue, value); }
+        public int MacroBackRightLightValue { get => macroBackRightLightValue; set => SetValue(ref macroBackRightLightValue, value); }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

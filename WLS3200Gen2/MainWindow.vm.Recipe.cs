@@ -63,6 +63,7 @@ namespace WLS3200Gen2
 
         private double alignerMicroAngle, alignerWaferIDAngle;
         private double macroTopStartPitchX, macroTopStartRollY, macroTopStartYawT, macroBackStartPos;
+        private int macroTopLeftLightValue, macroTopRightLightValue, macroBackLeftLightValue, macroBackRightLightValue;
         private Model.ArmStation lastArmStation = Model.ArmStation.Cassette1;
 
         private readonly object lockObjEFEMTrans = new object();
@@ -204,7 +205,13 @@ namespace WLS3200Gen2
         public double MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
         public double MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
 
+        public int MacroTopLeftLightValue { get => macroTopLeftLightValue; set => SetValue(ref macroTopLeftLightValue, value); }
+        public int MacroTopRightLightValue { get => macroTopRightLightValue; set => SetValue(ref macroTopRightLightValue, value); }
+
         public double MacroBackStartPos { get => macroBackStartPos; set => SetValue(ref macroBackStartPos, value); }
+
+        public int MacroBackLeftLightValue { get => macroBackLeftLightValue; set => SetValue(ref macroBackLeftLightValue, value); }
+        public int MacroBackRightLightValue { get => macroBackRightLightValue; set => SetValue(ref macroBackRightLightValue, value); }
 
         /// <summary>
         /// 
@@ -463,7 +470,6 @@ namespace WLS3200Gen2
             try
             {
 
-
                 Stopwatch stopwatch = new Stopwatch();
                 MappingCanvasWindow win = new MappingCanvasWindow(300, 300);
                 stopwatch.Start();
@@ -481,6 +487,30 @@ namespace WLS3200Gen2
                 var t1 = stopwatch.ElapsedMilliseconds;
 
 
+                try
+                {
+                    machine.MicroDetection.Microscope.HomeAsync();
+
+                    double aberationNow = 0;
+                    machine.MicroDetection.Microscope.AFOff();
+
+                    machine.MicroDetection.Microscope.ChangeLightAsync(44);
+
+                    machine.MicroDetection.Microscope.ChangeApertureAsync(700);
+
+                    double zNow = machine.MicroDetection.Microscope.AFPEL;
+
+                    aberationNow = machine.MicroDetection.Microscope.AFNEL;
+
+                    machine.MicroDetection.Microscope.SetSearchRange(584120, 100000);
+
+                    machine.MicroDetection.AxisZ.MoveAsync(25000);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
 
             }
             catch (Exception ex)
@@ -490,6 +520,26 @@ namespace WLS3200Gen2
             }
         });
 
+        public ICommand TableTestCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                SetLocateParamToRecipe();
+                await machine.MicroDetection.AxisZ.MoveToAsync(250000);
+                machine.MicroDetection.Camera.Stop();//var dis = machine.MicroDetection.Camera.Grab();
+                var dis = machine.MicroDetection.Camera.Grab();
+                machine.MicroDetection.AxisZ.MoveToAsync(250000);//CenterX
+
+
+                machine.MicroDetection.AxisX.MoveToAsync(255295);//292690 292381 292441      293628       336579     292719   292719
+                machine.MicroDetection.AxisY.MoveToAsync(199208);//-36963 244816 244816     -35427       -30927     -37004   -32863 
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        });
         public ICommand LoadMappingCommand => new RelayCommand(async () =>
         {
             string SINF_Path = "";
@@ -507,8 +557,10 @@ namespace WLS3200Gen2
                     mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping(true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
 
+                    ClearHomeMapShapeAction.Execute(true);
                     await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                     await SaveHomeMapImgae(mainRecipe.DetectRecipe.WaferMap);
+                    ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
                     ShowDetectionMapImgae(mainRecipe.DetectRecipe);
                 }
             }
@@ -524,6 +576,7 @@ namespace WLS3200Gen2
             try
             {
                 SINFMapGenerateWindow sINFMapGenerateWindow = new SINFMapGenerateWindow();
+                //sINFMapGenerateWindow.WaferMap = mainRecipe.DetectRecipe.WaferMap;
                 sINFMapGenerateWindow.ShowDialog();
                 //if (sINFMapGenerateWindow.Sinf != null && sINFMapGenerateWindow.Sinf.Dies != null && sINFMapGenerateWindow.Sinf.Dies.Length > 0)
                 //{
@@ -535,7 +588,6 @@ namespace WLS3200Gen2
                 //    mainRecipe.DetectRecipe.WaferMap.ColumnCount = sINFMapGenerateWindow.Sinf.ColumnCount;
                 //    mainRecipe.DetectRecipe.WaferMap.RowCount = sINFMapGenerateWindow.Sinf.RowCount;
                 //    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
-                //    ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                 //}
             }
             catch (Exception)
@@ -609,6 +661,10 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (showSize_X <= 0 || showSize_Y <= 0)
+                {
+                    return;
+                }
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
                 ROIShape tempselectShape = MapDrawings.Select(shape =>
                 {
@@ -854,6 +910,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 switch (key)
                 {
                     case "NotchAngle":
@@ -867,6 +924,7 @@ namespace WLS3200Gen2
                             }
                         }
                         await machine.Feeder.AlignerL.Run(AlignerMicroAngle);
+                        IsCanWorkEFEMTrans = true;
                         break;
                     case "WaferIDAngle":
                         await machine.Feeder.AlignerL.FixWafer();
@@ -879,18 +937,22 @@ namespace WLS3200Gen2
                             }
                         }
                         await machine.Feeder.AlignerL.Run(AlignerWaferIDAngle);
+                        IsCanWorkEFEMTrans = true;
                         break;
                     case "WaferIDTest":
+                        IsCanWorkEFEMTrans = true;
                         break;
                     default:
+                        IsCanWorkEFEMTrans = true;
                         break;
                 }
             }
             catch (Exception ex)
             {
-
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
+
         });
         public ICommand EFEMTransToLoadPortCommand => new RelayCommand<string>(async key =>
         {
@@ -998,9 +1060,18 @@ namespace WLS3200Gen2
                                 EFEMTransWaferPick(oldArmStation);
                                 //將片子放下去
                                 RecipeLastArmStation = Model.ArmStation.Align;
-                                machine.Feeder.AlignerL.Home().Wait();
+                                //如果是從Micro送過來就先不要Home，因為要怎麼進怎麼出
+                                if (oldArmStation != Model.ArmStation.Micro)
+                                {
+                                    machine.Feeder.AlignerL.Home().Wait();
+                                }
                                 machine.Feeder.WaferStandByToAligner().Wait();
                                 machine.Feeder.AlignerL.FixWafer().Wait();
+                                if (oldArmStation == Model.ArmStation.Micro)
+                                {
+                                    machine.Feeder.AlignerL.Home().Wait();
+                                }
+                                //如果是從Micro送過來就先不要Home，因為要怎麼進怎麼出
                                 if (machine.Feeder.AlignerL.IsLockOK == false)
                                 {
                                     throw new FlowException("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
@@ -1215,6 +1286,7 @@ namespace WLS3200Gen2
                         machine.Feeder.WaferMacroToStandBy().Wait();
                         break;
                     case Model.ArmStation.Micro:
+                        machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition).Wait();
                         machine.MicroDetection.TableVacuum.Off();
                         machine.Feeder.WaferMicroToStandBy().Wait();
                         break;
@@ -1583,12 +1655,14 @@ namespace WLS3200Gen2
                 {
                     X = item.Center.X,
                     Y = item.Center.Y,
-                    Size = 5,
-                    StrokeThickness = 2,
+                    Size = 50,
+                    StrokeThickness = 5,
                     Stroke = System.Windows.Media.Brushes.Red,
                     IsInteractived = false
                 };
                 AddShapeAction.Execute(center);
+                var offsetPixalX = (MainImage.PixelWidth / 2 - item.Center.X) * 0.7;
+                var offsetPixalY = (MainImage.PixelHeight / 2 - item.Center.Y) * 0.7;
 
             }
 
@@ -1611,21 +1685,21 @@ namespace WLS3200Gen2
 
 
                 var posDesign1 = new Point(LocateParam1.DesignPositionX, LocateParam1.DesignPositionY);
-                posDesign1.X = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransX);
-                posDesign1.Y = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransY);
+                posDesign1.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransX;
+                posDesign1.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransY;
                 LocateParam1.DesignPositionX = posDesign1.X;
                 LocateParam1.DesignPositionY = posDesign1.Y;
 
 
                 var posDesign2 = new Point(LocateParam2.DesignPositionX, LocateParam2.DesignPositionY);
-                posDesign2.X = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransX);
-                posDesign2.Y = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransY);
+                posDesign2.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransX;
+                posDesign2.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransY;
                 LocateParam2.DesignPositionX = posDesign2.X;
                 LocateParam2.DesignPositionY = posDesign2.Y;
 
                 var posDesign3 = new Point(LocateParam3.DesignPositionX, LocateParam3.DesignPositionY);
-                posDesign3.X = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransX);
-                posDesign3.Y = (mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransY);
+                posDesign3.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransX;
+                posDesign3.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransY;
                 LocateParam3.DesignPositionX = posDesign3.X;
                 LocateParam3.DesignPositionY = posDesign3.Y;
 
@@ -1655,7 +1729,7 @@ namespace WLS3200Gen2
                         int ss2 = 0;
                     }
                 }
-                this.transForm = new CogAffineTransform(posDesign, poss);
+                //this.transForm = new CogAffineTransform(posDesign, poss);
 
                 mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
                 mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
@@ -1677,7 +1751,13 @@ namespace WLS3200Gen2
             MacroTopStartRollY = eFEMtionRecipe.MacroTopStartRollY;
             MacroTopStartYawT = eFEMtionRecipe.MacroTopStartYawT;
 
+            MacroTopLeftLightValue = eFEMtionRecipe.MacroTopLeftLightValue;
+            MacroTopRightLightValue = eFEMtionRecipe.MacroTopRightLightValue;
+
             MacroBackStartPos = eFEMtionRecipe.MacroBackStartPos;
+
+            MacroBackLeftLightValue = eFEMtionRecipe.MacroBackLeftLightValue;
+            MacroBackRightLightValue = eFEMtionRecipe.MacroBackRightLightValue;
         }
         private void SetRecipeToLocateParam(DetectionRecipe detectionRecipe)
         {

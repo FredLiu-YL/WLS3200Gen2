@@ -133,6 +133,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                     axes[i].HomeVelocity = axisInfosArray[i].HomeVel;
                     axes[i].HomeMode = axisInfosArray[i].HomeMode;
                     axes[i].HomeDirection = axisInfosArray[i].HomeDirection;
+                    axes[i].Tolerance  = axisInfosArray[i].Tolerance;
                 }
 
                 axesMovVel = axesVel.ToArray();

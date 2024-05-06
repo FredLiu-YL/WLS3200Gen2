@@ -243,10 +243,13 @@ namespace WLS3200Gen2
                     SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
                     SetRecipeToLocateParam(mainRecipe.DetectRecipe);
                     SetRecipeToDetectionParam(mainRecipe.DetectRecipe);
-                    //ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
-                    //if (mainRecipe.DetectRecipe.WaferMap != null)
-                    //    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
-                    //ShowDetectionMapImgae(mainRecipe.DetectRecipe);
+                    if (mainRecipe.DetectRecipe.WaferMap != null)
+                    {
+                        ClearHomeMapShapeAction.Execute(true);
+                        await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                        ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
+                        ShowDetectionMapImgae(mainRecipe.DetectRecipe);
+                    }
                     WriteLog("Load Recipe :" + recipename);
                 }
 
@@ -344,22 +347,6 @@ namespace WLS3200Gen2
             }
         });
 
-        public ICommand TESTCommand => new RelayCommand(async () =>
-        {
-            try
-            {
-
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-            }
-        });
         public ICommand ManualReFindCommand => new RelayCommand(async () =>
        {
            try
@@ -476,22 +463,6 @@ namespace WLS3200Gen2
             {
             }
         });
-        public ICommand TEST1Command => new RelayCommand(async () =>
-        {
-            try
-            {
-
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-            }
-        });
         private PauseTokenSource ptsTest = new PauseTokenSource();
         private CancellationTokenSource ctsTest = new CancellationTokenSource();
         public ICommand TestCommand => new RelayCommand(async () =>
@@ -554,6 +525,10 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (showSize_X <= 0 || showSize_Y <= 0)
+                {
+                    return;
+                }
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
                 ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
                 {

@@ -14,6 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GalaSoft.MvvmLight.Command;
+using YuanliCore.CameraLib;
+using YuanliCore.Model.Interface.Component;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -22,10 +25,61 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class ReaderUnitUC : UserControl, INotifyPropertyChanged
     {
+        private static readonly DependencyProperty ReaderProperty = DependencyProperty.Register(nameof(Reader), typeof(IReader), typeof(ReaderUnitUC),
+                                                                                    new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        private string paramID, result;
+        private BitmapSource resultImage;
         public ReaderUnitUC()
         {
             InitializeComponent();
         }
+        public IReader Reader
+        {
+            get => (IReader)GetValue(ReaderProperty);
+            set => SetValue(ReaderProperty, value);
+        }
+        public string ParamID
+        {
+            get => paramID;
+            set => SetValue(ref paramID, value);
+        }
+        public string Result
+        {
+            get => result;
+            set => SetValue(ref result, value);
+        }
+        public BitmapSource ResultImage
+        {
+            get => resultImage;
+            set => SetValue(ref resultImage, value);
+        }
+
+        public ICommand SetParam => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        });
+        public ICommand GetResult => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                await Reader.ReadAsync();
+                ResultImage = Reader.Image.ToBitmapSource();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        });
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {

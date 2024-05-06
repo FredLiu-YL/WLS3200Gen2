@@ -284,7 +284,7 @@ namespace WLS3200Gen2.Model.Module
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 opticalAlignment.WriteLog = WriteLog;
                 WriteLog?.Invoke("Wafer Alignment Start");
-                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
+                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas );
                 WriteLog?.Invoke("Wafer Alignment End");
                 return transForm;
             }

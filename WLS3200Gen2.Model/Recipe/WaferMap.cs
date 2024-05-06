@@ -56,8 +56,18 @@ namespace WLS3200Gen2.Model.Recipe
         /// 樣本圖片 
         /// </summary>
         public Frame<byte[]> MapImage { get; set; }
-
-
+        public string Lot_ID { get; set; }
+        public int Wafer_Idx { get; set; }
+        public int Count_Row { get; set; }
+        public int Count_Column { get; set; }
+        /// <summary>
+        /// DUTMS(單位大小)
+        /// </summary>
+        public string Unit { get; set; }//DUTMS
+        public double DieSize_X { get; set; }
+        public double DieSize_Y { get; set; }
+        public double Start_LeftX { get; set; }
+        public double Start_TopY { get; set; }
     }
 
     public class SinfWaferMapping : WaferMapping
@@ -201,37 +211,22 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         private string Wafer_Size { get; set; }
         private string Device_Name { get; set; }
-        public string Lot_ID { get; set; }
-        public int Wafer_Idx { get; set; }
         private double Notch_Degree { get; set; }
-        public int Count_Row { get; set; }
-        public int Count_Column { get; set; }
         /// <summary>
         /// BCEQU
         /// </summary>
         private string Bin_Codes { get; set; }
         private double Ref_PointX { get; set; }
         private double Ref_PointY { get; set; }
-        /// <summary>
-        /// DUTMS(單位大小)
-        /// </summary>
-        public string Unit { get; set; }//DUTMS
-        public double DieSize_X { get; set; }
-        public double DieSize_Y { get; set; }
-
-        public double Start_LeftX { get; set; }
-        public double Start_TopY { get; set; }
         private string Direction_X { get; set; }
         private string Direction_Y { get; set; }
         private double Total_Die { get; set; }
-
+        public List<BincodeInfo> BinCode_result { get; set; } = new List<BincodeInfo>();
         private DieDraw[,] Dies_result { get; set; }
 
         private Direction posDirection;
 
         private Point mapCenter;
-        public List<BincodeInfo> BinCode_result { get; set; } = new List<BincodeInfo>();
-
         private void ReadSinf(string pfilePath)
         {
             try

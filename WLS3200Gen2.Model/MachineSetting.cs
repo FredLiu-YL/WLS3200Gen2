@@ -69,6 +69,7 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public string CamerasSettingFileName { get; set; }
         public CameraType CamerasType { get; set; }
+        public Size CamerasPixelSize { get; set; }
         public LoadPortType LoadPortType { get; set; }
         public LoadPortQuantity LoadPortCount { get; set; }
         /// <summary>
@@ -95,6 +96,14 @@ namespace WLS3200Gen2.Model
         /// DicRS232的COM
         /// </summary>
         public string DicCOM { get; set; }
+        /// <summary>
+        /// StrongLamp1的COM
+        /// </summary>
+        public string StrongLamp1COM { get; set; }
+        /// <summary>
+        /// StrongLamp2的COM
+        /// </summary>
+        public string StrongLamp2COM { get; set; }
         /// <summary>
         /// 
         /// </summary>

@@ -11,6 +11,7 @@ using WLS3200Gen2.Module;
 using YuanliCore.CameraLib;
 using YuanliCore.Interface;
 using YuanliCore.Model.Interface;
+using YuanliCore.Model.Interface.Component;
 using YuanliCore.Motion;
 
 namespace WLS3200Gen2.Model
@@ -31,6 +32,8 @@ namespace WLS3200Gen2.Model
                 camera = CameraEntity();
                 macro = MacrotEntity();
                 microscope = MicroEntity();
+                lampControl = LampControlEntity();
+                reader = ReaderEntity();
 
                 motionController.InitializeCommand();
 
@@ -39,9 +42,6 @@ namespace WLS3200Gen2.Model
                 robot.Initial();
                 //Log?.Invoke("Aligner Initial");
                 aligner.Initial();
-
-
-
                 //Log?.Invoke("Camera Initial");
                 //camera.Initial();
 
@@ -50,6 +50,12 @@ namespace WLS3200Gen2.Model
 
                 microscope.Initial();
 
+                for (int i = 0; i < lampControl.Length; i++)
+                {
+                    lampControl[i].Initial();
+                }
+
+                reader.Initial();
                 //將初始化後的元件 傳進模組內(分配io點位 以及 軸號)
                 AssignComponent();
 
@@ -77,11 +83,11 @@ namespace WLS3200Gen2.Model
 
             if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
             {
-                Feeder = new Feeder(robot, loadPort, null, macro, aligner, null, machineSetting);
+                Feeder = new Feeder(robot, loadPort, null, macro, aligner, lampControl[0], null, reader, null, machineSetting);
             }
             else
             {
-                Feeder = new Feeder(robot, loadPort, null, macro, aligner, axes[4], machineSetting);
+                Feeder = new Feeder(robot, loadPort, null, macro, aligner, lampControl[0], lampControl[1], reader, axes[4], machineSetting);
             }
 
 
@@ -336,6 +342,7 @@ namespace WLS3200Gen2.Model
                 {
                     if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                     {
+                        machineSetting.CamerasPixelSize = new System.Windows.Size(1.45, 1.44);
                         if (machineSetting.CamerasSettingFileName == null)
                         {
                             machineSetting.CamerasSettingFileName = "";
@@ -429,6 +436,54 @@ namespace WLS3200Gen2.Model
                 }
             }
             return robot;
+        }
+        private ILampControl[] LampControlEntity()
+        {
+            ILampControl[] lampControl = new ILampControl[1];
+            if (isSimulate)
+            {
+                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                {
+                    lampControl = new ILampControl[1];
+                    lampControl[0] = new DummyLampControl();
+                }
+                else
+                {
+                    lampControl = new ILampControl[2];
+                    lampControl[0] = new DummyLampControl();
+                    lampControl[1] = new DummyLampControl();
+                }
+            }
+            else
+            {
+                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                {
+                    lampControl = new ILampControl[1];
+                    lampControl[0] = new StrongLampRS232(machineSetting.StrongLamp1COM);
+                }
+                else
+                {
+                    lampControl = new ILampControl[2];
+                    machineSetting.StrongLamp1COM = "COM25";
+                    machineSetting.StrongLamp2COM = "COM26";
+                    lampControl[0] = new StrongLampRS232(machineSetting.StrongLamp1COM);//COM25
+                    lampControl[1] = new StrongLampRS232(machineSetting.StrongLamp2COM);//COM26
+                }
+            }
+            return lampControl;
+        }
+        private IReader ReaderEntity()
+        {
+            IReader reader = null;
+            if (isSimulate)
+            {
+                reader = new DummyReader();
+            }
+            else
+            {
+                reader = new CognexWaferID();
+            }
+            return reader;
         }
 
         public DigitalInput[] GetInputs()

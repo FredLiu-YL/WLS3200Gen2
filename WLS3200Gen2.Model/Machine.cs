@@ -10,6 +10,7 @@ using WLS3200Gen2.Module;
 using YuanliCore.Interface;
 using YuanliCore.Model.Communication;
 using YuanliCore.Model.Interface;
+using YuanliCore.Model.Interface.Component;
 
 namespace WLS3200Gen2.Model
 {
@@ -22,6 +23,8 @@ namespace WLS3200Gen2.Model
         private ICamera camera;
         private IMicroscope microscope;
         private IMacro macro;
+        private ILampControl[] lampControl;
+        private IReader reader;
         private MachineSetting machineSetting;
         private ICIM cim;
         private bool isSimulate;
