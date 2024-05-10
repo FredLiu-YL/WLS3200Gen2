@@ -339,7 +339,7 @@ namespace WLS3200Gen2.Model
                 {
                     if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                     {
-                        machineSetting.CamerasPixelSize = new System.Windows.Size(1.45, 1.44);
+                        machineSetting.CamerasPixelTable = new System.Windows.Point(-1.095, 1.095);
                         if (machineSetting.CamerasSettingFileName == null)
                         {
                             machineSetting.CamerasSettingFileName = "";
@@ -348,12 +348,15 @@ namespace WLS3200Gen2.Model
                     }
                     else
                     {
+                        machineSetting.CamerasPixelTable = new System.Windows.Point(-0.75, 0.75);
                         if (machineSetting.CamerasSettingFileName == null)
                         {
                             machineSetting.CamerasSettingFileName = "";
                         }
                         camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
                     }
+
+                    camera.PixelTable = machineSetting.CamerasPixelTable;
                     //camera = new ArtificialCamera();
 
 
@@ -426,9 +429,14 @@ namespace WLS3200Gen2.Model
             {
                 if (machineSetting.RobotsType == RobotType.Hirata)
                 {
-                    //LoadPortCOM machineSetting.LoadPortCOM
-                    robot = new HirataRobot_RS232(machineSetting.RobotsCOM, 10, 2);
-
+                    if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                    {
+                        robot = new HirataRobot_RS232(machineSetting.RobotsCOM, 10, 2, false);
+                    }
+                    else
+                    {
+                        robot = new HirataRobot_RS232(machineSetting.RobotsCOM, 10, 2, true);
+                    }
                 }
             }
             return robot;

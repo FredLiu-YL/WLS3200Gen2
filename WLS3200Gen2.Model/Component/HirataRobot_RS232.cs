@@ -36,9 +36,9 @@ namespace WLS3200Gen2.Model.Component
         private const char ETX = '\x3';
         private short RX_LRC = 3;
         private bool STX_flag = false, ETX_flag = false;
-
         private List<char> RxData;
-        public HirataRobot_RS232(string comPort, int speedPercent, double tolerance)
+        private bool isInputReverse;
+        public HirataRobot_RS232(string comPort, int speedPercent, double tolerance, bool isInputReverse)
         {
             try
             {
@@ -51,6 +51,7 @@ namespace WLS3200Gen2.Model.Component
 
                 this.MoveTolerance = tolerance;
                 this.SpeedPercent = speedPercent;
+                this.isInputReverse = isInputReverse;
                 //serialPort.Open();
                 //IsOpen = true;
             }
@@ -987,11 +988,25 @@ namespace WLS3200Gen2.Model.Component
 
                 if (paddedBinaryArray[(paddedBinaryArray.Length - 1) - id] == '0')
                 {
-                    status = false;//false
+                    if (isInputReverse)
+                    {
+                        status = true;
+                    }
+                    else
+                    {
+                        status = false;
+                    }
                 }
                 else
                 {
-                    status = true;//true
+                    if (isInputReverse)
+                    {
+                        status = false;
+                    }
+                    else
+                    {
+                        status = true;
+                    }
                 }
                 return status;
             }

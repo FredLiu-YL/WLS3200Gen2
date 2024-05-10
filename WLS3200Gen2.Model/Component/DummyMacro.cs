@@ -70,6 +70,11 @@ namespace WLS3200Gen2.Model.Component
 
         }
 
+        public Task InnerRingRollYMoveToAsync(double pos)
+        {
+            return Task.CompletedTask;
+        }
+
         public void InnerRingRollY_Move(bool isForward)
         {
 

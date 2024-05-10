@@ -143,6 +143,7 @@ namespace Test
                 //////////////////////Initial//////////////////////
                 //LampControl = new StrongLampRS232("COM25");
                 //LampControl.Initial();
+                loadPortCount = LoadPortQuantity.Pair;
                 if (loadPortCount == LoadPortQuantity.Single)
                 {
                     BXUCB aa = new BXUCB("COM4", false);

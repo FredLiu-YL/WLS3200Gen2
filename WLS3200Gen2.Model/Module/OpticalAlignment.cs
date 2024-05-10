@@ -35,7 +35,7 @@ namespace WLS3200Gen2.Model.Module
 
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
-        public Size PixelSize { get; set; } = new Size(1.45, 1.44);
+        public Point PixelTable { get; set; }
         public Action<string> WriteLog { get; set; }
         public Action<BitmapSource, Point?, int> FiducialRecord { get; set; }
 
@@ -50,12 +50,11 @@ namespace WLS3200Gen2.Model.Module
                 //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
                 foreach (LocateParam fiducial in fiducialDatas)
                 {
-                   
-                    //PixelSize = new Size(1.095, 1.095);
+                    
                     int number = fiducialDatas.ToList().IndexOf(fiducial);
                     WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
 
-                    int retryCount = 5;
+                    int retryCount = 3;
                     Point movePos = new Point(fiducial.GrabPositionX, fiducial.GrabPositionY);
                     Point actualPos = new Point(fiducial.GrabPositionX, fiducial.GrabPositionY);
 
@@ -179,8 +178,8 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 //目標-影像中心  * PixelSize   = 要移動的距離
-                var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelSize.Width * -1;
-                var deltaY = (objPixel.Y - image.PixelHeight / 2) * PixelSize.Height;
+                var deltaX = (objPixel.X - image.PixelWidth / 2) * PixelTable.X;
+                var deltaY = (objPixel.Y - image.PixelHeight / 2) * PixelTable.Y;
 
                 //當前位置+要移動的距離  = 目標實際機台座標
                 return new Point(currentPosX + deltaX, currentPosY + deltaY);

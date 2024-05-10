@@ -532,8 +532,8 @@ namespace WLS3200Gen2
                 machine.MicroDetection.AxisZ.MoveToAsync(machineSetting.TableWaferCatchPositionZ);//CenterX
 
 
-                machine.MicroDetection.AxisX.MoveToAsync(446000);//255295
-                machine.MicroDetection.AxisY.MoveToAsync(-22081);//199208
+                machine.MicroDetection.AxisX.MoveToAsync(255295);//255295 446000
+                machine.MicroDetection.AxisY.MoveToAsync(199208);//199208 -22081
 
                 //Robot.SetSpeedPercentCommand(Convert.ToInt32(RobotStaus.SpeedPercent));
             }
@@ -1410,7 +1410,10 @@ namespace WLS3200Gen2
                                 eFEMtionRecipe.MacroTopStartPitchX = MacroTopStartPitchX - machine.Feeder.Macro.InnerPitchXPosition;
                                 eFEMtionRecipe.MacroTopStartRollY = MacroTopStartRollY - machine.Feeder.Macro.InnerRollYPosition;
                                 eFEMtionRecipe.MacroTopStartYawT = MacroTopStartYawT - machine.Feeder.Macro.InnerYawTPosition;
-                                await machine.Feeder.TurnWafer(eFEMtionRecipe);
+                                //await machine.Feeder.TurnWafer(eFEMtionRecipe);
+
+                                await machine.Feeder.Macro.InnerRingRollYMoveToAsync(eFEMtionRecipe.MacroTopStartRollY);
+                                await machine.Feeder.Macro.InnerRingRollYMoveToAsync(0);
                             }
                             else
                             {
@@ -1467,6 +1470,17 @@ namespace WLS3200Gen2
                     SetLocateParamToRecipe();
                     //將die的map座標都轉換成 實際機台座標(解決片子更換後位置不對的問題 )
                     transForm = await machine.MicroDetection.Alignment(mainRecipe.DetectRecipe.AlignRecipe);
+
+                    List<Point> designPos = new List<Point>();
+                    designPos.Add(new Point(238050, 39330));
+                    designPos.Add(new Point(51750, 39330));
+                    designPos.Add(new Point(51750, 246330));
+                    List<Point> targetPos = new List<Point>();
+                    targetPos.Add(new Point(388259.446941595, 4377.94456233873));
+                    targetPos.Add(new Point(201781.399127985, 4520.27402669518));
+                    targetPos.Add(new Point(201632.191064522, 211707.69584316));
+                    //transForm = new CogAffineTransform(designPos, targetPos);
+
                     isRecipeAlignment = true;
                     //將所有的Die 轉換成實際片子座標(如果建立樣本時的wafer 與 LocateRun 是一起建立的  那座標會一樣 ，主要Locate目的是針對換wafer以後要重新對位
                     //如果有需要調整檢測座標 ，需要重新做對位  ，對位後會重新建立新的map全部die座標 ，為了給後續檢測座標設定使用 
@@ -1554,7 +1568,8 @@ namespace WLS3200Gen2
                 if (die == null) throw new Exception("No This Die");
                 //設計座標轉換對位後座標
                 Point transPos = transForm.TransPoint(new Point(die.MapTransX, die.MapTransY));
-                await machine.MicroDetection.TableMoveToAsync(transPos);
+
+                await machine.MicroDetection.TableMoveToAsync(new Point(transPos.X, transPos.Y));
             }
             catch (Exception ex)
             {
@@ -1748,7 +1763,7 @@ namespace WLS3200Gen2
                     IsInteractived = false
                 };
                 AddShapeAction.Execute(center);
-                
+
                 var offsetPixalX = MainImage.PixelWidth / 2 - item.Center.X;
                 var offsetPixalY = MainImage.PixelHeight / 2 - item.Center.Y;
                 var offsetDisX = offsetPixalX * 1.095;//1.095
@@ -1804,22 +1819,22 @@ namespace WLS3200Gen2
                 var indexs = new Point[] { index1, index2, index3 };
                 var posDesign = new Point[] { posDesign1, posDesign2, posDesign3 };
                 var poss = new Point[] { pos1, pos2, pos3 };
-                //if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
-                var transform = new CogAffineTransform(posDesign, poss);//(posDesign, poss);
-                //依序轉換完INDEX  塞回機械座標
-                foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
-                {
-                    Point posMap = new Point(die.MapTransX, die.MapTransY);
-                    Point pos = transform.TransPoint(posMap);
-                    die.PosX = pos.X;
-                    die.PosY = pos.Y;
-                    Point posInvert = transform.TransInvertPoint(pos);
-                    if ((die.IndexX == 0 && die.IndexY == 56) || (die.IndexX == 112 && die.IndexY == 56) || (die.IndexX == 113 && die.IndexY == 56) || (die.IndexX == 0 && die.IndexY == 66))
-                    {
-                        int ss2 = 0;
-                    }
-                }
-                //this.transForm = new CogAffineTransform(posDesign, poss);
+                ////if (index1.X == 0 && index1.Y == 0) return;//正常沒過LOCATE是無法進行到這步的 ，暫時卡控 讓設備不出錯
+                //var transform = new CogAffineTransform(posDesign, poss);//(posDesign, poss);
+                ////依序轉換完INDEX  塞回機械座標
+                //foreach (YuanliCore.Data.Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
+                //{
+                //    Point posMap = new Point(die.MapTransX, die.MapTransY);
+                //    Point pos = transform.TransPoint(posMap);
+                //    die.PosX = pos.X;
+                //    die.PosY = pos.Y;
+                //    Point posInvert = transform.TransInvertPoint(pos);
+                //    if ((die.IndexX == 0 && die.IndexY == 56) || (die.IndexX == 112 && die.IndexY == 56) || (die.IndexX == 113 && die.IndexY == 56) || (die.IndexX == 0 && die.IndexY == 66))
+                //    {
+                //        int ss2 = 0;
+                //    }
+                //}
+                ////this.transForm = new CogAffineTransform(posDesign, poss);
 
                 mainRecipe.DetectRecipe.AlignRecipe.AlignmentMode = SelectMode;
                 mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
@@ -1865,9 +1880,6 @@ namespace WLS3200Gen2
 
             mainRecipe.EFEMRecipe.MacroBackLeftLightValue = MacroBackLeftLightValue;
             mainRecipe.EFEMRecipe.MacroBackRightLightValue = MacroBackRightLightValue;
-
-            MacroBackLeftLightValue = eFEMtionRecipe.MacroBackLeftLightValue;
-            MacroBackRightLightValue = eFEMtionRecipe.MacroBackRightLightValue;
         }
         private void SetRecipeToLocateParam()
         {

@@ -69,7 +69,10 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public string CamerasSettingFileName { get; set; }
         public CameraType CamerasType { get; set; }
-        public Size CamerasPixelSize { get; set; }
+        /// <summary>
+        /// 1個Pixel平台走多少
+        /// </summary>
+        public Point CamerasPixelTable { get; set; }
         public LoadPortType LoadPortType { get; set; }
         public LoadPortQuantity LoadPortCount { get; set; }
         /// <summary>

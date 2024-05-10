@@ -12,6 +12,8 @@ namespace WLS3200Gen2.Model.Component
 {
     public class HannDeng_Macro : IMacro
     {
+        private bool isBusy;
+        private bool isStop;
         private readonly object lockObj = new object();
         private bool isCanMoveAllHome = false;
         private bool isInnerCanMoveStartPos = false;
@@ -244,12 +246,11 @@ namespace WLS3200Gen2.Model.Component
                     stopwatchReflash.Restart();
                     while (true)
                     {
-                        if (stopwatchReflash.ElapsedMilliseconds > 1)
+                        if (stopwatchReflash.ElapsedMilliseconds >= 2)
                         {
                             break;
                         }
                     }
-                    //System.Threading.Thread.Sleep(1);
                     //內環位置++
                     if (isInnerPitchXForward)
                     {
@@ -533,6 +534,61 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Macro InnerRingPitchX_Stop:" + ex);
             }
         }
+        public async Task InnerRingRollYMoveToAsync(double postion)
+        {
+            if (isBusy) throw new Exception("InnerRingRollY is Busy");
+
+            //if (postion > PositionPEL) throw new Exception($"ID:{ AxisID} [{AxisName}]  is Beyond the limits PositionPEL:{PositionPEL} POS:{postion}");
+            //if (postion < PositionNEL) throw new Exception($"ID:{ AxisID} [{AxisName}]  is Beyond the limits PositionNEL:{PositionNEL} POS:{postion}");
+            try
+            {
+                isBusy = true;
+                await Task.Run(async () =>
+               {
+                   System.Threading.Thread.Sleep(500);
+                   double movePos = postion - InnerRollYPosition;
+                   Stopwatch stopwatchRollY = new Stopwatch();
+                   stopwatchRollY.Start();
+                   if (Math.Abs(movePos) > 0)
+                   {
+                       if (movePos > 0)
+                       {
+                           InnerRingRollY_Move(true);
+                       }
+                       else
+                       {
+                           InnerRingRollY_Move(false);
+                       }
+                       int countRollY = 0;
+                       stopwatchRollY.Restart();
+                       while (true)
+                       {
+                           if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos))
+                           {
+                               InnerRingRollY_Stop();
+                               break;
+                           }
+                           countRollY++;
+                       }
+                       await Task.Delay(1);
+                       InnerRollYPosition = postion;
+                       //Thread.Sleep(800);
+                       //Macro.InnerRingRollY_Stop();
+                       stopwatchRollY.Stop();
+                   }
+               });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                isBusy = false;
+                isStop = false;
+            }
+        }
         /// <summary>
         /// 內環 縱軸/翻滾 移動
         /// </summary>
@@ -569,6 +625,7 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Macro InnerRingRollY_Move:" + ex);
             }
         }
+
         /// <summary>
         /// 內環 縱軸/翻滾 停止
         /// </summary>

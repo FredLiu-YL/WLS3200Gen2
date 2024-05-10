@@ -49,16 +49,9 @@ namespace WLS3200Gen2.Model.Module
             IsTableVacuum = inputs[5];
 
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
+            opticalAlignment.PixelTable = Camera.PixelTable;
             opticalAlignment.FiducialRecord += AlignRecord;
             opticalAlignment.AlignmentManual += AlignmentManual;
-            if (true)
-            {
-                opticalAlignment.PixelSize = new Size(1.095, 1.095);
-            }
-            else
-            {
-                opticalAlignment.PixelSize = new Size(0.75, 0.75);
-            }
         }
         public bool IsInitial { get; private set; } = false;
         public string GrabSaveTime { get; private set; }
@@ -362,7 +355,7 @@ namespace WLS3200Gen2.Model.Module
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 opticalAlignment.WriteLog = WriteLog;
                 WriteLog?.Invoke("Wafer Alignment Start");
-                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas );
+                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
                 WriteLog?.Invoke("Wafer Alignment End");
                 return transForm;
             }

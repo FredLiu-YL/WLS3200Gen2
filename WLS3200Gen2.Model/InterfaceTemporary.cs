@@ -601,6 +601,11 @@ namespace WLS3200Gen2.Model
         /// <param name="isForward"></param>
         void InnerRingRollY_Move(bool isForward);
         /// <summary>
+        /// 正面前後倒 isForwards = true(前傾)/false(後仰)
+        /// </summary>
+        /// <param name="isForward"></param>
+        Task InnerRingRollYMoveToAsync(double pos);
+        /// <summary>
         /// 平面旋轉 isForwards = true(順時針)/false(逆時針)
         /// </summary>
         /// <param name="isForwards"></param>

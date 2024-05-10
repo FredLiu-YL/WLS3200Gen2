@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using YuanliCore.Interface;
@@ -33,6 +34,7 @@ namespace WLS3200Gen2.Model.Component
         public IObservable<Frame<byte[]>> Frames => throw new NotImplementedException();
 
         public PixelFormat PixelFormat { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Point PixelTable { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Close()
         {

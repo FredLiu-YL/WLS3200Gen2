@@ -241,10 +241,11 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
-                Stopwatch stopwatchPitchX = new Stopwatch();
-                stopwatchPitchX.Start();
+               
                 Task startPitchX = Task.Run(async () =>
                 {
+                    Stopwatch stopwatchPitchX = new Stopwatch();
+                    stopwatchPitchX.Start();
                     if (Math.Abs(eFEMtionRecipe.MacroTopStartPitchX) > 0)
                     {
                         if (eFEMtionRecipe.MacroTopStartPitchX > 0)
@@ -270,11 +271,10 @@ namespace WLS3200Gen2.Model.Module
                         stopwatchPitchX.Stop();
                     }
                 });
-
-                Stopwatch stopwatchRollY = new Stopwatch();
-                stopwatchRollY.Start();
                 Task startRollY = Task.Run(async () =>
                 {
+                    Stopwatch stopwatchRollY = new Stopwatch();
+                    stopwatchRollY.Start();
                     if (Math.Abs(eFEMtionRecipe.MacroTopStartRollY) > 0)
                     {
                         if (eFEMtionRecipe.MacroTopStartRollY > 0)
@@ -289,24 +289,23 @@ namespace WLS3200Gen2.Model.Module
                         stopwatchRollY.Restart();
                         while (true)
                         {
-                            //if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(eFEMtionRecipe.MacroTopStartRollY))
-                            //{
-                            //    Macro.InnerRingRollY_Stop();
-                            //    break;
-                            //}
-                            //countRollY++;
-                            Thread.Sleep(800);
-                            Macro.InnerRingRollY_Stop();
-                            break;
+                            if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(eFEMtionRecipe.MacroTopStartRollY))
+                            {
+                                Macro.InnerRingRollY_Stop();
+                                break;
+                            }
+                            countRollY++;
+                            await Task.Delay(1);
                         }
+                        //Thread.Sleep(800);
+                        //Macro.InnerRingRollY_Stop();
                         stopwatchRollY.Stop();
                     }
                 });
-
-                Stopwatch stopwatchYawT = new Stopwatch();
-                stopwatchYawT.Start();
                 Task startYawT = Task.Run(async () =>
                 {
+                    Stopwatch stopwatchYawT = new Stopwatch();
+                    stopwatchYawT.Start();
                     if (Math.Abs(eFEMtionRecipe.MacroTopStartYawT) > 0)
                     {
                         if (eFEMtionRecipe.MacroTopStartYawT > 0)
@@ -325,6 +324,7 @@ namespace WLS3200Gen2.Model.Module
                                 Macro.InnerRingYawT_Stop();
                                 break;
                             }
+                            await Task.Delay(1);
                         }
                         stopwatchYawT.Stop();
                     }
@@ -343,10 +343,11 @@ namespace WLS3200Gen2.Model.Module
             {
                 if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
 
-                Stopwatch stopwatchRollY = new Stopwatch();
-                stopwatchRollY.Start();
+              
                 await Task.Run(() =>
                {
+                   Stopwatch stopwatchRollY = new Stopwatch();
+                   stopwatchRollY.Start();
                    if (Math.Abs(MacroBackStartPos) > 0)
                    {
                        if (MacroBackStartPos > 0)
