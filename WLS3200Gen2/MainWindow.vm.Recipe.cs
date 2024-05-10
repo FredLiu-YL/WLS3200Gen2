@@ -1865,6 +1865,9 @@ namespace WLS3200Gen2
 
             mainRecipe.EFEMRecipe.MacroBackLeftLightValue = MacroBackLeftLightValue;
             mainRecipe.EFEMRecipe.MacroBackRightLightValue = MacroBackRightLightValue;
+
+            MacroBackLeftLightValue = eFEMtionRecipe.MacroBackLeftLightValue;
+            MacroBackRightLightValue = eFEMtionRecipe.MacroBackRightLightValue;
         }
         private void SetRecipeToLocateParam()
         {

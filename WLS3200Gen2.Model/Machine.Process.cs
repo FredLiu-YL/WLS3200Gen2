@@ -110,6 +110,8 @@ namespace WLS3200Gen2.Model
                                     await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe, processSetting.IsTestRun);
                                     SetWaferStatusToUI(currentWafer);
 
+                                //關閉光源
+                                await CloseLampControl();
 
                                     //關閉光源
                                     await CloseLampControl();

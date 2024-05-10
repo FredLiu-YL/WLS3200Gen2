@@ -18,12 +18,12 @@ namespace WLS3200Gen2.Model.Component
 
         public void Close()
         {
-
+          
         }
 
         public void Initial()
         {
-
+           
         }
     }
 }
