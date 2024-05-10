@@ -14,18 +14,17 @@ namespace WLS3200Gen2.Module
     public class StackLight
     {
         private MachineStates machinestatus;
-        private DigitalOutput ledRed, ledGreen, ledYellow, buzzer;
+        private DigitalOutput ledRed, ledGreen, ledBlue, ledYellow, buzzer;
         private bool isVolume;//蜂鳴器功能開
         private bool isReflash;
         private Task reflashTask;
         public StackLight(DigitalOutput[] outputs)
         {
-
-
-            isVolume = true;
+            isVolume = false;
             this.ledRed = outputs[11];
-            this.ledGreen = outputs[12];
-            this.ledYellow = outputs[13];
+            this.ledYellow = outputs[12];
+            this.ledGreen = outputs[13];
+            this.ledBlue = outputs[14];
             this.buzzer = outputs[15];
             SwitchStates(MachineStates.IDLE);
             isReflash = true;
@@ -37,37 +36,27 @@ namespace WLS3200Gen2.Module
         public void SwitchStates(MachineStates machinestatus)
         {
             //重置所有燈號
-            ledRed.Off();
-            ledGreen.Off();
-            ledYellow.Off();
-            buzzer.Off();
-            isVolume = true;
-
             this.machinestatus = machinestatus;
-
         }
         public void VolumeOff()
         {
-
             isVolume = false;
-
-
+        }
+        public void VolumeOn()
+        {
+            isVolume = true;
         }
         public void Dispose()
         {
             try
             {
                 isReflash = false;
-
             }
             catch (Exception)
             {
 
                 throw;
             }
-
-
-
         }
 
         private async Task Reflash()
@@ -75,6 +64,10 @@ namespace WLS3200Gen2.Module
 
             while (isReflash)
             {
+                ledRed.Off();
+                ledGreen.Off();
+                ledYellow.Off();
+                buzzer.Off();
                 switch (machinestatus)
                 {
                     case MachineStates.IDLE:
@@ -108,11 +101,11 @@ namespace WLS3200Gen2.Module
                             buzzer.On();
                             await Task.Delay(500); //500毫秒後先關閉蜂鳴器
                             buzzer.Off();
-
                         }
                         else
+                        {
                             await Task.Delay(500);
-
+                        }
 
                         await Task.Delay(1000);
 
@@ -123,14 +116,18 @@ namespace WLS3200Gen2.Module
                     default:
                         break;
                 }
-
-
-
-
+            }
+            try
+            {
+                ledRed.Off();
+                ledGreen.Off();
+                ledYellow.Off();
+                buzzer.Off();
+            }
+            catch (Exception)
+            {
             }
         }
-
-
 
     }
 }

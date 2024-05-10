@@ -16,7 +16,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// <summary>
         /// Wafer尺寸
         /// </summary>
-        public InchType Inch { get; set; }
+        public InchType Inch { get; set; } = InchType.Inch12;
         /// <summary>
         /// 使用 1號 Loadport
         /// </summary>
@@ -33,6 +33,10 @@ namespace WLS3200Gen2.Model.Recipe
         /// 是否要自動對焦
         /// </summary>
         public bool IsAutoFocus { get; set; } = true;
+        /// <summary>
+        /// 是否要測試模式
+        /// </summary>
+        public bool IsTestRun { get; set; } = false ;
         public bool RemoteDefectPoint { get; set; }
         /// <summary>
         /// 晶圓檢查站點 //陣列0  是第25片 放在cassette最上面

@@ -56,6 +56,8 @@ namespace WLS3200Gen2.Model.Component
         /// <summary>
         /// 內環升降馬達開始運作 M1,M0 00:Down 10:Up
         /// </summary>
+        /// 
+        private DigitalOutput OuterRingVacuum { get; }
         private DigitalOutput InnerRingLiftMotorStart { get; }
         private DigitalOutput InnerRingLiftMotorM0 { get; }
         private DigitalOutput InnerRingLiftMotorM1 { get; }
@@ -133,6 +135,7 @@ namespace WLS3200Gen2.Model.Component
             InnerRingLiftMotorServoOff = outputs[28];
             InnerRingLiftMotorStop = outputs[26];
 
+            OuterRingVacuum = outputs[2];
 
             OuterRingRollYServo = outputs[36];
             OuterRingRollYOrg = outputs[37];
@@ -652,6 +655,7 @@ namespace WLS3200Gen2.Model.Component
                     int i = 0;
 
                     //外環抬升軸上來
+                    System.Threading.Thread.Sleep(500);
                     if (isFirstHome == true)
                     {
                         i = 0;
@@ -663,6 +667,8 @@ namespace WLS3200Gen2.Model.Component
                         OuterRingLiftMotorStart.Off();
                         OuterRingLiftMotorM0.Off();
                         OuterRingLiftMotorM1.Off();
+                        InnerRingVacuum.Off();
+                        OuterRingVacuum.On();
                         System.Threading.Thread.Sleep(50);
                         OuterRingLiftMotorM1.On();
                         System.Threading.Thread.Sleep(25);
@@ -684,7 +690,6 @@ namespace WLS3200Gen2.Model.Component
                             System.Threading.Thread.Sleep(50);
                             if (i >= 200) throw new Exception($"外環 馬達異常Time out");
                         }
-                        InnerRingVacuum.Off();
                         System.Threading.Thread.Sleep(50);
                         //上升第二段
                         OuterRingLiftMotorM0.On();
@@ -747,8 +752,9 @@ namespace WLS3200Gen2.Model.Component
                     if (isFirstHome != true)
                     {
                         InnerRingVacuum.On();
-                        System.Threading.Thread.Sleep(50);
                     }
+                    OuterRingVacuum.Off();
+                    System.Threading.Thread.Sleep(50);
                     //外環下降第二段
                     OuterRingLiftMotorStart.Off();
                     OuterRingLiftMotorM0.Off();
@@ -800,6 +806,7 @@ namespace WLS3200Gen2.Model.Component
 
                     //X、Y翻轉復歸
                     i = 0;
+                    System.Threading.Thread.Sleep(500);
                     InnerRingPitchXOrg.Off();
                     InnerRingRollYOrg.Off();
                     System.Threading.Thread.Sleep(50);
@@ -880,6 +887,8 @@ namespace WLS3200Gen2.Model.Component
                         OuterRingLiftMotorStart.Off();
                         OuterRingLiftMotorM0.Off();
                         OuterRingLiftMotorM1.Off();
+                        InnerRingVacuum.Off();
+                        OuterRingVacuum.On();
                         System.Threading.Thread.Sleep(25);
                         OuterRingLiftMotorM1.On();
                         System.Threading.Thread.Sleep(25);
@@ -901,8 +910,7 @@ namespace WLS3200Gen2.Model.Component
                             System.Threading.Thread.Sleep(50);
                             if (i >= 200) throw new Exception($"外環 上升異常");
                         }
-                        InnerRingVacuum.Off();
-                        System.Threading.Thread.Sleep(50);
+                        System.Threading.Thread.Sleep(300);
                         //外環上升第二段
                         OuterRingLiftMotorM0.On();
                         System.Threading.Thread.Sleep(25);

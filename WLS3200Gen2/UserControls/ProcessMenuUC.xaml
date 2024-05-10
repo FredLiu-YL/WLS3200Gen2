@@ -93,11 +93,29 @@
                              Color="Red" />
                     </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
                 </ToggleButton>
+                
+                <ToggleButton
+                         Grid.Column="0"
+                         Grid.Row ="4"
+                         Margin="8,8,8,16"
+                         IsChecked="{Binding IsTestRun}"
+                         Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                         Width="50"
+                         ToolTip="MaterialDesignSwitchToggleButton with Custom Track Background">
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                        <SolidColorBrush
+                             Color="Green" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOnBackground>
+                    <materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                        <SolidColorBrush
+                             Color="Red" />
+                    </materialDesign:ToggleButtonAssist.SwitchTrackOffBackground>
+                </ToggleButton>
 
                 <TextBlock Grid.Column="1" Grid.Row ="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AutoSave" FontSize="20"/>
                 <TextBlock Grid.Column="1" Grid.Row ="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="WaferCirclePhoto" FontSize="20" Width="180"/>
                 <TextBlock Grid.Column="1" Grid.Row ="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="DieAllPhoto" FontSize="20"/>
-
+                <TextBlock Grid.Column="1" Grid.Row ="4" HorizontalAlignment="Left" VerticalAlignment="Center" Text="TestRun" FontSize="20"/>
             </Grid>
         </materialDesign:PopupBox>
 

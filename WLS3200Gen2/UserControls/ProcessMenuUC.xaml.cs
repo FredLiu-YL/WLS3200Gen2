@@ -28,6 +28,8 @@ namespace WLS3200Gen2.UserControls
                                                                                          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty IsDieAllPhotoProperty = DependencyProperty.Register(nameof(IsDieAllPhoto), typeof(bool), typeof(ProcessMenuUC),
                                                                                          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsTestRunProperty = DependencyProperty.Register(nameof(IsTestRun), typeof(bool), typeof(ProcessMenuUC),
+                                                                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public ProcessMenuUC()
         {
             InitializeComponent();
@@ -46,6 +48,11 @@ namespace WLS3200Gen2.UserControls
         {
             get => (bool)GetValue(IsDieAllPhotoProperty);
             set => SetValue(IsDieAllPhotoProperty, value);
+        }
+        public bool IsTestRun
+        {
+            get => (bool)GetValue(IsTestRunProperty);
+            set => SetValue(IsTestRunProperty, value);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

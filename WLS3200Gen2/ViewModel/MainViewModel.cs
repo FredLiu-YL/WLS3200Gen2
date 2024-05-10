@@ -90,7 +90,6 @@ namespace WLS3200Gen2
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
             machine.MacroReady += MacroOperate;
-
             machine.SetWaferStatus += UpdateCassetteUI;
         }
 
@@ -102,11 +101,8 @@ namespace WLS3200Gen2
 
         private void UpdateCassetteUI(Wafer wafer)
         {
-
-
             var processStation = ProcessStations.Where(p => p.CassetteIndex == wafer.CassetteIndex).FirstOrDefault();
             processStation = wafer.ProcessStatus;
-
         }
 
 

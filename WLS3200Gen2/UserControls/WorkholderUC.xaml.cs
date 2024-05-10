@@ -107,7 +107,16 @@ namespace WLS3200Gen2.UserControls
                 {
                     tableMoveType = TableMoveType.RelaTive;
                 }
-
+                if (tableMoveType == TableMoveType.Low)
+                {
+                    TableX.AxisVelocity.MaxVel = 50000 / 10;
+                    TableY.AxisVelocity.MaxVel = 50000 / 10;
+                }
+                else
+                {
+                    TableX.AxisVelocity.MaxVel = 50000;
+                    TableY.AxisVelocity.MaxVel = 50000 ;
+                }
                 //var dis = Math.Round(Convert.ToDouble(TableDistance));
                 if (tableMoveType == TableMoveType.High || tableMoveType == TableMoveType.Low)
                 {

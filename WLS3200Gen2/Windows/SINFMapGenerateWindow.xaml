@@ -54,7 +54,8 @@
                         <Label Content="Testables" Grid.Column="0" Grid.Row="10" VerticalAlignment="Center"/>
                         <Label Content="Inkdies" Grid.Column="0" Grid.Row="11" VerticalAlignment="Center"/>
                         <Label Content="Wafer Size" Grid.Column="0" Grid.Row="12" VerticalAlignment="Center"/>
-
+                        <CheckBox Content="Show Ink" Grid.Column="0" Grid.Row="13"  VerticalAlignment="Center" IsChecked ="{Binding IsShowInk}"/>
+                        
                         <TextBox Grid.Column="1" Grid.Row="0" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Wafer_ID}"  />
                         <TextBox Grid.Column="1" Grid.Row="1" Height="35" Width="185" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Wafer_Slot}" />
 
@@ -68,6 +69,7 @@
                             <ComboBoxItem Content="8" IsSelected="{Binding IsWaferSize_8}"/>
                             <ComboBoxItem Content="12" IsSelected="{Binding IsWaferSize_12}"/>
                         </ComboBox>
+                       
                         <Button Content="Draw" Grid.Column="1" Grid.Row="13" HorizontalAlignment="Center" Height="40"  VerticalAlignment="Center" Width="180" Background="LightSkyBlue" Command="{Binding BtnDraw}"  />
 
 

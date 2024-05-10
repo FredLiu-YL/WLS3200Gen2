@@ -55,6 +55,7 @@ namespace WLS3200Gen2
         }
 
         public SinfWaferMapping Sinf;
+        public WaferMapping WaferMap { get; set; }
 
         private readonly string title_Ver = "Yuanli_MappingGenerate_Ver1.2";
 
@@ -120,7 +121,7 @@ namespace WLS3200Gen2
 
         private string sort_Classification_1, sort_Classification_2, sort_Classification_3, sort_Classification_4, sort_Classification_5;
 
-        private bool isSort_Except;
+        private bool isSort_Except, isShowInk;
 
         private string sinfPath, sinfSavePath, picturePath, defectPathName;
 
@@ -215,7 +216,7 @@ namespace WLS3200Gen2
         public string Test_Count { get => test_Count; set => SetValue(ref test_Count, value); }
         public string Ink_Count { get => ink_Count; set => SetValue(ref ink_Count, value); }
 
-
+        public bool IsShowInk { get => isShowInk; set => SetValue(ref isShowInk, value); }
 
         public string SinfPath { get => sinfPath; set => SetValue(ref sinfPath, value); }
 
@@ -344,7 +345,7 @@ namespace WLS3200Gen2
                 {
                     if (Sinf == null)
                     {
-                        Sinf = new SinfWaferMapping( true, false);
+                        Sinf = new SinfWaferMapping(true, false);
                     }
                     path = SINF_Path;
                     (Sinf.Dies, Sinf.WaferSize) = Sinf.ReadWaferFile(path, true, false);
@@ -799,7 +800,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                SinfWaferMapping aa =  SinfWaferMapping.Load("");
+                SinfWaferMapping aa = SinfWaferMapping.Load("");
 
                 FormIsEnable = false;
                 System.Windows.Forms.OpenFileDialog dlg_image = new System.Windows.Forms.OpenFileDialog();
@@ -1168,7 +1169,7 @@ namespace WLS3200Gen2
                 //m_WaferMapping.DrawRowCount = draw_CountY;
                 //m_WaferMapping.DieDrawInfo.Clear();
 
-                Sinf = new SinfWaferMapping( true, false);
+                Sinf = new SinfWaferMapping(true, false);
                 Sinf.Lot_ID = Wafer_ID;
                 Sinf.Unit = "MM";
                 Sinf.DieSize_X = dieSize_X;
@@ -1226,23 +1227,42 @@ namespace WLS3200Gen2
                         newDieDraw[x, y].MapTransX = dieSize_X * (x + 0.5);
                         newDieDraw[x, y].MapTransY = dieSize_Y * (y + 0.5);
 
-                        if (waferMappingDrawType == MappingDrawType.Skip)
+
+                        if (IsShowInk)
                         {
-                            newDieDraw[x, y].DieData = mappingDrawBinCode_Skip;
-                            newDieDraw[x, y].TransDieData = mappingDrawBinCode_Skip;
-                            //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Skip, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
-                        }
-                        else if (waferMappingDrawType == MappingDrawType.Ink)
-                        {
-                            newDieDraw[x, y].DieData = mappingDrawBinCode_Ink;
-                            newDieDraw[x, y].TransDieData = mappingDrawBinCode_Ink;
-                            //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Ink, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            if (waferMappingDrawType == MappingDrawType.Skip)
+                            {
+                                newDieDraw[x, y].DieData = mappingDrawBinCode_Skip;
+                                newDieDraw[x, y].TransDieData = mappingDrawBinCode_Skip;
+                                //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Skip, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            }
+                            else if (waferMappingDrawType == MappingDrawType.Ink)
+                            {
+                                newDieDraw[x, y].DieData = mappingDrawBinCode_Ink;
+                                newDieDraw[x, y].TransDieData = mappingDrawBinCode_Ink;
+                                //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Ink, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            }
+                            else
+                            {
+                                newDieDraw[x, y].DieData = mappingDrawBinCode_Tested;
+                                newDieDraw[x, y].TransDieData = mappingDrawBinCode_Tested;
+                                //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Tested, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            }
                         }
                         else
                         {
-                            newDieDraw[x, y].DieData = mappingDrawBinCode_Tested;
-                            newDieDraw[x, y].TransDieData = mappingDrawBinCode_Tested;
-                            //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Tested, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            if (waferMappingDrawType == MappingDrawType.Skip || waferMappingDrawType == MappingDrawType.Ink)
+                            {
+                                newDieDraw[x, y].DieData = mappingDrawBinCode_Skip;
+                                newDieDraw[x, y].TransDieData = mappingDrawBinCode_Skip;
+                                //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Skip, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            }
+                            else
+                            {
+                                newDieDraw[x, y].DieData = mappingDrawBinCode_Tested;
+                                newDieDraw[x, y].TransDieData = mappingDrawBinCode_Tested;
+                                //m_WaferMapping.DieDrawInfo.Add(new DieDrawInfo { BinCode = mappingDrawBinCode_Tested, IdxX = x, IdxY = y, DrawPosCenter = new Point(dieSize_X * (x + 0.5), dieSize_Y * (y + 0.5)) });
+                            }
                         }
                     }
                 }

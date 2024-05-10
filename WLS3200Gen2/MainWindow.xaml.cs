@@ -62,5 +62,10 @@ namespace WLS3200Gen2
             double ss = 0;
             ss = 3;
         }
+        private void Assign_Click(object sender, RoutedEventArgs e)
+        {
+            double ss = 0;
+            ss = 3;
+        }
     }
 }

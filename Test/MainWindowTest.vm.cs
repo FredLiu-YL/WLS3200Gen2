@@ -19,8 +19,10 @@ using WLS3200Gen2.Model.Component.Adlink;
 using WLS3200Gen2.Model.Module;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
+using YuanliCore.CameraLib;
 using YuanliCore.Interface;
 using YuanliCore.Model.Interface;
+using YuanliCore.Model.Interface.Component;
 using YuanliCore.Model.Microscope;
 using YuanliCore.Motion;
 using YuanliCore.Views.CanvasShapes;
@@ -37,6 +39,7 @@ namespace Test
         private IRobot robot;
         private IMicroscope micro;
         private ILampControl lampControl;
+        private IReader reader;
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private Axis tableX;
         private Axis tableY;
@@ -49,7 +52,7 @@ namespace Test
         private DigitalOutput[] digitalOutputs;
         private MacroStatus macroStatus = new MacroStatus();
         //private MacroDetection macroDetection1;
-        private LoadPortQuantity loadPortCount = LoadPortQuantity.Pair;
+        private LoadPortQuantity loadPortCount = LoadPortQuantity.Single;
 
 
         //public MacroDetection MacroDetection1 { get => macroDetection1; set => SetValue(ref macroDetection1, value); }
@@ -95,7 +98,7 @@ namespace Test
         public ILampControl LampControl { get => lampControl; set => SetValue(ref lampControl, value); }
         public LampUI LampControlParam { get => lampControlParam; set => SetValue(ref lampControlParam, value); }
 
-
+        public IReader Reader { get => reader; set => SetValue(ref reader, value); }
         //////////////////////////////////
         private WriteableBitmap mappingImage;
         private ObservableCollection<ROIShape> mappingDrawings = new ObservableCollection<ROIShape>();
@@ -187,10 +190,16 @@ namespace Test
 
                 await Micro.HomeAsync();
 
+                Reader = new CognexWaferID();
+                Reader.Initial();
 
-                //MachineCamera = new YuanliCore.CameraLib.IDS.UeyeCamera();
-                //MachineCamera.Open();
-                //CameraLive();
+                if (loadPortCount == LoadPortQuantity.Single)
+                {
+                    //MachineCamera = new YuanliCore.CameraLib.IDS.UeyeCamera();
+                    //MachineCamera.Open();
+                    //CameraLive();
+                }
+                   
 
                 //Robot = new HirataRobot_RS232("COM5", 10, 2);
                 //Robot.Initial();
@@ -534,9 +543,14 @@ namespace Test
 
         });
 
-        public ICommand OpenBXFMACommand => new RelayCommand<string>(key =>
-       {
-       });
+
+
+        public ICommand OpenBXFMACommand => new RelayCommand<string>(async key =>
+      {
+          string ss = await Reader.ReadAsync();
+
+          MainImage = new WriteableBitmap(Reader.Image.ToBitmapSource());
+      });
 
 
         private void CameraLive()

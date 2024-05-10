@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.UserControls;
+using YuanliCore.CameraLib;
 using YuanliCore.Data;
 using YuanliCore.Interface;
 using YuanliCore.Machine.Base;
@@ -33,13 +34,12 @@ namespace WLS3200Gen2
         private bool isRunning = false;
         private bool isRunCommand = false;
         private ProcessSetting processSetting;
-
         private Visibility informationUIVisibility, workholderUCVisibility;
-
+        private BitmapSource resultImage;
         private int tabControlSelectedIndex; // 0:Process Infomation   1:Alignment  2:Micro  3 :Macro
         private bool isOperateUI = true;
-
         private double manualPosX, manualPosY;
+        private string waferIDManualKeyIn;
         private MachineStates machinestatus = MachineStates.IDLE;
         private WaferProcessStatus macroJudgeOperation;
         private WaferProcessStatus microJudgeOperation = WaferProcessStatus.Pass;
@@ -50,9 +50,10 @@ namespace WLS3200Gen2
         private IAligner aligner;
         private ILoadPort loadPort1;
         private IRobot robot;
+        private ILampControl lampControl1, lampControl2;
         private MacroStatus macroStatus = new MacroStatus();
-        private bool isAutoSave, isAutoFocus;
-
+        private bool isAutoSave, isTestRun, isAutoFocus;
+        private string recipeName;
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
         /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
@@ -66,9 +67,11 @@ namespace WLS3200Gen2
         public Visibility processVisibility = Visibility.Visible;
         public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
         public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
+        public BitmapSource ResultImage { get => resultImage; set => SetValue(ref resultImage, value); }
         public int TabControlSelectedIndex { get => tabControlSelectedIndex; set => SetValue(ref tabControlSelectedIndex, value); }
         public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
         public double ManualPosY { get => manualPosY; set => SetValue(ref manualPosY, value); }
+        public string WaferIDManualKeyIn { get => waferIDManualKeyIn; set => SetValue(ref waferIDManualKeyIn, value); }
         public MachineStates Machinestatus { get => machinestatus; set => SetValue(ref machinestatus, value); }
         public ObservableCollection<ProcessStation> ProcessStations { get => processStations; set => SetValue(ref processStations, value); }
 
@@ -81,8 +84,12 @@ namespace WLS3200Gen2
         public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
         public ILoadPort LoadPort1 { get => loadPort1; set => SetValue(ref loadPort1, value); }
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
+        public ILampControl LampControl1 { get => lampControl1; set => SetValue(ref lampControl1, value); }
+        public ILampControl LampControl2 { get => lampControl2; set => SetValue(ref lampControl2, value); }
         public bool IsAutoSave { get => isAutoSave; set => SetValue(ref isAutoSave, value); }
+        public bool IsTestRun { get => isTestRun; set => SetValue(ref isTestRun, value); }
         public bool IsAutoFocus { get => isAutoFocus; set => SetValue(ref isAutoFocus, value); }
+        public String RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -104,9 +111,6 @@ namespace WLS3200Gen2
                 {
                     isRunCommand = true;
 
-
-
-
                     IsRunning = true;
                     WriteLog("Process Start");
                     //產生當下時間的資料夾
@@ -121,7 +125,8 @@ namespace WLS3200Gen2
                     //運作模式
                     ProcessSetting.IsAutoSave = IsAutoSave;
                     ProcessSetting.IsAutoFocus = IsAutoFocus;
-
+                    ProcessSetting.IsTestRun = IsTestRun;
+                    ProcessSetting.Inch = Model.Module.InchType.Inch12;
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
                     await machine.ProcessRunAsync(ProcessSetting);
 
@@ -237,16 +242,21 @@ namespace WLS3200Gen2
                 bool isDialogResult = (bool)win.ShowDialog();
                 if (isDialogResult)
                 {
-                    var recipename = win.FileName;
+                    string recipename = win.FileName;
+                    RecipeName = recipename;
+                    mainRecipe.Name = recipename;
                     mainRecipe.Load(path, recipename);
                     ShowHomeMapImgae(mainRecipe.DetectRecipe);
-                    SetRecipeToLoadWaferParam(mainRecipe.EFEMRecipe);
-                    SetRecipeToLocateParam(mainRecipe.DetectRecipe);
-                    SetRecipeToDetectionParam(mainRecipe.DetectRecipe);
-                    //ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
-                    //if (mainRecipe.DetectRecipe.WaferMap != null)
-                    //    await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
-                    //ShowDetectionMapImgae(mainRecipe.DetectRecipe);
+                    SetRecipeToLoadWaferParam();
+                    SetRecipeToLocateParam();
+                    SetRecipeToDetectionParam();
+                    if (mainRecipe.DetectRecipe.WaferMap != null)
+                    {
+                        ClearHomeMapShapeAction.Execute(true);
+                        await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
+                        ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
+                        ShowDetectionMapImgae(mainRecipe.DetectRecipe);
+                    }
                     WriteLog("Load Recipe :" + recipename);
                 }
 
@@ -279,8 +289,9 @@ namespace WLS3200Gen2
 
                     var recipename = win.FileName;
                     // machine.BonderRecipe.Save(win.FilePathName);
+                    mainRecipe.Name = recipename;
                     mainRecipe.RecipeSave(path, recipename);
-
+                    RecipeName = recipename;
                     WriteLog("Save Recipe :" + recipename);
                 }
             }
@@ -344,28 +355,13 @@ namespace WLS3200Gen2
             }
         });
 
-        public ICommand TESTCommand => new RelayCommand(async () =>
-        {
-            try
-            {
-
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-            }
-        });
         public ICommand ManualReFindCommand => new RelayCommand(async () =>
        {
            try
            {
-               await machine.MicroDetection.FindFiducial(MainImage, TablePosX, TablePosY);
-
+               Point movePos = await machine.MicroDetection.FindFiducial(MainImage, TablePosX, TablePosY);
+               ManualPosX = movePos.X;
+               ManualPosY = movePos.Y;
            }
            catch (Exception ex)
            {
@@ -380,7 +376,6 @@ namespace WLS3200Gen2
         {
             try
             {
-
                 await Task.WhenAll(TableX.MoveToAsync(ManualPosX), TableY.MoveToAsync(ManualPosY));
             }
             catch (Exception ex)
@@ -408,14 +403,45 @@ namespace WLS3200Gen2
             {
             }
         });
+        public ICommand WaferIDConfirmOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                if (WaferIDManualKeyIn != "")
+                {
+                    await machine.ProcessResume();
+                }
+            }
+            catch (Exception ex)
+            {
 
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand AlignmentOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                await machine.ProcessResume();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
         public ICommand MacroPASSOperateCommand => new RelayCommand(async () =>
         {
             try
             {
                 macroJudgeOperation = WaferProcessStatus.Pass;
                 await machine.ProcessResume();
-
             }
             catch (Exception ex)
             {
@@ -476,60 +502,8 @@ namespace WLS3200Gen2
             {
             }
         });
-        public ICommand TEST1Command => new RelayCommand(async () =>
-        {
-            try
-            {
 
 
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-            }
-        });
-        private PauseTokenSource ptsTest = new PauseTokenSource();
-        private CancellationTokenSource ctsTest = new CancellationTokenSource();
-        public ICommand TestCommand => new RelayCommand(async () =>
-        {
-            try
-            {
-                //List<MicroscopeLens> microscopeLenses = new List<MicroscopeLens>();
-                //for (int i = 0; i <= 5; i++)
-                //{
-                //    MicroscopeLens microscopeLens = new MicroscopeLens();
-                //    microscopeLenses.Add(microscopeLens);
-                //}
-                //machineSetting.MicroscopeLensDefault = microscopeLenses;
-
-
-                MainRecipe recipe = mainRecipe;
-                Wafer currentWafer = new Wafer(1);
-                currentWafer.Dies = recipe.DetectRecipe.WaferMap.Dies;
-                await machine.MicroDetection.Run(recipe.DetectRecipe, processSetting, currentWafer, ptsTest, ctsTest);
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-        });
-        public ICommand Test1Command => new RelayCommand(async () =>
-        {
-            try
-            {
-                ptsTest.IsPaused = false;
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-        });
         public void ShowDetectionHomeMapImgae(DetectionRecipe detectionRecipe)
         {
             try
@@ -554,6 +528,10 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (showSize_X <= 0 || showSize_Y <= 0)
+                {
+                    return;
+                }
                 var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
                 ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
                 {
@@ -685,13 +663,13 @@ namespace WLS3200Gen2
             }
             return path;
         }
-
+        //WaferIDConfirmOperateCommand
         private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             machine.ProcessPause();//暫停
 
             //切到Macro 頁面
-            TabControlSelectedIndex = 3;
+            TabControlSelectedIndex = 4;
             IsOperateUI = false;
             cts.Token.ThrowIfCancellationRequested();
             await pts.Token.WaitWhilePausedAsync(cts.Token);
@@ -700,13 +678,29 @@ namespace WLS3200Gen2
             IsOperateUI = true;
             return macroJudgeOperation;
         }
+        private async Task<Point> AlignmentOperate(PauseTokenSource pts, CancellationTokenSource cts, double grabPosX, double grabPosY)
+        {
+            pts.IsPaused = true;
+            machine.ProcessPause();//暫停
+            ManualPosX = grabPosX;
+            ManualPosY = grabPosY;
+            //切到Alignment 頁面
+            TabControlSelectedIndex = 2;
+            IsOperateUI = false;
+            cts.Token.ThrowIfCancellationRequested();
+            await pts.Token.WaitWhilePausedAsync(cts.Token);
+            //切到Infomation頁面
+            TabControlSelectedIndex = 0;
+            IsOperateUI = true;
+            return new Point(ManualPosX, ManualPosY);
+        }
         private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             pts.IsPaused = true;
-            //machine.ProcessPause();//暫停
+            machine.ProcessPause();//暫停
 
             //切到Micro 頁面
-            TabControlSelectedIndex = 3;
+            TabControlSelectedIndex = 4;
             IsOperateUI = false;
             cts.Token.ThrowIfCancellationRequested();
             await pts.Token.WaitWhilePausedAsync(cts.Token);
@@ -718,8 +712,8 @@ namespace WLS3200Gen2
         private async Task<String> WaferIDOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             pts.IsPaused = true;
-            //machine.ProcessPause();//暫停
-
+            machine.ProcessPause();//暫停
+            WaferIDManualKeyIn = "";
             //切到Micro 頁面
             TabControlSelectedIndex = 1;
             IsOperateUI = false;
@@ -728,7 +722,11 @@ namespace WLS3200Gen2
             //切到Infomation頁面
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
-            return "";
+            return WaferIDManualKeyIn;
+        }
+        private void WaferIDRecord(BitmapSource bitmap)
+        {
+            System.Drawing.Bitmap bmp = bitmap.ToBitmap();
         }
     }
 }

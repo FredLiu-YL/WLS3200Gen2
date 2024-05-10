@@ -1,6 +1,7 @@
 ﻿using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -10,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using WLS3200Gen2.Model.Recipe;
 using YuanliCore.CameraLib;
 using YuanliCore.Data;
@@ -25,7 +27,7 @@ namespace WLS3200Gen2.Model.Module
 
         private PauseTokenSource pauseToken;
         private CancellationTokenSource cancelToken;
-        private Subject<BitmapSource> subject = new Subject<BitmapSource>();
+        private Subject<DetectionSaveParam> subject = new Subject<DetectionSaveParam>();
         private IDisposable camlive;
 
 
@@ -48,8 +50,18 @@ namespace WLS3200Gen2.Model.Module
 
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.FiducialRecord += AlignRecord;
+            opticalAlignment.AlignmentManual += AlignmentManual;
+            if (true)
+            {
+                opticalAlignment.PixelSize = new Size(1.095, 1.095);
+            }
+            else
+            {
+                opticalAlignment.PixelSize = new Size(0.75, 0.75);
+            }
         }
         public bool IsInitial { get; private set; } = false;
+        public string GrabSaveTime { get; private set; }
         public ICamera Camera { get; }
         public Axis AxisX { get; }
         public Axis AxisY { get; }
@@ -59,9 +71,8 @@ namespace WLS3200Gen2.Model.Module
         public DigitalInput IsTableVacuum { get; }
         public DigitalOutput LiftPin { get; }
         public IMicroscope Microscope { get; }
-
         public DetectionRecipe DetectionRecipe { set; get; }
-        public IObservable<BitmapSource> Observable => subject;
+        public IObservable<DetectionSaveParam> Observable => subject;
         /// <summary>
         /// 流程動作文字記錄
         /// </summary>
@@ -71,10 +82,15 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         public event Action<BitmapSource, Point?, int> FiducialRecord;
         /// <summary>
+        /// 
+        /// </summary>
+        public event Func<PauseTokenSource, CancellationTokenSource, double, double, Task<Point>> AlignmentError;
+        /// <summary>
         /// 檢測結果紀錄
         /// </summary>
-        public event Action<BitmapSource> DetectionRecord;
-        /// <summary>
+        public event Action<BitmapSource, DetectionPoint, Wafer, string, string> DetectionRecord;
+
+        /// <summary> 
         /// 
         /// </summary>
         public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MicroReady;
@@ -134,12 +150,22 @@ namespace WLS3200Gen2.Model.Module
 
                 throw ex;
             }
-
-
             //如果有lift 或夾持機構 需要做處理
-
         }
+        public async Task FocusZWaferPrepare(double pos, PauseTokenSource pst, CancellationTokenSource ctk)
+        {
+            try
+            {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                await AxisZ.MoveToAsync(pos);
+            }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
+            //如果有lift 或夾持機構 需要做處理
+        }
         /// <summary>
         /// 出料準備動作
         /// </summary>
@@ -161,61 +187,112 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-
-
-        public async Task Run(DetectionRecipe recipe, ProcessSetting processSetting, Wafer currentWafer, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(MainRecipe mainRecipe, ProcessSetting processSetting, Wafer currentWafer, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             try
             {
-                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
-                this.pauseToken = pst;
-                this.cancelToken = ctk;
-                opticalAlignment.CancelToken = cancelToken;
-                opticalAlignment.PauseToken = pauseToken;
-
-                //入料準備?
-                //await subject.ToTask();
-
-                cancelToken.Token.ThrowIfCancellationRequested();
-                await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
-                //對位
-                //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
-                ITransform transForm = await Alignment(recipe.AlignRecipe);
-                cancelToken.Token.ThrowIfCancellationRequested();
-                await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
-                //每一個座標需要檢查的座標
-                foreach (DetectionPoint point in recipe.DetectionPoints)
+                DetectionRecipe recipe = mainRecipe.DetectRecipe;
+                if (IsTableVacuum.IsSignal)
                 {
-                    WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
-                    //轉換成對位後實際座標
-                    var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
-                    var transPosition = transForm.TransPoint(newPos);
+                    if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
 
-                    await TableMoveToAsync(transPosition); //Offset
-                    await SetMicroscope(point);
-                    if (processSetting.IsAutoFocus)
+                    if (pst == null || ctk == null)
                     {
-                        Microscope.AFTrace();
-                    }
-                    await Task.Delay(200);
-                    BitmapSource bmp = Camera.GrabAsync();
-                    if (processSetting.IsAutoSave)
-                    {
-                        subject.OnNext(bmp);//AOI另外丟到其他執行續處理
+                        pst = new PauseTokenSource();
+                        ctk = new CancellationTokenSource();
+                        this.pauseToken = pst;
+                        this.cancelToken = ctk;
+                        opticalAlignment.CancelToken = null;
+                        opticalAlignment.PauseToken = null;
                     }
                     else
                     {
-                        Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
-                        var cc = await micro;
+                        this.pauseToken = pst;
+                        this.cancelToken = ctk;
+                        opticalAlignment.CancelToken = cancelToken;
+                        opticalAlignment.PauseToken = pauseToken;
                     }
-                    DetectionRecord?.Invoke(bmp);
-                    // pauseToken.IsPaused = true;
+
+
+                    //入料準備?
+                    //await subject.ToTask();
 
                     cancelToken.Token.ThrowIfCancellationRequested();
                     await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 
+                    //對位
+                    //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
+                    DetectionPoint detectionPoint = new DetectionPoint();
+                    detectionPoint.MicroscopeLightValue = 39;
+                    detectionPoint.MicroscopeApertureValue = 700;
+                    detectionPoint.LensIndex = 1;
+                    detectionPoint.CubeIndex = 1;
+                    detectionPoint.Filter1Index = 1;
+                    detectionPoint.Filter2Index = 1;
+                    detectionPoint.Filter3Index = 1;
+
+                    Task alignmentMicroscopeTask = SetMicroscope(detectionPoint);
+                    Task alignmentTableTask = TableMoveToAsync(new Point(recipe.AlignRecipe.FiducialDatas[0].GrabPositionX, recipe.AlignRecipe.FiducialDatas[0].GrabPositionY));
+                    await Task.WhenAll(alignmentMicroscopeTask, alignmentTableTask);
+                    Microscope.AFTrace();
+                    if (true)
+                    {
+
+                    }
+                    else
+                    {
+                        ITransform transForm = await Alignment(recipe.AlignRecipe);
+                        cancelToken.Token.ThrowIfCancellationRequested();
+                        await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+
+                        var date = DateTime.Now.Date.ToString("yyyyMMdd-HH-mm");
+                        string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
+                                         DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
+                        GrabSaveTime = nowTime;
+                        int titleIdx = 0;
+                        if (processSetting.IsAutoSave)
+                        {
+                            //每一個座標需要檢查的座標
+                            foreach (DetectionPoint point in recipe.DetectionPoints)
+                            {
+                                titleIdx += 1;
+                                WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
+                                //轉換成對位後實際座標
+                                var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
+                                var transPosition = transForm.TransPoint(newPos);
+                                await TableMoveToAsync(transPosition); //Offset
+                                await SetMicroscope(point);
+                                if (processSetting.IsAutoFocus)
+                                {
+                                    Microscope.AFTrace();
+                                }
+                                await Task.Delay(200);
+                                DetectionSaveParam detectionSaveParam = new DetectionSaveParam();
+                                detectionSaveParam.Bmp = Camera.GrabAsync();
+                                detectionSaveParam.DetectionPoint = point;
+                                detectionSaveParam.Wafer = currentWafer;
+                                detectionSaveParam.NowTime = nowTime;
+                                detectionSaveParam.TitleIdx = titleIdx.ToString();
+                                detectionSaveParam.RecipeName = mainRecipe.Name;
+
+                                var t0 = Thread.CurrentThread.ManagedThreadId;
+                                subject.OnNext(detectionSaveParam);//AOI另外丟到其他執行續處理
+                                //DetectionRecord?.Invoke(detectionSaveParam.Bmp, point, currentWafer, nowTime, titleIdx.ToString());
+                                // pauseToken.IsPaused = true;
+                                cancelToken.Token.ThrowIfCancellationRequested();
+                                await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+                            }
+                        }
+                        else
+                        {
+                            Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
+                            var cc = await micro;
+                        }
+                    }
+                }
+                else
+                {
+                    throw new FlowException("MicroDetection:Fix Wafer Error!!");
                 }
             }
             catch (Exception ex)
@@ -262,7 +339,7 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         /// <param name="bmp"></param>
         /// <returns></returns>
-        public async Task DefectDetection(BitmapSource bmp)
+        public async Task DefectDetection(System.Drawing.Bitmap bmp)
         {
 
 
@@ -281,6 +358,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
+
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 opticalAlignment.WriteLog = WriteLog;
                 WriteLog?.Invoke("Wafer Alignment Start");
@@ -297,7 +375,6 @@ namespace WLS3200Gen2.Model.Module
         public async Task<Point> FindFiducial(BitmapSource image, double currentPosX, double currentPosY)
         {
             return await opticalAlignment.FindFiducial(image, currentPosX, currentPosY, 0);
-
         }
 
         private async Task SetMicroscope(DetectionPoint detectionPoint)
@@ -309,10 +386,10 @@ namespace WLS3200Gen2.Model.Module
             await Microscope.ChangeFilter1Async(detectionPoint.Filter1Index);
             await Microscope.ChangeFilter2Async(detectionPoint.Filter2Index);
             await Microscope.ChangeFilter3Async(detectionPoint.Filter3Index);
-            if (Microscope.IsAutoFocusTrace == false)
+            if (Microscope.IsAutoFocusTrace == false)//if (Microscope.IsAutoFocusTrace == false)
             {
-                await Microscope.MoveToAsync(detectionPoint.MicroscopePosition);
-                await Microscope.AberrationMoveToAsync(detectionPoint.MicroscopeAberationPosition);
+                await Microscope.MoveToAsync(577952);
+                await Microscope.AberrationMoveToAsync(480);
             }
         }
         //預留拿到對位結果後 可以做其他事
@@ -322,18 +399,84 @@ namespace WLS3200Gen2.Model.Module
             FiducialRecord?.Invoke(bitmap, pixel, number);
         }
 
+        private async Task<Point> AlignmentManual(PauseTokenSource pts, CancellationTokenSource cts, double grabPosX, double grabPosY)
+        {
+            Point actualPos = new Point(0, 0);
+            Task<Point> alignmentManual = AlignmentError?.Invoke(pts, cts, grabPosX, grabPosY);
+            actualPos = await alignmentManual;
+            return actualPos;
+        }
+
         private void ObservableDetection()
         {
-            camlive = Observable//.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
+            try
+            {
+                camlive = Observable//.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
+                                    // .ObserveOn(DispatcherScheduler.Current).
+                    .Select(frame =>
+                     {
+                         try
+                         {
+                             var t0 = Thread.CurrentThread.ManagedThreadId;
+                             var bmp = frame.Bmp.ToBitmap();
+
+                             string path1 = "C:\\Users\\USER\\Documents\\WLS3200\\Result\\" + frame.NowTime + "_" + frame.RecipeName +
+                                                         "\\Wafer" + frame.Wafer.CassetteIndex.ToString().PadLeft(2, '0');
+
+                             if (!Directory.Exists(path1 + "\\MicroPhoto"))
+                                 Directory.CreateDirectory(path1 + "\\MicroPhoto");
+
+                             string path = $"{ path1 }\\MicroPhoto\\{ frame.TitleIdx }_{frame.RecipeName}_{frame.NowTime}_{frame.DetectionPoint.IndexX}_{frame.DetectionPoint.IndexY}.bmp";
+                             return (bmp, path);
+                         }
+                         catch (Exception ex)
+                         {
+                             return (null, "");
+                         }
+                     })
                     .ObserveOn(TaskPoolScheduler.Default)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
-                    .Subscribe(async frame =>
-                    {
+                        .Subscribe(async frame2 =>
+                        {
+                            try
+                            {
+                                var t1 = Thread.CurrentThread.ManagedThreadId;
+                                if (frame2.bmp != null)
+                                {
+                                    //Application.Current.Dispatcher.Invoke((Action)delegate
+                                    //{
+                                    try
+                                    {
+                                        var t2 = Thread.CurrentThread.ManagedThreadId;
 
-                        frame.Save("C:\\TEST", ImageFileFormats.Bmp);
+                                        frame2.bmp.Save(frame2.path);
+                                    }
+                                    catch (Exception ex)
+                                    {
+
+                                    }
+                                    //});
+                                    await DefectDetection(frame2.bmp);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
 
 
-                        await DefectDetection(frame);
-                    });
+                            }
+                        });
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        public class DetectionSaveParam
+        {
+            public BitmapSource Bmp { get; set; }
+            public DetectionPoint DetectionPoint { get; set; }
+            public Wafer Wafer { get; set; }
+            public string NowTime { get; set; }
+            public string TitleIdx { get; set; }
+            public string RecipeName { get; set; }
         }
 
     }

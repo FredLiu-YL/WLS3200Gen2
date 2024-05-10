@@ -1353,7 +1353,7 @@ namespace WLS3200Gen2.Model.Component
                         readMessage1 = GetMessage();
                         if (stopwatch.ElapsedMilliseconds > timeOut2)
                         {
-                            throw new Exception();
+                            throw new Exception("LoadPort Error");
                         }
                         if (readMessage1.Count > 0)
                         {

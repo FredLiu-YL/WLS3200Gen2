@@ -987,11 +987,11 @@ namespace WLS3200Gen2.Model.Component
 
                 if (paddedBinaryArray[(paddedBinaryArray.Length - 1) - id] == '0')
                 {
-                    status = true;//false
+                    status = false;//false
                 }
                 else
                 {
-                    status = false;//true
+                    status = true;//true
                 }
                 return status;
             }

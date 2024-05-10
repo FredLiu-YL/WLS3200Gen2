@@ -20,6 +20,8 @@ namespace WLS3200Gen2
         private LoadPortUI loadPortUIShow = new LoadPortUI();
         private LoadPortUI loadPort2UIShow = new LoadPortUI();
         private AlignerUI alignerUIShow = new AlignerUI();
+        private LampUI lampControl1Param = new LampUI();
+        private LampUI lampControl2Param = new LampUI();
         private Point tableWaferCatchPosition;
         private double tableWaferCatchPositionX, tableWaferCatchPositionY, tableWaferCatchPositionZ, tableWaferCatchPositionR;
         private double robotAxisStandbyPosition, robotAxisLoadPort1TakePosition, robotAxisLoadPort2TakePosition;
@@ -30,7 +32,8 @@ namespace WLS3200Gen2
         public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
         public LoadPortUI LoadPort2UIShow { get => loadPort2UIShow; set => SetValue(ref loadPort2UIShow, value); }
         public AlignerUI AlignerUIShow { get => alignerUIShow; set => SetValue(ref alignerUIShow, value); }
-
+        public LampUI LampControl1Param { get => lampControl1Param; set => SetValue(ref lampControl1Param, value); }
+        public LampUI LampControl2Param { get => lampControl2Param; set => SetValue(ref lampControl2Param, value); }
         public double TableWaferCatchPositionX { get => tableWaferCatchPositionX; set => SetValue(ref tableWaferCatchPositionX, value); }
         public double TableWaferCatchPositionY { get => tableWaferCatchPositionY; set => SetValue(ref tableWaferCatchPositionY, value); }
         public double TableWaferCatchPositionZ { get => tableWaferCatchPositionZ; set => SetValue(ref tableWaferCatchPositionZ, value); }

@@ -106,6 +106,7 @@ namespace WLS3200Gen2.Model.Component
                    await ChangeLensAsync(1);
                    await ChangeApertureAsync(0);
                    await ChangeLightAsync(0);
+                   await ChangeCubeAsync(2);
                    if (isHaveDIC)
                    {
                        await ChangeFilter1Async(1);
@@ -267,6 +268,7 @@ namespace WLS3200Gen2.Model.Component
                     str = SendGetMessage("2AF OFF", 3);
                     if (str.Contains("AF +"))
                     {
+                        IsAutoFocusTrace = false;
                         break;
                     }
                     else if (str.Contains("AF !"))
@@ -336,24 +338,28 @@ namespace WLS3200Gen2.Model.Component
             {
                 int nowCount = 0;
                 string str = "";
-                while (true)
+                if (IsAutoFocusTrace == false)
                 {
-                    str = SendGetMessage("2AF REAL", 10);
-                    if (str.Contains("AF +"))
+                    while (true)
                     {
-                        break;
-                    }
-                    else if (str.Contains("AF !"))
-                    {
-                        string errorStr = str.Replace("2AF !,", "");
-                        throw new Exception("BXUCB AF_Trace Error:" + errorStr);
-                    }
-                    else
-                    {
-                        nowCount++;
-                        if (nowCount > TimeOutRetryCount)
+                        str = SendGetMessage("2AF REAL", 10);
+                        if (str.Contains("AF +"))
                         {
-                            throw new Exception("BXUCB AF_Trace Error:Retry " + TimeOutRetryCount + " Count");
+                            IsAutoFocusTrace = true;
+                            break;
+                        }
+                        else if (str.Contains("AF !"))
+                        {
+                            string errorStr = str.Replace("2AF !,", "");
+                            throw new Exception("BXUCB AF_Trace Error:" + errorStr);
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("BXUCB AF_Trace Error:Retry " + TimeOutRetryCount + " Count");
+                            }
                         }
                     }
                 }
@@ -456,8 +462,11 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    ChangeFilterAsync(1, idx);
-                    Filter1Index = idx;
+                    if (isHaveDIC)
+                    {
+                        ChangeFilterAsync(1, idx);
+                        Filter1Index = idx;
+                    }
                 });
             }
             catch (Exception ex)
@@ -472,8 +481,11 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    ChangeFilterAsync(1, idx);
-                    Filter2Index = idx;
+                    if (isHaveDIC)
+                    {
+                        ChangeFilterAsync(1, idx);
+                        Filter2Index = idx;
+                    }
                 });
             }
             catch (Exception ex)
@@ -488,8 +500,11 @@ namespace WLS3200Gen2.Model.Component
             {
                 return Task.Run(() =>
                 {
-                    ChangeFilterAsync(1, idx);
-                    Filter3Index = idx;
+                    if (isHaveDIC)
+                    {
+                        ChangeFilterAsync(1, idx);
+                        Filter3Index = idx;
+                    }
                 });
             }
             catch (Exception ex)

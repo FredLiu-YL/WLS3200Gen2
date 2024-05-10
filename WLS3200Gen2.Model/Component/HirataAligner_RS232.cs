@@ -115,7 +115,7 @@ namespace WLS3200Gen2.Model.Component
                     while (true)
                     {
                         AlignerItems alignerItems = new AlignerItems();
-                        alignerItems = Set_FindNotchPos(degree);
+                        alignerItems = Set_FindNotchPos(degree * 10);
                         if (alignerItems.IsSetOK == true)
                         {
                             alignerItems = Command_MovFindNotch();
@@ -663,7 +663,7 @@ namespace WLS3200Gen2.Model.Component
                 alignerItems.IsSetOK = false;
                 alignerItems.IsDone = false;
                 List<string> str3 = new List<string>();
-                str3 = SendGetMessage("SET:OFSE" + alignerItems.AlignerPos.FindNotchPos + ";", true);
+                str3 = SendGetMessage("SET:OFSE" + degree + ";", true);//alignerItems.AlignerPos.FindNotchPos
                 bool isSetOK = false;
                 bool isINF = false;
                 foreach (var item in str3)
