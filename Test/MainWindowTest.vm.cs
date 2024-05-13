@@ -189,10 +189,10 @@ namespace Test
                     Macro = new HannDeng_Macro(DigitalOutputs, DigitalInputs);
                 }
 
-                await Micro.HomeAsync();
+                //await Micro.HomeAsync();
 
-                Reader = new CognexWaferID();
-                Reader.Initial();
+                //Reader = new CognexWaferID();
+                //Reader.Initial();
 
                 if (loadPortCount == LoadPortQuantity.Single)
                 {

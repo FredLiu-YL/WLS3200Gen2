@@ -808,12 +808,12 @@
                                                                 <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
                                                                 <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
                                                                 <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                                <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <Button Grid.Column="4" Grid.Row="0" Content="{Binding TopMoveContent}" Command="{Binding MacroCommand}" CommandParameter="TopMove"  Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
 
                                                                 <TextBlock Grid.Column="0" Grid.Row="3"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
                                                                 <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                                <Button Grid.Column="4" Grid.Row="3" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <Button Grid.Column="4" Grid.Row="3" Content="{Binding BackMoveContent}" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
                                                             </Grid>
                                                         </GroupBox>

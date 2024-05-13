@@ -67,7 +67,7 @@ namespace WLS3200Gen2
         private double macroTopStartPitchX, macroTopStartRollY, macroTopStartYawT, macroBackStartPos;
         private int macroTopLeftLightValue, macroTopRightLightValue, macroBackLeftLightValue, macroBackRightLightValue;
         private Model.ArmStation lastArmStation = Model.ArmStation.Cassette1;
-
+        private string topMoveContent = "TopMove", backMoveContent = "BackMove";
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
         private bool isDie, isDieSub, isDieInSideAll, isPosition, isRecipeAlignment = false;
@@ -206,6 +206,8 @@ namespace WLS3200Gen2
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
         public double MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
         public double MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
+        public string TopMoveContent { get => topMoveContent; set => SetValue(ref topMoveContent, value); }
+        public string BackMoveContent { get => backMoveContent; set => SetValue(ref backMoveContent, value); }
 
         public int MacroTopLeftLightValue { get => macroTopLeftLightValue; set => SetValue(ref macroTopLeftLightValue, value); }
         public int MacroTopRightLightValue { get => macroTopRightLightValue; set => SetValue(ref macroTopRightLightValue, value); }
@@ -1400,40 +1402,75 @@ namespace WLS3200Gen2
             {
                 if (RecipeLastArmStation == Model.ArmStation.Macro)
                 {
-
+                    IsCanWorkEFEMTrans = false;
                     switch (key)
                     {
                         case "TopMove":
-                            if (machine.Feeder.Macro.IsInnerUsing)
+                            if (TopMoveContent == "TopMove")
                             {
-                                EFEMtionRecipe eFEMtionRecipe = new EFEMtionRecipe();
-                                eFEMtionRecipe.MacroTopStartPitchX = MacroTopStartPitchX - machine.Feeder.Macro.InnerPitchXPosition;
-                                eFEMtionRecipe.MacroTopStartRollY = MacroTopStartRollY - machine.Feeder.Macro.InnerRollYPosition;
-                                eFEMtionRecipe.MacroTopStartYawT = MacroTopStartYawT - machine.Feeder.Macro.InnerYawTPosition;
-                                //await machine.Feeder.TurnWafer(eFEMtionRecipe);
-
-                                await machine.Feeder.Macro.InnerRingRollYMoveToAsync(eFEMtionRecipe.MacroTopStartRollY);
-                                await machine.Feeder.Macro.InnerRingRollYMoveToAsync(0);
+                                if (machine.Feeder.Macro.IsInnerUsing)
+                                {
+                                    EFEMtionRecipe eFEMtionRecipe = new EFEMtionRecipe();
+                                    eFEMtionRecipe.MacroTopStartPitchX = MacroTopStartPitchX;// - machine.Feeder.Macro.InnerPitchXPosition;
+                                    eFEMtionRecipe.MacroTopStartRollY = MacroTopStartRollY;// - machine.Feeder.Macro.InnerRollYPosition;
+                                    eFEMtionRecipe.MacroTopStartYawT = MacroTopStartYawT;// - machine.Feeder.Macro.InnerYawTPosition;
+                                    await machine.Feeder.TurnWafer(eFEMtionRecipe);
+                                    //TopMoveContent = "Home";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Top!!");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Wafer Not In Top!!");
+                                if (machine.Feeder.Macro.IsInnerUsing)
+                                {
+                                    await machine.Feeder.Macro.InnerRingPitchXMoveToAsync(0);
+                                    await machine.Feeder.Macro.InnerRingRollYMoveToAsync(0);
+                                    await machine.Feeder.Macro.InnerRingYawTMoveToAsync(0);
+                                    TopMoveContent = "TopMove";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Top!!");
+                                }
                             }
+
                             break;
                         case "BackMove":
-                            if (machine.Feeder.Macro.IsOuterUsing)
+                            if (TopMoveContent == "TopMove")
                             {
-                                double moveOffset = MacroBackStartPos - machine.Feeder.Macro.OuterRollYPosition;
-                                await machine.Feeder.TurnBackWafer(moveOffset);
+                                if (machine.Feeder.Macro.IsOuterUsing)
+                                {
+                                    double moveOffset = MacroBackStartPos;// - machine.Feeder.Macro.OuterRollYPosition;
+                                    await machine.Feeder.TurnBackWafer(moveOffset);
+                                    //TopMoveContent = "Home";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Back!!");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Wafer Not In Back!!");
+                                if (machine.Feeder.Macro.IsOuterUsing)
+                                {
+                                    double moveOffset = MacroBackStartPos;// - machine.Feeder.Macro.OuterRollYPosition;
+                                    await machine.Feeder.TurnBackWafer(0);
+                                    TopMoveContent = "TopMove";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Back!!");
+                                }
                             }
+
                             break;
                         default:
                             break;
                     }
+                    IsCanWorkEFEMTrans = true;
                 }
                 else
                 {

@@ -214,7 +214,6 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
-                Wafer TempPre_Wafer = null;
                 await Task.Run(async () =>
                  {
 
@@ -241,96 +240,20 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
-               
-                Task startPitchX = Task.Run(async () =>
-                {
-                    Stopwatch stopwatchPitchX = new Stopwatch();
-                    stopwatchPitchX.Start();
-                    if (Math.Abs(eFEMtionRecipe.MacroTopStartPitchX) > 0)
-                    {
-                        if (eFEMtionRecipe.MacroTopStartPitchX > 0)
-                        {
-                            Macro.InnerRingPitchX_Move(true);
-                        }
-                        else
-                        {
-                            Macro.InnerRingPitchX_Move(false);
-                        }
-                        int countPitchX = 0;
-                        stopwatchPitchX.Restart();
-                        while (true)
-                        {
-                            if (stopwatchPitchX.ElapsedMilliseconds >= Math.Abs(eFEMtionRecipe.MacroTopStartPitchX))//if (stopwatchPitchX.ElapsedMilliseconds >= eFEMtionRecipe.MacroTopStartPitchX) countPitchX
-                            {
-                                Macro.InnerRingPitchX_Stop();
-                                break;
-                            }
-                            countPitchX++;
-                            await Task.Delay(1);
-                        }
-                        stopwatchPitchX.Stop();
-                    }
-                });
-                Task startRollY = Task.Run(async () =>
-                {
-                    Stopwatch stopwatchRollY = new Stopwatch();
-                    stopwatchRollY.Start();
-                    if (Math.Abs(eFEMtionRecipe.MacroTopStartRollY) > 0)
-                    {
-                        if (eFEMtionRecipe.MacroTopStartRollY > 0)
-                        {
-                            Macro.InnerRingRollY_Move(true);
-                        }
-                        else
-                        {
-                            Macro.InnerRingRollY_Move(false);
-                        }
-                        int countRollY = 0;
-                        stopwatchRollY.Restart();
-                        while (true)
-                        {
-                            if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(eFEMtionRecipe.MacroTopStartRollY))
-                            {
-                                Macro.InnerRingRollY_Stop();
-                                break;
-                            }
-                            countRollY++;
-                            await Task.Delay(1);
-                        }
-                        //Thread.Sleep(800);
-                        //Macro.InnerRingRollY_Stop();
-                        stopwatchRollY.Stop();
-                    }
-                });
-                Task startYawT = Task.Run(async () =>
-                {
-                    Stopwatch stopwatchYawT = new Stopwatch();
-                    stopwatchYawT.Start();
-                    if (Math.Abs(eFEMtionRecipe.MacroTopStartYawT) > 0)
-                    {
-                        if (eFEMtionRecipe.MacroTopStartYawT > 0)
-                        {
-                            Macro.InnerRingYawT_Move(true);
-                        }
-                        else
-                        {
-                            Macro.InnerRingYawT_Move(false);
-                        }
-                        stopwatchYawT.Restart();
-                        while (true)
-                        {
-                            if (stopwatchYawT.ElapsedMilliseconds > Math.Abs(eFEMtionRecipe.MacroTopStartYawT))
-                            {
-                                Macro.InnerRingYawT_Stop();
-                                break;
-                            }
-                            await Task.Delay(1);
-                        }
-                        stopwatchYawT.Stop();
-                    }
-                });
 
-                await Task.WhenAll(startPitchX, startRollY, startYawT);
+                await Macro.InnerRingPitchXMoveToAsync(eFEMtionRecipe.MacroTopStartPitchX);
+                await Macro.InnerRingRollYMoveToAsync(eFEMtionRecipe.MacroTopStartRollY);
+                await Macro.InnerRingYawTMoveToAsync(eFEMtionRecipe.MacroTopStartYawT);
+
+                //Task pitchX = Macro.InnerRingPitchXMoveToAsync(eFEMtionRecipe.MacroTopStartPitchX);
+                //Task rollY = Macro.InnerRingRollYMoveToAsync(eFEMtionRecipe.MacroTopStartRollY);
+                //Task yawT =  Macro.InnerRingYawTMoveToAsync(eFEMtionRecipe.MacroTopStartYawT);
+
+                //Task pitchX = Task.CompletedTask;
+                //Task rollY = Task.CompletedTask;
+                //Task yawT = Task.CompletedTask;
+
+                //await Task.WhenAll(pitchX, rollY, yawT);
             }
             catch (Exception ex)
             {
@@ -343,35 +266,8 @@ namespace WLS3200Gen2.Model.Module
             {
                 if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
 
-              
-                await Task.Run(() =>
-               {
-                   Stopwatch stopwatchRollY = new Stopwatch();
-                   stopwatchRollY.Start();
-                   if (Math.Abs(MacroBackStartPos) > 0)
-                   {
-                       if (MacroBackStartPos > 0)
-                       {
-                           Macro.OuterRingRollY_Move(true);
-                       }
-                       else
-                       {
-                           Macro.OuterRingRollY_Move(false);
-                       }
-                       int countRollY = 0;
-                       stopwatchRollY.Restart();
-                       while (true)
-                       {
-                           if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(MacroBackStartPos))
-                           {
-                               Macro.OuterRingRollY_Stop();
-                               break;
-                           }
-                           countRollY++;
-                       }
-                       stopwatchRollY.Stop();
-                   }
-               });
+                Task rollY = Macro.OuterRingRollYMoveToAsync(MacroBackStartPos);
+                await Task.WhenAll(rollY);
             }
             catch (Exception ex)
             {

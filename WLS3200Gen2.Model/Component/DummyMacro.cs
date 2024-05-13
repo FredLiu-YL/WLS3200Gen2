@@ -25,6 +25,15 @@ namespace WLS3200Gen2.Model.Component
         public double InnerYawTPosition => 0;
         public double OuterRollYPosition => 0;
 
+        public double InnerRingPitchXPositionPEL { get; set; } = 0;
+        public double InnerRingPitchXPositionNEL { get; set; } = 0;
+        public double InnerRingYawTPositionPEL { get; set; } = 0;
+        public double InnerRingYawTPositionNEL { get; set; } = 0;
+        public double InnerRingRollYPositionPEL { get; set; } = 0;
+        public double InnerRingRollYPositionNEL { get; set; } = 0;
+        public double OuterRingRollYPositionPEL { get; set; } = 0;
+        public double OuterRingRollYPositionNEL { get; set; } = 0;
+
         public void FixWafer()
         {
 
@@ -60,6 +69,11 @@ namespace WLS3200Gen2.Model.Component
 
         }
 
+        public Task InnerRingPitchXMoveToAsync(double pos)
+        {
+            return Task.CompletedTask;
+        }
+
         public void InnerRingPitchX_Move(bool isForward)
         {
 
@@ -85,6 +99,11 @@ namespace WLS3200Gen2.Model.Component
 
         }
 
+        public Task InnerRingYawTMoveToAsync(double pos)
+        {
+            return Task.CompletedTask;
+        }
+
         public void InnerRingYawT_Move(bool isForwards)
         {
 
@@ -93,6 +112,11 @@ namespace WLS3200Gen2.Model.Component
         public void InnerRingYawT_Stop()
         {
 
+        }
+
+        public Task OuterRingRollYMoveToAsync(double pos)
+        {
+            return Task.CompletedTask;
         }
 
         public void OuterRingRollY_Move(bool isForwards)

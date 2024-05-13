@@ -46,7 +46,7 @@ namespace WLS3200Gen2
         /// </summary>
         public MainViewModel()
         {
-            isSimulate = true;
+            isSimulate = false;
 
             //   machineSetting.Load();
             if (!Directory.Exists(systemPath))
