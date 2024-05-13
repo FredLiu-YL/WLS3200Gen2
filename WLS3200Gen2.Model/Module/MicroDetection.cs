@@ -34,9 +34,8 @@ namespace WLS3200Gen2.Model.Module
         private OpticalAlignment opticalAlignment;
 
 
-        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs)
+        public MicroDetection(ICamera camera, IMicroscope microscope, Axis[] axes, DigitalOutput[] outputs, DigitalInput[] inputs, Point PixelTable)
         {
-
             this.Microscope = microscope;
             AxisX = axes[0];
             AxisY = axes[1];
@@ -49,7 +48,7 @@ namespace WLS3200Gen2.Model.Module
             IsTableVacuum = inputs[5];
 
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
-            opticalAlignment.PixelTable = Camera.PixelTable;
+            opticalAlignment.PixelTable = PixelTable;
             opticalAlignment.FiducialRecord += AlignRecord;
             opticalAlignment.AlignmentManual += AlignmentManual;
         }

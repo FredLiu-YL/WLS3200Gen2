@@ -89,7 +89,7 @@ namespace WLS3200Gen2.Model
             {
                 Feeder = new Feeder(robot, loadPort, null, macro, aligner, lampControl[0], lampControl[1], reader, axes[4], machineSetting);
             }
-            MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis);
+            MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis, machineSetting.CamerasPixelTable);
             StackLight = new StackLight(dos);
         }
         public async Task<bool> BeforeHomeCheck()
@@ -355,13 +355,7 @@ namespace WLS3200Gen2.Model
                         }
                         camera = new YuanliCore.CameraLib.ImageSource.ImageSourceCamera(machineSetting.CamerasSettingFileName);
                     }
-
-                    camera.PixelTable = machineSetting.CamerasPixelTable;
                     //camera = new ArtificialCamera();
-
-
-
-
                 }
 
                 return camera;
@@ -446,17 +440,9 @@ namespace WLS3200Gen2.Model
             ILampControl[] lampControl = new ILampControl[1];
             if (isSimulate)
             {
-                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
-                {
-                    lampControl = new ILampControl[1];
-                    lampControl[0] = new DummyLampControl();
-                }
-                else
-                {
-                    lampControl = new ILampControl[2];
-                    lampControl[0] = new DummyLampControl();
-                    lampControl[1] = new DummyLampControl();
-                }
+                lampControl = new ILampControl[2];
+                lampControl[0] = new DummyLampControl();
+                lampControl[1] = new DummyLampControl();
             }
             else
             {
