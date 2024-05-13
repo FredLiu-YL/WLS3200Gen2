@@ -49,6 +49,7 @@ namespace WLS3200Gen2
         private ObservableCollection<ROIShape> mapDrawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> homeMapDrawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
+        private Action<Point> alignMarkMove;
         private LocateMode selectMode;
         private double alignOffsetX, alignOffsetY;
 
@@ -267,6 +268,7 @@ namespace WLS3200Gen2
         //判斷有沒有做過 對位，主要卡控所有的座標都要建立在對位後的 才會是對的
         public bool IsLocate { get => isLocate; set => SetValue(ref isLocate, value); }
         public Action<CogMatcher> SampleFind { get => sampleFind; set => SetValue(ref sampleFind, value); }
+        public Action<Point> AlignMarkMove { get => alignMarkMove; set => SetValue(ref alignMarkMove, value); }
 
 
 
@@ -1773,6 +1775,11 @@ namespace WLS3200Gen2
 
 
 
+        }
+
+        private async void SampleMoveAction(Point pos)
+        {
+            await machine.MicroDetection.TableMoveToAsync(pos);
         }
         private void SetLocateParamToRecipe()
         {

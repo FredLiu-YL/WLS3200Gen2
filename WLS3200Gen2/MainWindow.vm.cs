@@ -237,7 +237,7 @@ namespace WLS3200Gen2
                 taskRefresh1 = Task.Run(RefreshPos);
 
                 SampleFind = SampleFindAction;
-
+                AlignMarkMove = SampleMoveAction;
 
                 CameraLive();
                 machine.MicroDetection.FiducialRecord += FiducialRecord;

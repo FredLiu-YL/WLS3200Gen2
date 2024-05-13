@@ -8,7 +8,7 @@
              xmlns:command="http://www.galasoft.ch/mvvmlight"
              mc:Ignorable="d" 
                x:Name="LocateUserControls"
-             d:DesignHeight="750" d:DesignWidth="350">
+             d:DesignHeight="750" d:DesignWidth="400">
     <Grid  DataContext="{Binding ElementName=LocateUserControls}" >
         <Grid.Resources>
             <local:LocateModePatternConver x:Key="BoolToEnumConverter" />
@@ -73,7 +73,7 @@
                             <ColumnDefinition Width="0.10*"/>
                             <ColumnDefinition  Width="0.2*"/>
                             <ColumnDefinition  Width="0.2*"/>
-                            <ColumnDefinition  Width="0.2*"/>
+                            <ColumnDefinition  Width="0.4*"/>
                             <ColumnDefinition  Width="0.3*"/>
 
                         </Grid.ColumnDefinitions>
@@ -100,10 +100,22 @@
                         <TextBox Text="{Binding MatchParam2.GrabPositionY }"  Grid.Row="2" Grid.Column="2" FontSize="16" Width="60"/>
                         <TextBox Text="{Binding MatchParam3.GrabPositionY }"  Grid.Row="3" Grid.Column="2" FontSize="16" Width="60"/>
 
-                        <Button Margin="2" Content="GET"  Command="{Binding GetPositionCommand}" CommandParameter="set1" FontSize="12" Grid.Row="1" Grid.Column="3"/>
-                        <Button Margin="2" Content="GET"  Command="{Binding GetPositionCommand}" CommandParameter="set2"  FontSize="12" Grid.Row="2" Grid.Column="3"/>
-                        <Button Margin="2" Content="GET"  Command="{Binding GetPositionCommand}" CommandParameter="set3"  FontSize="12" Grid.Row="3" Grid.Column="3"/>
+                        <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal">
+                            <Button Margin="2" Content="GET" Width="55" Command="{Binding GetPositionCommand}"  CommandParameter="set1" FontSize="12"    />
+                            <Button Margin="2" Content="Move" Width="65"  Command="{Binding MoveToSampleCommand}" CommandParameter="Sample1"  FontSize="12" />
+                        </StackPanel>
 
+                        <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal">
+                            <Button Margin="2" Content="GET" Width="55" Command="{Binding GetPositionCommand}" CommandParameter="set2"  FontSize="12"  />
+                            <Button Margin="2" Content="Move" Width="65"  Command="{Binding MoveToSampleCommand}" CommandParameter="Sample2"  FontSize="12" />
+
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="3" Orientation="Horizontal">
+                            <Button Margin="2" Content="GET" Width="55" Command="{Binding GetPositionCommand}" CommandParameter="set3"  FontSize="12"  />
+                            <Button Margin="2" Content="Move" Width="65"  Command="{Binding MoveToSampleCommand}" CommandParameter="Sample3"  FontSize="12" />
+
+                        </StackPanel>
                         <TextBlock Text="Offset(um)" Grid.Row="0" Grid.Column="5" FontSize="20"/>
                         <StackPanel Grid.Row="1" Grid.Column="5" Orientation="Horizontal">
                             <TextBlock  Text="X:" FontSize="16" />
@@ -124,7 +136,7 @@
                                     <RowDefinition/>
 
                                 </Grid.RowDefinitions>
-                                <GroupBox  Margin="-2,0,-2,0"  Grid.Row="0" Header="Locate Pattern1" FontSize="20" Grid.ColumnSpan="1" Grid.RowSpan="1" Height="140" >
+                                <GroupBox  Margin="-1,0,-1,0"  Grid.Row="0" Header="Locate Pattern1" FontSize="20" Grid.ColumnSpan="1" Grid.RowSpan="1"  >
                                     <Grid Margin="-7">
                                         <Grid.ColumnDefinitions >
                                             <ColumnDefinition  Width="1.4*" />
@@ -138,10 +150,11 @@
                                             <Grid.RowDefinitions>
                                                 <RowDefinition/>
                                                 <RowDefinition/>
+                                         
                                             </Grid.RowDefinitions>
                                             <Button Grid.Row="0"  Content="Edit"  Command="{Binding EditSampleCommand}"  CommandParameter="Sample1" />
                                             <Button Grid.Row="1"  Content="Locate"   Command="{Binding LocateSampleCommand}" CommandParameter="Sample1" Margin="0,3,0,2"    />
-
+                                           
                                         </Grid>
                                         <Grid  Grid.Column="2">
                                             <Grid.RowDefinitions>
@@ -178,7 +191,7 @@
 
                                 </GroupBox>
 
-                                <GroupBox  Margin="-2,0,-2,0"  Grid.Row="1" Header="Locate Pattern2" FontSize="24" Grid.ColumnSpan="1" Grid.RowSpan="1" Height="140" >
+                                <GroupBox  Margin="-1,0,-1,0"  Grid.Row="1" Header="Locate Pattern2" FontSize="24" Grid.ColumnSpan="1" Grid.RowSpan="1">
                                     <Grid Margin="-7" >
                                         <Grid.ColumnDefinitions >
                                             <ColumnDefinition  Width="1.4*" />
@@ -232,7 +245,7 @@
 
                                 </GroupBox>
 
-                                <GroupBox  Margin="-2,0,-2,0"  Grid.Row="2" Header="Locate Pattern3" FontSize="24" Grid.ColumnSpan="1" Grid.RowSpan="1" Height="140" >
+                                <GroupBox  Margin="-1,-1,-1,-1"  Grid.Row="2" Header="Locate Pattern3" FontSize="24" Grid.ColumnSpan="1" Grid.RowSpan="1" >
                                     <Grid Margin="-7" >
                                         <Grid.ColumnDefinitions >
                                             <ColumnDefinition  Width="1.4*" />
