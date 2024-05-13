@@ -359,6 +359,7 @@ namespace WLS3200Gen2
        {
            try
            {
+               //找出畫面位置的 實際軸座標
                Point movePos = await machine.MicroDetection.FindFiducial(MainImage, TablePosX, TablePosY);
                ManualPosX = movePos.X;
                ManualPosY = movePos.Y;
@@ -680,19 +681,23 @@ namespace WLS3200Gen2
         }
         private async Task<Point> AlignmentOperate(PauseTokenSource pts, CancellationTokenSource cts, double grabPosX, double grabPosY)
         {
-            pts.IsPaused = true;
+     
             machine.ProcessPause();//暫停
+            
+            //將原本拍照的座標設成預設值
             ManualPosX = grabPosX;
             ManualPosY = grabPosY;
+
             //切到Alignment 頁面
             TabControlSelectedIndex = 2;
             IsOperateUI = false;
             cts.Token.ThrowIfCancellationRequested();
             await pts.Token.WaitWhilePausedAsync(cts.Token);
+
             //切到Infomation頁面
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
-            return new Point(ManualPosX, ManualPosY);
+            return new Point(ManualPosX, ManualPosY);//最後UI任何操作都會寫入ManualPosX Y 的座標 ，離開之前傳回座標給流程
         }
         private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {

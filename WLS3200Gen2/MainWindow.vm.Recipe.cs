@@ -176,7 +176,7 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComplete) return isLocatePageSelect;
+                if (!isInitialComplete) return isLocatePageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
                 if (isLocatePageSelect)
                     LoadLoactePage();
                 return isLocatePageSelect;
@@ -190,7 +190,9 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComplete) return isDetectionPageSelect;
+                if (!isInitialComplete) return isDetectionPageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!IsLocateComplete) isDetectionPageSelect = false;
+
                 if (isDetectionPageSelect)
                     SetLocateParamToRecipe();
                 return isDetectionPageSelect;
@@ -1468,6 +1470,7 @@ namespace WLS3200Gen2
                 if (IsCanWorkEFEMTrans)
                 {
                     IsCanWorkEFEMTrans = false;
+                    IsLocateComplete = false;
                     //經過這個方法後，會將map中所有的Die  Index座標轉換成當下樣本建立時的實際機台座標(pattern中心)
                     SetLocateParamToRecipe();
                     //將die的map座標都轉換成 實際機台座標(解決片子更換後位置不對的問題 )
@@ -1496,7 +1499,7 @@ namespace WLS3200Gen2
                         die.PosX = pos.X;
                         die.PosY = pos.Y;
                     }
-
+                    IsLocateComplete = true;
                     IsCanWorkEFEMTrans = true;
                 }
             }
@@ -1797,28 +1800,30 @@ namespace WLS3200Gen2
 
 
                 var posDesign1 = new Point(LocateParam1.DesignPositionX, LocateParam1.DesignPositionY);
-                posDesign1.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransX;
-                posDesign1.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransY;
-                LocateParam1.DesignPositionX = posDesign1.X;
-                LocateParam1.DesignPositionY = posDesign1.Y;
-
-
                 var posDesign2 = new Point(LocateParam2.DesignPositionX, LocateParam2.DesignPositionY);
-                posDesign2.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransX;
-                posDesign2.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransY;
-                LocateParam2.DesignPositionX = posDesign2.X;
-                LocateParam2.DesignPositionY = posDesign2.Y;
-
                 var posDesign3 = new Point(LocateParam3.DesignPositionX, LocateParam3.DesignPositionY);
-                posDesign3.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransX;
-                posDesign3.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransY;
-                LocateParam3.DesignPositionX = posDesign3.X;
-                LocateParam3.DesignPositionY = posDesign3.Y;
+                if (mainRecipe.DetectRecipe.WaferMap != null)
+                {
 
-                datas.Add(LocateParam1);
-                datas.Add(LocateParam2);
-                datas.Add(LocateParam3);
+                    posDesign1.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransX;
+                    posDesign1.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransY;
+                    LocateParam1.DesignPositionX = posDesign1.X;
+                    LocateParam1.DesignPositionY = posDesign1.Y;
+            
+                    posDesign2.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransX;
+                    posDesign2.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransY;
+                    LocateParam2.DesignPositionX = posDesign2.X;
+                    LocateParam2.DesignPositionY = posDesign2.Y;
+        
+                    posDesign3.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransX;
+                    posDesign3.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransY;
+                    LocateParam3.DesignPositionX = posDesign3.X;
+                    LocateParam3.DesignPositionY = posDesign3.Y;
 
+                    datas.Add(LocateParam1);
+                    datas.Add(LocateParam2);
+                    datas.Add(LocateParam3);
+                }
                 var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
                 var pos2 = new Point(LocateParam2.GrabPositionX, LocateParam2.GrabPositionY);
                 var pos3 = new Point(LocateParam3.GrabPositionX, LocateParam3.GrabPositionY);

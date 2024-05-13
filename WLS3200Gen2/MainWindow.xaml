@@ -119,10 +119,10 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="0"
                                     Style="{StaticResource MaterialDesignFilledTabControl}">
                             <TabItem Header="Micro">
-                                <views:VirtualCanvas Grid.Row="1"  ImageSource="{Binding MainImage}" />
+                                <views:VirtualCanvas Grid.Row="1" Width="910" Height="760"  ImageSource="{Binding MainImage}" />
                             </TabItem>
                             <TabItem Header="Macro">
-                                <views:VirtualCanvas Grid.Row="1" />
+                                <views:VirtualCanvas Grid.Row="1" Width="910" Height="760" />
                             </TabItem>
                             <TabItem Header="TAB 3" Visibility="Hidden">
 

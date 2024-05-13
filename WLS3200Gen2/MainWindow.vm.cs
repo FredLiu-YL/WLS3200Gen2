@@ -161,6 +161,8 @@ namespace WLS3200Gen2
                 //加入 LOG功能到各模組 一定要放在  machine.Initial()後面
                 machine.MicroDetection.WriteLog += WriteLog;
                 machine.Feeder.WriteLog += WriteLog;
+               
+
                 await Task.Delay(10);//顯示UI 
                 isWaferInSystem = true;
                 isWaferInSystem = await machine.BeforeHomeCheck();
@@ -196,10 +198,7 @@ namespace WLS3200Gen2
                 BincodeList.Add(bincode2);
                 BincodeList.Add(new BincodeInfo());
 
-                machine.MicroDetection.AlignmentError += AlignmentOperate;
-                machine.MicroDetection.MicroReady += MicroOperate;
-                machine.Feeder.WaferIDRecord += WaferIDRecord;
-                machine.Feeder.WaferIDReady += WaferIDOperate;
+        
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
@@ -241,7 +240,13 @@ namespace WLS3200Gen2
 
                 CameraLive();
                 machine.MicroDetection.FiducialRecord += FiducialRecord;
+                machine.MicroDetection.AlignManual += AlignmentOperate;
                 machine.MicroDetection.DetectionRecord += DetectionRecord;
+                machine.MicroDetection.MicroReady += MicroOperate;
+                machine.Feeder.WaferIDRecord += WaferIDRecord;
+                machine.Feeder.WaferIDReady += WaferIDOperate;
+
+
 
                 isInitialComplete = true;
 
