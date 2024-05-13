@@ -38,7 +38,9 @@ namespace WLS3200Gen2.Model.Module
         public Point PixelTable { get; set; }
         public Action<string> WriteLog { get; set; }
         public Action<BitmapSource, Point?, int> FiducialRecord { get; set; }
-
+        /// <summary>
+        /// 對位失敗 手動對位
+        /// </summary>
         public event Func<PauseTokenSource, CancellationTokenSource, double, double, Task<Point>> AlignmentManual;
 
         public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
@@ -50,7 +52,7 @@ namespace WLS3200Gen2.Model.Module
                 //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
                 foreach (LocateParam fiducial in fiducialDatas)
                 {
-                    
+
                     int number = fiducialDatas.ToList().IndexOf(fiducial);
                     WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
 
@@ -78,14 +80,23 @@ namespace WLS3200Gen2.Model.Module
                                 //取像
                                 image = camera.GrabAsync();
                                 actualPos = await FindFiducial(image, movePos.X, movePos.Y, number);
-                                movePos = actualPos;
+                                //               movePos = actualPos;
                                 break;
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
                                 if (errorReTryCount >= 2)
                                 {
-                                    throw;
+                                    if (AlignmentManual != null)// 如果有接實作 就手動對位
+                                    {
+                                        CancelToken.Token.ThrowIfCancellationRequested();
+                                        await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                                        Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, movePos.X, movePos.Y);
+                                        actualPos = await alignmentManual;
+
+                                    }                                
+                                    else
+                                        throw ex;
                                 }
                                 errorReTryCount += 1;
                                 await Task.Delay(50);
@@ -93,7 +104,7 @@ namespace WLS3200Gen2.Model.Module
                         }
                     }
                     //移動到中心
-                    await TableMoveToAsync(actualPos.X, actualPos.Y);
+                    //    await TableMoveToAsync(actualPos.X, actualPos.Y);
                     targetPos.Add(actualPos);
 
                     if (CancelToken != null && PauseToken != null)
@@ -134,14 +145,14 @@ namespace WLS3200Gen2.Model.Module
             {
                 FiducialRecord?.Invoke(image, null, number);
                 WriteLog($"Search failed ");
-                //沒搜尋到  要做些處置(目前沒做事)
+                //沒搜尋到  要做些處置(目前沒做事)  改到外層去做事
 
                 if (CancelToken != null && PauseToken != null)
                 {
-                    CancelToken.Token.ThrowIfCancellationRequested();
-                    await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-                    Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, currentPosX, currentPosY);
-                    actualPos = await alignmentManual;
+                  //  CancelToken.Token.ThrowIfCancellationRequested();
+                  //  await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                  //  Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, currentPosX, currentPosY);
+                  //  actualPos = await alignmentManual;
                 }
                 else
                 {

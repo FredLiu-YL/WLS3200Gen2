@@ -91,6 +91,7 @@ namespace WLS3200Gen2.Model
             }
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis, machineSetting.CamerasPixelTable);
             StackLight = new StackLight(dos);
+        
         }
         public async Task<bool> BeforeHomeCheck()
         {

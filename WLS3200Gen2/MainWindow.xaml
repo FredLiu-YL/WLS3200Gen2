@@ -119,10 +119,10 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="0"
                                     Style="{StaticResource MaterialDesignFilledTabControl}">
                             <TabItem Header="Micro">
-                                <views:VirtualCanvas Grid.Row="1"  ImageSource="{Binding MainImage}" />
+                                <views:VirtualCanvas Grid.Row="1" Width="910" Height="760"  ImageSource="{Binding MainImage}" />
                             </TabItem>
                             <TabItem Header="Macro">
-                                <views:VirtualCanvas Grid.Row="1" />
+                                <views:VirtualCanvas Grid.Row="1" Width="910" Height="760" />
                             </TabItem>
                             <TabItem Header="TAB 3" Visibility="Hidden">
 
@@ -896,11 +896,11 @@
                                         <Grid   Grid.Column="1">
 
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition  Width="1.6*"/>
-                                                <ColumnDefinition/>
+                                                <ColumnDefinition  Width="0.5*"/>
+                                                <ColumnDefinition  Width="2.0*"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <Grid Grid.Column="0">
+                                            <Grid Grid.Column="1">
                                                 <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
 
                                                     <Grid>
@@ -912,7 +912,7 @@
                                                         </Grid.RowDefinitions>
 
                                                         <UserControlUC:LocateUC Grid.Row="0" MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
-                                                                                 MatchFind="{Binding SampleFind}" SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}" CurrentPosX="{Binding TablePosX }" CurrentPosY="{Binding TablePosY }" />
+                                                                                 MatchFind="{Binding SampleFind}"   AlignMarkMove="{Binding AlignMarkMove}"  SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}" CurrentPosX="{Binding TablePosX }" CurrentPosY="{Binding TablePosY }" />
                                                         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
                                                                 <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}"  />

@@ -50,7 +50,7 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.PixelTable = PixelTable;
             opticalAlignment.FiducialRecord += AlignRecord;
-            opticalAlignment.AlignmentManual += AlignmentManual;
+            opticalAlignment.AlignmentManual += AlignManual;
         }
         public bool IsInitial { get; private set; } = false;
         public string GrabSaveTime { get; private set; }
@@ -73,10 +73,13 @@ namespace WLS3200Gen2.Model.Module
         /// 對位結果紀錄 (圖像 對位座標(pxel))
         /// </summary>
         public event Action<BitmapSource, Point?, int> FiducialRecord;
+
+
         /// <summary>
-        /// 
+        /// 手動對位 
         /// </summary>
-        public event Func<PauseTokenSource, CancellationTokenSource, double, double, Task<Point>> AlignmentError;
+        public event Func<PauseTokenSource, CancellationTokenSource, double, double, Task<Point>> AlignManual;
+
         /// <summary>
         /// 檢測結果紀錄
         /// </summary>
@@ -391,13 +394,7 @@ namespace WLS3200Gen2.Model.Module
             FiducialRecord?.Invoke(bitmap, pixel, number);
         }
 
-        private async Task<Point> AlignmentManual(PauseTokenSource pts, CancellationTokenSource cts, double grabPosX, double grabPosY)
-        {
-            Point actualPos = new Point(0, 0);
-            Task<Point> alignmentManual = AlignmentError?.Invoke(pts, cts, grabPosX, grabPosY);
-            actualPos = await alignmentManual;
-            return actualPos;
-        }
+ 
 
         private void ObservableDetection()
         {

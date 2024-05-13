@@ -58,7 +58,11 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty MatchFindProperty = DependencyProperty.Register(nameof(MatchFind), typeof(Action<CogMatcher>), typeof(LocateUC),
                                                                         new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty AlignMarkMoveProperty = DependencyProperty.Register(nameof(AlignMarkMove), typeof(Action<Point>), typeof(LocateUC),
+                                                                       new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+
+        
         public static readonly DependencyProperty CurrentPosXProperty = DependencyProperty.Register(nameof(CurrentPosX), typeof(double), typeof(LocateUC),
                                                                    new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty CurrentPosYProperty = DependencyProperty.Register(nameof(CurrentPosY), typeof(double), typeof(LocateUC),
@@ -118,6 +122,11 @@ namespace WLS3200Gen2.UserControls
         {
             get => (Action<CogMatcher>)GetValue(MatchFindProperty);
             set => SetValue(MatchFindProperty, value);
+        }
+        public Action<Point> AlignMarkMove
+        {
+            get => (Action<Point>)GetValue(AlignMarkMoveProperty);
+            set => SetValue(AlignMarkMoveProperty, value);
         }
         public LocateMode SelectMode
         {
@@ -266,26 +275,37 @@ namespace WLS3200Gen2.UserControls
             //  UpdateParam();
             MatchFind?.Invoke(tempMatcher);
 
-            /*   
-             *   ClearShapeAction.Execute(Drawings);
-                     resultPoint = tempMatcher.Find(Image.ToByteFrame());
+         
+        });
 
-                       foreach (var item in resultPoint)
-                       {
-                           var center = new ROICross
-                           {
-                               X = item.Center.X,
-                               Y = item.Center.Y,
-                               Size = 5,
-                               StrokeThickness = 2,
-                               Stroke = Brushes.Red,
-                               IsInteractived = false
-                           };
-                           AddShapeAction.Execute(center);
 
-                       } 
-                     */
 
+
+
+        public ICommand MoveToSampleCommand => new RelayCommand<string>(async key =>
+        {
+            Point movePos =new Point();
+
+            switch (key)
+            {
+                case "Sample1":
+                    movePos = new Point(MatchParam1.GrabPositionX, MatchParam1.GrabPositionY);
+
+                    break;
+                case "Sample2":
+                    movePos = new Point(MatchParam2.GrabPositionX, MatchParam2.GrabPositionY);
+
+                    break;
+                case "Sample3":
+                    movePos = new Point(MatchParam3.GrabPositionX, MatchParam3.GrabPositionY);
+                    break;
+                default:
+                    break;
+            }
+         
+            AlignMarkMove?.Invoke(movePos);
+
+          
 
         });
 
