@@ -85,19 +85,14 @@ namespace WLS3200Gen2.Model.Recipe
         /// 光圈
         /// </summary>
         public int MicroscopeApertureValue { get; set; }
-
-
         /// <summary>
         /// 目前Z軸位置
         /// </summary>
         public double MicroscopePosition { get; set; }
-
         /// <summary>
         /// 準焦位置
         /// </summary>
         public double MicroscopeAberationPosition { get; set; }
-
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
@@ -112,16 +107,12 @@ namespace WLS3200Gen2.Model.Recipe
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
     }
 
 
     public enum LocateMode
     {
-
         Pattern,
         Edge
-
-
     }
 }
