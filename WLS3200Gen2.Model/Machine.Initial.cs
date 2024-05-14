@@ -394,6 +394,22 @@ namespace WLS3200Gen2.Model
             else
             {
                 macro = new HannDeng_Macro(motionController.OutputSignals.ToArray(), motionController.InputSignals.ToArray());
+                machineSetting.InnerRingPitchXPositionPEL = 800;
+                machineSetting.InnerRingPitchXPositionNEL = -800;
+                machineSetting.InnerRingRollYPositionPEL = 800;
+                machineSetting.InnerRingRollYPositionNEL = -800;
+                machineSetting.InnerRingYawTPositionPEL = 4000;
+                machineSetting.InnerRingYawTPositionNEL = -4000;
+                machineSetting.OuterRingRollYPositionPEL = 1600;
+                machineSetting.OuterRingRollYPositionNEL = -1600;
+                macro.InnerRingPitchXPositionPEL = machineSetting.InnerRingPitchXPositionPEL;
+                macro.InnerRingPitchXPositionNEL = machineSetting.InnerRingPitchXPositionNEL;
+                macro.InnerRingRollYPositionPEL = machineSetting.InnerRingRollYPositionPEL;
+                macro.InnerRingRollYPositionNEL = machineSetting.InnerRingRollYPositionNEL;
+                macro.InnerRingYawTPositionPEL = machineSetting.InnerRingYawTPositionPEL;
+                macro.InnerRingYawTPositionNEL = machineSetting.InnerRingYawTPositionNEL;
+                macro.OuterRingRollYPositionPEL = machineSetting.OuterRingRollYPositionPEL;
+                macro.OuterRingRollYPositionNEL = machineSetting.OuterRingRollYPositionNEL;
             }
 
             return macro;

@@ -36,6 +36,7 @@ namespace WLS3200Gen2
         private ObservableCollection<WaferUIData> loadPort1Wafers = new ObservableCollection<WaferUIData>();
         private int loadPort1WaferSelect;
         private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
+        private ObservableCollection<LocateParam> locateParamList = new ObservableCollection<LocateParam>();
         private ObservableCollection<DetectionPoint> detectionPointList = new ObservableCollection<DetectionPoint>();
 
         private BitmapSource locateSampleImage1;
@@ -68,7 +69,7 @@ namespace WLS3200Gen2
         private double macroTopStartPitchX, macroTopStartRollY, macroTopStartYawT, macroBackStartPos;
         private int macroTopLeftLightValue, macroTopRightLightValue, macroBackLeftLightValue, macroBackRightLightValue;
         private Model.ArmStation lastArmStation = Model.ArmStation.Cassette1;
-
+        private string topMoveContent = "TopMove", backMoveContent = "BackMove";
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
         private bool isDie, isDieSub, isDieInSideAll, isPosition, isRecipeAlignment = false;
@@ -209,6 +210,8 @@ namespace WLS3200Gen2
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
         public double MacroTopStartRollY { get => macroTopStartRollY; set => SetValue(ref macroTopStartRollY, value); }
         public double MacroTopStartYawT { get => macroTopStartYawT; set => SetValue(ref macroTopStartYawT, value); }
+        public string TopMoveContent { get => topMoveContent; set => SetValue(ref topMoveContent, value); }
+        public string BackMoveContent { get => backMoveContent; set => SetValue(ref backMoveContent, value); }
 
         public int MacroTopLeftLightValue { get => macroTopLeftLightValue; set => SetValue(ref macroTopLeftLightValue, value); }
         public int MacroTopRightLightValue { get => macroTopRightLightValue; set => SetValue(ref macroTopRightLightValue, value); }
@@ -258,6 +261,7 @@ namespace WLS3200Gen2
                 }
             }
         }
+        public ObservableCollection<LocateParam> LocateParamList { get => locateParamList; set => SetValue(ref locateParamList, value); }
         //  public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
         public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
@@ -1368,40 +1372,75 @@ namespace WLS3200Gen2
             {
                 if (RecipeLastArmStation == Model.ArmStation.Macro)
                 {
-
+                    IsCanWorkEFEMTrans = false;
                     switch (key)
                     {
                         case "TopMove":
-                            if (machine.Feeder.Macro.IsInnerUsing)
+                            if (TopMoveContent == "TopMove")
                             {
-                                EFEMtionRecipe eFEMtionRecipe = new EFEMtionRecipe();
-                                eFEMtionRecipe.MacroTopStartPitchX = MacroTopStartPitchX - machine.Feeder.Macro.InnerPitchXPosition;
-                                eFEMtionRecipe.MacroTopStartRollY = MacroTopStartRollY - machine.Feeder.Macro.InnerRollYPosition;
-                                eFEMtionRecipe.MacroTopStartYawT = MacroTopStartYawT - machine.Feeder.Macro.InnerYawTPosition;
-                                //await machine.Feeder.TurnWafer(eFEMtionRecipe);
-
-                                await machine.Feeder.Macro.InnerRingRollYMoveToAsync(eFEMtionRecipe.MacroTopStartRollY);
-                                await machine.Feeder.Macro.InnerRingRollYMoveToAsync(0);
+                                if (machine.Feeder.Macro.IsInnerUsing)
+                                {
+                                    EFEMtionRecipe eFEMtionRecipe = new EFEMtionRecipe();
+                                    eFEMtionRecipe.MacroTopStartPitchX = MacroTopStartPitchX;// - machine.Feeder.Macro.InnerPitchXPosition;
+                                    eFEMtionRecipe.MacroTopStartRollY = MacroTopStartRollY;// - machine.Feeder.Macro.InnerRollYPosition;
+                                    eFEMtionRecipe.MacroTopStartYawT = MacroTopStartYawT;// - machine.Feeder.Macro.InnerYawTPosition;
+                                    await machine.Feeder.TurnWafer(eFEMtionRecipe);
+                                    //TopMoveContent = "Home";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Top!!");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Wafer Not In Top!!");
+                                if (machine.Feeder.Macro.IsInnerUsing)
+                                {
+                                    await machine.Feeder.Macro.InnerRingPitchXMoveToAsync(0);
+                                    await machine.Feeder.Macro.InnerRingRollYMoveToAsync(0);
+                                    await machine.Feeder.Macro.InnerRingYawTMoveToAsync(0);
+                                    TopMoveContent = "TopMove";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Top!!");
+                                }
                             }
+
                             break;
                         case "BackMove":
-                            if (machine.Feeder.Macro.IsOuterUsing)
+                            if (TopMoveContent == "TopMove")
                             {
-                                double moveOffset = MacroBackStartPos - machine.Feeder.Macro.OuterRollYPosition;
-                                await machine.Feeder.TurnBackWafer(moveOffset);
+                                if (machine.Feeder.Macro.IsOuterUsing)
+                                {
+                                    double moveOffset = MacroBackStartPos;// - machine.Feeder.Macro.OuterRollYPosition;
+                                    await machine.Feeder.TurnBackWafer(moveOffset);
+                                    //TopMoveContent = "Home";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Back!!");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show("Wafer Not In Back!!");
+                                if (machine.Feeder.Macro.IsOuterUsing)
+                                {
+                                    double moveOffset = MacroBackStartPos;// - machine.Feeder.Macro.OuterRollYPosition;
+                                    await machine.Feeder.TurnBackWafer(0);
+                                    TopMoveContent = "TopMove";
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Wafer Not In Back!!");
+                                }
                             }
+
                             break;
                         default:
                             break;
                     }
+                    IsCanWorkEFEMTrans = true;
                 }
                 else
                 {
@@ -1753,9 +1792,6 @@ namespace WLS3200Gen2
             try
             {
                 List<LocateParam> datas = new List<LocateParam>();
-
-
-
                 //需要做出一個轉換矩陣 對應index 與 機台座標
                 var index1 = new Point(LocateParam1.IndexX, LocateParam1.IndexY);
                 var index2 = new Point(LocateParam2.IndexX, LocateParam2.IndexY);
@@ -1773,12 +1809,13 @@ namespace WLS3200Gen2
                     posDesign1.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index1.X && d.IndexY == index1.Y).FirstOrDefault().MapTransY;
                     LocateParam1.DesignPositionX = posDesign1.X;
                     LocateParam1.DesignPositionY = posDesign1.Y;
-            
+
+
                     posDesign2.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransX;
                     posDesign2.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index2.X && d.IndexY == index2.Y).FirstOrDefault().MapTransY;
                     LocateParam2.DesignPositionX = posDesign2.X;
                     LocateParam2.DesignPositionY = posDesign2.Y;
-        
+
                     posDesign3.X = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransX;
                     posDesign3.Y = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == index3.X && d.IndexY == index3.Y).FirstOrDefault().MapTransY;
                     LocateParam3.DesignPositionX = posDesign3.X;
@@ -1787,6 +1824,40 @@ namespace WLS3200Gen2
                     datas.Add(LocateParam1);
                     datas.Add(LocateParam2);
                     datas.Add(LocateParam3);
+                }
+                LocateParam locateParam = new LocateParam(0)
+                {
+                    MicroscopeLightValue = Microscope.LightValue,
+                    MicroscopeApertureValue = Microscope.ApertureValue,
+                    LensIndex = Microscope.LensIndex,
+                    MicroscopePosition = Microscope.Position,
+                    MicroscopeAberationPosition = Microscope.AberationPosition,
+                    CubeIndex = Microscope.CubeIndex,
+                    Filter1Index = Microscope.Filter1Index,
+                    Filter2Index = Microscope.Filter2Index,
+                    Filter3Index = Microscope.Filter3Index
+                };
+                if (LocateParamList.Count == 0)
+                {
+                    LocateParamList.Add(locateParam);
+                }
+                else
+                {
+                    LocateParamList.RemoveAt(0);
+                    LocateParamList.Add(locateParam);
+                }
+
+                for (int i = 0; i < datas.Count; i++)
+                {
+                    datas[i].MicroscopeLightValue = LocateParamList[0].MicroscopeLightValue;
+                    datas[i].MicroscopeApertureValue = LocateParamList[0].MicroscopeApertureValue;
+                    datas[i].LensIndex = LocateParamList[0].LensIndex;
+                    datas[i].MicroscopePosition = LocateParamList[0].MicroscopePosition;
+                    datas[i].MicroscopeAberationPosition = LocateParamList[0].MicroscopeAberationPosition;
+                    datas[i].CubeIndex = LocateParamList[0].CubeIndex;
+                    datas[i].Filter1Index = LocateParamList[0].Filter1Index;
+                    datas[i].Filter2Index = LocateParamList[0].Filter2Index;
+                    datas[i].Filter3Index = LocateParamList[0].Filter3Index;
                 }
                 var pos1 = new Point(LocateParam1.GrabPositionX, LocateParam1.GrabPositionY);
                 var pos2 = new Point(LocateParam2.GrabPositionX, LocateParam2.GrabPositionY);
@@ -1816,6 +1887,8 @@ namespace WLS3200Gen2
                 mainRecipe.DetectRecipe.AlignRecipe.OffsetX = AlignOffsetX;
                 mainRecipe.DetectRecipe.AlignRecipe.OffsetY = AlignOffsetY;
                 mainRecipe.DetectRecipe.AlignRecipe.FiducialDatas = datas.ToArray();
+
+
             }
             catch (Exception ex)
             {

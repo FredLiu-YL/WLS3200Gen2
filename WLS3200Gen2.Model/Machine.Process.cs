@@ -44,26 +44,16 @@ namespace WLS3200Gen2.Model
                 Feeder.ProcessInitial(processSetting.Inch, machineSetting, pts, cts);
 
                 //轉換Cassette 與WAFER檢查資訊給流程使用
-                //var wafers = processSetting.ProcessStation.Select(s =>
-                //{
-                //    var w = new Wafer(s.CassetteIndex);
-                //    w.ProcessStatus = s;
-                //    return w;
-                //});
-                List<Wafer> wafers = new List<Wafer>();
-                for (int i = processSetting.ProcessStation.Length - 1; i >= 0; i--)
+                var wafers = processSetting.ProcessStation.Select(s =>
                 {
-                    var s = processSetting.ProcessStation[i];
                     var w = new Wafer(s.CassetteIndex);
                     w.ProcessStatus = s;
-                    wafers.Add(w);
-                }
-
+                    return w;
+                });
 
                 //因為Loadport 先掃完wafer才傳進來 ， 由主流程控制走向(由上往下取)    所有流程前進判斷都靠這個
-                Queue<Wafer> processWafers = new Queue<Wafer>(wafers);
-                // Queue<Wafer> processWafers = new Queue<Wafer>(wafers.Reverse());
-
+                //Queue<Wafer> processWafers = new Queue<Wafer>(wafers);//主流程走向(由上往下取)
+                Queue<Wafer> processWafers = new Queue<Wafer>(wafers.Reverse());//主流程走向(由下往上取)
 
                 CreateProcessFolder();
                 await Task.Run(async () =>
@@ -79,16 +69,8 @@ namespace WLS3200Gen2.Model
                     currentWafer = SearchLoadWafer(processWafers);
                     if (currentWafer != null)
                     {
-                        //需不需要去Macro
-                        if (currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select)
-                        {
-                            await Feeder.LoadCassetteToMacroAsync(currentWafer.CassetteIndex, processSetting.IsLoadport1);
-                        }
-                        else
-                        {
-                            //若沒有人檢查晶圓直接到Aligner
-                            await Feeder.LoadCassetteToAlignerAsync(currentWafer.CassetteIndex, processSetting.IsLoadport1);
-                        }
+                        //先載一片
+                        await PreLoad(currentWafer, processSetting);
                         while (true)
                         {
                             try
@@ -110,8 +92,8 @@ namespace WLS3200Gen2.Model
                                     await MacroBackInspection(currentWafer.ProcessStatus.MacroBack, recipe.EFEMRecipe, processSetting.IsTestRun);
                                     SetWaferStatusToUI(currentWafer);
 
-                                //關閉光源
-                                await CloseLampControl();
+                                    //關閉光源
+                                    await CloseLampControl();
 
                                     //關閉光源
                                     await CloseLampControl();
@@ -157,17 +139,8 @@ namespace WLS3200Gen2.Model
                                     // nextWafer = processWafers.Dequeue();
 
                                     //預載一片在Macro上
-                                    if (nextWafer != null)
-                                    {
-                                        if (nextWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select || nextWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select)
-                                        {
-                                            taskLoad = Feeder.LoadCassetteToMacroAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
-                                        }
-                                        else
-                                        {
-                                            taskLoad = Feeder.LoadCassetteToAlignerAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
-                                        }
-                                    }
+
+                                    taskLoad = PreLoad(nextWafer, processSetting);
                                     //執行主設備動作 
                                     await focusZWafertask;
                                     await MicroDetection.Run(recipe, processSetting, currentWafer, pts, cts);
@@ -199,17 +172,7 @@ namespace WLS3200Gen2.Model
                                     await Feeder.AlignerToStandByAsync();
                                     await Feeder.UnLoadWaferToCassette(currentWafer, processSetting.IsLoadport1);
                                     //預載一片在Macro上
-                                    if (nextWafer != null)
-                                    {
-                                        if (nextWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select || nextWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select)
-                                        {
-                                            await Feeder.LoadCassetteToMacroAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
-                                        }
-                                        else
-                                        {
-                                            await Feeder.LoadCassetteToAlignerAsync(nextWafer.CassetteIndex, processSetting.IsLoadport1);
-                                        }
-                                    }
+                                    taskLoad = PreLoad(nextWafer, processSetting);
                                 }
 
                                 await Task.Delay(300);
@@ -298,6 +261,18 @@ namespace WLS3200Gen2.Model
 
             }
         }
+        private async Task PreLoad(Wafer wafer, ProcessSetting processSetting)
+        {
+            if (wafer.ProcessStatus.MacroTop == WaferProcessStatus.Select || wafer.ProcessStatus.MacroBack == WaferProcessStatus.Select)
+            {
+                await Feeder.LoadCassetteToMacroAsync(wafer.CassetteIndex, processSetting.IsLoadport1);
+            }
+            else
+            {
+                //若沒有人檢查晶圓直接到Aligner
+                await Feeder.LoadCassetteToAlignerAsync(wafer.CassetteIndex, processSetting.IsLoadport1);
+            }
+        }
         private async Task MacroTopInspection(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe, bool isTestRun)
         {
             //晶面檢查
@@ -315,9 +290,7 @@ namespace WLS3200Gen2.Model
                     var judgeResult = await macro;
                 }
                 await Feeder.Macro.HomeInnerRing();
-
                 station = WaferProcessStatus.Complate;
-
             }
 
         }
@@ -340,10 +313,7 @@ namespace WLS3200Gen2.Model
                     Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
                     var judgeResult = await macro;
                 }
-                else
-                {
-                    await Feeder.TurnBackWafer(-startPos);
-                }
+                await Feeder.TurnBackWafer(0);
                 //翻回來
                 await Feeder.Macro.HomeOuterRing();
                 station = WaferProcessStatus.Complate;

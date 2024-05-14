@@ -105,8 +105,8 @@
                 </TabItem.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="0.6*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
                         <Grid.RowDefinitions>
@@ -119,10 +119,11 @@
                                     materialDesign:ColorZoneAssist.Mode="Custom" Grid.Row="0"
                                     Style="{StaticResource MaterialDesignFilledTabControl}">
                             <TabItem Header="Micro">
-                                <views:VirtualCanvas Grid.Row="1" Width="910" Height="760"  ImageSource="{Binding MainImage}" />
+                                <views:VirtualCanvas Margin="0,0,-2,-2" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding HomeMapImage}" ItemsSource="{Binding HomeMapDrawings}"   
+                                                                              AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}"  />
                             </TabItem>
                             <TabItem Header="Macro">
-                                <views:VirtualCanvas Grid.Row="1" Width="910" Height="760" />
+
                             </TabItem>
                             <TabItem Header="TAB 3" Visibility="Hidden">
 
@@ -138,9 +139,9 @@
 
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="0.09*"/>
+                            <RowDefinition Height="0.08*"/>
                             <RowDefinition Height="0.63*"/>
-                            <RowDefinition Height="0.30*"/>
+                            <RowDefinition Height="0.29*"/>
                         </Grid.RowDefinitions>
                         <Grid  IsEnabled="{Binding IsOperateUI}"  >
                             <Grid.ColumnDefinitions>
@@ -224,10 +225,9 @@
                                 <ColumnDefinition Width="0.67*"/>
                                 <ColumnDefinition Width="0.33*"/>
                             </Grid.ColumnDefinitions>
-                            <views:VirtualCanvas Margin="0,0,-2,-2" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding HomeMapImage}" ItemsSource="{Binding HomeMapDrawings}"   
-                                                                              AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}"  >
-
-                            </views:VirtualCanvas>
+                            <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding MainImage}" />
+                            <!--<views:VirtualCanvas Margin="0,0,-2,-2" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding HomeMapImage}" ItemsSource="{Binding HomeMapDrawings}"   
+                                                 AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}" />-->
                             <GroupBox Grid.Column="1"  >
                                 <GroupBox.Header>
                                     <StackPanel Orientation="Horizontal">
@@ -327,19 +327,19 @@
                                             <TextBox Grid.ColumnSpan="2" Text="{Binding WaferIDManualKeyIn}"  Width="435" FontSize="32" Grid.Row="1" HorizontalContentAlignment="Left" VerticalAlignment="Center"/>
                                             <Button Grid.Column="1" Grid.Row="2" Content="Confirm" Command="{Binding WaferIDConfirmOperateCommand}"  Width="150" Height="40" Margin="5"/>
                                         </Grid>
-                                        
+
                                     </GroupBox>
                                 </Grid>
-                                
+
                             </TabItem>
                             <TabItem Header="Alignment"  Visibility="{Binding InformationUCVisibility}" Height="10"  >
                                 <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1"  >
                                     <Grid >
                                         <Grid.ColumnDefinitions >
-                                            <ColumnDefinition Width="85*"/>
-                                            <ColumnDefinition Width="369*"/>
-                                            <ColumnDefinition Width="159*"/>
-                                            <ColumnDefinition Width="295*"/>
+                                            <ColumnDefinition Width="0.2*"/>
+                                            <ColumnDefinition Width="0.25*"/>
+                                            <ColumnDefinition Width="0.25*"/>
+                                            <ColumnDefinition Width="0.3*"/>
                                         </Grid.ColumnDefinitions>
                                         <GroupBox Grid.Column="0" Grid.Row="0" Header="Alignment Target Pos" FontSize="15" Grid.ColumnSpan="2">
                                             <Grid Margin="-5">
@@ -380,20 +380,38 @@
 
 
                                         </GroupBox>
-                                        <GroupBox Grid.Column="2" Grid.Row="0" Header="WorkItem" FontSize="15" Grid.ColumnSpan="2">
-                                            <Grid>
-                                                <UserControlUC:WorkholderUC Grid.Column="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top"  />
-                                            </Grid>
-                                        </GroupBox>
+                                        <TabControl Grid.Column="2" Grid.Row="0"  FontSize="15" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignFilledTabControl}">
+                                            <TabItem Height="35">
+                                                <TabItem.Header>
+                                                    <StackPanel Orientation="Horizontal" >
+                                                        <TextBlock Text="Work Item" Grid.Column="1"  Margin="0,-10,0,-10" FontSize="15" />
+                                                    </StackPanel>
+                                                </TabItem.Header>
+                                                <Grid>
+                                                    <UserControlUC:WorkholderUC Grid.Column="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top"  />
+                                                </Grid>
+                                            </TabItem>
+                                            <TabItem Height="35">
+                                                <TabItem.Header>
+                                                    <StackPanel Orientation="Horizontal" >
+                                                        <TextBlock Text="Microscope" Grid.Column="1"  Margin="0,-10,0,-10" FontSize="15" />
+                                                    </StackPanel>
+                                                </TabItem.Header>
+                                                <Grid>
+                                                    <microscope:BXFMUC Grid.Column="0" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,-111,0" HorizontalAlignment="Left" Width="565" Grid.ColumnSpan="2" />
+                                                </Grid>
+                                            </TabItem>
+                                        </TabControl>
+
                                     </Grid>
                                 </Border>
                             </TabItem>
                             <TabItem Header="Micro Judge" FontSize="10" Visibility="{Binding InformationUCVisibility}" Height="10"   >
                                 <Grid>
                                     <Grid.ColumnDefinitions >
-                                        <ColumnDefinition Width="0.19*" />
-                                        <ColumnDefinition Width="0.19*" />
-                                        <ColumnDefinition Width="0.62*"/>
+                                        <ColumnDefinition Width="0.2*" />
+                                        <ColumnDefinition Width="0.2*" />
+                                        <ColumnDefinition Width="0.6*"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid Grid.Column="0" Grid.ColumnSpan="2">
                                         <Grid.ColumnDefinitions>
@@ -452,17 +470,21 @@
                                                 </StackPanel>
                                             </TabItem.Header>
                                             <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="268*"/>
+                                                    <ColumnDefinition Width="71*"/>
+                                                </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
                                                     <RowDefinition Height="0.12*"/>
                                                     <RowDefinition Height="0.88*"/>
                                                 </Grid.RowDefinitions>
-                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,-10">
+                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,225" Grid.ColumnSpan="2" Grid.RowSpan="2">
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
                                                 <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
                                                       FontSize="10" 
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}"   >
+                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}" Grid.ColumnSpan="2"   >
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                             <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
@@ -486,16 +508,20 @@
                                                 </StackPanel>
                                             </TabItem.Header>
                                             <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="129*"/>
+                                                    <ColumnDefinition Width="548*"/>
+                                                </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
                                                     <RowDefinition Height="0.12*"/>
                                                     <RowDefinition Height="0.88*"/>
                                                 </Grid.RowDefinitions>
-                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,-10">
+                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,225" Grid.ColumnSpan="2" Grid.RowSpan="2">
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
                                                     <!--<Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>-->
                                                 </StackPanel>
-                                                <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,0,0" HorizontalAlignment="Left" Width="565" />
+                                                <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2"  />
                                             </Grid>
                                         </TabItem>
                                         <TabItem Height="30">
@@ -818,12 +844,12 @@
                                                                 <TextBox Grid.Column="3" Grid.Row="0" Text="{Binding MacroTopStartRollY}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
                                                                 <TextBlock Grid.Column="2" Grid.Row="1"   Text="Yaw T:" FontSize="20"  VerticalAlignment="Center" />
                                                                 <TextBox Grid.Column="3" Grid.Row="1" Text="{Binding MacroTopStartYawT}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                                <Button Grid.Column="4" Grid.Row="0" Content="TopMove" Command="{Binding MacroCommand}" CommandParameter="TopMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <Button Grid.Column="4" Grid.Row="0" Content="{Binding TopMoveContent}" Command="{Binding MacroCommand}" CommandParameter="TopMove"  Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
 
                                                                 <TextBlock Grid.Column="0" Grid.Row="3"   Text="Flip Y:" FontSize="20"  VerticalAlignment="Center" />
                                                                 <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding MacroBackStartPos}"   FontSize="20"  Width="70" VerticalAlignment="Center"  />
-                                                                <Button Grid.Column="4" Grid.Row="3" Content="BackMove" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <Button Grid.Column="4" Grid.Row="3" Content="{Binding BackMoveContent}" Command="{Binding MacroCommand}" CommandParameter="BackMove" Width="100" Height="30" HorizontalAlignment="Left" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
 
                                                             </Grid>
                                                         </GroupBox>
@@ -906,8 +932,8 @@
                                         <Grid   Grid.Column="1">
 
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition  Width="0.5*"/>
-                                                <ColumnDefinition  Width="2.0*"/>
+                                                <ColumnDefinition  Width="0.01*"/>
+                                                <ColumnDefinition  Width="0.99*"/>
                                             </Grid.ColumnDefinitions>
 
                                             <Grid Grid.Column="1">
@@ -919,11 +945,26 @@
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                             <RowDefinition />
+                                                            <RowDefinition />
                                                         </Grid.RowDefinitions>
 
                                                         <UserControlUC:LocateUC Grid.Row="0" MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
                                                                                  MatchFind="{Binding SampleFind}"   AlignMarkMove="{Binding AlignMarkMove}"  SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}" CurrentPosX="{Binding TablePosX }" CurrentPosY="{Binding TablePosY }" />
-                                                        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2" >
+                                                        <GroupBox Grid.Row="1" FontSize="16"  Header="Locate Microscpe Param">
+                                                            <DataGrid  Margin="0" ItemsSource="{Binding LocateParamList}"  CanUserSortColumns="False" 
+                                                                       AutoGenerateColumns="False" SelectionUnit="FullRow"  Height="100" IsReadOnly="True" >
+                                                                <DataGrid.Columns >
+                                                                    <DataGridTextColumn  Width="60"  Header="Lens"  Binding="{Binding LensIndex}" IsReadOnly="True"/>
+                                                                    <DataGridTextColumn  Width="65"  Header="Cube"  Binding="{Binding CubeIndex}" IsReadOnly="True"/>
+                                                                    <DataGridTextColumn  Width="90"  Header="Intensity"  Binding="{Binding MicroscopeLightValue}" IsReadOnly="True"/>
+                                                                    <DataGridTextColumn  Width="90"  Header="Aperture"  Binding="{Binding MicroscopeApertureValue}" IsReadOnly="True"/>
+                                                                    <DataGridTextColumn  Width="70"  Header="Filter1"  Binding="{Binding Filter1Index}" IsReadOnly="True"/>
+                                                                    <DataGridTextColumn  Width="70"  Header="Filter2"  Binding="{Binding Filter2Index}" IsReadOnly="True"/>
+                                                                    <DataGridTextColumn  Width="70"  Header="Filter3"  Binding="{Binding Filter3Index}" IsReadOnly="True"/>
+                                                                </DataGrid.Columns>
+                                                            </DataGrid>
+                                                        </GroupBox>
+                                                        <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
                                                                 <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}"  />
                                                                 <Button Margin="2" Content="Locate Run" Command="{Binding LocateRunCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
@@ -931,8 +972,8 @@
                                                             </StackPanel>
 
                                                         </Border>
-                                                        <Button Grid.Row="2" Content="WaferToMicro" Command="{Binding EFEMTransToMicroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="5" />
-                                                        <Button Grid.Row="3" Grid.Column="2" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding TableTestCommand}" Cursor="Hand" />
+                                                        <Button Grid.Row="3" Content="WaferToMicro" Command="{Binding EFEMTransToMicroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="5" />
+                                                        <Button Grid.Row="4" Grid.Column="2" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding TableTestCommand}" Cursor="Hand" />
                                                     </Grid>
 
 

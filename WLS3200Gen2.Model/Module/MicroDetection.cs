@@ -215,27 +215,28 @@ namespace WLS3200Gen2.Model.Module
                     cancelToken.Token.ThrowIfCancellationRequested();
                     await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 
-                    //對位
-                    //ITransform transForm = await opticalAlignment.Alignment(recipe.AlignRecipe);
+                    //設定顯微鏡參數
                     DetectionPoint detectionPoint = new DetectionPoint();
-                    detectionPoint.MicroscopeLightValue = 39;
-                    detectionPoint.MicroscopeApertureValue = 700;
-                    detectionPoint.LensIndex = 1;
-                    detectionPoint.CubeIndex = 1;
-                    detectionPoint.Filter1Index = 1;
-                    detectionPoint.Filter2Index = 1;
-                    detectionPoint.Filter3Index = 1;
-
+                    detectionPoint.MicroscopeLightValue = recipe.AlignRecipe.FiducialDatas[0].MicroscopeLightValue;
+                    detectionPoint.MicroscopeApertureValue = recipe.AlignRecipe.FiducialDatas[0].MicroscopeApertureValue;
+                    detectionPoint.LensIndex = recipe.AlignRecipe.FiducialDatas[0].LensIndex;
+                    detectionPoint.CubeIndex = recipe.AlignRecipe.FiducialDatas[0].CubeIndex;
+                    detectionPoint.Filter1Index = recipe.AlignRecipe.FiducialDatas[0].Filter1Index;
+                    detectionPoint.Filter2Index = recipe.AlignRecipe.FiducialDatas[0].Filter2Index;
+                    detectionPoint.Filter3Index = recipe.AlignRecipe.FiducialDatas[0].Filter3Index;
                     Task alignmentMicroscopeTask = SetMicroscope(detectionPoint);
+                    //移動到第一個定位點，以便先第一次自動AF
                     Task alignmentTableTask = TableMoveToAsync(new Point(recipe.AlignRecipe.FiducialDatas[0].GrabPositionX, recipe.AlignRecipe.FiducialDatas[0].GrabPositionY));
                     await Task.WhenAll(alignmentMicroscopeTask, alignmentTableTask);
                     Microscope.AFTrace();
-                    if (true)
+
+                    if (processSetting.IsTestRun)
                     {
 
                     }
                     else
                     {
+                        //對位
                         ITransform transForm = await Alignment(recipe.AlignRecipe);
                         cancelToken.Token.ThrowIfCancellationRequested();
                         await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
@@ -394,7 +395,7 @@ namespace WLS3200Gen2.Model.Module
             FiducialRecord?.Invoke(bitmap, pixel, number);
         }
 
- 
+
 
         private void ObservableDetection()
         {

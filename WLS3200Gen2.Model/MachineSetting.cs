@@ -19,6 +19,14 @@ namespace WLS3200Gen2.Model
         public AxisConfig TableZConfig { get; set; } = new AxisConfig();
         public AxisConfig TableRConfig { get; set; } = new AxisConfig();
         public AxisConfig RobotAxisConfig { get; set; } = new AxisConfig();
+        public double InnerRingPitchXPositionPEL { get; set; }
+        public double InnerRingPitchXPositionNEL { get; set; }
+        public double InnerRingYawTPositionPEL { get; set; }
+        public double InnerRingYawTPositionNEL { get; set; }
+        public double InnerRingRollYPositionPEL { get; set; }
+        public double InnerRingRollYPositionNEL { get; set; }
+        public double OuterRingRollYPositionPEL { get; set; }
+        public double OuterRingRollYPositionNEL { get; set; }
         /// <summary>
         /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
         /// </summary>
@@ -111,7 +119,6 @@ namespace WLS3200Gen2.Model
         /// 
         /// </summary>
         public IEnumerable<MicroscopeLens> MicroscopeLensDefault { get; set; }
-
     }
 
 

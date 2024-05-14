@@ -553,6 +553,38 @@ namespace WLS3200Gen2.Model
         /// </summary>
         double OuterRollYPosition { get; }
         /// <summary>
+        /// 內環橫軸正極限
+        /// </summary>
+        double InnerRingPitchXPositionPEL { get; set; }
+        /// <summary>
+        /// 內環橫軸負極限
+        /// </summary>
+        double InnerRingPitchXPositionNEL { get; set; }
+        /// <summary>
+        /// 內環旋轉軸正極限
+        /// </summary>
+        double InnerRingYawTPositionPEL { get; set; }
+        /// <summary>
+        /// 內環旋轉軸負極限
+        /// </summary>
+        double InnerRingYawTPositionNEL { get; set; }
+        /// <summary>
+        /// 內環翻轉正極限
+        /// </summary>
+        double InnerRingRollYPositionPEL { get; set; }
+        /// <summary>
+        /// 內環翻轉負極限
+        /// </summary>
+        double InnerRingRollYPositionNEL { get; set; }
+        /// <summary>
+        /// 外環翻轉正極限
+        /// </summary>
+        double OuterRingRollYPositionPEL { get; set; }
+        /// <summary>
+        /// 外環翻轉負極限
+        /// </summary>
+        double OuterRingRollYPositionNEL { get; set; }
+        /// <summary>
         /// 初始化
         /// </summary>
         void Initial();
@@ -596,12 +628,17 @@ namespace WLS3200Gen2.Model
         /// <param name="isForward"></param>
         void InnerRingPitchX_Move(bool isForward);
         /// <summary>
+        /// 金面左右翻絕對位置
+        /// </summary>
+        /// <param name="isForward"></param>
+        Task InnerRingPitchXMoveToAsync(double pos);
+        /// <summary>
         /// 正面前後倒 isForwards = true(前傾)/false(後仰)
         /// </summary>
         /// <param name="isForward"></param>
         void InnerRingRollY_Move(bool isForward);
         /// <summary>
-        /// 正面前後倒 isForwards = true(前傾)/false(後仰)
+        /// 金面前後倒絕對位置
         /// </summary>
         /// <param name="isForward"></param>
         Task InnerRingRollYMoveToAsync(double pos);
@@ -610,8 +647,20 @@ namespace WLS3200Gen2.Model
         /// </summary>
         /// <param name="isForwards"></param>
         void InnerRingYawT_Move(bool isForwards);
+        /// <summary>
+        /// 金面旋轉絕對位置
+        /// </summary>
+        /// <param name="isForward"></param>
+        Task InnerRingYawTMoveToAsync(double pos);
+
 
         void OuterRingRollY_Move(bool isForwards);
+        /// <summary>
+        /// 金背前後倒絕對位置
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        Task OuterRingRollYMoveToAsync(double pos);
 
         void InnerRingPitchX_Stop();
         void InnerRingRollY_Stop();

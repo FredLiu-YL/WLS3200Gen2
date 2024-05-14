@@ -31,20 +31,6 @@ namespace YuanliCore.Model
         /// </summary>
         public LocateParam[] FiducialDatas { get; set; }
     }
-
-
-    /* public class FiducialData
-     {
-         public Frame<byte[]> SampleImage { get; set; }
-
-         public PatmaxParams Param { get; set; }
-
-         public Point DesignPosition { get; set; }
-
-         public Point GrabPosition { get; set; }
-
-     }*/
-
     public class LocateParam : INotifyPropertyChanged
     {
         private double grabPositionX, grabPositionY, designPositionX, designPositionY;
@@ -66,11 +52,44 @@ namespace YuanliCore.Model
         public double GrabPositionY { get => grabPositionY; set => SetValue(ref grabPositionY, value); }
         public double DesignPositionX { get => designPositionX; set => SetValue(ref designPositionX, value); }
         public double DesignPositionY { get => designPositionY; set => SetValue(ref designPositionY, value); }
-
-
         public int IndexX { get => indexX; set => SetValue(ref indexX, value); }
         public int IndexY { get => indexY; set => SetValue(ref indexY, value); }
-
+        /// <summary>
+        /// 鏡頭倍率
+        /// </summary>
+        public int LensIndex { get; set; }
+        /// <summary>
+        /// Cube在哪一槽
+        /// </summary>
+        public int CubeIndex { get; set; }
+        /// <summary>
+        /// 第一道濾片
+        /// </summary>
+        public int Filter1Index { get; set; }
+        /// <summary>
+        /// 第二道濾片
+        /// </summary>
+        public int Filter2Index { get; set; }
+        /// <summary>
+        /// 第三道濾片
+        /// </summary>
+        public int Filter3Index { get; set; }
+        /// <summary>
+        /// 光強度
+        /// </summary>
+        public int MicroscopeLightValue { get; set; }
+        /// <summary>
+        /// 光圈
+        /// </summary>
+        public int MicroscopeApertureValue { get; set; }
+        /// <summary>
+        /// 目前Z軸位置
+        /// </summary>
+        public double MicroscopePosition { get; set; }
+        /// <summary>
+        /// 準焦位置
+        /// </summary>
+        public double MicroscopeAberationPosition { get; set; }
         /// <summary>
         /// Cognex 資料存在這裡 需要獨立序列化 id 在100-199  用於檔案區隔  。從100開始是因為檔案名稱搜尋1開頭比較簡單
         /// </summary>
@@ -90,6 +109,5 @@ namespace YuanliCore.Model
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
     }
 }

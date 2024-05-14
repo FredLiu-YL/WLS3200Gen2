@@ -12,10 +12,16 @@ namespace WLS3200Gen2.Model.Component
 {
     public class HannDeng_Macro : IMacro
     {
-        private bool isBusy;
-        private bool isStop;
         private readonly object lockObj = new object();
         private bool isCanMoveAllHome = false;
+
+        private bool isInnerRingPitchXBusy = false;
+        private bool isInnerRingPitchXStop = false;
+        private bool isInnerRingRollYBusy = false;
+        private bool isInnerRingRollYStop = false;
+        private bool isInnerRingYawTBusy = false;
+        private bool isInnerRingYawTStop = false;
+
         private bool isInnerCanMoveStartPos = false;
         private bool isInnerUsing = false;
         private bool isOuterCanMoveStartPos = false;
@@ -30,8 +36,12 @@ namespace WLS3200Gen2.Model.Component
         private bool isInnerYawTForward = false;
         private bool isInnerYawTBackward = false;
 
+        private bool isOuterRingRollYBusy = false;
+        private bool isOuterRingRollYStop = false;
+
         private bool isOuterRollYForward = false;
         private bool isOuterRollYBackward = false;
+
 
         private DigitalOutput InnerRingVacuum { get; }
         private DigitalOutput InnerRingPitchXServo { get; }
@@ -188,6 +198,14 @@ namespace WLS3200Gen2.Model.Component
         public double InnerRollYPosition { get; private set; }
         public double InnerYawTPosition { get; private set; }
         public double OuterRollYPosition { get; private set; }
+        public double InnerRingPitchXPositionPEL { get; set; }
+        public double InnerRingPitchXPositionNEL { get; set; }
+        public double InnerRingYawTPositionPEL { get; set; }
+        public double InnerRingYawTPositionNEL { get; set; }
+        public double InnerRingRollYPositionPEL { get; set; }
+        public double InnerRingRollYPositionNEL { get; set; }
+        public double OuterRingRollYPositionPEL { get; set; }
+        public double OuterRingRollYPositionNEL { get; set; }
 
         public Task Home()
         {
@@ -232,63 +250,66 @@ namespace WLS3200Gen2.Model.Component
         }
         public void Initial()
         {
-            Task.Run(ReflashPosition);
+            ReflashPosition();
         }
-        private async Task ReflashPosition()
+        private Task ReflashPosition()
         {
             try
             {
-                Stopwatch stopwatchReflash = new Stopwatch();
-                stopwatchReflash.Start();
-                while (true)
+                return Task.Run(async () =>
                 {
-                    //await Task.Delay(1);
-                    stopwatchReflash.Restart();
+                    Stopwatch stopwatchReflash = new Stopwatch();
+                    stopwatchReflash.Start();
                     while (true)
                     {
-                        if (stopwatchReflash.ElapsedMilliseconds >= 2)
+                        //await Task.Delay(1);
+                        stopwatchReflash.Restart();
+                        while (true)
                         {
-                            break;
+                            if (stopwatchReflash.ElapsedMilliseconds >= 2)
+                            {
+                                break;
+                            }
+                        }
+                        //內環位置++
+                        if (isInnerPitchXForward)
+                        {
+                            InnerPitchXPosition += 2;
+                        }
+                        else if (isInnerPitchXBackward)
+                        {
+                            InnerPitchXPosition -= 2;
+                        }
+
+                        if (isInnerRollYForward)
+                        {
+                            InnerRollYPosition += 2;
+                        }
+                        else if (isInnerRollYBackward)
+                        {
+                            InnerRollYPosition -= 2;
+                        }
+
+                        if (isInnerYawTForward)
+                        {
+                            InnerYawTPosition += 2;
+                        }
+                        else if (isInnerYawTBackward)
+                        {
+                            InnerYawTPosition -= 2;
+                        }
+
+                        //外環位置++
+                        if (isOuterRollYForward)
+                        {
+                            OuterRollYPosition += 2;
+                        }
+                        else if (isOuterRollYBackward)
+                        {
+                            OuterRollYPosition -= 2;
                         }
                     }
-                    //內環位置++
-                    if (isInnerPitchXForward)
-                    {
-                        InnerPitchXPosition += 2;
-                    }
-                    else if (isInnerPitchXBackward)
-                    {
-                        InnerPitchXPosition -= 2;
-                    }
-
-                    if (isInnerRollYForward)
-                    {
-                        InnerRollYPosition += 2;
-                    }
-                    else if (isInnerRollYBackward)
-                    {
-                        InnerRollYPosition -= 2;
-                    }
-
-                    if (isInnerYawTForward)
-                    {
-                        InnerYawTPosition += 2;
-                    }
-                    else if (isInnerYawTBackward)
-                    {
-                        InnerYawTPosition -= 2;
-                    }
-
-                    //外環位置++
-                    if (isOuterRollYForward)
-                    {
-                        OuterRollYPosition += 2;
-                    }
-                    else if (isOuterRollYBackward)
-                    {
-                        OuterRollYPosition -= 2;
-                    }
-                }
+                });
             }
             catch (Exception)
             {
@@ -443,10 +464,62 @@ namespace WLS3200Gen2.Model.Component
             }
             catch (Exception ex)
             {
-
                 throw new Exception("Macro GoInnerRingCheckPos:" + ex);
             }
         }
+        public async Task OuterRingRollYMoveToAsync(double postion)
+        {
+            if (isOuterRingRollYBusy) throw new Exception("InnerRingRollY is Busy");
+            if (postion >= OuterRingRollYPositionPEL) postion = OuterRingRollYPositionPEL;
+            if (postion <= OuterRingRollYPositionNEL) postion = OuterRingRollYPositionNEL;
+            try
+            {
+                isOuterRingRollYBusy = true;
+                await Task.Run(async () =>
+                {
+                    isOuterRingRollYStop = false;
+                    await Task.Delay(300);
+                    //System.Threading.Thread.Sleep(500);
+                    double movePos = postion - OuterRollYPosition;
+                    Stopwatch stopwatchRollY = new Stopwatch();
+                    stopwatchRollY.Start();
+                    if (Math.Abs(movePos) > 0)
+                    {
+                        if (movePos > 0)
+                        {
+                            OuterRingRollY_Move(true);
+                        }
+                        else
+                        {
+                            OuterRingRollY_Move(false);
+                        }
+                        stopwatchRollY.Restart();
+                        while (true)
+                        {
+                            if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos) || isOuterRingRollYStop)
+                            {
+                                OuterRingRollY_Stop();
+                                break;
+                            }
+                        }
+                        await Task.Delay(1);
+                        stopwatchRollY.Stop();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                isOuterRingRollYBusy = false;
+                isOuterRingRollYStop = false;
+            }
+        }
+
+
         /// <summary>
         /// 外環 橫軸/俯仰 Y 停止
         /// </summary>
@@ -455,6 +528,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
+                isOuterRingRollYStop = true;
                 OuterRingRollYForward.Off();
                 OuterRingRollYBackward.Off();
                 isOuterRollYForward = false;
@@ -518,63 +592,47 @@ namespace WLS3200Gen2.Model.Component
             }
         }
         /// <summary>
-        /// 內環 縱軸/翻滾 停止
+        /// 內環 縱軸/翻滾 移動
         /// </summary>
-        public void InnerRingPitchX_Stop()
+        /// <param name="postion"></param>
+        /// <returns></returns>
+        public Task InnerRingPitchXMoveToAsync(double postion)
         {
+            if (isInnerRingPitchXBusy) throw new Exception("InnerRingRollY is Busy");
+            if (postion >= InnerRingPitchXPositionPEL) postion = InnerRingPitchXPositionPEL;
+            if (postion <= InnerRingPitchXPositionNEL) postion = InnerRingPitchXPositionNEL;
             try
             {
-                isInnerPitchXForward = false;
-                isInnerPitchXBackward = false;
-                InnerRingPitchXForward.Off();
-                InnerRingPitchXBackward.Off();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Macro InnerRingPitchX_Stop:" + ex);
-            }
-        }
-        public async Task InnerRingRollYMoveToAsync(double postion)
-        {
-            if (isBusy) throw new Exception("InnerRingRollY is Busy");
-
-            //if (postion > PositionPEL) throw new Exception($"ID:{ AxisID} [{AxisName}]  is Beyond the limits PositionPEL:{PositionPEL} POS:{postion}");
-            //if (postion < PositionNEL) throw new Exception($"ID:{ AxisID} [{AxisName}]  is Beyond the limits PositionNEL:{PositionNEL} POS:{postion}");
-            try
-            {
-                isBusy = true;
-                await Task.Run(async () =>
+                isInnerRingPitchXBusy = true;
+                return Task.Run(async () =>
                {
-                   System.Threading.Thread.Sleep(500);
-                   double movePos = postion - InnerRollYPosition;
-                   Stopwatch stopwatchRollY = new Stopwatch();
-                   stopwatchRollY.Start();
+                   isInnerRingPitchXStop = false;
+                   await Task.Delay(300);
+                   //System.Threading.Thread.Sleep(500);
+                   double movePos = postion - InnerPitchXPosition;
+                   Stopwatch stopwatchPitchX = new Stopwatch();
+                   stopwatchPitchX.Start();
                    if (Math.Abs(movePos) > 0)
                    {
                        if (movePos > 0)
                        {
-                           InnerRingRollY_Move(true);
+                           InnerRingPitchX_Move(true);
                        }
                        else
                        {
-                           InnerRingRollY_Move(false);
+                           InnerRingPitchX_Move(false);
                        }
-                       int countRollY = 0;
-                       stopwatchRollY.Restart();
+                       stopwatchPitchX.Restart();
                        while (true)
                        {
-                           if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos))
+                           if (Math.Abs(postion - InnerPitchXPosition) <= 1 || isInnerRingPitchXStop)//if (stopwatchPitchX.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingPitchXStop)
                            {
-                               InnerRingRollY_Stop();
+                               InnerRingPitchX_Stop();
                                break;
                            }
-                           countRollY++;
                        }
                        await Task.Delay(1);
-                       InnerRollYPosition = postion;
-                       //Thread.Sleep(800);
-                       //Macro.InnerRingRollY_Stop();
-                       stopwatchRollY.Stop();
+                       stopwatchPitchX.Stop();
                    }
                });
             }
@@ -585,8 +643,26 @@ namespace WLS3200Gen2.Model.Component
             }
             finally
             {
-                isBusy = false;
-                isStop = false;
+                isInnerRingPitchXBusy = false;
+                isInnerRingPitchXStop = false;
+            }
+        }
+        /// <summary>
+        /// 內環 縱軸/翻滾 停止
+        /// </summary>
+        public void InnerRingPitchX_Stop()
+        {
+            try
+            {
+                isInnerRingPitchXStop = true;
+                isInnerPitchXForward = false;
+                isInnerPitchXBackward = false;
+                InnerRingPitchXForward.Off();
+                InnerRingPitchXBackward.Off();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Macro InnerRingPitchX_Stop:" + ex);
             }
         }
         /// <summary>
@@ -625,7 +701,58 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Macro InnerRingRollY_Move:" + ex);
             }
         }
+        public Task InnerRingRollYMoveToAsync(double postion)
+        {
+            if (isInnerRingRollYBusy) throw new Exception("InnerRingRollY is Busy");
+            if (postion >= InnerRingRollYPositionPEL) postion = InnerRingRollYPositionPEL;
+            if (postion <= InnerRingRollYPositionNEL) postion = InnerRingRollYPositionNEL;
+            try
+            {
+                isInnerRingRollYBusy = true;
+                return Task.Run(async () =>
+               {
+                   isInnerRingRollYStop = false;
+                   await Task.Delay(300);
+                   //System.Threading.Thread.Sleep(500);
+                   double movePos = postion - InnerRollYPosition;
+                   Stopwatch stopwatchRollY = new Stopwatch();
+                   stopwatchRollY.Start();
+                   if (Math.Abs(movePos) > 0)
+                   {
+                       if (movePos > 0)
+                       {
+                           InnerRingRollY_Move(true);
+                       }
+                       else
+                       {
+                           InnerRingRollY_Move(false);
+                       }
+                       stopwatchRollY.Restart();
+                       while (true)
+                       {
+                           if (Math.Abs(postion - InnerRollYPosition) <= 1 || isInnerRingRollYStop)//if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingRollYStop)
+                           {
+                               InnerRingRollY_Stop();
+                               break;
+                           }
+                       }
+                       await Task.Delay(1);
+                       InnerRollYPosition = postion;
+                       stopwatchRollY.Stop();
+                   }
+               });
+            }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
+            finally
+            {
+                isInnerRingRollYBusy = false;
+                isInnerRingRollYStop = false;
+            }
+        }
         /// <summary>
         /// 內環 縱軸/翻滾 停止
         /// </summary>
@@ -633,6 +760,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
+                isInnerRingRollYStop = true;
                 InnerRingRollYForward.Off();
                 InnerRingRollYBackward.Off();
                 isInnerRollYForward = false;
@@ -680,6 +808,62 @@ namespace WLS3200Gen2.Model.Component
             }
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public Task InnerRingYawTMoveToAsync(double pos)
+        {
+            if (isInnerRingYawTBusy) throw new Exception("InnerRingYawT is Busy");
+            if (pos >= InnerRingYawTPositionPEL) pos = InnerRingYawTPositionPEL;
+            if (pos <= InnerRingYawTPositionNEL) pos = InnerRingYawTPositionNEL;
+            try
+            {
+                isInnerRingYawTBusy = true;
+                return Task.Run(async () =>
+               {
+                   isInnerRingYawTStop = false;
+                   await Task.Delay(300);
+                   //System.Threading.Thread.Sleep(500);
+                   double movePos = pos - InnerYawTPosition;
+                   Stopwatch stopwatchYawT = new Stopwatch();
+                   stopwatchYawT.Start();
+                   if (Math.Abs(movePos) > 0)
+                   {
+                       if (movePos > 0)
+                       {
+                           InnerRingYawT_Move(true);
+                       }
+                       else
+                       {
+                           InnerRingYawT_Move(false);
+                       }
+                       stopwatchYawT.Restart();
+                       while (true)
+                       {
+                           if (Math.Abs(pos - InnerYawTPosition) <= 1 || isInnerRingYawTStop)//if (stopwatchYawT.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingYawTStop)
+                           {
+                               InnerRingYawT_Stop();
+                               break;
+                           }
+                       }
+                       await Task.Delay(1);
+                       stopwatchYawT.Stop();
+                   }
+               });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                isInnerRingYawTBusy = false;
+                isInnerRingYawTStop = false;
+            }
+        }
+        /// <summary>
         /// 內環 垂軸/偏擺 停止
         /// </summary>
         /// <param name="isForward"></param>
@@ -687,6 +871,7 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
+                isInnerRingYawTStop = true;
                 InnerRingYawTForward.Off();
                 InnerRingYawTBackward.Off();
                 isInnerYawTForward = false;
@@ -712,7 +897,10 @@ namespace WLS3200Gen2.Model.Component
                     int i = 0;
 
                     //外環抬升軸上來
-                    System.Threading.Thread.Sleep(500);
+                    System.Threading.Thread.Sleep(200);
+                    OuterRingRollYForward.Off();
+                    OuterRingRollYBackward.Off();
+                    System.Threading.Thread.Sleep(300);
                     if (isFirstHome == true)
                     {
                         i = 0;
@@ -860,10 +1048,17 @@ namespace WLS3200Gen2.Model.Component
                 {
                     IsInnerUsing = false;
                     int i = 0;
-
+                    //全部關閉
+                    System.Threading.Thread.Sleep(200);
+                    InnerRingPitchXForward.Off();
+                    InnerRingPitchXBackward.Off();
+                    InnerRingRollYForward.Off();
+                    InnerRingRollYBackward.Off();
+                    InnerRingYawTForward.Off();
+                    InnerRingYawTBackward.Off();
                     //X、Y翻轉復歸
                     i = 0;
-                    System.Threading.Thread.Sleep(500);
+                    System.Threading.Thread.Sleep(300);
                     InnerRingPitchXOrg.Off();
                     InnerRingRollYOrg.Off();
                     System.Threading.Thread.Sleep(50);
@@ -1219,7 +1414,6 @@ namespace WLS3200Gen2.Model.Component
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
 
     }
 }

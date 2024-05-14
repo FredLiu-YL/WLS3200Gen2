@@ -96,21 +96,25 @@ namespace WLS3200Gen2.UserControls
                         switch (key)
                         {
                             case "X+":
-                                Macro.InnerRingPitchX_Move(true);
+                                Macro.InnerRingPitchXMoveToAsync(Macro.InnerRingPitchXPositionPEL);
                                 break;
                             case "X-":
-                                Macro.InnerRingPitchX_Move(false);
+                                Macro.InnerRingPitchXMoveToAsync(Macro.InnerRingPitchXPositionNEL);
+                                //Macro.InnerRingPitchX_Move(false);
                                 break;
                             case "Y+":
-                                Macro.InnerRingRollY_Move(true);
+                                Macro.InnerRingRollYMoveToAsync(Macro.InnerRingRollYPositionPEL);
                                 break;
                             case "Y-":
-                                Macro.InnerRingRollY_Move(false);
+                                Macro.InnerRingRollYMoveToAsync(Macro.InnerRingRollYPositionNEL);
+                                //Macro.InnerRingRollY_Move(false);
                                 break;
                             case "T+":
+                                //Macro.InnerRingYawTMoveToAsync(Macro.InnerRingYawTPositionPEL);
                                 Macro.InnerRingYawT_Move(true);
                                 break;
                             case "T-":
+                                //Macro.InnerRingYawTMoveToAsync(Macro.InnerRingYawTPositionNEL);
                                 Macro.InnerRingYawT_Move(false);
                                 break;
                             default:
@@ -219,10 +223,12 @@ namespace WLS3200Gen2.UserControls
                         switch (key)
                         {
                             case "Y+":
-                                Macro.OuterRingRollY_Move(true);
+                                Macro.OuterRingRollYMoveToAsync(Macro.InnerRingRollYPositionPEL);
+                                //Macro.OuterRingRollY_Move(true);
                                 break;
                             case "Y-":
-                                Macro.OuterRingRollY_Move(false);
+                                Macro.OuterRingRollYMoveToAsync(Macro.InnerRingRollYPositionNEL);
+                                //Macro.OuterRingRollY_Move(false);
                                 break;
                         }
                     }
