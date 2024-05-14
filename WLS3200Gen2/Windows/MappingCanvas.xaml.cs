@@ -63,7 +63,7 @@ namespace WLS3200Gen2.UserControls
                                                          new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 
-        public static readonly DependencyProperty BitmapImageProperty = DependencyProperty.Register(nameof(BitmapImage), typeof(WriteableBitmap), typeof(MappingCanvas),
+        public static readonly DependencyProperty MapImageProperty = DependencyProperty.Register(nameof(MapImage), typeof(WriteableBitmap), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty SelectDiesProperty = DependencyProperty.Register(nameof(SelectDies), typeof(ObservableCollection<Die>), typeof(MappingCanvas),
@@ -137,10 +137,10 @@ namespace WLS3200Gen2.UserControls
         }
 
 
-        public WriteableBitmap BitmapImage
+        public WriteableBitmap MapImage
         {
-            get => (WriteableBitmap)GetValue(BitmapImageProperty);
-            set => SetValue(BitmapImageProperty, value);
+            get => (WriteableBitmap)GetValue(MapImageProperty);
+            set => SetValue(MapImageProperty, value);
         }
 
 
@@ -193,8 +193,8 @@ namespace WLS3200Gen2.UserControls
 
         private void ZoomFit()
         {
-            double scaleW = scrollViewer.ActualWidth / BitmapImage.Width;
-            double scaleH = scrollViewer.ActualHeight / BitmapImage.Height;
+            double scaleW = scrollViewer.ActualWidth / MapImage.Width;
+            double scaleH = scrollViewer.ActualHeight / MapImage.Height;
             if (scaleW <= scaleH)//取最小比例來做縮放
                 viewbox.LayoutTransform = new ScaleTransform(scaleW, scaleW);
             else
@@ -628,7 +628,7 @@ namespace WLS3200Gen2.UserControls
                 case MappingOperate.Create:
                     var rects = DrawCanvasRectangles(Dies, BincodeInFomation);
                     rectangles = rects.rectangles;
-                    BitmapImage = CreateMappingImage(rects.rectangles, rects.canvas);
+                    MapImage = CreateMappingImage(rects.rectangles, rects.canvas);
                     ZoomFit();
                     break;
                 case MappingOperate.Fit:
@@ -654,12 +654,12 @@ namespace WLS3200Gen2.UserControls
         private void DrawMapping()
         {
             if (Dies == null) return;
-            if (BitmapImage != null) return;
+            if (MapImage != null) return;
 
 
             var rects = DrawCanvasRectangles(Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
             rectangles = rects.rectangles;
-            //    BitmapImage = CreateBitmapImage(rects);
+            //    BitmapImage = CreateBitmapImage(rects);//由外部控制畫圖 ，所以不自動畫圖了
         }
 
 

@@ -38,7 +38,7 @@
                         <RowDefinition />
                         
                     </Grid.RowDefinitions>
-                    <Image  Grid.Column="0" Grid.Row="0"  Source="{Binding BitmapImage}"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                    <Image  Grid.Column="0" Grid.Row="0"  Source="{Binding MapImage}"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
                     <Canvas  Grid.Column="0" Grid.Row="0" x:Name="canvas" >
 
                     </Canvas>

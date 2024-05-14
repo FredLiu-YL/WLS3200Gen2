@@ -148,6 +148,9 @@
     <Compile Include="InfomationWidow.xaml.cs">
       <DependentUpon>InfomationWidow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainWindow.vm.Recipe.Detect.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.vm.Setting.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

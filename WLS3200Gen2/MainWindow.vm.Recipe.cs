@@ -407,45 +407,9 @@ namespace WLS3200Gen2
 
         }
 
-        public ICommand TestLoadRecipePageCommand => new RelayCommand(() =>
-        {
-            try
-            {
 
 
-            }
-            catch (Exception ex)
-            {
 
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-
-            }
-        });
-
-
-        public ICommand LoadWaferCommand => new RelayCommand(() =>
-        {
-
-            /* LoadPort2Wafers.Add(
-                 new WaferUIData
-                 {
-                     WaferStates = ExistStates.Exist
-                 });
-             LoadPort2Wafers.Add(
-           new WaferUIData
-           {
-               WaferStates = ExistStates.Exist
-           });
-
-
-             LoadPort2Wafers[4].WaferStates = ExistStates.Error;
-
-             TestStates = ExistStates.Exist;*/
-
-        });
 
 
         public ICommand MappingEditCommand => new RelayCommand(async () =>
