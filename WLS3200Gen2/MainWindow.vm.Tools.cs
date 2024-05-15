@@ -136,7 +136,8 @@ namespace WLS3200Gen2
                 Task robot = machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
                 await Task.WhenAll(micro, robot);
                 machine.MicroDetection.TableVacuum.On();
-                await machine.Feeder.LoadToMicroAsync();
+                WaferProcessStatus station = new WaferProcessStatus();
+                await machine.Feeder.LoadToMicroAsync(station);
                 if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
                 {
                     throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");

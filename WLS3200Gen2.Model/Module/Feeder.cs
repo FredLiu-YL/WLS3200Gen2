@@ -56,7 +56,7 @@ namespace WLS3200Gen2.Model.Module
             this.Reader = reader;
             this.machineSetting = machineSetting;
         }
-        public bool IsInitial { get; private set; } = false;
+        public bool IsInitial { get; set; } = false;
 
         public IEFEMRobot Robot { get; }
         public IMacro Macro { get; }
@@ -209,7 +209,7 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         /// <param name="inchType"></param>
         /// <returns></returns>
-        public async Task LoadCassetteToMacroAsync(int cassetteIndex, bool isLoadport1)
+        public async Task LoadCassetteToMacroAsync(WaferProcessStatus station, int cassetteIndex, bool isLoadport1)
         {
             try
             {
@@ -231,6 +231,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+                station = WaferProcessStatus.Reject;
                 throw ex;
             }
         }
@@ -278,7 +279,7 @@ namespace WLS3200Gen2.Model.Module
         /// 從Cassette->Aligner位置
         /// </summary>
         /// <returns></returns>
-        public async Task LoadCassetteToAlignerAsync(int cassetteIndex, bool isLoadport1)
+        public async Task LoadCassetteToAlignerAsync(WaferProcessStatus station, int cassetteIndex, bool isLoadport1)
         {
             try
             {
@@ -304,7 +305,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                station = WaferProcessStatus.Reject;
                 throw ex;
             }
         }
@@ -339,7 +340,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                station = WaferProcessStatus.Reject;
                 throw ex;
             }
         }
@@ -366,7 +367,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                station = WaferProcessStatus.Reject;
                 throw ex;
             }
         }
@@ -448,20 +449,28 @@ namespace WLS3200Gen2.Model.Module
         /// Aligner-> StandBy位置
         /// </summary>
         /// <returns></returns>
-        public async Task AlignerToStandByAsync()
+        public async Task AlignerToStandByAsync(WaferProcessStatus station)
         {
-            if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
-            await Task.Run(async () =>
+            try
             {
-                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
+                await Task.Run(async () =>
                 {
-                    await AlignerToStandByOnePortAsync();
-                }
-                else
-                {
-                    await AlignerToStandByTwoPortAsync();
-                }
-            });
+                    if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                    {
+                        await AlignerToStandByOnePortAsync();
+                    }
+                    else
+                    {
+                        await AlignerToStandByTwoPortAsync();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                station = WaferProcessStatus.Reject;
+                throw ex;
+            }
         }
         private async Task AlignerToStandByOnePortAsync()
         {
@@ -482,21 +491,29 @@ namespace WLS3200Gen2.Model.Module
         /// wafer放進主設備
         /// </summary>
         /// <returns></returns>
-        public async Task LoadToMicroAsync()
+        public async Task LoadToMicroAsync(WaferProcessStatus station)
         {
-            if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
-            //await WaferAlignerToStandBy();
-            await Task.Run(async () =>
+            try
             {
-                if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
+                //await WaferAlignerToStandBy();
+                await Task.Run(async () =>
                 {
-                    await LoadToMicroOnePortAsync();
-                }
-                else
-                {
-                    await LoadToMicroTwoPortAsync();
-                }
-            });
+                    if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
+                    {
+                        await LoadToMicroOnePortAsync();
+                    }
+                    else
+                    {
+                        await LoadToMicroTwoPortAsync();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                station = WaferProcessStatus.Reject;
+                throw ex;
+            }
         }
         private async Task LoadToMicroOnePortAsync()
         {
@@ -651,7 +668,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                wafer.ProcessStatus.Micro = WaferProcessStatus.Reject;
                 throw ex;
             }
         }

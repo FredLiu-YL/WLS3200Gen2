@@ -52,7 +52,7 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment.FiducialRecord += AlignRecord;
             opticalAlignment.AlignmentManual += AlignManual;
         }
-        public bool IsInitial { get; private set; } = false;
+        public bool IsInitial { get; set; } = false;
         public string GrabSaveTime { get; private set; }
         public ICamera Camera { get; }
         public Axis AxisX { get; }
@@ -182,7 +182,7 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task Run(MainRecipe mainRecipe, ProcessSetting processSetting, Wafer currentWafer, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(Wafer currentWafer, MainRecipe mainRecipe, ProcessSetting processSetting, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             try
             {
@@ -208,7 +208,6 @@ namespace WLS3200Gen2.Model.Module
                         opticalAlignment.PauseToken = pauseToken;
                     }
 
-
                     //入料準備?
                     //await subject.ToTask();
 
@@ -230,60 +229,54 @@ namespace WLS3200Gen2.Model.Module
                     await Task.WhenAll(alignmentMicroscopeTask, alignmentTableTask);
                     Microscope.AFTrace();
 
-                    if (processSetting.IsTestRun)
-                    {
 
+                    //對位
+                    ITransform transForm = await Alignment(recipe.AlignRecipe);
+                    cancelToken.Token.ThrowIfCancellationRequested();
+                    await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+
+                    var date = DateTime.Now.Date.ToString("yyyyMMdd-HH-mm");
+                    string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
+                                     DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
+                    GrabSaveTime = nowTime;
+                    int titleIdx = 0;
+                    if (processSetting.IsAutoSave)
+                    {
+                        //每一個座標需要檢查的座標
+                        foreach (DetectionPoint point in recipe.DetectionPoints)
+                        {
+                            titleIdx += 1;
+                            WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
+                            //轉換成對位後實際座標
+                            var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
+                            var transPosition = transForm.TransPoint(newPos);
+                            await TableMoveToAsync(transPosition); //Offset
+                            await SetMicroscope(point);
+                            if (processSetting.IsAutoFocus)
+                            {
+                                Microscope.AFTrace();
+                            }
+                            await Task.Delay(200);
+                            DetectionSaveParam detectionSaveParam = new DetectionSaveParam();
+                            detectionSaveParam.Bmp = Camera.GrabAsync();
+                            detectionSaveParam.DetectionPoint = point;
+                            detectionSaveParam.Wafer = currentWafer;
+                            detectionSaveParam.NowTime = nowTime;
+                            detectionSaveParam.TitleIdx = titleIdx.ToString();
+                            detectionSaveParam.RecipeName = mainRecipe.Name;
+
+                            var t0 = Thread.CurrentThread.ManagedThreadId;
+                            subject.OnNext(detectionSaveParam);//AOI另外丟到其他執行續處理
+                                                               //DetectionRecord?.Invoke(detectionSaveParam.Bmp, point, currentWafer, nowTime, titleIdx.ToString());
+                                                               // pauseToken.IsPaused = true;
+                            cancelToken.Token.ThrowIfCancellationRequested();
+                            await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+                        }
                     }
                     else
                     {
-                        //對位
-                        ITransform transForm = await Alignment(recipe.AlignRecipe);
-                        cancelToken.Token.ThrowIfCancellationRequested();
-                        await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-
-                        var date = DateTime.Now.Date.ToString("yyyyMMdd-HH-mm");
-                        string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
-                                         DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
-                        GrabSaveTime = nowTime;
-                        int titleIdx = 0;
-                        if (processSetting.IsAutoSave)
-                        {
-                            //每一個座標需要檢查的座標
-                            foreach (DetectionPoint point in recipe.DetectionPoints)
-                            {
-                                titleIdx += 1;
-                                WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
-                                //轉換成對位後實際座標
-                                var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
-                                var transPosition = transForm.TransPoint(newPos);
-                                await TableMoveToAsync(transPosition); //Offset
-                                await SetMicroscope(point);
-                                if (processSetting.IsAutoFocus)
-                                {
-                                    Microscope.AFTrace();
-                                }
-                                await Task.Delay(200);
-                                DetectionSaveParam detectionSaveParam = new DetectionSaveParam();
-                                detectionSaveParam.Bmp = Camera.GrabAsync();
-                                detectionSaveParam.DetectionPoint = point;
-                                detectionSaveParam.Wafer = currentWafer;
-                                detectionSaveParam.NowTime = nowTime;
-                                detectionSaveParam.TitleIdx = titleIdx.ToString();
-                                detectionSaveParam.RecipeName = mainRecipe.Name;
-
-                                var t0 = Thread.CurrentThread.ManagedThreadId;
-                                subject.OnNext(detectionSaveParam);//AOI另外丟到其他執行續處理
-                                //DetectionRecord?.Invoke(detectionSaveParam.Bmp, point, currentWafer, nowTime, titleIdx.ToString());
-                                // pauseToken.IsPaused = true;
-                                cancelToken.Token.ThrowIfCancellationRequested();
-                                await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
-                            }
-                        }
-                        else
-                        {
-                            Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
-                            var cc = await micro;
-                        }
+                        Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
+                        var cc = await micro;
                     }
                 }
                 else
@@ -291,9 +284,14 @@ namespace WLS3200Gen2.Model.Module
                     throw new FlowException("MicroDetection:Fix Wafer Error!!");
                 }
             }
+            catch (FlowException ex)
+            {
+                currentWafer.ProcessStatus.Micro = WaferProcessStatus.Reject;
+                throw ex;
+            }
             catch (Exception ex)
             {
-
+                currentWafer.ProcessStatus.Micro = WaferProcessStatus.Reject;
                 throw ex;
             }
         }
@@ -354,7 +352,6 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 opticalAlignment.WriteLog = WriteLog;
                 WriteLog?.Invoke("Wafer Alignment Start");

@@ -32,8 +32,8 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class MappingCanvas : UserControl, INotifyPropertyChanged
     {
-        private int width = 30, height = 30;//定義繪圖方框的寬高 (PIXEL)
-        private int Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
+        private double width = 30, height = 30;//定義繪圖方框的寬高 (PIXEL)
+        private double Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
         private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
 
         //    private const double ScaleRate = 0.1; // 縮放比率
@@ -238,7 +238,8 @@ namespace WLS3200Gen2.UserControls
         {
             List<RectangleInfo> rects = new List<RectangleInfo>();
             Stopwatch stopwatch = new Stopwatch();
-
+            //MapImage.Width
+            //MapImage.Height 
             object lockObj = new object();
 
             int col = dice.Max(die => die.IndexX);
@@ -246,7 +247,10 @@ namespace WLS3200Gen2.UserControls
             int cols = col + 1;//因從0開始算 ，最大值會是總數量-1  ，要加回來
             int rows = row + 1;
 
-
+            SelectRectangles.Clear();
+            width = 3000 / (cols + cols * 0.5 + 1);
+            height = 3000 / (rows + rows * 0.5 + 1);
+            Cuttingline = Math.Min(width, height) / 4;
 
             Canvas imageCanvas = new Canvas();
             imageCanvas.Width = cols * (width + Cuttingline) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
@@ -259,6 +263,7 @@ namespace WLS3200Gen2.UserControls
             imageCanvas.Children.Clear();
             var dieGroup = dice.OrderBy(d => d.IndexX).GroupBy(d => d.IndexX).ToArray();//先把X分類出來  加速後面搜尋速度
             stopwatch.Start();
+            startPoint = new Point(width, height);
             Parallel.For(0, cols, i =>
             {
 
@@ -307,6 +312,9 @@ namespace WLS3200Gen2.UserControls
         private WriteableBitmap CreateMappingImage(IEnumerable<RectangleInfo> rects, Canvas imageCanvas)
         {
             Stopwatch stopwatch = new Stopwatch();
+            canvas.Children.Clear();
+            imageCanvas.Children.Clear();
+            //imageCanvas.ShapesItems.Clear();
             foreach (var rect in rects)
             {
                 imageCanvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, rect.Fill));
@@ -474,13 +482,13 @@ namespace WLS3200Gen2.UserControls
                     selectRange.Height = height;
 
 
-               
+
             }
             else if (myGrid.IsMouseCaptured) //拖曳移動功能
             {
-              //  if (!myGrid.IsMouseCaptured) return;
+                //  if (!myGrid.IsMouseCaptured) return;
                 Point dragEndPoint = e.GetPosition(scrollViewer);
-          
+
                 double offsetX = dragEndPoint.X - dragStartPoint.X;
                 double offsetY = dragEndPoint.Y - dragStartPoint.Y;
 
@@ -489,7 +497,7 @@ namespace WLS3200Gen2.UserControls
 
                 dragStartPoint = dragEndPoint;
 
-                
+
             }
             //計算當下滑鼠指向哪一顆
             var dieIndwx = rectangles.Where(r => r.Rectangle.Contains(currentPoint)).FirstOrDefault();
@@ -530,7 +538,7 @@ namespace WLS3200Gen2.UserControls
                 Mouse.OverrideCursor = null; // 恢復滑鼠外型為預設
 
 
-            
+
         }
 
         private void Grid_MouseLeave(object sender, MouseEventArgs e)

@@ -61,10 +61,8 @@ namespace WLS3200Gen2
             int radius = col / 2; // 圓形半徑
             int radiusSquared = radius * radius; // 半徑的平方
 
-
             Parallel.For(0, col, x =>
             {
-
                 Parallel.For(0, row, y =>
                 {
 
@@ -120,6 +118,21 @@ namespace WLS3200Gen2
                 var dummy = CreateDummyBincode(50, 50);//建出假資料
                 MapBincodeList = dummy.mapBincodes;
                 DieArray = dummy.dice;
+
+                List<BincodeInfo> bincodeInfos = new List<BincodeInfo>();
+                var info1 = new BincodeInfo();
+                info1.Code = "000";
+                info1.Color = Brushes.Green;
+                bincodeInfos.Add(info1);
+                var info2 = new BincodeInfo();
+                info2.Code = "099";
+                info2.Color = Brushes.Red;
+                bincodeInfos.Add(info2);
+
+                MapBincodeList = bincodeInfos.ToArray();
+                DieArray = mainRecipe.DetectRecipe.WaferMap.Dies;// dummy.dice;
+
+
                 MappingOp?.Invoke(MappingOperate.Create); //產生圖片
 
 

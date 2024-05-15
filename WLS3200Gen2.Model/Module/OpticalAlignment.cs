@@ -93,7 +93,6 @@ namespace WLS3200Gen2.Model.Module
                                         await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
                                         Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, movePos.X, movePos.Y);
                                         actualPos = await alignmentManual;
-
                                     }                                
                                     else
                                         throw ex;

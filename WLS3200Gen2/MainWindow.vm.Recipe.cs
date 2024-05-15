@@ -526,7 +526,7 @@ namespace WLS3200Gen2
                 processSetting.IsAutoFocus = true;
                 processSetting.IsAutoSave = true;
                 Wafer currentWafer = new Wafer(1);
-                await machine.MicroDetection.Run(recipe, processSetting, currentWafer, ptsTest, ctsTest);
+                await machine.MicroDetection.Run(currentWafer, recipe, processSetting, ptsTest, ctsTest);
             }
             catch (Exception ex)
             {
@@ -1345,7 +1345,8 @@ namespace WLS3200Gen2
                                     await Task.WhenAll(micro, robot);
                                 }
                                 machine.MicroDetection.TableVacuum.On();
-                                await machine.Feeder.LoadToMicroAsync();
+                                WaferProcessStatus station = new WaferProcessStatus();
+                                await machine.Feeder.LoadToMicroAsync(station);
                                 if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
                                 {
                                     throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");

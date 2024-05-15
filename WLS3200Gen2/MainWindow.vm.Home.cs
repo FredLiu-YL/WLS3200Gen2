@@ -28,7 +28,6 @@ namespace WLS3200Gen2
 {
     public partial class MainViewModel
     {
-
         private ObservableCollection<ProcessStation> processStations = new ObservableCollection<ProcessStation>();
         private string logMessage;
         private bool isRunning = false;
@@ -128,7 +127,16 @@ namespace WLS3200Gen2
                     ProcessSetting.IsTestRun = IsTestRun;
                     ProcessSetting.Inch = Model.Module.InchType.Inch12;
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
-                    await machine.ProcessRunAsync(ProcessSetting);
+
+                    isWaferInSystem = await machine.BeforeHomeCheck();
+                    if (isWaferInSystem)
+                    {
+                        MessageBox.Show("Wafer In System!! Please RemoveWafer", "Wafer In System", MessageBoxButton.YesNo);
+                    }
+                    else
+                    {
+                        await machine.ProcessRunAsync(ProcessSetting);
+                    }
 
                     SwitchStates(MachineStates.IDLE);
 
@@ -681,23 +689,31 @@ namespace WLS3200Gen2
         }
         private async Task<Point> AlignmentOperate(PauseTokenSource pts, CancellationTokenSource cts, double grabPosX, double grabPosY)
         {
-     
-            machine.ProcessPause();//暫停
-            
-            //將原本拍照的座標設成預設值
-            ManualPosX = grabPosX;
-            ManualPosY = grabPosY;
+            if (ProcessSetting.IsTestRun)
+            {
+                ManualPosX = grabPosX;
+                ManualPosY = grabPosY;
+                return new Point(ManualPosX, ManualPosY);
+            }
+            else
+            {
+                machine.ProcessPause();//暫停
 
-            //切到Alignment 頁面
-            TabControlSelectedIndex = 2;
-            IsOperateUI = false;
-            cts.Token.ThrowIfCancellationRequested();
-            await pts.Token.WaitWhilePausedAsync(cts.Token);
+                //將原本拍照的座標設成預設值
+                ManualPosX = grabPosX;
+                ManualPosY = grabPosY;
 
-            //切到Infomation頁面
-            TabControlSelectedIndex = 0;
-            IsOperateUI = true;
-            return new Point(ManualPosX, ManualPosY);//最後UI任何操作都會寫入ManualPosX Y 的座標 ，離開之前傳回座標給流程
+                //切到Alignment 頁面
+                TabControlSelectedIndex = 2;
+                IsOperateUI = false;
+                cts.Token.ThrowIfCancellationRequested();
+                await pts.Token.WaitWhilePausedAsync(cts.Token);
+
+                //切到Infomation頁面
+                TabControlSelectedIndex = 0;
+                IsOperateUI = true;
+                return new Point(ManualPosX, ManualPosY);//最後UI任何操作都會寫入ManualPosX Y 的座標 ，離開之前傳回座標給流程
+            }
         }
         private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
