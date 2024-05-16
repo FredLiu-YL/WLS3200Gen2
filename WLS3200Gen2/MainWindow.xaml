@@ -445,7 +445,7 @@
 
                                         </Grid>
                                         <GroupBox Grid.Column="0" Grid.Row="1" Header="Bin Code List" Grid.ColumnSpan="2" FontSize="12">
-                                            <DataGrid Margin="0" ItemsSource="{Binding BincodeList}"  CanUserSortColumns="False" 
+                                            <!--<DataGrid Margin="0" ItemsSource="{Binding BincodeList}"  CanUserSortColumns="False" 
                                                     AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectList}" FontSize="10" >
                                                 <i:Interaction.Triggers>
                                                     <i:EventTrigger EventName="PreviewMouseDoubleClick">
@@ -465,7 +465,38 @@
                                                     <DataGridTextColumn  Width="70"  Header="Code"  Binding="{Binding Code}"    />
                                                     <DataGridTextColumn  Width="120"  Header="Describe"  Binding="{Binding Describe}"  />
                                                 </DataGrid.Columns>
-                                            </DataGrid>
+                                            </DataGrid>-->
+                                            <Grid >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="0.13*" />
+                                                    <RowDefinition  Height="0.87*" />
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.1*"/>
+                                                        <ColumnDefinition Width="0.3*"/>
+                                                        <ColumnDefinition Width="0.3*"/>
+                                                        <ColumnDefinition Width="0.3*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label Grid.Column="0"  Content="Color"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <Label Grid.Column="1"  Content="Code" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <Label Grid.Column="2"  Content="Describe"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <Label Grid.Column="3"  Content="Assign"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Grid>
+                                                <ListBox Grid.Row="1"   Margin="0" ItemsSource="{Binding BincodeList }">
+                                                    <ListBox.ItemContainerStyle>
+                                                        <Style TargetType="ListBoxItem">
+                                                            <Setter Property="Margin" Value="0"/>
+                                                        </Style>
+                                                    </ListBox.ItemContainerStyle>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <!-- 這裡放置你的 UserControl -->
+                                                            <UserControlUC:BincodeListUnitUC Color="{Binding Color}" Code="{Binding Code}" Describe="{Binding Describe}" Assign="{Binding Assign }"/>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </Grid>
                                         </GroupBox>
                                     </Grid>
 
@@ -483,8 +514,8 @@
                                                     <ColumnDefinition Width="71*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
-                                                    <RowDefinition Height="0.12*"/>
-                                                    <RowDefinition Height="0.88*"/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition Height="231"/>
                                                 </Grid.RowDefinitions>
                                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,225" Grid.ColumnSpan="2" Grid.RowSpan="2">
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>

@@ -157,6 +157,9 @@
     <Compile Include="UserControls\AFAberationUnitUC.xaml.cs">
       <DependentUpon>AFAberationUnitUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\BincodeListUnitUC.xaml.cs">
+      <DependentUpon>BincodeListUnitUC.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MachineStateUC.xaml.cs">
       <DependentUpon>MachineStateUC.xaml</DependentUpon>
     </Compile>
@@ -250,6 +253,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\AFAberationUnitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\BincodeListUnitUC.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

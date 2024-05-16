@@ -264,8 +264,8 @@ namespace WLS3200Gen2
 
                         ShowHomeNewMapImage();
                         await Task.Delay(5);
-                        
-                        
+
+
                         ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
 
                         //ShowRecipeNewMapImage();
@@ -438,11 +438,8 @@ namespace WLS3200Gen2
                     ProcessStations.Add(temp);
                 }
 
-                foreach (var station in ProcessStations)
-                {
-                    station.PropertyChanged += ProcessStation_PropertyChanged;
-                }
-                ProcessStations[0].MacroBack = WaferProcessStatus.Select;
+
+                BincodeList[0].Assign = "";
                 SwitchStates(MachineStates.IDLE);
             }
             catch (Exception ex)

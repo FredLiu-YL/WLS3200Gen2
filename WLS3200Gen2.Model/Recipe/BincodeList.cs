@@ -14,13 +14,11 @@ namespace WLS3200Gen2.Model.Recipe
     {
         private string code;
         private string describe;
+        private string assign;
         private Brush color;
-
-
         public string Code { get => code; set => SetValue(ref code, value); }
-
         public string Describe { get => describe; set => SetValue(ref describe, value); }
-
+        public string Assign { get => assign; set => SetValue(ref assign, value); }
         public Brush Color { get => color; set => SetValue(ref color, value); }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -37,7 +35,20 @@ namespace WLS3200Gen2.Model.Recipe
         protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgsExtended(name, oldValue, newValue));
+        }
+    }
+    public class PropertyChangedEventArgsExtended : PropertyChangedEventArgs
+    {
+        public object OldValue { get; }
+        public object NewValue { get; }
+
+        public PropertyChangedEventArgsExtended(string propertyName, object oldValue, object newValue)
+            : base(propertyName)
+        {
+            OldValue = oldValue;
+            NewValue = newValue;
         }
     }
 }

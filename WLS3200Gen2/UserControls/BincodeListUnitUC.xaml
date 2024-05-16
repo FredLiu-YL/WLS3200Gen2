@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="WLS3200Gen2.UserControls.BincodeListUnitUC"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:usercontrols="clr-namespace:WLS3200Gen2.UserControls"
+        xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
+        x:Name="BincodeListUnit"
+        mc:Ignorable="d"
+         Height="35" Width="420">
+    <Grid DataContext="{Binding ElementName=BincodeListUnit}">
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition Width="0.1*"/>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="0.3*"/>
+        </Grid.ColumnDefinitions>
+        <Button  Grid.Column="0" Background="{Binding Color }" IsEnabled="True" Width="30" Height="30" />
+        <Label Grid.Column="1" Content="{Binding Code }" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text ="{Binding Describe}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <Button Grid.Column="3" Command="{Binding AssignCommand}" Width="90" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Assign"/>
+    </Grid>
+</UserControl>

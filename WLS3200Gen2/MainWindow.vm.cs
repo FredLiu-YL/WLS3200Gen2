@@ -95,7 +95,7 @@ namespace WLS3200Gen2
         public WriteableBitmap HomeMapImage { get => homeMapImage; set => SetValue(ref homeMapImage, value); }
 
         public System.Windows.Point MapMousePixcel { get => mapmousePixcel; set => SetValue(ref mapmousePixcel, value); }
-      
+
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
         private ObservableCollection<RobotAddress> customers = new ObservableCollection<RobotAddress>();
@@ -196,7 +196,12 @@ namespace WLS3200Gen2
                 };
                 BincodeList.Add(bincode1);
                 BincodeList.Add(bincode2);
-                BincodeList.Add(new BincodeInfo());
+                foreach (var item in BincodeList)
+                {
+                    item.PropertyChanged += BincodeList_PropertyChanged;
+                }
+                
+                //BincodeList.Add(new BincodeInfo());
 
 
                 TableX = machine.MicroDetection.AxisX;
@@ -280,8 +285,8 @@ namespace WLS3200Gen2
                 new RobotAddress() { Name = "LoadPort1 Step5", Address = "114" },
             };
 
-                ProcessStations.CollectionChanged += ProcessStations_CollectionChanged;
-             
+                
+
 
                 Customers.Add(new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" });
                 SwitchStates(MachineStates.IDLE);
@@ -297,31 +302,13 @@ namespace WLS3200Gen2
             }
         });
 
-        private void ProcessStation_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void BincodeList_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "MacroBack")
             {
-                
+
                 // 屬性更改時執行的操作
             }
-        }
-        private void ProcessStations_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Add)
-            {
-                foreach (ProcessStation newItem in e.NewItems)
-                {
-                    // 在這裡處理新增的元素
-                }
-            }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (ProcessStation oldItem in e.OldItems)
-                {
-                    // 在這裡處理移除的元素
-                }
-            }
-            // 可以處理其他類型的集合更改，如清除、替換等
         }
 
 
