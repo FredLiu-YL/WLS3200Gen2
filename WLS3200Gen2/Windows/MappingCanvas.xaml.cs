@@ -45,7 +45,7 @@ namespace WLS3200Gen2.UserControls
         private Point dragStartPoint;
 
 
-        private List<RectangleInfo> rectangles = new List<RectangleInfo>();
+        //private List<RectangleInfo> rectangles = new List<RectangleInfo>();
         private ObservableCollection<RectangleInfo> selectRectangles = new ObservableCollection<RectangleInfo>();
         //    private ObservableCollection<Die> selectDies = new ObservableCollection<Die>();
 
@@ -75,7 +75,12 @@ namespace WLS3200Gen2.UserControls
         //col,row,背景色，線條
         public static readonly DependencyProperty DrawingRectangleProperty = DependencyProperty.Register(nameof(DrawingRectangle), typeof(Action<int, int, Brush, Brush>), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
+        public static readonly DependencyProperty MousePixcelProperty = DependencyProperty.Register(nameof(MousePixcel), typeof(Point), typeof(MappingCanvas),
+                                                                                                    new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty RectanglesProperty = DependencyProperty.Register(nameof(Rectangles), typeof(List<RectangleInfo>), typeof(MappingCanvas),
+                                                                                                    new FrameworkPropertyMetadata(new List<RectangleInfo>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty SelectRectanglesProperty = DependencyProperty.Register(nameof(SelectRectangles), typeof(ObservableCollection<RectangleInfo>), typeof(MappingCanvas),
+                                                                                                    new FrameworkPropertyMetadata(new ObservableCollection<RectangleInfo>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public MappingCanvas()
         {
@@ -109,11 +114,7 @@ namespace WLS3200Gen2.UserControls
         }
 
 
-        public ObservableCollection<RectangleInfo> SelectRectangles
-        {
-            get => selectRectangles;
-            set => SetValue(ref selectRectangles, value);
-        }
+
 
         public int Col
         {
@@ -157,15 +158,29 @@ namespace WLS3200Gen2.UserControls
             get => (Action<int, int, Brush, Brush>)GetValue(DrawingRectangleProperty);
             set => SetValue(DrawingRectangleProperty, value);
         }
-
-
         public ObservableCollection<LineViewModel> Lines
         {
             get => _lines;
             set => SetValue(ref _lines, value);
         }
-
-
+        /// <summary>
+        /// 取得或設定 滑鼠在影像上座標
+        /// </summary>
+        public Point MousePixcel
+        {
+            get => (Point)GetValue(MousePixcelProperty);
+            set => SetValue(MousePixcelProperty, value);
+        }
+        public List<RectangleInfo> Rectangles
+        {
+            get => (List<RectangleInfo>)GetValue(RectanglesProperty);
+            set => SetValue(RectanglesProperty, value);
+        }
+        public ObservableCollection<RectangleInfo> SelectRectangles
+        {
+            get => (ObservableCollection<RectangleInfo>)GetValue(SelectRectanglesProperty);
+            set => SetValue(SelectRectanglesProperty, value);
+        }
         #region 縮放
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
         {
@@ -193,13 +208,15 @@ namespace WLS3200Gen2.UserControls
 
         private void ZoomFit()
         {
-            double scaleW = scrollViewer.ActualWidth / MapImage.Width;
-            double scaleH = scrollViewer.ActualHeight / MapImage.Height;
-            if (scaleW <= scaleH)//取最小比例來做縮放
-                viewbox.LayoutTransform = new ScaleTransform(scaleW, scaleW);
-            else
-                viewbox.LayoutTransform = new ScaleTransform(scaleH, scaleH);
-
+            if (MapImage != null)
+            {
+                double scaleW = scrollViewer.ActualWidth / MapImage.Width;
+                double scaleH = scrollViewer.ActualHeight / MapImage.Height;
+                if (scaleW <= scaleH)//取最小比例來做縮放
+                    viewbox.LayoutTransform = new ScaleTransform(scaleW, scaleW);
+                else
+                    viewbox.LayoutTransform = new ScaleTransform(scaleH, scaleH);
+            }
         }
         private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -241,20 +258,24 @@ namespace WLS3200Gen2.UserControls
             //MapImage.Width
             //MapImage.Height 
             object lockObj = new object();
-
             int col = dice.Max(die => die.IndexX);
             int row = dice.Max(die => die.IndexY);
             int cols = col + 1;//因從0開始算 ，最大值會是總數量-1  ，要加回來
             int rows = row + 1;
+            int mapSize = MapSize(cols, rows);
+            double offsetDraw = mapSize / 150;
 
             SelectRectangles.Clear();
-            width = 3000 / (cols + cols * 0.5 + 1);
-            height = 3000 / (rows + rows * 0.5 + 1);
+
+            width = mapSize / (cols + 1 + cols / 4);
+            height = mapSize / (rows + 1 + rows / 4);
             Cuttingline = Math.Min(width, height) / 4;
 
+            width = (mapSize - Cuttingline * (cols - 1)) / (cols + 1);
+            height = (mapSize - Cuttingline * (rows - 1)) / (rows + 1);
             Canvas imageCanvas = new Canvas();
-            imageCanvas.Width = cols * (width + Cuttingline) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
-            imageCanvas.Height = rows * (height + Cuttingline) + height;//數量 * 高度+線寬
+            imageCanvas.Width = mapSize;//cols * (width + Cuttingline) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
+            imageCanvas.Height = mapSize;//rows * (height + Cuttingline) + height;//數量 * 高度+線寬
             imageCanvas.Background = Brushes.White;
 
             myGrid.Width = imageCanvas.Width;
@@ -263,13 +284,12 @@ namespace WLS3200Gen2.UserControls
             imageCanvas.Children.Clear();
             var dieGroup = dice.OrderBy(d => d.IndexX).GroupBy(d => d.IndexX).ToArray();//先把X分類出來  加速後面搜尋速度
             stopwatch.Start();
+
             startPoint = new Point(width, height);
             Parallel.For(0, cols, i =>
             {
-
                 Parallel.For(0, rows, j =>
                 {
-
                     var rect = new RectangleInfo(startPoint.X + ((width + Cuttingline) * i), startPoint.Y + ((height + Cuttingline) * j), width, height);
 
                     rect.Row = j;
@@ -309,6 +329,37 @@ namespace WLS3200Gen2.UserControls
            */
             return (rects, imageCanvas);
         }
+        private int MapSize(int cols, int rows)
+        {
+            try
+            {
+                int total = cols * rows;
+                if (total <= 10000)
+                {
+                    return 3000;
+                }
+                else if (total <= 40000)
+                {
+                    return 6000;
+                }
+                else if (total <= 90000)
+                {
+                    return 9000;
+                }
+                else if (total <= 160000)
+                {
+                    return 12000;
+                }
+                else
+                {
+                    return 15000;
+                }
+            }
+            catch (Exception)
+            {
+                return 15000;
+            }
+        }
         private WriteableBitmap CreateMappingImage(IEnumerable<RectangleInfo> rects, Canvas imageCanvas)
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -320,6 +371,7 @@ namespace WLS3200Gen2.UserControls
                 imageCanvas.Children.Add(CreateRectangle(rect.CenterX, rect.CenterY, rect.Width, rect.Height, rect.Fill));
 
             }
+            imageCanvas.Background = Brushes.Black;
             var count3 = stopwatch.ElapsedMilliseconds;
             stopwatch.Restart();
             var bitmapImage = CreateBitmap(imageCanvas);
@@ -357,21 +409,46 @@ namespace WLS3200Gen2.UserControls
 
         private void DrawRectangle(RectangleInfo rectangleinfo, Brush fill, Brush stroke)
         {
-
-
-
             Rectangle rectangle = new Rectangle();
             rectangle.Width = rectangleinfo.Width;
             rectangle.Height = rectangleinfo.Height;
             rectangle.Fill = fill; // 可以根據需要設置不同的顏色
             rectangle.Stroke = stroke;
+            rectangle.StrokeThickness = Cuttingline / 2;
+            //Cuttingline
             // 設置 Rectangle 的位置
             Canvas.SetLeft(rectangle, rectangleinfo.CenterX - rectangleinfo.Width / 2); // 每個 Rectangle 的水平間距為 120
             Canvas.SetTop(rectangle, rectangleinfo.CenterY - rectangleinfo.Height / 2); // 所有 Rectangle 的垂直位置相同
 
+            //先將原本的移除
+            int index = SelectRectangles.IndexOf(rectangleinfo);
+            var result = SelectRectangles
+           .Select((rect, idx) => new { rect, idx })
+           .FirstOrDefault(x => x.rect.Col == rectangleinfo.Col && x.rect.Row == rectangleinfo.Row);
+            if (result != null)
+            {
+                index = result.idx;
+            }
+            else
+            {
+                index = -1;
+            }
+            if (index >= 0)
+            {
+                canvas.Children.RemoveAt(index);
+                SelectRectangles.RemoveAt(index);
+            }
+            //新增 SelectRectangles
+            //SelectRectangles.Add(rectangleinfo);
+            SelectRectangles.Add(new RectangleInfo(rectangleinfo.CenterX, rectangleinfo.CenterY, rectangleinfo.Width, rectangleinfo.Height)
+            {
+                Col = rectangleinfo.Col,
+                Row = rectangleinfo.Row,
+                Fill = rectangleinfo.Fill
+            });
+            SelectRectangles[SelectRectangles.Count - 1].Fill = stroke;
             // 將 Rectangle 加入到 Canvas 中
             canvas.Children.Add(rectangle);
-
         }
         #endregion
 
@@ -382,6 +459,19 @@ namespace WLS3200Gen2.UserControls
         private Rectangle selectRange;
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            //防止拉出去螢幕外的框，消除掉
+            if (isSelectRange)
+            {
+                try
+                {
+                    isSelectRange = false;
+                    canvas.Children.RemoveAt(canvas.Children.Count - 1);//框選完清掉選取框框
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
             if (isTouchMode)
             {
                 dragStartPoint = e.GetPosition(scrollViewer);
@@ -395,70 +485,62 @@ namespace WLS3200Gen2.UserControls
                 selectRange = new Rectangle
                 {
                     Stroke = Brushes.Red,
-                    StrokeThickness = 2,
+                    StrokeThickness = 5,
                     Width = 0,
                     Height = 0
                 };
                 Canvas.SetLeft(selectRange, selectStartPoint.X);
                 Canvas.SetTop(selectRange, selectStartPoint.Y);
                 canvas.Children.Add(selectRange);
+
             }
         }
 
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            MousePixcel = new Point(e.GetPosition(myGrid).X, e.GetPosition(myGrid).Y);
             if (isTouchMode)
             {
                 myGrid.ReleaseMouseCapture();
             }
             else if (isSelectMode)
             {
-                isSelectRange = false;
-                canvas.Children.RemoveAt(canvas.Children.Count - 1);//框選完清掉選取框框
-
-                var selectRects = SelectRectInRange(selectRange, rectangles);
-
-
-                if (isAdd)
+                if (isSelectRange)
                 {
-                    foreach (var item in selectRects)
-                    {
-                        SelectRectangles.Add(item);
-                        DrawRectangle(item, item.Fill, Brushes.Red);
-                    }
+                    isSelectRange = false;
+                    canvas.Children.RemoveAt(canvas.Children.Count - 1);//框選完清掉選取框框
 
-                }
-                else if (isDel)
-                {
+                    var selectRects = SelectRectInRange(selectRange, Rectangles);
 
-                    foreach (var item in selectRects)
+                    if (isAdd)
                     {
-                        int index = SelectRectangles.IndexOf(item);
-                        if (index >= 0)
+                        foreach (var item in selectRects)
                         {
-                            canvas.Children.RemoveAt(index);
-                            SelectRectangles.RemoveAt(index);
+                            DrawRectangle(item, item.Fill, Brushes.Yellow);
                         }
-
-
                     }
+                    else if (isDel)
+                    {
+                        foreach (var item in selectRects)
+                        {
+                            int index = SelectRectangles.IndexOf(item);
+                            if (index >= 0)
+                            {
+                                canvas.Children.RemoveAt(index);
+                                SelectRectangles.RemoveAt(index);
+                            }
+                        }
+                    }
+                    //這樣數量一多會很慢 需要再改
+                    SelectDies.Clear();
+                    foreach (var item in SelectRectangles)
+                    {
+                        var die = Dies.Where(d => d.IndexX == item.Col && d.IndexY == item.Row).FirstOrDefault();
+                        SelectDies.Add(die);
+                    }
+                    // Point pixel = e.GetPosition(myGrid);
+                    //  DrawMapRectangle(pixel);
                 }
-
-                //這樣數量一多會很慢 需要再改
-                SelectDies.Clear();
-                foreach (var item in SelectRectangles)
-                {
-
-                    var die = Dies.Where(d => d.IndexX == item.Col && d.IndexY == item.Row).FirstOrDefault();
-                    SelectDies.Add(die);
-
-
-                }
-
-
-                // Point pixel = e.GetPosition(myGrid);
-                //  DrawMapRectangle(pixel);
-
             }
         }
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -500,7 +582,7 @@ namespace WLS3200Gen2.UserControls
 
             }
             //計算當下滑鼠指向哪一顆
-            var dieIndwx = rectangles.Where(r => r.Rectangle.Contains(currentPoint)).FirstOrDefault();
+            var dieIndwx = Rectangles.Where(r => r.Rectangle.Contains(currentPoint)).FirstOrDefault();
             if (dieIndwx != null)
             {
                 Col = dieIndwx.Col;
@@ -511,7 +593,7 @@ namespace WLS3200Gen2.UserControls
         private void DrawMapRectangle(Point pixel)
         {
 
-            var selectRect = rectangles.Where(rect => rect.Rectangle.Contains(pixel)).FirstOrDefault();
+            var selectRect = Rectangles.Where(rect => rect.Rectangle.Contains(pixel)).FirstOrDefault();
             if (selectRect == null) return;
 
 
@@ -523,7 +605,7 @@ namespace WLS3200Gen2.UserControls
         private void DrawMapRectangle(int indexX, int indexY, Brush fill, Brush stroke)
         {
 
-            var selectRect = rectangles.Where(rect => rect.Col == indexX && rect.Row == indexY).FirstOrDefault();
+            var selectRect = Rectangles.Where(rect => rect.Col == indexX && rect.Row == indexY).FirstOrDefault();
             if (selectRect == null) return;
 
 
@@ -581,6 +663,7 @@ namespace WLS3200Gen2.UserControls
                         break;
 
                     case "clear":
+                        SelectRectangles.Clear();
                         canvas.Children.Clear();
                         break;
 
@@ -605,14 +688,17 @@ namespace WLS3200Gen2.UserControls
 
             MapOperate(MappingOperate.Create);
         }
-
-
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selectRange"></param>
+        /// <param name="rectInfos"></param>
+        /// <returns></returns>
         private IEnumerable<RectangleInfo> SelectRectInRange(Rectangle selectRange, IEnumerable<RectangleInfo> rectInfos)
         {
             var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
             IEnumerable<RectangleInfo> selectRects = new List<RectangleInfo>();
-            if (selectRange.Width <= width || selectRange.Height <= Height)
+            if (selectRange.Width <= width || selectRange.Height <= height)
             {
                 selectRects = rectInfos.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
                                    || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
@@ -622,8 +708,6 @@ namespace WLS3200Gen2.UserControls
             {
                 selectRects = rectInfos.Where(r => rect.Contains(r.Rectangle.TopLeft) || rect.Contains(r.Rectangle.BottomLeft)
                                    || rect.Contains(r.Rectangle.BottomRight) || rect.Contains(r.Rectangle.TopRight));
-
-
             }
             return selectRects;
         }
@@ -635,7 +719,7 @@ namespace WLS3200Gen2.UserControls
             {
                 case MappingOperate.Create:
                     var rects = DrawCanvasRectangles(Dies, BincodeInFomation);
-                    rectangles = rects.rectangles;
+                    Rectangles = rects.rectangles;
                     MapImage = CreateMappingImage(rects.rectangles, rects.canvas);
                     ZoomFit();
                     break;
@@ -643,6 +727,7 @@ namespace WLS3200Gen2.UserControls
                     ZoomFit();
                     break;
                 case MappingOperate.Clear:
+                    SelectRectangles.Clear();
                     canvas.Children.Clear();
                     break;
                 default:
@@ -666,7 +751,7 @@ namespace WLS3200Gen2.UserControls
 
 
             var rects = DrawCanvasRectangles(Dies, BincodeInFomation); //取Inedex最大值 會是總數量-1  ，所以要+1回來
-            rectangles = rects.rectangles;
+            Rectangles = rects.rectangles;
             //    BitmapImage = CreateBitmapImage(rects);//由外部控制畫圖 ，所以不自動畫圖了
         }
 

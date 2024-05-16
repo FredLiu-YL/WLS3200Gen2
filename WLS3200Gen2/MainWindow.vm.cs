@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -51,7 +52,6 @@ namespace WLS3200Gen2
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
-        private System.Windows.Point mapmousePixcel;
         //WLS3200的文件都放在這 (Recipe、 Log setting)
         private string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\WLS3200";
         //WLS3200 生產相關資訊會存到這
@@ -95,7 +95,7 @@ namespace WLS3200Gen2
         public WriteableBitmap HomeMapImage { get => homeMapImage; set => SetValue(ref homeMapImage, value); }
 
         public System.Windows.Point MapMousePixcel { get => mapmousePixcel; set => SetValue(ref mapmousePixcel, value); }
-
+      
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
         private ObservableCollection<RobotAddress> customers = new ObservableCollection<RobotAddress>();
@@ -161,7 +161,7 @@ namespace WLS3200Gen2
                 //加入 LOG功能到各模組 一定要放在  machine.Initial()後面
                 machine.MicroDetection.WriteLog += WriteLog;
                 machine.Feeder.WriteLog += WriteLog;
-               
+
 
                 await Task.Delay(10);//顯示UI 
                 isWaferInSystem = true;
@@ -198,7 +198,7 @@ namespace WLS3200Gen2
                 BincodeList.Add(bincode2);
                 BincodeList.Add(new BincodeInfo());
 
-        
+
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
                 TableR = machine.MicroDetection.AxisR;
@@ -280,6 +280,8 @@ namespace WLS3200Gen2
                 new RobotAddress() { Name = "LoadPort1 Step5", Address = "114" },
             };
 
+                ProcessStations.CollectionChanged += ProcessStations_CollectionChanged;
+             
 
                 Customers.Add(new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" });
                 SwitchStates(MachineStates.IDLE);
@@ -294,6 +296,36 @@ namespace WLS3200Gen2
 
             }
         });
+
+        private void ProcessStation_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "MacroBack")
+            {
+                
+                // 屬性更改時執行的操作
+            }
+        }
+        private void ProcessStations_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (ProcessStation newItem in e.NewItems)
+                {
+                    // 在這裡處理新增的元素
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (ProcessStation oldItem in e.OldItems)
+                {
+                    // 在這裡處理移除的元素
+                }
+            }
+            // 可以處理其他類型的集合更改，如清除、替換等
+        }
+
+
+
         public ICommand WindowClosingCommand => new RelayCommand<CancelEventArgs>(async e =>
         {
             try
@@ -379,7 +411,7 @@ namespace WLS3200Gen2
                 catch (Exception)
                 {
                 }
-       
+
             }
         }
         private void DetectionRecord(BitmapSource bitmap, DetectionPoint point, Wafer currentWafer, string nowTime, string titleIdx)

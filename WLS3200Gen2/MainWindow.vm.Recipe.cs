@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -625,7 +626,6 @@ namespace WLS3200Gen2
         {
             try
             {
-
                 if (detectionRecipe.DetectionPoints == null) return;
                 foreach (var item in detectionRecipe.DetectionPoints)
                 {
@@ -638,10 +638,129 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                throw ex;
+            }
+        }
+        public void ShowHomeNewMapImage()
+        {
+            try
+            {
+                List<BincodeInfo> bincodeInfos = new List<BincodeInfo>();
+                var info1 = new BincodeInfo();
+                info1.Code = "000";
+                info1.Color = Brushes.Green;
+                bincodeInfos.Add(info1);
+                var info2 = new BincodeInfo();
+                info2.Code = "099";
+                info2.Color = Brushes.Red;
+                bincodeInfos.Add(info2);
+
+                MapBincodeListHome = bincodeInfos.ToArray();
+                DieArrayHome = mainRecipe.DetectRecipe.WaferMap.Dies;// dummy.dice;
+                MappingHomeOp?.Invoke(MappingOperate.Create); //產生圖片
+
+                tempRecipeRectangles = new List<RectangleInfo>();
+                tempHomeAssignRectangles = new List<RectangleInfo>();
+
+                foreach (var item in RectanglesHome)
+                {
+                    tempRecipeRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
+                    {
+                        Col = item.Col,
+                        Row = item.Row,
+                        Fill = item.Fill
+                    });
+                    tempHomeAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
+                    {
+                        Col = item.Col,
+                        Row = item.Row,
+                        Fill = item.Fill
+                    });
+                }
+                foreach (var item in mainRecipe.DetectRecipe.DetectionPoints)
+                {
+                    Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
+                    if (die != null)
+                    {
+                        var result = tempRecipeRectangles
+                         .Select((rect, idx) => new { rect, idx })
+                         .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
+                        tempRecipeRectangles[result.idx].Fill = Brushes.Yellow;
+                    }
+                }
+                selectHomeRectangle = null;
+                selectRecipeRectangle = null;
+            }
+            catch (Exception ex)
+            {
 
                 throw ex;
             }
         }
+        public void ShowRecipeNewMapImage()
+        {
+            try
+            {
+                List<BincodeInfo> bincodeInfos = new List<BincodeInfo>();
+                var info1 = new BincodeInfo();
+                info1.Code = "000";
+                info1.Color = Brushes.Green;
+                bincodeInfos.Add(info1);
+                var info2 = new BincodeInfo();
+                info2.Code = "099";
+                info2.Color = Brushes.Red;
+                bincodeInfos.Add(info2);
+                MapBincodeList = bincodeInfos.ToArray();
+                DieArray = mainRecipe.DetectRecipe.WaferMap.Dies;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        public void ShowDetectionRecipeNewMapImgae(DetectionRecipe detectionRecipe)
+        {
+            try
+            {
+                if (detectionRecipe.DetectionPoints == null) return;
+                foreach (var item in detectionRecipe.DetectionPoints)
+                {
+                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
+                    if (die != null)
+                    {
+                        NewRecipeMapDieColorChange(false, die, Brushes.Yellow);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void ShowDetectionHomeNewMapImgae(DetectionRecipe detectionRecipe)
+        {
+            try
+            {
+                if (detectionRecipe.DetectionPoints == null) return;
+                foreach (var item in detectionRecipe.DetectionPoints)
+                {
+                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
+                    if (die != null)
+                    {
+                        HomeNewMapAssignDieColorChange(false, die, null, null);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public void ClearDetectionMapImgae(DetectionRecipe detectionRecipe)
         {
             try
@@ -713,6 +832,47 @@ namespace WLS3200Gen2
             catch (Exception ex)
             {
 
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 更換tempRecipeRectangles顏色， 讓RecipeMap上的Die變成DefectList顏色(brush黃色是選擇要檢查的Die,brush==null代表要改回來)
+        /// </summary>
+        /// <param name="die"></param>
+        /// <param name="brush"></param>
+        private void NewRecipeMapDieColorChange(bool isDoubleClickSelected, Die die, Brush stroke)
+        {
+            try
+            {
+                var result = tempRecipeRectangles
+                                  .Select((rect, idx) => new { rect, idx })
+                                  .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
+                if (result != null)
+                {
+                    //若是要Die按兩下變色的功能
+                    if (isDoubleClickSelected)
+                    {
+                        if (stroke == null)
+                        {
+                            stroke = tempRecipeRectangles[result.idx].Fill;
+                        }
+                    }
+                    else
+                    {
+                        if (stroke == null)
+                        {
+                            tempRecipeRectangles[result.idx].Fill = Rectangles[result.idx].Fill;
+                        }
+                        else
+                        {
+                            tempRecipeRectangles[result.idx].Fill = stroke;
+                        }
+                    }
+                    SetRectangle?.Invoke(Rectangles[result.idx].Col, Rectangles[result.idx].Row, Rectangles[result.idx].Fill, tempRecipeRectangles[result.idx].Fill);
+                }
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -1638,9 +1798,8 @@ namespace WLS3200Gen2
 
                 MessageBox.Show(ex.Message);
             }
-
-
         });
+
         public ICommand AddDetectionCommand => new RelayCommand(async () =>
         {
             try
@@ -1675,7 +1834,39 @@ namespace WLS3200Gen2
                 if (die != null)
                 {
                     MapDieColorChange(mainRecipe.DetectRecipe.WaferMap, die, Brushes.Yellow);
+                    NewRecipeMapDieColorChange(false, die, Brushes.Yellow);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        });
+        public ICommand AddMultiDetectionCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //將SelectRectangles全部加填進去，然後用當前的參數
+
+                //foreach (var item in SelectRectangles)
+                //{
+                //    bool isNotOrgColor = false;
+                //    if (item.Fill != Brushes.Red)
+                //    {
+                //        foreach (var item2 in MapBincodeList)
+                //        {
+                //            if (item.Fill == item2.Color)
+                //            {
+                //                isNotOrgColor = true;
+                //            }
+                //        }
+                //    }
+
+                //    if (isNotOrgColor)
+                //    {
+                //        tempRecipeRectangles.FirstOrDefault(d => d.Col == item.Col && d.Row == item.Row).Fill = item.Fill;
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -1683,7 +1874,6 @@ namespace WLS3200Gen2
 
             }
         });
-
         public ICommand RemoveDetectionCommand => new RelayCommand(async () =>
         {
             try
@@ -1698,6 +1888,8 @@ namespace WLS3200Gen2
                     if (die != null && count == 1)
                     {
                         MapDieColorReturn(mainRecipe.DetectRecipe.WaferMap, die, mainRecipe.DetectRecipe.BincodeList);
+                        NewRecipeMapDieColorChange(false, die, null);
+
                     }
                 }
             }
