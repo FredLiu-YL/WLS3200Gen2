@@ -32,8 +32,6 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class MappingCanvas : UserControl, INotifyPropertyChanged
     {
-        private double width = 30, height = 30;//定義繪圖方框的寬高 (PIXEL)
-        private double Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
         private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
 
         //    private const double ScaleRate = 0.1; // 縮放比率
@@ -81,6 +79,12 @@ namespace WLS3200Gen2.UserControls
                                                                                                     new FrameworkPropertyMetadata(new List<RectangleInfo>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty SelectRectanglesProperty = DependencyProperty.Register(nameof(SelectRectangles), typeof(ObservableCollection<RectangleInfo>), typeof(MappingCanvas),
                                                                                                     new FrameworkPropertyMetadata(new ObservableCollection<RectangleInfo>(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty DrawSizeProperty = DependencyProperty.Register(nameof(DrawSize), typeof(Point), typeof(MappingCanvas),
+                                                                                                    new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty DrawCuttinglineProperty = DependencyProperty.Register(nameof(DrawCuttingline), typeof(double), typeof(MappingCanvas),
+                                                                                                    new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
 
         public MappingCanvas()
         {
@@ -181,6 +185,20 @@ namespace WLS3200Gen2.UserControls
             get => (ObservableCollection<RectangleInfo>)GetValue(SelectRectanglesProperty);
             set => SetValue(SelectRectanglesProperty, value);
         }
+        public Point DrawSize
+        {
+            get => (Point)GetValue(DrawSizeProperty);
+            set => SetValue(DrawSizeProperty, value);
+        }
+        public double DrawCuttingline
+        {
+            get => (double)GetValue(DrawCuttinglineProperty);
+            set => SetValue(DrawCuttinglineProperty, value);
+        }
+        //private double width = 30, height = 30;//定義繪圖方框的寬高 (PIXEL)
+        //private double Cuttingline = 3;// 方框中間的間隙( Die之間的切割道寬度)(PIXEL)
+
+
         #region 縮放
         private void ZoomIn_Click(object sender, RoutedEventArgs e)
         {
@@ -267,12 +285,15 @@ namespace WLS3200Gen2.UserControls
 
             SelectRectangles.Clear();
 
-            width = mapSize / (cols + 1 + cols / 4);
-            height = mapSize / (rows + 1 + rows / 4);
-            Cuttingline = Math.Min(width, height) / 4;
+            double width = mapSize / (cols + 1 + cols / 4);
+            double height = mapSize / (rows + 1 + rows / 4);
+            double Cuttingline = Math.Min(width, height) / 4;
 
             width = (mapSize - Cuttingline * (cols - 1)) / (cols + 1);
             height = (mapSize - Cuttingline * (rows - 1)) / (rows + 1);
+
+            DrawSize = new Point(width, height);
+            DrawCuttingline = Cuttingline;
             Canvas imageCanvas = new Canvas();
             imageCanvas.Width = mapSize;//cols * (width + Cuttingline) + width; //數量 * 寬度+線寬 +圖像BUFF 每個方框都抓20*20寬高，計算出需要的圖像大小
             imageCanvas.Height = mapSize;//rows * (height + Cuttingline) + height;//數量 * 高度+線寬
@@ -414,7 +435,7 @@ namespace WLS3200Gen2.UserControls
             rectangle.Height = rectangleinfo.Height;
             rectangle.Fill = fill; // 可以根據需要設置不同的顏色
             rectangle.Stroke = stroke;
-            rectangle.StrokeThickness = Cuttingline / 2;
+            rectangle.StrokeThickness = DrawCuttingline / 2;
             //Cuttingline
             // 設置 Rectangle 的位置
             Canvas.SetLeft(rectangle, rectangleinfo.CenterX - rectangleinfo.Width / 2); // 每個 Rectangle 的水平間距為 120
@@ -698,7 +719,7 @@ namespace WLS3200Gen2.UserControls
         {
             var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
             IEnumerable<RectangleInfo> selectRects = new List<RectangleInfo>();
-            if (selectRange.Width <= width || selectRange.Height <= height)
+            if (selectRange.Width <= DrawSize.X || selectRange.Height <= DrawSize.Y)
             {
                 selectRects = rectInfos.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
                                    || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));

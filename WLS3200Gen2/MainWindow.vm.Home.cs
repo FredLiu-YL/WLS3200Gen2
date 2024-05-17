@@ -262,19 +262,15 @@ namespace WLS3200Gen2
                     {
                         ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
 
-                        ShowHomeNewMapImage();
-                        await Task.Delay(5);
-
-
+                        ShowHomeNewMapImage(mainRecipe.DetectRecipe);
                         ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
 
-                        //ShowRecipeNewMapImage();
-                        //MappingOp?.Invoke(MappingOperate.Create); //產生圖片
-                        //ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+                        ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
 
-                        ClearHomeMapShapeAction.Execute(true);
                         await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                         ShowDetectionMapImgae(mainRecipe.DetectRecipe);
+
+                        BincodeListUpdate(mainRecipe.DetectRecipe.BincodeList);
                     }
                     WriteLog("Load Recipe :" + recipename);
                 }
@@ -321,82 +317,6 @@ namespace WLS3200Gen2
             }
 
         });
-        /// <summary>
-        /// HomeMap下BinCode變色
-        /// </summary>
-        /// <param name="die"></param>
-        /// <param name="fill"></param>
-        /// <param name="stroke"></param>
-        private void HomeNewMapAssignDieColorChange(bool isDoubleClickSelected, Die die, Brush fill, Brush stroke)
-        {
-            try
-            {
-                var result = tempRecipeRectangles
-                                  .Select((rect, idx) => new { rect, idx })
-                                  .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
-                if (result != null)
-                {
-                    //若是要Die按兩下變色的功能
-                    if (isDoubleClickSelected)
-                    {
-                        fill = tempHomeAssignRectangles[result.idx].Fill;
-                    }
-                    else
-                    {
-                        //若是null就是不用Assign，拿現在的狀態
-                        if (fill == null)
-                        {
-                            fill = tempHomeAssignRectangles[result.idx].Fill;
-                        }
-                        else
-                        {
-                            tempHomeAssignRectangles[result.idx].Fill = fill;
-                        }
-                    }
-                    //若是null就是要顯示原本Recipe，不然其實就是紅色選擇到的
-                    if (stroke == null)
-                    {
-                        stroke = tempRecipeRectangles[result.idx].Fill;
-                    }
-                    SetHomeRectangle?.Invoke(RectanglesHome[result.idx].Col, RectanglesHome[result.idx].Row, fill, stroke);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        /// <summary>
-        /// 變更主畫面上
-        /// </summary>
-        /// <param name="die"></param>
-        /// <param name="brush"></param>
-        private void HomeNewMapDieColorChange(Die die, Brush brush)
-        {
-            try
-            {
-                var result = tempRecipeRectangles
-                                  .Select((rect, idx) => new { rect, idx })
-                                  .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
-                if (result != null)
-                {
-                    if (brush == null)
-                    {
-                        tempRecipeRectangles[result.idx].Fill = Rectangles[result.idx].Fill;
-                    }
-                    else
-                    {
-                        tempRecipeRectangles[result.idx].Fill = brush;
-                    }
-                    SetRectangle?.Invoke(Rectangles[result.idx].Col, Rectangles[result.idx].Row, Rectangles[result.idx].Fill, tempRecipeRectangles[result.idx].Fill);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public ICommand SlotMappingCommand => new RelayCommand(async () =>
         {
             try
@@ -531,6 +451,42 @@ namespace WLS3200Gen2
             }
             finally
             {
+            }
+        });
+        public ICommand GrabCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
+                DetectionPoint point = new DetectionPoint();
+                Wafer currentWafer = new Wafer(1);
+                string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
+                                DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
+                string titleIdx = "1";
+                DetectionRecord(bmp, point, currentWafer, nowTime, titleIdx);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+        });
+        public ICommand NextWaferCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
+                DetectionPoint point = new DetectionPoint();
+                Wafer currentWafer = new Wafer(1);
+                string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
+                                DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
+                string titleIdx = "1";
+                DetectionRecord(bmp, point, currentWafer, nowTime, titleIdx);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
             }
         });
         public ICommand MacroPASSOperateCommand => new RelayCommand(async () =>

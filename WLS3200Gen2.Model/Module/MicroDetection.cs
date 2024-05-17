@@ -30,7 +30,6 @@ namespace WLS3200Gen2.Model.Module
         private Subject<DetectionSaveParam> subject = new Subject<DetectionSaveParam>();
         private IDisposable camlive;
 
-
         private OpticalAlignment opticalAlignment;
 
 
@@ -89,6 +88,8 @@ namespace WLS3200Gen2.Model.Module
         /// 
         /// </summary>
         public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MicroReady;
+
+        public ITransform TransForm { get; set; }
         public async Task Home()
         {
             try
@@ -232,6 +233,7 @@ namespace WLS3200Gen2.Model.Module
 
                     //對位
                     ITransform transForm = await Alignment(recipe.AlignRecipe);
+                    TransForm = transForm;
                     cancelToken.Token.ThrowIfCancellationRequested();
                     await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 

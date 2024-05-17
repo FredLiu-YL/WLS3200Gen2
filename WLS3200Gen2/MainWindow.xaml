@@ -97,7 +97,6 @@
             <!--首頁-->
             <TabItem Height="75" IsSelected="{Binding IsMainHomePageSelect}" >
                 <TabItem.Header >
-
                     <StackPanel Width="auto"  Height="auto">
                         <materialDesign:PackIcon   Width="34" Height="34" HorizontalAlignment="Center" Kind="HomeVariant" />
                         <TextBlock HorizontalAlignment="Center" Text="Home" />
@@ -124,8 +123,9 @@
                                                                               AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}"  />
                             </TabItem>
                             <TabItem Header="Macro">
-                                <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetHomeRectangle}" MappingImageOperate="{Binding MappingHomeOp}" 
-                                                             Dies="{Binding DieArrayHome}" BincodeInFomation="{Binding MapBincodeListHome}" MapImage="{Binding MappingHomeTable}" MousePixcel="{Binding NewHomeMapMousePixcel}" Rectangles="{Binding RectanglesHome}"  >
+                                <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetHomeRectangle}" MappingImageOperate="{Binding MappingHomeOp}" Dies="{Binding DieArrayHome}" 
+                                                             BincodeInFomation="{Binding MapBincodeListHome}" MapImage="{Binding MappingHomeTable}" MousePixcel="{Binding NewHomeMapMousePixcel}"
+                                                             Rectangles="{Binding RectanglesHome}" DrawSize="{Binding HomeMapDrawSize}" DrawCuttingline="{Binding HomeMapDrawCuttingline}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                             <i:InvokeCommandAction Command="{Binding DoubleClickHomeNewMappingDieCommand}"/>
@@ -483,7 +483,7 @@
                                                     <Label Grid.Column="2"  Content="Describe"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                     <Label Grid.Column="3"  Content="Assign"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 </Grid>
-                                                <ListBox Grid.Row="1"   Margin="0" ItemsSource="{Binding BincodeList }">
+                                                <ListBox Grid.Row="1"   Margin="0" ItemsSource="{Binding BincodeList}">
                                                     <ListBox.ItemContainerStyle>
                                                         <Style TargetType="ListBoxItem">
                                                             <Setter Property="Margin" Value="0"/>
@@ -518,7 +518,7 @@
                                                     <RowDefinition Height="231"/>
                                                 </Grid.RowDefinitions>
                                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,225" Grid.ColumnSpan="2" Grid.RowSpan="2">
-                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>
+                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
                                                 <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
@@ -526,7 +526,7 @@
                                                     AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}" Grid.ColumnSpan="2"   >
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                                                            <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
+                                                            <i:InvokeCommandAction Command="{Binding HomeDetectionPointListDoubleClickCommand}"/>
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>
                                                     <DataGrid.Columns >
@@ -684,30 +684,45 @@
 
                         <Grid  Grid.Column="1"  >
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="0.77*"/>
-                                <RowDefinition  Height="0.23*"/>
+                                <RowDefinition Height="0.75*"/>
+                                <RowDefinition  Height="0.25*"/>
                             </Grid.RowDefinitions>
 
                             <views:VirtualCanvas Grid.Row="0"  Grid.Column="0" ImageSource="{Binding MainImage}" ItemsSource="{Binding Drawings}"   MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" ClearShapeAction="{Binding ClearShapeAction}" />
-                            <GroupBox Header="MAP" Grid.Row="1" Grid.Column="1"      >
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="MAP" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
 
-                                    </Grid.RowDefinitions>
-                                    <Button Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
-                                    <Button Grid.Column="1" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
+                                        </Grid.RowDefinitions>
+                                        <Button Grid.Column="0" Grid.ColumnSpan="2" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
+                                        <Button Grid.Column="0" Grid.Row="1" Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
+                                        <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
+                                    </Grid>
 
-                                    <Button Grid.Column="0" Grid.Row="2" Content="WaferToLoadPort" Command="{Binding EFEMTransToLoadPortCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" />
-                                    <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
-                                </Grid>
-
-                            </GroupBox>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Grid.Row="0" Header="BinCode">
+                                    <Button Grid.Column="0" Grid.Row="2" Content="Bincode Edit" Command="{Binding RecipeBincodeEditCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Wafer Trans">
+                                    <Button Grid.Column="0" Grid.Row="2" Content="WaferToLoadPort" Command="{Binding EFEMTransToLoadPortCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
+                                </GroupBox>
+                            </Grid>
+                           
 
                         </Grid>
 
@@ -1056,10 +1071,9 @@
                                             </Grid.RowDefinitions>
                                             <StackPanel Grid.Row="0" Orientation="Horizontal" Grid.ColumnSpan="2"   >
                                                 <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="100"  Command="{Binding AddDetectionCommand}"  />
-                                                <Button Margin="5" Content="ADD Multi" FontSize="24" Height="50" Width="150"  Command="{Binding AddMultiDetectionCommand}"  />
                                                 <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130"   Command="{Binding RemoveDetectionCommand}"  />
                                                 <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="130"   Command="{Binding EditDetectionCommand}"  />
-
+                                                <Button Margin="5" Content="Map ADD" FontSize="24" Height="50" Width="150"  Command="{Binding MapAddDetectionCommand}"  />
 
                                             </StackPanel>
                                             <StackPanel Grid.Row="1" Grid.ColumnSpan="2">

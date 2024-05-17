@@ -38,6 +38,7 @@ namespace WLS3200Gen2
         private int loadPort1WaferSelect;
         private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
         private ObservableCollection<LocateParam> locateParamList = new ObservableCollection<LocateParam>();
+        private ObservableCollection<DetectionPoint> detectionRunningPointList = new ObservableCollection<DetectionPoint>();
         private ObservableCollection<DetectionPoint> detectionPointList = new ObservableCollection<DetectionPoint>();
 
         private BitmapSource locateSampleImage1;
@@ -85,9 +86,11 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (isMainHomePageSelect == true)
+                if (isMainHomePageSelect)
                 {
                     ShowHomeMapImgae(mainRecipe.DetectRecipe);
+                    ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
+                    ResetDetectionRunningPointList();
                 }
                 return isMainHomePageSelect;
             }
@@ -264,6 +267,7 @@ namespace WLS3200Gen2
         }
         public ObservableCollection<LocateParam> LocateParamList { get => locateParamList; set => SetValue(ref locateParamList, value); }
         //  public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
+        public ObservableCollection<DetectionPoint> DetectionRunningPointList { get => detectionRunningPointList; set => SetValue(ref detectionRunningPointList, value); }
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
         public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
@@ -311,6 +315,8 @@ namespace WLS3200Gen2
                 IsMainHomePageSelect = true;
                 return;
             }
+
+            ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
 
             LoadPort1Wafers.Clear();
             foreach (var item in ProcessStations)
@@ -564,7 +570,7 @@ namespace WLS3200Gen2
                     mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping(true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
 
-                    ClearHomeMapShapeAction.Execute(true);
+
                     await ShowMappingDrawings(mainRecipe.DetectRecipe.WaferMap.Dies, mainRecipe.DetectRecipe.BincodeList, mainRecipe.DetectRecipe.WaferMap.ColumnCount, mainRecipe.DetectRecipe.WaferMap.RowCount, 3000);
                     await SaveHomeMapImgae(mainRecipe.DetectRecipe.WaferMap);
                     ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
@@ -602,6 +608,32 @@ namespace WLS3200Gen2
 
                 throw;
             }
+        });
+        public ICommand RecipeBincodeEditCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                if (BincodeList == null)
+                    BincodeList = new ObservableCollection<BincodeInfo>();
+
+                BincodeSettingWindow settingWindow = new BincodeSettingWindow(BincodeList);
+
+
+                settingWindow.ShowDialog();
+
+
+                BincodeList = settingWindow.BincodeList;
+                if (mainRecipe.DetectRecipe.BincodeList != null)
+                {
+                    mainRecipe.DetectRecipe.BincodeList = BincodeList;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
         });
         /// <summary>
         /// 顯示主畫面Map圖片
@@ -641,125 +673,8 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-        public void ShowHomeNewMapImage()
-        {
-            try
-            {
-                List<BincodeInfo> bincodeInfos = new List<BincodeInfo>();
-                var info1 = new BincodeInfo();
-                info1.Code = "000";
-                info1.Color = Brushes.Green;
-                bincodeInfos.Add(info1);
-                var info2 = new BincodeInfo();
-                info2.Code = "099";
-                info2.Color = Brushes.Red;
-                bincodeInfos.Add(info2);
 
-                MapBincodeListHome = bincodeInfos.ToArray();
-                DieArrayHome = mainRecipe.DetectRecipe.WaferMap.Dies;// dummy.dice;
-                MappingHomeOp?.Invoke(MappingOperate.Create); //產生圖片
 
-                tempRecipeRectangles = new List<RectangleInfo>();
-                tempHomeAssignRectangles = new List<RectangleInfo>();
-
-                foreach (var item in RectanglesHome)
-                {
-                    tempRecipeRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
-                    {
-                        Col = item.Col,
-                        Row = item.Row,
-                        Fill = item.Fill
-                    });
-                    tempHomeAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
-                    {
-                        Col = item.Col,
-                        Row = item.Row,
-                        Fill = item.Fill
-                    });
-                }
-                foreach (var item in mainRecipe.DetectRecipe.DetectionPoints)
-                {
-                    Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
-                    if (die != null)
-                    {
-                        var result = tempRecipeRectangles
-                         .Select((rect, idx) => new { rect, idx })
-                         .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
-                        tempRecipeRectangles[result.idx].Fill = Brushes.Yellow;
-                    }
-                }
-                selectHomeRectangle = null;
-                selectRecipeRectangle = null;
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-        public void ShowRecipeNewMapImage()
-        {
-            try
-            {
-                List<BincodeInfo> bincodeInfos = new List<BincodeInfo>();
-                var info1 = new BincodeInfo();
-                info1.Code = "000";
-                info1.Color = Brushes.Green;
-                bincodeInfos.Add(info1);
-                var info2 = new BincodeInfo();
-                info2.Code = "099";
-                info2.Color = Brushes.Red;
-                bincodeInfos.Add(info2);
-                MapBincodeList = bincodeInfos.ToArray();
-                DieArray = mainRecipe.DetectRecipe.WaferMap.Dies;
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
-        public void ShowDetectionRecipeNewMapImgae(DetectionRecipe detectionRecipe)
-        {
-            try
-            {
-                if (detectionRecipe.DetectionPoints == null) return;
-                foreach (var item in detectionRecipe.DetectionPoints)
-                {
-                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
-                    if (die != null)
-                    {
-                        NewRecipeMapDieColorChange(false, die, Brushes.Yellow);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public void ShowDetectionHomeNewMapImgae(DetectionRecipe detectionRecipe)
-        {
-            try
-            {
-                if (detectionRecipe.DetectionPoints == null) return;
-                foreach (var item in detectionRecipe.DetectionPoints)
-                {
-                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
-                    if (die != null)
-                    {
-                        HomeNewMapAssignDieColorChange(false, die, null, null);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         public void ClearDetectionMapImgae(DetectionRecipe detectionRecipe)
         {
@@ -835,47 +750,7 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-        /// <summary>
-        /// 更換tempRecipeRectangles顏色， 讓RecipeMap上的Die變成DefectList顏色(brush黃色是選擇要檢查的Die,brush==null代表要改回來)
-        /// </summary>
-        /// <param name="die"></param>
-        /// <param name="brush"></param>
-        private void NewRecipeMapDieColorChange(bool isDoubleClickSelected, Die die, Brush stroke)
-        {
-            try
-            {
-                var result = tempRecipeRectangles
-                                  .Select((rect, idx) => new { rect, idx })
-                                  .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
-                if (result != null)
-                {
-                    //若是要Die按兩下變色的功能
-                    if (isDoubleClickSelected)
-                    {
-                        if (stroke == null)
-                        {
-                            stroke = tempRecipeRectangles[result.idx].Fill;
-                        }
-                    }
-                    else
-                    {
-                        if (stroke == null)
-                        {
-                            tempRecipeRectangles[result.idx].Fill = Rectangles[result.idx].Fill;
-                        }
-                        else
-                        {
-                            tempRecipeRectangles[result.idx].Fill = stroke;
-                        }
-                    }
-                    SetRectangle?.Invoke(Rectangles[result.idx].Col, Rectangles[result.idx].Row, Rectangles[result.idx].Fill, tempRecipeRectangles[result.idx].Fill);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+
         public void MapDieColorReturn(WaferMapping waferMapping, Die die, IEnumerable<BincodeInfo> bincodeListDefault)
         {
             try
@@ -977,6 +852,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                ClearHomeMapShapeAction.Execute(true);
                 MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 ClearMapShapeAction.Execute(true);
                 double dieSizeX = dies[0].DieSize.Width;
@@ -1677,24 +1553,6 @@ namespace WLS3200Gen2
 
 
         });
-        public ICommand GrabCommand => new RelayCommand(async () =>
-        {
-            try
-            {
-                BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
-                DetectionPoint point = new DetectionPoint();
-                Wafer currentWafer = new Wafer(1);
-                string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
-                                DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
-                string titleIdx = "1";
-                DetectionRecord(bmp, point, currentWafer, nowTime, titleIdx);
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.Message);
-            }
-        });
         public ICommand TableZContinueMoveCommand => new RelayCommand<string>(async key =>
         {
             try
@@ -1842,10 +1700,12 @@ namespace WLS3200Gen2
                 MessageBox.Show(ex.Message);
             }
         });
-        public ICommand AddMultiDetectionCommand => new RelayCommand(async () =>
+        public ICommand MapAddDetectionCommand => new RelayCommand(async () =>
         {
             try
             {
+
+
                 //將SelectRectangles全部加填進去，然後用當前的參數
 
                 //foreach (var item in SelectRectangles)

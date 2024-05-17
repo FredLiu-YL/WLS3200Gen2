@@ -18,6 +18,6 @@
         <Button  Grid.Column="0" Background="{Binding Color }" IsEnabled="True" Width="30" Height="30" />
         <Label Grid.Column="1" Content="{Binding Code }" VerticalAlignment="Center" HorizontalAlignment="Center" />
         <TextBlock Grid.Column="2" Text ="{Binding Describe}" VerticalAlignment="Center" HorizontalAlignment="Center" />
-        <Button Grid.Column="3" Command="{Binding AssignCommand}" Width="90" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Assign"/>
+        <Button Grid.Column="3" Command="{Binding AssignCommand}" Width="90" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Assign" IsEnabled="{Binding IsAssign}"/>
     </Grid>
 </UserControl>

@@ -21,6 +21,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using WLS3200Gen2.Model;
 using WLS3200Gen2.Model.Recipe;
 using WLS3200Gen2.Module;
@@ -182,25 +183,31 @@ namespace WLS3200Gen2
                     //直接關掉程式!
                 }
 
-                BincodeInfo bincode1 = new BincodeInfo
+                if (machineSetting.BincodeListDefault == null)
                 {
-                    Code = "B01",
-                    Describe = "TES_TEST123",
-                    Color = Brushes.Blue
-                };
-                BincodeInfo bincode2 = new BincodeInfo
-                {
-                    Code = "B02",
-                    Describe = "ABc_TEST123",
-                    Color = Brushes.GreenYellow
-                };
-                BincodeList.Add(bincode1);
-                BincodeList.Add(bincode2);
-                foreach (var item in BincodeList)
-                {
-                    item.PropertyChanged += BincodeList_PropertyChanged;
+                    BincodeInfo bincode1 = new BincodeInfo
+                    {
+                        Code = "B01",
+                        Describe = "TES_TEST123",
+                        Color = Brushes.Blue
+                    };
+                    BincodeInfo bincode2 = new BincodeInfo
+                    {
+                        Code = "B02",
+                        Describe = "ABc_TEST123",
+                        Color = Brushes.GreenYellow
+                    };
+                    BincodeList.Add(bincode1);
+                    BincodeList.Add(bincode2);
                 }
-                
+                else
+                {
+                    BincodeListUpdate(machineSetting.BincodeListDefault);
+                }
+
+
+
+
                 //BincodeList.Add(new BincodeInfo());
 
 
@@ -285,7 +292,7 @@ namespace WLS3200Gen2
                 new RobotAddress() { Name = "LoadPort1 Step5", Address = "114" },
             };
 
-                
+
 
 
                 Customers.Add(new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" });
@@ -302,15 +309,112 @@ namespace WLS3200Gen2
             }
         });
 
-        private void BincodeList_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void BincodeListUpdate(IEnumerable<BincodeInfo> bincodeListDefault)
         {
-            if (e.PropertyName == "MacroBack")
+            try
+            {
+                if (bincodeListDefault != null)
+                {
+                    foreach (var item in BincodeList)
+                    {
+                        try
+                        {
+                            item.PropertyChanged -= BincodeList_PropertyChanged;
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                    BincodeList.Clear();
+                    foreach (BincodeInfo item in bincodeListDefault)
+                    {
+                        BincodeList.Add(new BincodeInfo() { Code = item.Code, Describe = item.Describe, Assign = item.Assign, Color = item.Color });
+                    }
+                    foreach (BincodeInfo item in BincodeList)
+                    {
+                        item.PropertyChanged += BincodeList_PropertyChanged;
+                    }
+                }
+            }
+            catch (Exception ex)
             {
 
+                throw ex;
+            }
+        }
+        private void BincodeList_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Assign")
+            {
                 // 屬性更改時執行的操作
             }
         }
+        private void Assign(string binCode)
+        {
+            try
+            {
+                //如果是在執行的狀態才能下BinCode
+                if (isRunCommand)
+                {
+                    BincodeInfo assignBincodeInfo = mainRecipe.DetectRecipe.BincodeList.Where(r => r.Code == binCode).FirstOrDefault();
+                    if (assignBincodeInfo != null)
+                    {
+                        double nowTablePosX = machine.MicroDetection.AxisX.Position;
+                        double nowTablePosY = machine.MicroDetection.AxisY.Position;
+                        Point mapPoint = machine.MicroDetection.TransForm.TransInvertPoint(new Point(nowTablePosX, nowTablePosY));
+                        homeMapToPixelScale = MapPointToMapImagePixelScale(HomeMapDrawSize.X, HomeMapDrawSize.Y, HomeMapDrawCuttingline);
+                        var transMapMousePixcel = new Point(homeMapToPixelScale.X * mapPoint.X, homeMapToPixelScale.Y * mapPoint.Y);
 
+                        Rectangle selectRange = new Rectangle
+                        {
+                            Stroke = Brushes.Red,
+                            StrokeThickness = 5,
+                            Width = 0,
+                            Height = 0
+                        };
+                        Canvas.SetLeft(selectRange, transMapMousePixcel.X);
+                        Canvas.SetTop(selectRange, transMapMousePixcel.Y);
+
+                        var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
+                        RectangleInfo tempselectRects = RectanglesHome.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                         || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight)).FirstOrDefault();
+
+                        foreach (DetectionPoint item in DetectionRunningPointList)
+                        {
+                            if (item.IndexX == tempselectRects.Col && item.IndexY == tempselectRects.Row)
+                            {
+                                item.Code = binCode;
+                            }
+                        }
+
+                        Die changeDie = new Die() { IndexX = tempselectRects.Col, IndexY = tempselectRects.Row };
+                        HomeNewMapAssignDieColorChange(false, changeDie, assignBincodeInfo.Color, Brushes.Red);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+       
+        public Point MapPointToMapImagePixelScale(double drawWidth, double drawHeight, double drawCuttingline)
+        {
+            try
+            {
+                Point startPoint = new Point(drawWidth, drawHeight);
+                var transDie = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == 1 && d.IndexY == 1).FirstOrDefault();
+                var mapPoint11 = new Point(transDie.MapTransX, transDie.MapTransY);
+                var mapImagePoint11 = new Point(startPoint.X + ((drawWidth + drawCuttingline) * 1), startPoint.Y + ((drawHeight + drawCuttingline) * 1));
+                var scale = new Point(mapImagePoint11.X / mapPoint11.X, mapImagePoint11.Y / mapPoint11.Y);
+                return scale;
+            }
+            catch (Exception)
+            {
+
+                return new Point(0, 0);
+            }
+        }
 
 
         public ICommand WindowClosingCommand => new RelayCommand<CancelEventArgs>(async e =>

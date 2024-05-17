@@ -22,6 +22,7 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class BincodeListUnitUC : UserControl, INotifyPropertyChanged
     {
+        private bool isAssign = true;
         public BincodeListUnitUC()
         {
             InitializeComponent();
@@ -59,19 +60,30 @@ namespace WLS3200Gen2.UserControls
             get => (Brush)GetValue(ColorProperty);
             set => SetValue(ColorProperty, value);
         }
+        public bool IsAssign
+        {
+            get => isAssign;
+            set => SetValue(ref isAssign, value);
+        }
         public ICommand AssignCommand => new RelayCommand(async () =>
         {
             try
             {
-                if (Assign == Describe)
+                if (IsAssign)
                 {
-                    Assign = "";
+                    IsAssign = false;
+                    if (Assign == Describe)
+                    {
+                        Assign = "";
+                        await Task.Delay(50);
+                    }
+                    else
+                    {
+                        Assign = Describe;
+                        await Task.Delay(50);
+                    }
+                    IsAssign = true;
                 }
-                else
-                {
-                    Assign = Describe;
-                }
-                
             }
             catch (Exception ex)
             {
