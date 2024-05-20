@@ -536,18 +536,9 @@ namespace WLS3200Gen2
         {
             try
             {
-                //var t1 = Thread.CurrentThread.ManagedThreadId;
-                //string path = "C:\\Users\\USER\\Documents\\WLS3200\\Result\\" + nowTime + "_" + mainRecipe.Name +
-                //    "\\Wafer" + currentWafer.CassetteIndex.ToString().PadLeft(2, '0');
-                //if (!Directory.Exists(path + "\\MicroPhoto"))
-                //    Directory.CreateDirectory(path + "\\MicroPhoto");
-                string path2 = $"{ machine.MicroDetection.GrabSaveFolder }\\MicroPhoto\\{ machine.MicroDetection.GrabTitleIdx}_{mainRecipe.Name}_{machine.MicroDetection.GrabSavePicturTime}_{point.IndexX}_{point.IndexY}.bmp";
-
+                string path = $"{ machine.MicroDetection.GrabSaveFolder }\\MicroPhoto\\{ machine.MicroDetection.GrabTitleIdx}_{mainRecipe.Name}_{machine.MicroDetection.GrabSavePicturTime}_{point.IndexX}_{point.IndexY}.bmp";
+                bitmap.ToBitmap().Save(path);
                 machine.MicroDetection.GrabTitleIdx += 1;
-                //bitmap.Save(path + "\\MicroPhoto" + "\\" + titleIdx + "_" + mainRecipe.Name + "_" + nowTime + "_" + point.IndexX + "_" + point.IndexY + ".bmp");
-
-                //System.Drawing.Bitmap bmp = bitmap.ToBitmap();
-                //bmp.Save(path + "\\MicroPhoto" + "\\" + titleIdx + "_" + mainRecipe.Name + "_" + nowTime + "_" + point.IndexX + "_" + point.IndexY + ".bmp");
             }
             catch (Exception ex)
             {
