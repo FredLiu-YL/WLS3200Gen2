@@ -27,7 +27,7 @@
 
         </i:Interaction.Triggers>
         <Border  Background="{DynamicResource MaterialDesignBackground}">
-            <GroupBox  Header="Locate" Style="{StaticResource MaterialDesignGroupBox}"  UseLayoutRounding="True">
+            <GroupBox  Header="Locate" Style="{StaticResource MaterialDesignGroupBox}"  UseLayoutRounding="True" FontSize="20">
                 <GroupBox.Resources>
 
                     <Style x:Key="YourTabItemStyle" TargetType="TabItem">
@@ -191,7 +191,7 @@
 
                                 </GroupBox>
 
-                                <GroupBox  Margin="-1,0,-1,0"  Grid.Row="1" Header="Locate Pattern2" FontSize="24" Grid.ColumnSpan="1" Grid.RowSpan="1">
+                                <GroupBox  Margin="-1,0,-1,0"  Grid.Row="1" Header="Locate Pattern2" FontSize="20" Grid.ColumnSpan="1" Grid.RowSpan="1">
                                     <Grid Margin="-7" >
                                         <Grid.ColumnDefinitions >
                                             <ColumnDefinition  Width="1.4*" />
@@ -245,7 +245,7 @@
 
                                 </GroupBox>
 
-                                <GroupBox  Margin="-1,-1,-1,-1"  Grid.Row="2" Header="Locate Pattern3" FontSize="24" Grid.ColumnSpan="1" Grid.RowSpan="1" >
+                                <GroupBox  Margin="-1,-1,-1,-1"  Grid.Row="2" Header="Locate Pattern3" FontSize="20" Grid.ColumnSpan="1" Grid.RowSpan="1" >
                                     <Grid Margin="-7" >
                                         <Grid.ColumnDefinitions >
                                             <ColumnDefinition  Width="1.4*" />

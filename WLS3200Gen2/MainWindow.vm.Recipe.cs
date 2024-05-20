@@ -38,7 +38,7 @@ namespace WLS3200Gen2
         private int loadPort1WaferSelect;
         private ObservableCollection<WaferUIData> loadPort2Wafers = new ObservableCollection<WaferUIData>();
         private ObservableCollection<LocateParam> locateParamList = new ObservableCollection<LocateParam>();
-        private ObservableCollection<DetectionPoint> detectionRunningPointList = new ObservableCollection<DetectionPoint>();
+        private ObservableCollection<DetectionPoint> detectionPointListLog = new ObservableCollection<DetectionPoint>();
         private ObservableCollection<DetectionPoint> detectionPointList = new ObservableCollection<DetectionPoint>();
 
         private BitmapSource locateSampleImage1;
@@ -61,11 +61,11 @@ namespace WLS3200Gen2
         private bool isLocate;
         private int selectDetectionPointList;
         private bool isMainHomePageSelect, isMainRecipePageSelect, isMainSettingPageSelect, isMainToolsPageSelect, isMainSecurityPageSelect;
-        private bool isLoadwaferPageSelect, isLocatePageSelect, isDetectionPageSelect;
+        private bool isLoadwaferPageSelect, isMacroPageSelect, isAlignerPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
-        private bool isLoadwaferComplete, isLocateComplete, isDetectionComplete;
+        private bool isLoadwaferComplete, isMacroComplete, isAlignerComplete, isLocateComplete, isDetectionComplete;
 
         private double alignerMicroAngle, alignerWaferIDAngle;
         private double macroTopStartPitchX, macroTopStartRollY, macroTopStartYawT, macroBackStartPos;
@@ -169,11 +169,32 @@ namespace WLS3200Gen2
         {
             get
             {
-
+                if (!isInitialComplete) return isLocatePageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
                 return isLoadwaferPageSelect;
             }
             set => SetValue(ref isLoadwaferPageSelect, value);
         }
+        public bool IsMacroPageSelect
+        {
+            get
+            {
+                if (!isInitialComplete) return isMacroPageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!IsLoadwaferComplete) isMacroPageSelect = false;
+                return isMacroPageSelect;
+            }
+            set => SetValue(ref isMacroPageSelect, value);
+        }
+        public bool IsAlignerPageSelect
+        {
+            get
+            {
+                if (!isInitialComplete) return isAlignerPageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!IsMacroComplete) isAlignerPageSelect = false;
+                return isAlignerPageSelect;
+            }
+            set => SetValue(ref isAlignerPageSelect, value);
+        }
+
         /// <summary>
         ///  切換到 對位頁
         /// </summary>
@@ -182,6 +203,7 @@ namespace WLS3200Gen2
             get
             {
                 if (!isInitialComplete) return isLocatePageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!IsAlignerComplete) isLocatePageSelect = false;
                 if (isLocatePageSelect)
                     LoadLoactePage();
                 return isLocatePageSelect;
@@ -235,6 +257,14 @@ namespace WLS3200Gen2
         /// </summary>
         public bool IsLoadwaferComplete { get => isLoadwaferComplete; set => SetValue(ref isLoadwaferComplete, value); }
         /// <summary>
+        /// Macro 設定完成
+        /// </summary>
+        public bool IsMacroComplete { get => isMacroComplete; set => SetValue(ref isMacroComplete, value); }
+        /// <summary>
+        /// Aligner 設定完成，且Notch已經轉到Micro位置
+        /// </summary>
+        public bool IsAlignerComplete { get => isAlignerComplete; set => SetValue(ref isAlignerComplete, value); }
+        /// <summary>
         /// locate已完成 (Detection頁面功能需要判斷)
         /// </summary>
         public bool IsLocateComplete { get => isLocateComplete; set => SetValue(ref isLocateComplete, value); }
@@ -267,7 +297,13 @@ namespace WLS3200Gen2
         }
         public ObservableCollection<LocateParam> LocateParamList { get => locateParamList; set => SetValue(ref locateParamList, value); }
         //  public ObservableCollection<WaferUIData> LoadPort2Wafers { get => loadPort2Wafers; set => SetValue(ref loadPort2Wafers, value); }
-        public ObservableCollection<DetectionPoint> DetectionRunningPointList { get => detectionRunningPointList; set => SetValue(ref detectionRunningPointList, value); }
+        /// <summary>
+        /// 需要檢查的點(即將要log紀錄的資訊)
+        /// </summary>
+        public ObservableCollection<DetectionPoint> DetectionPointListLog { get => detectionPointListLog; set => SetValue(ref detectionPointListLog, value); }
+        /// <summary>
+        /// 需要檢查的點(Recipe)
+        /// </summary>
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
         public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
@@ -1053,6 +1089,11 @@ namespace WLS3200Gen2
                                     throw new Exception("EFEMTransCommand Error!");
                                 }
                             }
+                            IsLoadwaferComplete = false;
+                            IsMacroComplete = false;
+                            IsAlignerComplete = false;
+                            IsLocateComplete = false;
+                            IsDetectionComplete = false;
                             IsCanWorkEFEMTrans = true;
                         }
                     }
@@ -1080,57 +1121,47 @@ namespace WLS3200Gen2
             {
                 await Task.Run(() =>
                 {
-                    try
+                    if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
                     {
-
-                        if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
+                        IsCanWorkEFEMTrans = false;
+                        //是否執行移動片子訊息
+                        string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Align);
+                        var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
                         {
-                            IsCanWorkEFEMTrans = false;
-                            //是否執行移動片子訊息
-                            string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Align);
-                            var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
-                            if (result == MessageBoxResult.Yes)
+                            //片子上一個狀態先記錄起來
+                            Model.ArmStation oldArmStation = RecipeLastArmStation;
+                            //確認手臂有無片
+                            if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
                             {
-                                //片子上一個狀態先記錄起來
-                                Model.ArmStation oldArmStation = RecipeLastArmStation;
-                                //確認手臂有無片
-                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
-                                {
-                                    throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
-                                }
-                                //將Wafer取出，退到安全位置
-                                EFEMTransWaferPick(oldArmStation);
-                                //將片子放下去
-                                RecipeLastArmStation = Model.ArmStation.Align;
-                                //如果是從Micro送過來就先不要Home，因為要怎麼進怎麼出
-                                if (oldArmStation != Model.ArmStation.Micro)
-                                {
-                                    machine.Feeder.AlignerL.Home().Wait();
-                                }
-                                machine.Feeder.WaferStandByToAligner().Wait();
-                                machine.Feeder.AlignerL.FixWafer().Wait();
-                                if (oldArmStation == Model.ArmStation.Micro)
-                                {
-                                    machine.Feeder.AlignerL.Home().Wait();
-                                }
-                                //如果是從Micro送過來就先不要Home，因為要怎麼進怎麼出
-                                if (machine.Feeder.AlignerL.IsLockOK == false)
-                                {
-                                    throw new FlowException("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
-                                }
+                                throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
                             }
-                            IsCanWorkEFEMTrans = true;
+                            //將Wafer取出，退到安全位置
+                            EFEMTransWaferPick(oldArmStation);
+                            //將片子放下去
+                            RecipeLastArmStation = Model.ArmStation.Align;
+                            //如果是從Micro送過來就先不要Home，因為要怎麼進怎麼出
+                            if (oldArmStation != Model.ArmStation.Micro)
+                            {
+                                machine.Feeder.AlignerL.Home().Wait();
+                            }
+                            machine.Feeder.WaferStandByToAligner().Wait();
+                            machine.Feeder.AlignerL.FixWafer().Wait();
+                            if (oldArmStation == Model.ArmStation.Micro)
+                            {
+                                machine.Feeder.AlignerL.Home().Wait();
+                            }
+                            //如果是從Micro送過來就先不要Home，因為要怎麼進怎麼出
+                            if (machine.Feeder.AlignerL.IsLockOK == false)
+                            {
+                                throw new FlowException("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
+                            }
+                            IsMacroComplete = true;
+                            IsAlignerComplete = false;
+                            IsLocateComplete = false;
+                            IsDetectionComplete = false;
                         }
-                    }
-                    catch (FlowException ex)
-                    {
-
-                        throw ex;
-                    }
-                    catch (Exception ex)
-                    {
-
-                        throw ex;
+                        IsCanWorkEFEMTrans = true;
                     }
                 });
             }
@@ -1178,6 +1209,11 @@ namespace WLS3200Gen2
                                 {
                                     throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
                                 }
+                                IsLoadwaferComplete = true;
+                                IsMacroComplete = false;
+                                IsAlignerComplete = false;
+                                IsLocateComplete = false;
+                                IsDetectionComplete = false;
                             }
                             IsCanWorkEFEMTrans = true;
                         }
@@ -1387,6 +1423,7 @@ namespace WLS3200Gen2
                                 {
                                     throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
                                 }
+                                IsAlignerComplete = true;
                             }
                             IsCanWorkEFEMTrans = true;
                         }

@@ -52,7 +52,18 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment.AlignmentManual += AlignManual;
         }
         public bool IsInitial { get; set; } = false;
-        public string GrabSaveTime { get; private set; }
+        /// <summary>
+        /// 存圖檔案路徑
+        /// </summary>
+        public string GrabSaveFolder { get; private set; }
+        /// <summary>
+        /// 存圖圖片路徑
+        /// </summary>
+        public string GrabSavePicturTime { get; private set; }
+        /// <summary>
+        /// 存圖圖片Index
+        /// </summary>
+        public int GrabTitleIdx { get; set; }
         public ICamera Camera { get; }
         public Axis AxisX { get; }
         public Axis AxisY { get; }
@@ -82,7 +93,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 檢測結果紀錄
         /// </summary>
-        public event Action<BitmapSource, DetectionPoint, Wafer, string, string> DetectionRecord;
+        public event Action<BitmapSource, DetectionPoint> DetectionRecord;
 
         /// <summary> 
         /// 
@@ -237,17 +248,18 @@ namespace WLS3200Gen2.Model.Module
                     cancelToken.Token.ThrowIfCancellationRequested();
                     await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
 
-                    var date = DateTime.Now.Date.ToString("yyyyMMdd-HH-mm");
-                    string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
-                                     DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
-                    GrabSaveTime = nowTime;
-                    int titleIdx = 0;
+
+                    //創建存檔各片存檔的路徑
+                    GrabSavePicturTime = DateTime.Now.ToString("yyyyMMddHHmm");
+                    GrabSaveFolder = CreateMicroFolder(GrabSavePicturTime, mainRecipe.Name, currentWafer);
+
+                    GrabTitleIdx = 0;
                     if (processSetting.IsAutoSave)
                     {
                         //每一個座標需要檢查的座標
                         foreach (DetectionPoint point in recipe.DetectionPoints)
                         {
-                            titleIdx += 1;
+                            GrabTitleIdx += 1;
                             WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
                             //轉換成對位後實際座標
                             var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
@@ -261,11 +273,7 @@ namespace WLS3200Gen2.Model.Module
                             await Task.Delay(200);
                             DetectionSaveParam detectionSaveParam = new DetectionSaveParam();
                             detectionSaveParam.Bmp = Camera.GrabAsync();
-                            detectionSaveParam.DetectionPoint = point;
-                            detectionSaveParam.Wafer = currentWafer;
-                            detectionSaveParam.NowTime = nowTime;
-                            detectionSaveParam.TitleIdx = titleIdx.ToString();
-                            detectionSaveParam.RecipeName = mainRecipe.Name;
+                            detectionSaveParam.SavePath = $"{ GrabSaveFolder }\\MicroPhoto\\{ GrabTitleIdx }_{mainRecipe.Name}_{GrabSavePicturTime}_{point.IndexX}_{point.IndexY}.bmp";
 
                             var t0 = Thread.CurrentThread.ManagedThreadId;
                             subject.OnNext(detectionSaveParam);//AOI另外丟到其他執行續處理
@@ -297,9 +305,22 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
+        private string CreateMicroFolder(string nowTime, string recipeName, Wafer currentWafer)
+        {
+            try
+            {
+                string pathfolder = "C:\\Users\\USER\\Documents\\WLS3200\\Result\\" + nowTime + "_" + recipeName +
+                                                         "\\Wafer" + currentWafer.CassetteIndex.ToString().PadLeft(2, '0');
+                if (!Directory.Exists(pathfolder + "\\MicroPhoto"))
+                    Directory.CreateDirectory(pathfolder + "\\MicroPhoto");
+                return pathfolder;
+            }
+            catch (Exception ex)
+            {
 
-
-
+                throw ex;
+            }
+        }
         public async Task TableMoveToAsync(Point pos)
         {
             try
@@ -408,14 +429,7 @@ namespace WLS3200Gen2.Model.Module
                          {
                              var t0 = Thread.CurrentThread.ManagedThreadId;
                              var bmp = frame.Bmp.ToBitmap();
-
-                             string path1 = "C:\\Users\\USER\\Documents\\WLS3200\\Result\\" + frame.NowTime + "_" + frame.RecipeName +
-                                                         "\\Wafer" + frame.Wafer.CassetteIndex.ToString().PadLeft(2, '0');
-
-                             if (!Directory.Exists(path1 + "\\MicroPhoto"))
-                                 Directory.CreateDirectory(path1 + "\\MicroPhoto");
-
-                             string path = $"{ path1 }\\MicroPhoto\\{ frame.TitleIdx }_{frame.RecipeName}_{frame.NowTime}_{frame.DetectionPoint.IndexX}_{frame.DetectionPoint.IndexY}.bmp";
+                             var path = frame.SavePath;
                              return (bmp, path);
                          }
                          catch (Exception ex)
@@ -461,11 +475,7 @@ namespace WLS3200Gen2.Model.Module
         public class DetectionSaveParam
         {
             public BitmapSource Bmp { get; set; }
-            public DetectionPoint DetectionPoint { get; set; }
-            public Wafer Wafer { get; set; }
-            public string NowTime { get; set; }
-            public string TitleIdx { get; set; }
-            public string RecipeName { get; set; }
+            public string SavePath { get; set; }
         }
 
     }

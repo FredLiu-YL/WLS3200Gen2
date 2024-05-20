@@ -36,19 +36,21 @@ namespace WLS3200Gen2.Model.Recipe
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgsExtended(name, oldValue, newValue));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgsExtended(name, oldValue, newValue, Code));
         }
     }
     public class PropertyChangedEventArgsExtended : PropertyChangedEventArgs
     {
         public object OldValue { get; }
         public object NewValue { get; }
+        public string Code { get; }
 
-        public PropertyChangedEventArgsExtended(string propertyName, object oldValue, object newValue)
+        public PropertyChangedEventArgsExtended(string propertyName, object oldValue, object newValue, string code)
             : base(propertyName)
         {
             OldValue = oldValue;
             NewValue = newValue;
+            Code = code;
         }
     }
 }

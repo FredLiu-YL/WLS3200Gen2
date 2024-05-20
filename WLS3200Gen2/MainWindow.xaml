@@ -556,8 +556,8 @@
                                                     <RowDefinition Height="0.88*"/>
                                                 </Grid.RowDefinitions>
                                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,225" Grid.ColumnSpan="2" Grid.RowSpan="2">
-                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0"/>
-                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
+                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
+                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                     <!--<Button Content="ERROR" Width="150" Height="30" Margin="55,0,0,0"/>-->
                                                 </StackPanel>
                                                 <microscope:BXFMUC Grid.Column="0" Grid.Row="1" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2"  />
@@ -580,8 +580,8 @@
                                                     <RowDefinition Height="0.88*"/>
                                                 </Grid.RowDefinitions>
                                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,225" Grid.ColumnSpan="3" Grid.RowSpan="2">
-                                                    <Button Content="Grab" Width="150"/>
-                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0"/>
+                                                    <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
+                                                    <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
                                                 <UserControlUC:WorkholderUC Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,10,0,0" Height="190" Width="320" Grid.ColumnSpan="3"/>
                                             </Grid>
@@ -710,19 +710,17 @@
 
                                         </Grid.RowDefinitions>
                                         <Button Grid.Column="0" Grid.ColumnSpan="2" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
-                                        <Button Grid.Column="0" Grid.Row="1" Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
-                                        <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
+                                        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
+
                                     </Grid>
 
                                 </GroupBox>
                                 <GroupBox Grid.Column="1" Grid.Row="0" Header="BinCode">
                                     <Button Grid.Column="0" Grid.Row="2" Content="Bincode Edit" Command="{Binding RecipeBincodeEditCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Grid.Row="1" Header="Wafer Trans">
-                                    <Button Grid.Column="0" Grid.Row="2" Content="WaferToLoadPort" Command="{Binding EFEMTransToLoadPortCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
-                                </GroupBox>
+                                <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
                             </Grid>
-                           
+
 
                         </Grid>
 
@@ -734,42 +732,44 @@
                         </Grid.RowDefinitions>
                         <Grid  Grid.Row="0">
                             <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1" >
-
-                                <TabControl>
-                                    <TabItem  Width="180"  IsSelected="{Binding IsLoadwaferPageSelect}"  >
-                                        <!-- 在 TabItem 的 Header 中添加一個 StackPanel，包含 TextBlock 和 Image -->
-                                        <TabItem.Header >
-                                            <Grid Margin="-10" Width="180"  >
+                                <TabControl >
+                                    <TabItem Width="110" IsSelected="{Binding IsLoadwaferPageSelect}">
+                                        <TabItem.Header>
+                                            <Grid Margin="-30" >
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="3*" />
-                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                    <ColumnDefinition Width="0.6*" />
+                                                    <ColumnDefinition Width="0.2*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="-10,0,0,0" IsSignal="{Binding IsLoadwaferComplete}"  />
-                                                <TextBlock Text="Load Wafer" Grid.Column="1"  Margin="-10,0,0,0" FontSize="22" />
-                                                <materialDesign:PackIcon Grid.Column="2"  Margin="0,0,0,0" Width="30"  Height="30"  Kind="ArrowRightBold" />
-
+                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="0,0,0,0" IsSignal="{Binding IsLoadwaferComplete}"  />
+                                                <TextBlock Text="Step1" Grid.Column="1"  Margin="0,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <materialDesign:PackIcon Grid.Column="2"  Margin="0,0,0,0" Width="30"  Height="30"  Kind="ArrowRightBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Grid>
                                         </TabItem.Header>
-                                        <!-- TabItem 的內容 -->
-
-                                        <Grid Grid.Row="0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="0.5*"/>
-                                                <RowDefinition Height="0.5*"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions >
-                                                <ColumnDefinition Width="0.20*"/>
-                                                <ColumnDefinition Width="0.7*"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="1" Header="Load Port" >
-
+                                            <Grid.RowDefinitions >
+                                                <RowDefinition Height="0.05*"/>
+                                                <RowDefinition Height="0.55*"/>
+                                                <RowDefinition Height="0.20*"/>
+                                                <RowDefinition Height="0.20*"/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.ColumnSpan="2" BorderThickness="3" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Margin="0,2,0,2" >
+                                                <TextBlock  Text="Load Wafer" Grid.ColumnSpan="2" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <Border ></Border>
+                                            <GroupBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="1" Header="Load Port" >
                                                 <Grid >
                                                     <Grid Margin="-5">
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="206*" />
+                                                            <ColumnDefinition Width="21*"/>
+                                                            <ColumnDefinition Width="49*"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}" SelectIndex="{Binding LoadPort1WaferSelect}"  />
+                                                        <usercontrols1:CassetteStateUC Grid.Column="0" Margin="0"  LoadPortWafers="{Binding LoadPort1Wafers}" SelectIndex="{Binding LoadPort1WaferSelect}" Grid.ColumnSpan="3"  />
                                                         <!--<usercontrols1:CassetteStateUC Grid.Column="1" Margin="0"  LoadPortWafers="{Binding LoadPort2Wafers}"/>-->
 
 
@@ -794,52 +794,57 @@
 
                                                     </Grid>
                                                 </Grid>
-
                                             </GroupBox>
-
-
-
-
-                                            <GroupBox Header="Aligner"  Grid.Row="0" Grid.Column="1">
-                                                <Grid Margin="-5" >
-                                                    <Grid >
-                                                        <Grid.Resources>
-                                                            <!-- 定義一個名為 GroupBoxStyle 的樣式 -->
-                                                            <Style TargetType="GroupBox" x:Key="GroupBoxStyle">
-                                                                <!-- 將 GroupBox 的背景顏色設置為白色 -->
-                                                                <Setter Property="Background" Value="White"/>
-                                                            </Style>
-                                                        </Grid.Resources>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition />
-                                                            <RowDefinition />
-                                                            <RowDefinition />
-                                                            <RowDefinition />
-                                                            <RowDefinition />
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="0.4*"/>
-                                                            <ColumnDefinition Width="0.3*"/>
-                                                            <ColumnDefinition Width="0.3*"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <TextBox  Grid.Row="0"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerMicroAngle}"/>
-                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="NotchAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
-
-                                                        <TextBlock Grid.Row="1"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
-                                                        <TextBox  Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerWaferIDAngle}"/>
-                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
-
-
-                                                        <Button Grid.Column="2" Grid.Row="2" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="-20,0,-20,0"/>
-
-                                                        <GroupBox Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
-                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="WaferID Reader" Style="{StaticResource GroupBoxStyle}">
-                                                            <UserControlUC:ReaderUnitUC Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left"  />
-                                                        </GroupBox>
-                                                    </Grid>
+                                            <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Header="Trans Wafer Next Step">
+                                                <Grid>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Grid.Column="0" Grid.Row="0" Content="WaferToMacro" Command="{Binding EFEMTransToMacroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                                    <Button Grid.Column="1" Grid.Row="0" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  Margin="-20,0,-20,0"/>
                                                 </Grid>
                                             </GroupBox>
+                                            <GroupBox Grid.Column="0" Grid.Row="3" Header="Trans Wafer Back This Step" Grid.ColumnSpan="1">
+                                                <Grid>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Button Grid.Column="0" Grid.Row="2" Content="WaferToLoadPort" Command="{Binding EFEMTransToLoadPortCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
+                                                </Grid>
+                                            </GroupBox>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Width="110" IsSelected="{Binding IsMacroPageSelect}">
+                                        <TabItem.Header >
+                                            <Grid Margin="-30">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                    <ColumnDefinition Width="0.6*" />
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="0,0,0,0" IsSignal="{Binding IsMacroComplete}"  />
+                                                <TextBlock Text="Step2" Grid.Column="1"  Margin="0,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <materialDesign:PackIcon Grid.Column="2"  Margin="0,0,0,0" Width="30"  Height="30"  Kind="ArrowRightBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </TabItem.Header>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.5*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions >
+                                                <RowDefinition Height="0.05*"/>
+                                                <RowDefinition Height="0.55*"/>
+                                                <RowDefinition Height="0.20*"/>
+                                                <RowDefinition Height="0.20*"/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.ColumnSpan="2" BorderThickness="3" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Margin="0,2,0,2" >
+                                                <TextBlock  Text="Macro Setting"  Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>
+                                            </Border>
                                             <GroupBox Header="Macro" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
                                                 <Grid Margin="-5,-5,-5,-5">
                                                     <Grid.ColumnDefinitions>
@@ -961,7 +966,7 @@
                                                                     <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
                                                                     <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
                                                                 </StackPanel>
-                                                                <Button Grid.Row="1" Content="WaferToMacro" Command="{Binding EFEMTransToMacroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" />
+
                                                             </Grid>
 
                                                         </Grid>
@@ -969,46 +974,148 @@
                                                 </Grid>
 
                                             </GroupBox>
-
-
-
-
+                                            <GroupBox Grid.Column="0" Grid.Row="2" Header="Trans Wafer Next Step" Grid.ColumnSpan="2">
+                                                <Grid>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Button Grid.Column="2" Grid.Row="2" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  Margin="-20,0,-20,0"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="0" Grid.Row="3" Header="Trans Wafer Back This Step" Grid.ColumnSpan="1">
+                                                <Grid>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Button Grid.Column="0" Grid.Row="0" Content="WaferToMacro" Command="{Binding EFEMTransToMacroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                                </Grid>
+                                            </GroupBox>
                                         </Grid>
                                     </TabItem>
-
-                                    <TabItem Width="160"  IsSelected="{Binding IsLocatePageSelect}" >
-                                        <TabItem.Header>
-                                            <Grid Margin="-10" Width="160"  >
+                                    <TabItem  Width="110" IsSelected="{Binding IsAlignerPageSelect}">
+                                        <!-- 在 TabItem 的 Header 中添加一個 StackPanel，包含 TextBlock 和 Image -->
+                                        <TabItem.Header >
+                                            <Grid Margin="-30"  >
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="2.5*" />
-                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                    <ColumnDefinition Width="0.6*" />
+                                                    <ColumnDefinition Width="0.2*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="-10,0,0,0" IsSignal="{Binding IsLocateComplete}"  />
-                                                <TextBlock Text="Locate" Grid.Column="1"  Margin="-10,0,0,0" FontSize="22" />
-                                                <materialDesign:PackIcon Grid.Column="2" Margin="-10,0,0,0"  Width="30"  Height="30"  Kind="ArrowRightBold" />
+                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="0,0,0,0" IsSignal="{Binding IsAlignerComplete}"  />
+                                                <TextBlock Text="Step3" Grid.Column="1"  Margin="0,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <materialDesign:PackIcon Grid.Column="2"  Margin="0,0,0,0" Width="30"  Height="30"  Kind="ArrowRightBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Grid>
                                         </TabItem.Header>
-                                        <Grid   Grid.Column="1">
+                                        <!-- TabItem 的內容 -->
 
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition  Width="0.01*"/>
-                                                <ColumnDefinition  Width="0.99*"/>
+                                        <Grid Grid.Row="0">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="0.05*"/>
+                                                <RowDefinition Height="0.55*"/>
+                                                <RowDefinition Height="0.2*"/>
+                                                <RowDefinition Height="0.2*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions >
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-
-                                            <Grid Grid.Column="1">
-                                                <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-
-                                                    <Grid>
-                                                        <Grid.RowDefinitions >
-                                                            <RowDefinition Height="650" />
+                                            <Border Grid.ColumnSpan="2" BorderThickness="3" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Margin="0,2,0,2" >
+                                                <TextBlock  Text="Aligner Setting"  Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>
+                                            </Border>
+                                            <GroupBox Header="Aligner"  Grid.Row="1" Grid.ColumnSpan="2" FontSize="15">
+                                                <Grid Margin="-5" >
+                                                    <Grid >
+                                                        <Grid.Resources>
+                                                            <!-- 定義一個名為 GroupBoxStyle 的樣式 -->
+                                                            <Style TargetType="GroupBox" x:Key="GroupBoxStyle">
+                                                                <!-- 將 GroupBox 的背景顏色設置為白色 -->
+                                                                <Setter Property="Background" Value="White"/>
+                                                            </Style>
+                                                        </Grid.Resources>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                         </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="0.4*"/>
+                                                            <ColumnDefinition Width="0.3*"/>
+                                                            <ColumnDefinition Width="0.3*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Row="0"  Grid.Column="0"  Text="Wafer ID Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="0"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerWaferIDAngle}"/>
+                                                        <Button Grid.Row="0"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="WaferIDAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                                        <GroupBox Header="WaferID Picture" FontSize="15" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   Style="{StaticResource GroupBoxStyle}">
+                                                            <Image Grid.Column="0" Grid.Row="2" Source ="{Binding ResultImage}"/>
+                                                        </GroupBox>
+                                                        <Button Grid.Row="1"  Grid.Column="2" Content="Grab" Command="{Binding AlignerCommand}" CommandParameter="WaferIDGrab" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                                        <TextBlock Grid.Row="4"  Grid.Column="0"  Text="Micro Angle:" FontSize="20"  VerticalAlignment="Center" />
+                                                        <TextBox  Grid.Row="4"  Grid.Column="1" VerticalAlignment="Center" Width="125" Text="{Binding AlignerMicroAngle}"/>
+                                                        <Button Grid.Row="4"  Grid.Column="2" Content="Run" Command="{Binding AlignerCommand}" CommandParameter="NotchAngle" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                                        <!--<GroupBox Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                              materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="WaferID Reader" Style="{StaticResource GroupBoxStyle}">
+                                                            <UserControlUC:ReaderUnitUC Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                                                        </GroupBox>-->
+                                                    </Grid>
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="0" Grid.Row="2" Header="Trans Wafer Next Step" Grid.ColumnSpan="2">
+                                                <Grid>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Button Grid.Row="3" Content="WaferToMicro" Command="{Binding EFEMTransToMicroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center" Margin="5" />
+                                                </Grid>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="0" Grid.Row="3" Header="Trans Wafer Back This Step" Grid.ColumnSpan="1">
+                                                <Grid>
+                                                    <Grid.RowDefinitions >
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Button Grid.Column="2" Grid.Row="2" Content="WaferToAligner" Command="{Binding EFEMTransToAlignerCommand}" CommandParameter="WaferToAligner" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  Margin="-20,0,-20,0"/>
+                                                </Grid>
+                                            </GroupBox>
+                                        </Grid>
+                                    </TabItem>
 
-                                                        <UserControlUC:LocateUC Grid.Row="0" MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
+                                    <TabItem Width="110"  IsSelected="{Binding IsLocatePageSelect}" >
+                                        <TabItem.Header>
+                                            <Grid   Margin="-30">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                    <ColumnDefinition Width="0.6*" />
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="0,0,0,0" IsSignal="{Binding IsLocateComplete}"  />
+                                                <TextBlock Text="Step4" Grid.Column="1"  Margin="0,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <materialDesign:PackIcon Grid.Column="2"  Margin="0,0,0,0" Width="30"  Height="30"  Kind="ArrowRightBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </TabItem.Header>
+                                        <Grid   Grid.Column="1">
+
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="0.05*"/>
+                                                <RowDefinition Height="0.95*"/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.ColumnSpan="3" BorderThickness="3" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Margin="0,2,0,2" >
+                                                <TextBlock  Text="Locate Setting"  Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2"/>
+                                            </Border>
+                                            <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+                                                <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+
+                                                    <Grid>
+                                                        <Grid.RowDefinitions >
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            
+                                                        </Grid.RowDefinitions>
+
+                                                        <UserControlUC:LocateUC  Grid.Row="0" MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
                                                                                  MatchFind="{Binding SampleFind}"   AlignMarkMove="{Binding AlignMarkMove}"  SelectMode="{Binding SelectMode}" OffsetX="{Binding AlignOffsetX}" OffsetY="{Binding AlignOffsetY}" CurrentPosX="{Binding TablePosX }" CurrentPosY="{Binding TablePosY }" />
                                                         <GroupBox Grid.Row="1" FontSize="16"  Header="Locate Microscpe Param">
                                                             <DataGrid  Margin="0" ItemsSource="{Binding LocateParamList}"  CanUserSortColumns="False" 
@@ -1026,14 +1133,13 @@
                                                         </GroupBox>
                                                         <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
-                                                                <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}"  />
-                                                                <Button Margin="2" Content="Locate Run" Command="{Binding LocateRunCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
-
+                                                                <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}" Width="150" Height="40"/>
+                                                                <Button Margin="2" Content="Locate Run" Command="{Binding LocateRunCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40"/>
                                                             </StackPanel>
 
                                                         </Border>
-                                                        <Button Grid.Row="3" Content="WaferToMicro" Command="{Binding EFEMTransToMicroCommand}" CommandParameter="WaferToMacro" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Left" Margin="5" />
-                                                        <Button Grid.Row="4" Grid.Column="2" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding TableTestCommand}" Cursor="Hand" />
+
+                                                        <Button Grid.Row="4" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />
                                                     </Grid>
 
 
@@ -1046,37 +1152,41 @@
 
                                     </TabItem>
 
-                                    <TabItem Width="190" IsSelected="{Binding IsDetectionPageSelect}" >
-                                        <TabItem.Header>
-                                            <Grid Margin="-10" Width="190"  >
+                                    <TabItem Width="100" IsSelected="{Binding IsDetectionPageSelect}" >
+                                        <TabItem.Header >
+                                            <Grid Margin="-30">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition Width="2.5*" />
-                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                    <ColumnDefinition Width="0.6*" />
+                                                    <ColumnDefinition Width="0.2*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <usercontrols:SignalUC Width="20" Height="20"  Margin="-20,0,0,0" IsSignal="{Binding IsDetectionComplete}"  />
-                                                <TextBlock Text="Detection" Grid.Column="1" FontSize="22"  Margin="-20,0,0,0" />
-                                                <materialDesign:PackIcon Grid.Column="2" Margin="-20,0,0,0"  Width="30"  Height="30"  Kind="ArrowRightBold" />
+                                                <usercontrols:SignalUC Grid.Column="0" Width="20" Height="20"  Margin="0,0,0,0" IsSignal="{Binding IsDetectionComplete}"  />
+                                                <TextBlock Text="Step5" Grid.Column="1"  Margin="0,0,0,0" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <TextBlock Text="" Grid.Column="2"  Margin="0,0,0,0" FontSize="20"  Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             </Grid>
                                         </TabItem.Header>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="35*"/>
-                                                <ColumnDefinition Width="36*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                                <ColumnDefinition Width="0.5*"/>
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
+                                                <RowDefinition Height="0.05*"/>
                                                 <RowDefinition Height="0.06*"/>
-                                                <RowDefinition Height="0.8*"/>
+                                                <RowDefinition Height="0.75*"/>
                                                 <RowDefinition Height="0.14*"/>
                                             </Grid.RowDefinitions>
-                                            <StackPanel Grid.Row="0" Orientation="Horizontal" Grid.ColumnSpan="2"   >
-                                                <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="100"  Command="{Binding AddDetectionCommand}"  />
-                                                <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130"   Command="{Binding RemoveDetectionCommand}"  />
-                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="130"   Command="{Binding EditDetectionCommand}"  />
-                                                <Button Margin="5" Content="Map ADD" FontSize="24" Height="50" Width="150"  Command="{Binding MapAddDetectionCommand}"  />
+                                            <Border Grid.ColumnSpan="3" BorderThickness="3" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Margin="0,2,0,2" >
+                                                <TextBlock  Text="Detection Setting" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"  />
+                                            </Border>
+                                            <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2"   >
+                                                <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="100" Command="{Binding AddDetectionCommand}"  />
+                                                <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130" Command="{Binding RemoveDetectionCommand}"  />
+                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="130" Command="{Binding EditDetectionCommand}"  />
+                                                <Button Margin="5" Content="Map ADD" FontSize="24" Height="50" Width="150" Command="{Binding MapAddDetectionCommand}"  />
 
                                             </StackPanel>
-                                            <StackPanel Grid.Row="1" Grid.ColumnSpan="2">
+                                            <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                                 <StackPanel  Margin="1"  Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                                                     <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
@@ -1103,7 +1213,7 @@
                                                 </StackPanel>
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                             </StackPanel>
-                                            <GroupBox Grid.Row="2" Header="Die Trans" FontSize="20" Grid.ColumnSpan="2">
+                                            <GroupBox Grid.Row="3" Header="Die Trans" FontSize="20" Grid.ColumnSpan="2">
                                                 <StackPanel Margin="-5" Orientation="Horizontal">
                                                     <!--<Button Margin="5" FontSize="20" Height ="40" Content="TransOnlyDie" Command="{Binding TransOnlyDieCommand}"  />-->
                                                     <!--<Button Margin="5" FontSize="20" Height ="40" Content="TransDieInSideAll" Command="{Binding TransDieInSideAllCommand}"  />-->
@@ -1115,6 +1225,7 @@
                                             </GroupBox>
                                         </Grid>
                                     </TabItem>
+
                                 </TabControl>
 
                             </Border>
@@ -1253,7 +1364,7 @@
 
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="46*"/>
+                                            <RowDefinition Height="46"/>
                                             <RowDefinition Height="46*"/>
                                             <RowDefinition Height="46*"/>
                                             <RowDefinition Height="47"/>

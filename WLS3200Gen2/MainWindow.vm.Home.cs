@@ -32,6 +32,8 @@ namespace WLS3200Gen2
         private string logMessage;
         private bool isRunning = false;
         private bool isRunCommand = false;
+        private readonly object lockAssignObj = new object();
+        private Die nowAssignDie;
         private ProcessSetting processSetting;
         private Visibility informationUIVisibility, workholderUCVisibility;
         private BitmapSource resultImage;
@@ -460,10 +462,7 @@ namespace WLS3200Gen2
                 BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
                 DetectionPoint point = new DetectionPoint();
                 Wafer currentWafer = new Wafer(1);
-                string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
-                                DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
-                string titleIdx = "1";
-                DetectionRecord(bmp, point, currentWafer, nowTime, titleIdx);
+                DetectionRecord(bmp, point);
             }
             catch (Exception ex)
             {
@@ -475,13 +474,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
-                DetectionPoint point = new DetectionPoint();
-                Wafer currentWafer = new Wafer(1);
-                string nowTime = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') +
-                                DateTime.Now.Hour.ToString().PadLeft(2, '0') + DateTime.Now.Minute.ToString().PadLeft(2, '0');
-                string titleIdx = "1";
-                DetectionRecord(bmp, point, currentWafer, nowTime, titleIdx);
+                await machine.ProcessResume();
             }
             catch (Exception ex)
             {

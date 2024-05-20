@@ -48,16 +48,16 @@ namespace WLS3200Gen2
         private List<RectangleInfo> rectanglesHome = new List<RectangleInfo>();
         private List<RectangleInfo> rectangles = new List<RectangleInfo>();
         private Point homeMapDrawSize;
-        private double homeMapDrawCuttingline;
+        private double homeMapDrawCuttingline = 3000;
         private Point homeMapToPixelScale;
         /// <summary>
         /// Map顯示Die的狀況
         /// </summary>
         private List<RectangleInfo> tempRecipeRectangles = new List<RectangleInfo>();
         /// <summary>
-        /// 下BinCode後的狀況
+        /// 紀錄單片下BinCode後的狀況
         /// </summary>
-        private List<RectangleInfo> tempHomeAssignRectangles = new List<RectangleInfo>();
+        private List<RectangleInfo> tempHomeLogAssignRectangles = new List<RectangleInfo>();
         private ObservableCollection<RectangleInfo> selectRectangles = new ObservableCollection<RectangleInfo>();
         private IEnumerable<RectangleInfo> selectHomeRectangle;
         private IEnumerable<RectangleInfo> selectRecipeRectangle;
@@ -158,18 +158,30 @@ namespace WLS3200Gen2
         {
             try
             {
-                Rectangle selectRange = new Rectangle
+                Rectangle nowSelectRange = new Rectangle
                 {
                     Stroke = Brushes.Red,
                     StrokeThickness = 5,
                     Width = 0,
                     Height = 0
                 };
-                Canvas.SetLeft(selectRange, NewHomeMapMousePixcel.X);
-                Canvas.SetTop(selectRange, NewHomeMapMousePixcel.Y);
-                var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
+                Canvas.SetLeft(nowSelectRange, NewHomeMapMousePixcel.X);
+                Canvas.SetTop(nowSelectRange, NewHomeMapMousePixcel.Y);
+                ChangeHomeMappingSelect(nowSelectRange);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+        });
+        private void ChangeHomeMappingSelect(Rectangle nowSelectRange)
+        {
+            try
+            {
+                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
                 IEnumerable<RectangleInfo> tempselectRects = new List<RectangleInfo>();
-                tempselectRects = Rectangles.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                tempselectRects = RectanglesHome.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
                                    || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
                 if (tempselectRects != null)
                 {
@@ -177,20 +189,20 @@ namespace WLS3200Gen2
                     {
                         foreach (var item in selectHomeRectangle)
                         {
-                            int index = Rectangles.IndexOf(item);
+                            int index = RectanglesHome.IndexOf(item);
                             if (index >= 0)
                             {
-                                SetHomeRectangle?.Invoke(Rectangles[index].Col, Rectangles[index].Row, tempHomeAssignRectangles[index].Fill, tempRecipeRectangles[index].Fill);
+                                SetHomeRectangle?.Invoke(RectanglesHome[index].Col, RectanglesHome[index].Row, tempHomeLogAssignRectangles[index].Fill, tempRecipeRectangles[index].Fill);
                             }
                         }
                     }
                     foreach (var item in tempselectRects)
                     {
-                        int index = Rectangles.IndexOf(item);
+                        int index = RectanglesHome.IndexOf(item);
                         if (index >= 0)
                         {
-                            var ss = Rectangles[index].Fill;
-                            SetHomeRectangle?.Invoke(Rectangles[index].Col, Rectangles[index].Row, tempHomeAssignRectangles[index].Fill, Brushes.Red);
+                            var ss = RectanglesHome[index].Fill;
+                            SetHomeRectangle?.Invoke(RectanglesHome[index].Col, RectanglesHome[index].Row, tempHomeLogAssignRectangles[index].Fill, Brushes.Red);
                         }
                     }
                     selectHomeRectangle = tempselectRects;
@@ -199,9 +211,11 @@ namespace WLS3200Gen2
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message);
+                throw ex;
             }
-        });
+        }
+
+
         /// <summary>
         /// Recipe端畫面互動
         /// </summary>
@@ -229,9 +243,13 @@ namespace WLS3200Gen2
                         foreach (var item in selectRecipeRectangle)
                         {
                             int index = Rectangles.IndexOf(item);
+                            var index2 = tempRecipeRectangles
+                                .Select((rect2, idx) => new { rect2, idx })
+                                .FirstOrDefault(x => x.rect2.Col == item.Col && x.rect2.Row == item.Row).idx;
+
                             if (index >= 0)
                             {
-                                SetRectangle?.Invoke(Rectangles[index].Col, Rectangles[index].Row, Rectangles[index].Fill, tempRecipeRectangles[index].Fill);
+                                SetRectangle?.Invoke(Rectangles[index].Col, Rectangles[index].Row, Rectangles[index].Fill, tempRecipeRectangles[index2].Fill);
                             }
                         }
                     }
@@ -289,7 +307,7 @@ namespace WLS3200Gen2
                         Row = item.Row,
                         Fill = item.Fill
                     });
-                    tempHomeAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
+                    tempHomeLogAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
                     {
                         Col = item.Col,
                         Row = item.Row,
@@ -340,13 +358,13 @@ namespace WLS3200Gen2
         {
             try
             {
-                if (DetectionRunningPointList == null)
+                if (DetectionPointListLog == null)
                 {
-                    DetectionRunningPointList = new ObservableCollection<DetectionPoint>();
+                    DetectionPointListLog = new ObservableCollection<DetectionPoint>();
                 }
                 foreach (var item in DetectionPointList)
                 {
-                    DetectionRunningPointList.Add(new DetectionPoint()
+                    DetectionPointListLog.Add(new DetectionPoint()
                     {
                         IndexX = item.IndexX,
                         IndexY = item.IndexY,
@@ -376,11 +394,11 @@ namespace WLS3200Gen2
         {
             try
             {
-                tempHomeAssignRectangles = new List<RectangleInfo>();
+                tempHomeLogAssignRectangles = new List<RectangleInfo>();
 
                 foreach (var item in RectanglesHome)
                 {
-                    tempHomeAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
+                    tempHomeLogAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
                     {
                         Col = item.Col,
                         Row = item.Row,
@@ -429,7 +447,7 @@ namespace WLS3200Gen2
                 MappingHomeOp?.Invoke(MappingOperate.Create); //產生圖片
 
                 tempRecipeRectangles = new List<RectangleInfo>();
-                tempHomeAssignRectangles = new List<RectangleInfo>();
+                tempHomeLogAssignRectangles = new List<RectangleInfo>();
 
                 foreach (var item in RectanglesHome)
                 {
@@ -439,7 +457,7 @@ namespace WLS3200Gen2
                         Row = item.Row,
                         Fill = item.Fill
                     });
-                    tempHomeAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
+                    tempHomeLogAssignRectangles.Add(new RectangleInfo(item.CenterX, item.CenterY, item.Width, item.Height)
                     {
                         Col = item.Col,
                         Row = item.Row,
@@ -481,7 +499,7 @@ namespace WLS3200Gen2
                     Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
                     if (die != null)
                     {
-                        HomeNewMapAssignDieColorChange(false, die, null, null);
+                        HomeNewMapAssignDieColorChange(die, null, null);
                     }
                 }
 
@@ -492,36 +510,28 @@ namespace WLS3200Gen2
             }
         }
         /// <summary>
-        /// HomeMap變色，Die更改BinCode顏色
+        /// HomeMap變色，更改LogBinCode顏色
         /// </summary>
-        /// <param name="die"></param>
+        /// <param name="changeDie"></param>
         /// <param name="fill"></param>
         /// <param name="stroke"></param>
-        private void HomeNewMapAssignDieColorChange(bool isDoubleClickSelected, Die die, Brush fill, Brush stroke)
+        private void HomeNewMapAssignDieColorChange(Die changeDie, Brush fill, Brush stroke)
         {
             try
             {
                 var result = tempRecipeRectangles
                                   .Select((rect, idx) => new { rect, idx })
-                                  .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
+                                  .FirstOrDefault(x => x.rect.Col == changeDie.IndexX && x.rect.Row == changeDie.IndexY);
                 if (result != null)
                 {
-                    //若是要Die按兩下變色的功能
-                    if (isDoubleClickSelected)
+                    //若是null就是不用Assign，拿現在的狀態
+                    if (fill == null)
                     {
-                        fill = tempHomeAssignRectangles[result.idx].Fill;
+                        fill = tempHomeLogAssignRectangles[result.idx].Fill;
                     }
                     else
                     {
-                        //若是null就是不用Assign，拿現在的狀態
-                        if (fill == null)
-                        {
-                            fill = tempHomeAssignRectangles[result.idx].Fill;
-                        }
-                        else
-                        {
-                            tempHomeAssignRectangles[result.idx].Fill = fill;
-                        }
+                        tempHomeLogAssignRectangles[result.idx].Fill = fill;
                     }
                     //若是null就是要顯示原本Recipe，不然其實就是紅色選擇到的
                     if (stroke == null)

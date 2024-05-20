@@ -344,9 +344,16 @@ namespace WLS3200Gen2
         }
         private void BincodeList_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Assign")
+            if (e is PropertyChangedEventArgsExtended extendedArgs)
             {
-                // 屬性更改時執行的操作
+                string propertyName = extendedArgs.PropertyName;
+                object oldValue = extendedArgs.OldValue;
+                object newValue = extendedArgs.NewValue;
+                string code = extendedArgs.Code;
+                if (propertyName == "Assign")
+                {
+                    Assign(code);
+                }
             }
         }
         private void Assign(string binCode)
@@ -354,41 +361,22 @@ namespace WLS3200Gen2
             try
             {
                 //如果是在執行的狀態才能下BinCode
-                if (isRunCommand)
+                lock (lockAssignObj)
                 {
                     BincodeInfo assignBincodeInfo = mainRecipe.DetectRecipe.BincodeList.Where(r => r.Code == binCode).FirstOrDefault();
-                    if (assignBincodeInfo != null)
+                    if (assignBincodeInfo != null && nowAssignDie != null)
                     {
-                        double nowTablePosX = machine.MicroDetection.AxisX.Position;
-                        double nowTablePosY = machine.MicroDetection.AxisY.Position;
-                        Point mapPoint = machine.MicroDetection.TransForm.TransInvertPoint(new Point(nowTablePosX, nowTablePosY));
-                        homeMapToPixelScale = MapPointToMapImagePixelScale(HomeMapDrawSize.X, HomeMapDrawSize.Y, HomeMapDrawCuttingline);
-                        var transMapMousePixcel = new Point(homeMapToPixelScale.X * mapPoint.X, homeMapToPixelScale.Y * mapPoint.Y);
-
-                        Rectangle selectRange = new Rectangle
+                        Point nowTablePos = machine.MicroDetection.TransForm.TransPoint(new Point(nowAssignDie.MapTransX, nowAssignDie.MapTransY));
+                        ShowNowTablePosInWaferMapDie(nowTablePos.X, nowTablePos.Y);
+                        //執行中的
+                        foreach (DetectionPoint item in DetectionPointListLog)
                         {
-                            Stroke = Brushes.Red,
-                            StrokeThickness = 5,
-                            Width = 0,
-                            Height = 0
-                        };
-                        Canvas.SetLeft(selectRange, transMapMousePixcel.X);
-                        Canvas.SetTop(selectRange, transMapMousePixcel.Y);
-
-                        var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
-                        RectangleInfo tempselectRects = RectanglesHome.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
-                                         || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight)).FirstOrDefault();
-
-                        foreach (DetectionPoint item in DetectionRunningPointList)
-                        {
-                            if (item.IndexX == tempselectRects.Col && item.IndexY == tempselectRects.Row)
+                            if (item.IndexX == nowAssignDie.IndexX && item.IndexY == nowAssignDie.IndexY)
                             {
-                                item.Code = binCode;
+                                item.Code = assignBincodeInfo.Code;
                             }
                         }
-
-                        Die changeDie = new Die() { IndexX = tempselectRects.Col, IndexY = tempselectRects.Row };
-                        HomeNewMapAssignDieColorChange(false, changeDie, assignBincodeInfo.Color, Brushes.Red);
+                        HomeNewMapAssignDieColorChange(nowAssignDie, assignBincodeInfo.Color, Brushes.Red);
                     }
                 }
             }
@@ -397,7 +385,46 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-       
+        /// <summary>
+        /// 顯示目前平台位置相對應到畫面上的Wafer點位
+        /// </summary>
+        /// <param name="nowTablePosX"></param>
+        /// <param name="nowTablePosY"></param>
+        private void ShowNowTablePosInWaferMapDie(double nowTablePosX, double nowTablePosY)
+        {
+            try
+            {
+                Point mapPoint = machine.MicroDetection.TransForm.TransInvertPoint(new Point(nowTablePosX, nowTablePosY));
+                homeMapToPixelScale = MapPointToMapImagePixelScale(HomeMapDrawSize.X, HomeMapDrawSize.Y, HomeMapDrawCuttingline);
+                var transMapMousePixcel = new Point(homeMapToPixelScale.X * mapPoint.X, homeMapToPixelScale.Y * mapPoint.Y);
+
+                Rectangle nowSelectRange = new Rectangle
+                {
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 5,
+                    Width = 0,
+                    Height = 0
+                };
+                Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
+                Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+                var rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                 || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+                ChangeHomeMappingSelect(nowSelectRange);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// Map位置轉換成要顯示的Pixel要乘上的Scale
+        /// </summary>
+        /// <param name="drawWidth"></param>
+        /// <param name="drawHeight"></param>
+        /// <param name="drawCuttingline"></param>
+        /// <returns></returns>
         public Point MapPointToMapImagePixelScale(double drawWidth, double drawHeight, double drawCuttingline)
         {
             try
@@ -505,16 +532,18 @@ namespace WLS3200Gen2
 
             }
         }
-        private void DetectionRecord(BitmapSource bitmap, DetectionPoint point, Wafer currentWafer, string nowTime, string titleIdx)
+        private void DetectionRecord(BitmapSource bitmap, DetectionPoint point)
         {
             try
             {
-                var t1 = Thread.CurrentThread.ManagedThreadId;
-                string path = "C:\\Users\\USER\\Documents\\WLS3200\\Result\\" + nowTime + "_" + mainRecipe.Name +
-                    "\\Wafer" + currentWafer.CassetteIndex.ToString().PadLeft(2, '0');
-                if (!Directory.Exists(path + "\\MicroPhoto"))
-                    Directory.CreateDirectory(path + "\\MicroPhoto");
+                //var t1 = Thread.CurrentThread.ManagedThreadId;
+                //string path = "C:\\Users\\USER\\Documents\\WLS3200\\Result\\" + nowTime + "_" + mainRecipe.Name +
+                //    "\\Wafer" + currentWafer.CassetteIndex.ToString().PadLeft(2, '0');
+                //if (!Directory.Exists(path + "\\MicroPhoto"))
+                //    Directory.CreateDirectory(path + "\\MicroPhoto");
+                string path2 = $"{ machine.MicroDetection.GrabSaveFolder }\\MicroPhoto\\{ machine.MicroDetection.GrabTitleIdx}_{mainRecipe.Name}_{machine.MicroDetection.GrabSavePicturTime}_{point.IndexX}_{point.IndexY}.bmp";
 
+                machine.MicroDetection.GrabTitleIdx += 1;
                 //bitmap.Save(path + "\\MicroPhoto" + "\\" + titleIdx + "_" + mainRecipe.Name + "_" + nowTime + "_" + point.IndexX + "_" + point.IndexY + ".bmp");
 
                 //System.Drawing.Bitmap bmp = bitmap.ToBitmap();
