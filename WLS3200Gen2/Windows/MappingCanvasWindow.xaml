@@ -12,7 +12,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="0.1*"/>
         </Grid.ColumnDefinitions>
-        <usercontrols:MappingCanvas DrawingRectangle="{Binding SetRectangle}" MappingImageOperate="{Binding MappingOp}" Dies="{Binding DieArray}" BincodeInFomation="{Binding BincodeList}" MapImage="{Binding MappingTable}" />
+        <usercontrols:MappingCanvas  DrawingRectangle="{Binding SetRectangle}" SetFocusCenter="{Binding SetFocus}"  MappingImageOperate="{Binding MappingOp}" Dies="{Binding DieArray}" BincodeInFomation="{Binding BincodeList}" MapImage="{Binding MappingTable}" />
         <StackPanel Grid.Column="1" >
             <Button Content="Create Map"  Click="BtnCreate_Click" Background="SeaGreen" />
             <Button Content="Clear"  Click="BtnClear_Click" Background="SeaGreen" />
@@ -22,6 +22,7 @@
                 <TextBox Text="{Binding Row}"  Width="40" />
             </StackPanel>
             <Button Content="SetRect"  Click="BtnSetRect_Click"   Background="SeaGreen" Cursor="Hand" />
+            <Button Content="SetCenter"  Click="BtnSetCenter_Click"   Background="SeaGreen" Cursor="Hand" />
         </StackPanel>
       
     </Grid>

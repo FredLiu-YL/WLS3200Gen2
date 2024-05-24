@@ -73,6 +73,10 @@ namespace WLS3200Gen2.UserControls
         //col,row,背景色，線條
         public static readonly DependencyProperty DrawingRectangleProperty = DependencyProperty.Register(nameof(DrawingRectangle), typeof(Action<int, int, Brush, Brush>), typeof(MappingCanvas),
                                                               new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty SetFocusCenterProperty = DependencyProperty.Register(nameof(SetFocusCenter), typeof(Action<int, int>), typeof(MappingCanvas),
+                                                                    new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        
         public static readonly DependencyProperty MousePixcelProperty = DependencyProperty.Register(nameof(MousePixcel), typeof(Point), typeof(MappingCanvas),
                                                                                                     new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty RectanglesProperty = DependencyProperty.Register(nameof(Rectangles), typeof(List<RectangleInfo>), typeof(MappingCanvas),
@@ -110,6 +114,7 @@ namespace WLS3200Gen2.UserControls
         {
             MappingImageOperate = MapOperate;
             DrawingRectangle = DrawMapRectangle;
+            SetFocusCenter = SetFocus;
         }
         public ObservableCollection<Die> SelectDies
         {
@@ -162,6 +167,16 @@ namespace WLS3200Gen2.UserControls
             get => (Action<int, int, Brush, Brush>)GetValue(DrawingRectangleProperty);
             set => SetValue(DrawingRectangleProperty, value);
         }
+
+        /// <summary>
+        /// 指定Index 當作畫面中心
+        /// </summary>
+        public Action<int, int> SetFocusCenter
+        {
+            get => (Action<int, int>)GetValue(SetFocusCenterProperty);
+            set => SetValue(SetFocusCenterProperty, value);
+        }
+
         public ObservableCollection<LineViewModel> Lines
         {
             get => _lines;
@@ -221,6 +236,9 @@ namespace WLS3200Gen2.UserControls
                 scaleDelta = 0.02;
             // 縮放
             viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
+            
+         
+           
 
         }
 
@@ -611,6 +629,26 @@ namespace WLS3200Gen2.UserControls
             }
         }
 
+        private void CenterScrollViewerOnPixel( double pixelX, double pixelY)
+        {
+            
+            // 獲取縮放比例
+            var transform = viewbox.LayoutTransform as ScaleTransform;
+            double scaleX = transform?.ScaleX ?? 1.0;
+            double scaleY = transform?.ScaleY ?? 1.0;
+
+            // 計算在縮放後的實際像素座標
+            double actualPixelX = pixelX * scaleX;
+            double actualPixelY = pixelY * scaleY;
+
+            // 計算水平和垂直偏移量
+            double horizontalOffset = actualPixelX - (scrollViewer.ViewportWidth / 2);
+            double verticalOffset = actualPixelY - (scrollViewer.ViewportHeight / 2);
+
+            // 設定 ScrollViewer 的水平和垂直偏移量
+            scrollViewer.ScrollToHorizontalOffset(horizontalOffset);
+            scrollViewer.ScrollToVerticalOffset(verticalOffset);
+        }
         private void DrawMapRectangle(Point pixel)
         {
 
@@ -621,7 +659,13 @@ namespace WLS3200Gen2.UserControls
             DrawRectangle(selectRect, selectRect.Fill, Brushes.Red);
             //  DrawMapRectangle(selectRect.Col, selectRect.Row, Brushes.DarkBlue, Brushes.MintCream);
         }
+        private void SetFocus(int col,int row)
+        {
+            var die = Rectangles.Where(d => d.Col == col && d.Row == row).FirstOrDefault();
 
+            CenterScrollViewerOnPixel(die.CenterX, die.CenterY);
+
+        }
         //col,row,背景色，線條
         private void DrawMapRectangle(int indexX, int indexY, Brush fill, Brush stroke)
         {

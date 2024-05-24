@@ -32,6 +32,8 @@ namespace WLS3200Gen2
         private WriteableBitmap mappingTable;
         private Action<MappingOperate> create;
         private Action<int, int, Brush, Brush> setRectangle;
+        private Action<int, int> setFocus;
+        
         public MappingCanvasWindow(int column, int row)
         {
             InitializeComponent();
@@ -50,6 +52,7 @@ namespace WLS3200Gen2
       
         public Action<MappingOperate> MappingOp { get => create; set => SetValue(ref create, value); }
         public Action<int, int, Brush, Brush> SetRectangle { get => setRectangle; set => SetValue(ref setRectangle, value); }
+        public Action<int, int> SetFocus { get => setFocus; set => SetValue(ref setFocus, value); }
         public int Column { get => column; set => SetValue(ref column, value); }
         public int Row { get => row; set => SetValue(ref row, value); }
 
@@ -151,8 +154,11 @@ namespace WLS3200Gen2
         {
             SetRectangle?.Invoke(Column,Row,Brushes.Coral,Brushes.OrangeRed);
         }
+        private void BtnSetCenter_Click(object sender, RoutedEventArgs e)
+        {
+            SetFocus?.Invoke(Column, Row);
+        }
 
-        
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return;
