@@ -17,8 +17,8 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal"  Visibility="Visible"   >
             <Button Content="Fit"  Command="{Binding BtnOperateCommand}"  CommandParameter="fit" Cursor="Hand"  />
             <Button Content="+" Click="ZoomIn_Click"/>
-            <Button Content="-" Click="ZoomOut_Click" />
-            <!--<Button Content="Create"  Command="{Binding BtnOperateCommand}"  CommandParameter="createRetagle"  Cursor="Hand"  />-->
+            <Button Content="-" Click="ZoomOut_Click" Cursor="Hand" />
+            <Button Content="Create"  Command="{Binding BtnOperateCommand}"  CommandParameter="createRetagle"  Cursor="Hand"  />
             <Button Content="SelectAdd"  Command="{Binding BtnOperateCommand}" CommandParameter="selectAdd"     />
             <Button Content="SelectDel"  Command="{Binding BtnOperateCommand}" CommandParameter="selectDel"     />
             <Button Content="Touch"   Command="{Binding BtnOperateCommand}" CommandParameter="touch"    />
