@@ -47,6 +47,7 @@ namespace WLS3200Gen2
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
         private double tableXMaxVel, tableYMaxVel;
         private double tablePosX, tablePosY, tablePosZ, tablePosR;
+        private int microCheckNowIndexX, microCheckNowIndexY;
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
@@ -70,6 +71,8 @@ namespace WLS3200Gen2
         public ICommand AddButtonAction { get; set; }
         public double TableXMaxVel { get => tableXMaxVel; set => SetValue(ref tableXMaxVel, value); }
         public double TableYMaxVel { get => tableYMaxVel; set => SetValue(ref tableYMaxVel, value); }
+        public int MicroCheckNowIndexX { get => microCheckNowIndexX; set => SetValue(ref microCheckNowIndexX, value); }
+        public int MicroCheckNowIndexY { get => microCheckNowIndexY; set => SetValue(ref microCheckNowIndexY, value); }
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
         public Axis TableR { get => tableR; set => SetValue(ref tableR, value); }
@@ -121,10 +124,6 @@ namespace WLS3200Gen2
         /// </summary>
         public ICommand ClearHomeMapShapeAction { get; set; }
 
-        /// <summary>
-        /// 對位結果紀錄 (圖像 對位座標(pxel))
-        /// </summary>
-        public event Action<double, double> RefreshChangeHomeMap;
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
         {
             try
@@ -163,6 +162,19 @@ namespace WLS3200Gen2
                 else
                 {
                     //直接關掉程式!
+                    if (machine.MicroDetection != null && machine.MicroDetection.Camera != null)
+                    {
+                        try
+                        {
+                            machine.MicroDetection.Camera.Stop();
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
+                    isRefresh = false;
+                    await Task.Delay(500);
+                    Application.Current.Shutdown();
                     machine.MicroDetection.Camera.Open();
                 }
 
@@ -242,7 +254,7 @@ namespace WLS3200Gen2
                 machine.MicroDetection.MicroReady += MicroOperate;
                 machine.Feeder.WaferIDRecord += WaferIDRecord;
                 machine.Feeder.WaferIDReady += WaferIDOperate;
-                RefreshChangeHomeMap += RefreshChange;
+
 
 
                 isInitialComplete = true;
@@ -502,17 +514,9 @@ namespace WLS3200Gen2
                     {
                     }
                 }
-
-
-
+                isRefresh = false;
                 // 如果使用者選擇 "是"，則允許視窗關閉
                 e.Cancel = false;
-
-
-
-                isRefresh = false;
-
-
             }
             catch (Exception ex)
             {
@@ -617,18 +621,18 @@ namespace WLS3200Gen2
             }
 
         }
-        private void RefreshChange(double tablePosX, double tablePosY)
+        private void RefreshHomeMap(double tablePosX, double tablePosY)
         {
             try
             {
-                lock (lockUpdateMapObj)
+                lock (lockHomeMapObj)
                 {
-                    if (isUpdateMap == false && updateMapTransForm != null)
+                    if (isUpdateHomeMap == false && updateHomeMapTransform != null)
                     {
-                        isUpdateMap = true;
+                        isUpdateHomeMap = true;
                         App.Current.Dispatcher.Invoke((Action)(() =>
                         {
-                            var mapPoint = updateMapTransForm.TransInvertPoint(new Point(tablePosX, tablePosY));
+                            var mapPoint = updateHomeMapTransform.TransInvertPoint(new Point(tablePosX, tablePosY));
                             var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
                             Rectangle nowSelectRange = new Rectangle
                             {
@@ -639,13 +643,64 @@ namespace WLS3200Gen2
                             };
                             Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
                             Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
-                            //var rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
-                            //RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
-                            //                 || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
                             ChangeHomeMappingSelect(nowSelectRange);
-                            isUpdateMap = false;
+
+                            Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                            RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                              || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+                            if (tempselectRects != null)
+                            {
+                                MicroCheckNowIndexX = tempselectRects.Col;
+                                MicroCheckNowIndexY = tempselectRects.Row;
+                            }
+                            isUpdateHomeMap = false;
                         }));
-                        while (isUpdateMap)
+                        while (isUpdateHomeMap)
+                        {
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+        private void RefreshRecipeMap(double tablePosX, double tablePosY)
+        {
+            try
+            {
+                lock (lockRecipeMapObj)
+                {
+                    if (isUpdateRecipeMap == false && updateRecipeMapTransform != null)
+                    {
+                        isUpdateRecipeMap = true;
+                        App.Current.Dispatcher.Invoke((Action)(() =>
+                        {
+                            var mapPoint = updateRecipeMapTransform.TransInvertPoint(new Point(tablePosX, tablePosY));
+                            var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
+                            Rectangle nowSelectRange = new Rectangle
+                            {
+                                Stroke = Brushes.Red,
+                                StrokeThickness = 5,
+                                Width = 0,
+                                Height = 0
+                            };
+                            Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
+                            Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+                            ChangeHomeMappingSelect(nowSelectRange);
+
+                            Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                            RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                              || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+                            if (tempselectRects != null)
+                            {
+                                MicroCheckNowIndexX = tempselectRects.Col;
+                                MicroCheckNowIndexY = tempselectRects.Row;
+                            }
+                            isUpdateRecipeMap = false;
+                        }));
+                        while (isUpdateRecipeMap)
                         {
                         }
                     }
@@ -673,14 +728,17 @@ namespace WLS3200Gen2
                         TablePosR = machine.MicroDetection.AxisR.Position;
                         if (isRunningMicroDetection)
                         {
-                            RefreshChange(TablePosX, TablePosY);
-                            //RefreshChangeHomeMap?.Invoke(TablePosX, TablePosY);
+                            RefreshHomeMap(TablePosX, TablePosY);
+
+                        }
+                        if (true)
+                        {
+                            RefreshRecipeMap(TablePosX, TablePosY);
                         }
                         //if (atfMachine.AFModule.AFSystem != null)
                         //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
 
 
-                        //得到EMO 軸停止
                         if (isMainRecipePageSelect || isMainSecurityPageSelect)
                         {
                             if (machine.MicroDetection.Microscope != null)

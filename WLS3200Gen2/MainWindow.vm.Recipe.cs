@@ -66,6 +66,7 @@ namespace WLS3200Gen2
         private bool isMainHomePageSelect, isMainRecipePageSelect, isMainSettingPageSelect, isMainToolsPageSelect, isMainSecurityPageSelect;
         private bool isLoadwaferPageSelect, isMacroPageSelect, isAlignerPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
+        private string mapAdd = "MAP ADD";
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
         private bool isLoadwaferComplete, isMacroComplete, isAlignerComplete, isLocateComplete, isDetectionComplete;
@@ -77,6 +78,7 @@ namespace WLS3200Gen2
         private string topMoveContent = "TopMove", backMoveContent = "BackMove";
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
+        private bool isMapEnd = true;
         private bool isDie, isDieSub, isDieInSideAll, isPosition, isRecipeAlignment = false;
         /// <summary>
         /// 畫圖的參數
@@ -237,7 +239,7 @@ namespace WLS3200Gen2
         /// 是否可運作EFEM
         /// </summary>
         public bool IsCanWorkEFEMTrans { get => isCanWorkEFEMTrans; set => SetValue(ref isCanWorkEFEMTrans, value); }
-
+        public bool IsMapEnd { get => isMapEnd; set => SetValue(ref isMapEnd, value); }
         public double AlignerMicroAngle { get => alignerMicroAngle; set => SetValue(ref alignerMicroAngle, value); }
         public double AlignerWaferIDAngle { get => alignerWaferIDAngle; set => SetValue(ref alignerWaferIDAngle, value); }
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
@@ -337,8 +339,10 @@ namespace WLS3200Gen2
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>
         public System.Windows.Point MousePixcel { get => mousePixcel; set => SetValue(ref mousePixcel, value); }
-
-
+        /// <summary>
+        /// MapAdd標題名稱
+        /// </summary>
+        public String MapAdd { get => mapAdd; set => SetValue(ref mapAdd, value); }
         /// <summary>
         /// 取得或設定 shape 
         /// </summary>
@@ -363,10 +367,19 @@ namespace WLS3200Gen2
             //為什麼要在這邊判斷，因為要先切到Recipe頁面再來畫圖才會出現
             if (isRecipeMapShow == false && mainRecipe.DetectRecipe.WaferMap != null)
             {
-                ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
-                isRecipeMapShow = true;
+                //開一個Task是因為要等畫面切完之後，再來變化
+                Task.Run(async () =>
+                {
+                    await Task.Delay(500);
+                    ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
+                    ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+                    isRecipeMapShow = true;
+                });
             }
-            ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+            else
+            {
+                ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+            }
 
             LoadPort1Wafers.Clear();
             foreach (var item in ProcessStations)
@@ -1439,6 +1452,7 @@ namespace WLS3200Gen2
                 point.Filter2Index = Microscope.Filter2Index;
                 point.Filter3Index = Microscope.Filter3Index;
                 DetectionPointList.Add(point);
+                mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
                 Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == idxX && d.IndexY == idxY).FirstOrDefault();
                 if (die != null)
                 {
@@ -1454,29 +1468,48 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (MapAdd == "MAP ADD")
+                {
+                    IsMapEnd = false;
+                    MappingRecipeOp?.Invoke(MappingOperate.Clear);
+                    MapAdd = "END";
+                    IsMapEnd = true;
+                }
+                else
+                {
+                    IsMapEnd = false;
+                    //將SelectRectangles全部加填進去，然後用當前的參數
+                    DetectionPoint point = new DetectionPoint();
+                    point.MicroscopeLightValue = Microscope.LightValue;
+                    point.MicroscopeApertureValue = Microscope.ApertureValue;
+                    point.LensIndex = Microscope.LensIndex;
+                    point.MicroscopePosition = Microscope.Position;//machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AutoFocusPosition;
+                    point.MicroscopeAberationPosition = Microscope.AberationPosition; //machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AberationPosition;
+                    point.CubeIndex = Microscope.CubeIndex;
+                    point.Filter1Index = Microscope.Filter1Index;
+                    point.Filter2Index = Microscope.Filter2Index;
+                    point.Filter3Index = Microscope.Filter3Index;
 
-
-                //將SelectRectangles全部加填進去，然後用當前的參數
-
-                //foreach (var item in SelectRectangles)
-                //{
-                //    bool isNotOrgColor = false;
-                //    if (item.Fill != Brushes.Red)
-                //    {
-                //        foreach (var item2 in MapBincodeList)
-                //        {
-                //            if (item.Fill == item2.Color)
-                //            {
-                //                isNotOrgColor = true;
-                //            }
-                //        }
-                //    }
-
-                //    if (isNotOrgColor)
-                //    {
-                //        tempRecipeRectangles.FirstOrDefault(d => d.Col == item.Col && d.Row == item.Row).Fill = item.Fill;
-                //    }
-                //}
+                    foreach (var item in SelectRectangles)
+                    {
+                        int idxX = item.Col;
+                        int idxY = item.Row;
+                        var haveSameXY = DetectionPointList.FirstOrDefault(d => d.IndexX == idxX && d.IndexY == idxY);
+                        Die die = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(d => d.IndexX == idxX && d.IndexY == idxY);
+                        if (item.Fill == Brushes.Yellow && haveSameXY == null && die != null)
+                        {
+                            point.IndexX = idxX;
+                            point.IndexY = idxY;
+                            //var newPos = transForm.TransInvertPoint(new Point(die.MapTransX, die.MapTransY));
+                            point.Position = new Point(Math.Ceiling(die.MapTransX), Math.Ceiling(die.MapTransY));
+                            DetectionPointList.Add(point);
+                        }
+                    }
+                    MapAdd = "MAP ADD";
+                    mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
+                    ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+                    IsMapEnd = true;
+                }
             }
             catch (Exception ex)
             {

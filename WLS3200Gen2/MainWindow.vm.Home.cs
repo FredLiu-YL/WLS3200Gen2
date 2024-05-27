@@ -35,9 +35,12 @@ namespace WLS3200Gen2
         private bool isRunning = false;
         private bool isRunCommand = false;
         private readonly object lockAssignObj = new object();
-        private readonly object lockUpdateMapObj = new object();
-        private bool isUpdateMap = false;
-        private ITransform updateMapTransForm { get; set; }
+        private readonly object lockHomeMapObj = new object();
+        private readonly object lockRecipeMapObj = new object();
+        private bool isUpdateHomeMap = false;
+        private bool isUpdateRecipeMap = false;
+        private ITransform updateHomeMapTransform { get; set; }
+        private ITransform updateRecipeMapTransform { get; set; }
         private Die nowAssignDie;
         /// <summary>
         /// 在運行中的Wafer檢查
@@ -836,7 +839,7 @@ namespace WLS3200Gen2
         {
             pts.IsPaused = true;
             machine.ProcessPause();//暫停
-            updateMapTransForm = machine.MicroDetection.TransForm;
+            updateHomeMapTransform = machine.MicroDetection.TransForm;
             isRunningMicroDetection = true;
             //切到Micro 頁面
             TabControlSelectedIndex = 3;

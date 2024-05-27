@@ -71,8 +71,17 @@ namespace WLS3200Gen2.Model
 
 
         }
+        public void Disopse()
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
 
-
+                throw ex;
+            }
+        }
 
         public void AssignComponent()
         {

@@ -123,7 +123,8 @@
                                                                               AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}"  />
                             </TabItem>
                             <TabItem Header="Macro">
-                                <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetHomeRectangle}" MappingImageOperate="{Binding MappingHomeOp}" Dies="{Binding DieArrayHome}" 
+                                <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetHomeRectangle}" SetFocusCenter="{Binding SetHomeFocusCenter}"
+                                                             MappingImageOperate="{Binding MappingHomeOp}" Dies="{Binding DieArrayHome}" 
                                                              BincodeInFomation="{Binding MapBincodeListHome}" MapImage="{Binding MappingHomeTable}" MousePixcel="{Binding NewHomeMapMousePixcel}"
                                                              Rectangles="{Binding RectanglesHome}" DrawSize="{Binding HomeMapDrawSize}" DrawCuttingline="{Binding HomeMapDrawCuttingline}">
                                     <i:Interaction.Triggers>
@@ -648,8 +649,8 @@
                 </TabItem.Header>
                 <Grid >
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2.2*"/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="0.72*"/>
+                        <ColumnDefinition Width="0.28*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -657,10 +658,11 @@
                     </Grid.RowDefinitions>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.3*"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.55*"/>
+                            <ColumnDefinition Width="0.45*"/>
                         </Grid.ColumnDefinitions>
-                        <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetRectangle}" MappingImageOperate="{Binding MappingRecipeOp}" Dies="{Binding DieArray}" 
+                        <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetRectangle}" SetFocusCenter="{Binding SetFocusCenter}"
+                                                     MappingImageOperate="{Binding MappingRecipeOp}" Dies="{Binding DieArray}" 
                                                      BincodeInFomation="{Binding MapBincodeList}" MapImage="{Binding MappingTable}" MousePixcel="{Binding NewMapMousePixcel}" 
                                                      Rectangles="{Binding Rectangles}" SelectRectangles ="{Binding SelectRectangles}"
                                                      DrawSize="{Binding RecipeMapDrawSize}" DrawCuttingline="{Binding RecipeMapDrawCuttingline}">
@@ -724,7 +726,7 @@
                         <Grid  Grid.Row="0">
                             <Border     BorderBrush="{DynamicResource PrimaryHueMidBrush}"   BorderThickness="1" >
                                 <TabControl >
-                                    <TabItem Width="110" IsSelected="{Binding IsLoadwaferPageSelect}">
+                                    <TabItem Width="100" IsSelected="{Binding IsLoadwaferPageSelect}">
                                         <TabItem.Header>
                                             <Grid Margin="-30" >
                                                 <Grid.ColumnDefinitions>
@@ -809,7 +811,7 @@
                                             </GroupBox>
                                         </Grid>
                                     </TabItem>
-                                    <TabItem Width="110" IsSelected="{Binding IsMacroPageSelect}">
+                                    <TabItem Width="100" IsSelected="{Binding IsMacroPageSelect}">
                                         <TabItem.Header >
                                             <Grid Margin="-30">
                                                 <Grid.ColumnDefinitions>
@@ -983,7 +985,7 @@
                                             </GroupBox>
                                         </Grid>
                                     </TabItem>
-                                    <TabItem  Width="110" IsSelected="{Binding IsAlignerPageSelect}">
+                                    <TabItem  Width="100" IsSelected="{Binding IsAlignerPageSelect}">
                                         <!-- 在 TabItem 的 Header 中添加一個 StackPanel，包含 TextBlock 和 Image -->
                                         <TabItem.Header >
                                             <Grid Margin="-30"  >
@@ -1072,7 +1074,7 @@
                                         </Grid>
                                     </TabItem>
 
-                                    <TabItem Width="110"  IsSelected="{Binding IsLocatePageSelect}" >
+                                    <TabItem Width="100"  IsSelected="{Binding IsLocatePageSelect}" >
                                         <TabItem.Header>
                                             <Grid   Margin="-30">
                                                 <Grid.ColumnDefinitions>
@@ -1194,10 +1196,10 @@
                                                 <TextBlock  Text="Detection Setting" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"  />
                                             </Border>
                                             <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2"   >
-                                                <Button Margin="5" Content="ADD" FontSize="24" Height="50" Width="100" Command="{Binding AddDetectionCommand}"  />
+                                                <Button Margin="5" Content="ADD"  FontSize="24" Height="50" Width="100" Command="{Binding AddDetectionCommand}"  />
                                                 <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130" Command="{Binding RemoveDetectionCommand}"  />
                                                 <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="130" Command="{Binding EditDetectionCommand}"  />
-                                                <Button Margin="5" Content="Map ADD" FontSize="24" Height="50" Width="150" Command="{Binding MapAddDetectionCommand}"  />
+                                                <Button Margin="5" Content="{Binding MapAdd}" IsEnabled="{Binding IsMapEnd}" FontSize="24" Height="50" Width="150" Command="{Binding MapAddDetectionCommand}"  />
 
                                             </StackPanel>
                                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
@@ -1288,7 +1290,7 @@
                                             <RowDefinition />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
-                                              
+
                                         <Button Grid.Column="0" Grid.Row="0"  Width="60"  Height="60"   >
                                             <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
                                             <i:Interaction.Triggers>
@@ -1735,7 +1737,7 @@
                                 <TextBox Grid.Column="3" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="5" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="7" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
-                                
+
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>

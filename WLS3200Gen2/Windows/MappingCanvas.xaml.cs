@@ -76,7 +76,7 @@ namespace WLS3200Gen2.UserControls
         public static readonly DependencyProperty SetFocusCenterProperty = DependencyProperty.Register(nameof(SetFocusCenter), typeof(Action<int, int>), typeof(MappingCanvas),
                                                                     new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        
+
         public static readonly DependencyProperty MousePixcelProperty = DependencyProperty.Register(nameof(MousePixcel), typeof(Point), typeof(MappingCanvas),
                                                                                                     new FrameworkPropertyMetadata(new Point(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty RectanglesProperty = DependencyProperty.Register(nameof(Rectangles), typeof(List<RectangleInfo>), typeof(MappingCanvas),
@@ -240,9 +240,9 @@ namespace WLS3200Gen2.UserControls
                 scaleDelta = 0.02;
             // 縮放
             viewbox.LayoutTransform = new ScaleTransform(viewbox.LayoutTransform.Value.M11 - scaleDelta, viewbox.LayoutTransform.Value.M22 - scaleDelta);
-            
-         
-           
+
+
+
 
         }
 
@@ -559,7 +559,7 @@ namespace WLS3200Gen2.UserControls
                     {
                         foreach (var item in selectRects)
                         {
-                            DrawRectangle(item, item.Fill, Brushes.Yellow);
+                            DrawRectangle(item, Brushes.Yellow, Brushes.Yellow);
                         }
                     }
                     else if (isDel)
@@ -641,9 +641,9 @@ namespace WLS3200Gen2.UserControls
             }
         }
 
-        private void CenterScrollViewerOnPixel( double pixelX, double pixelY)
+        private void CenterScrollViewerOnPixel(double pixelX, double pixelY)
         {
-            
+
             // 獲取縮放比例
             var transform = viewbox.LayoutTransform as ScaleTransform;
             double scaleX = transform?.ScaleX ?? 1.0;
@@ -671,7 +671,7 @@ namespace WLS3200Gen2.UserControls
             DrawRectangle(selectRect, selectRect.Fill, Brushes.Red);
             //  DrawMapRectangle(selectRect.Col, selectRect.Row, Brushes.DarkBlue, Brushes.MintCream);
         }
-        private void SetFocus(int col,int row)
+        private void SetFocus(int col, int row)
         {
             var die = Rectangles.Where(d => d.Col == col && d.Row == row).FirstOrDefault();
 

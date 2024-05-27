@@ -44,6 +44,7 @@ namespace WLS3200Gen2
         private Action<MappingOperate> create;
         private Action<int, int, Brush, Brush> setHomeRectangle;
         private Action<int, int, Brush, Brush> setRectangle;
+        private Action<int, int> setFocusCenter, setHomeFocusCenter;
         private System.Windows.Point newHomeMapMousePixcel, newMapMousePixcel;
         private List<RectangleInfo> rectanglesHome = new List<RectangleInfo>();
         private List<RectangleInfo> rectangles = new List<RectangleInfo>();
@@ -59,11 +60,16 @@ namespace WLS3200Gen2
         /// </summary>
         private List<RectangleInfo> tempHomeLogAssignRectangles = new List<RectangleInfo>();
         private ObservableCollection<RectangleInfo> selectRectangles = new ObservableCollection<RectangleInfo>();
-        private IEnumerable<RectangleInfo> selectHomeRectangle;
-        private IEnumerable<RectangleInfo> selectRecipeRectangle;
+        /// <summary>
+        /// 目前畫面選擇的Die
+        /// </summary>
+        private RectangleInfo selectHomeRectangle;
+        private RectangleInfo selectRecipeRectangle;
 
         public Action<int, int, Brush, Brush> SetHomeRectangle { get => setHomeRectangle; set => SetValue(ref setHomeRectangle, value); }
+        public Action<int, int> SetHomeFocusCenter { get => setHomeFocusCenter; set => SetValue(ref setHomeFocusCenter, value); }
         public Action<int, int, Brush, Brush> SetRectangle { get => setRectangle; set => SetValue(ref setRectangle, value); }
+        public Action<int, int> SetFocusCenter { get => setFocusCenter; set => SetValue(ref setFocusCenter, value); }
         public WriteableBitmap MappingHomeTable { get => mappingHomeTable; set => SetValue(ref mappingHomeTable, value); }
         public WriteableBitmap MappingTable { get => mappingTable; set => SetValue(ref mappingTable, value); }
         public BincodeInfo[] MapBincodeListHome { get => mapbincodeListHome; set => SetValue(ref mapbincodeListHome, value); }
@@ -193,37 +199,30 @@ namespace WLS3200Gen2
                 MessageBox.Show(ex.Message);
             }
         });
-        private void ChangeHomeMappingSelect(Rectangle nowSelectRange)
+        /// <summary>
+        /// 更改目前在Home頁面Map的Die外框顏色，選擇到的外框是紅色，不是的變回來
+        /// </summary>
+        /// <param name="nowSelect"></param>
+        private void ChangeHomeMappingSelect(Rectangle nowSelect)
         {
             try
             {
-                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
-                IEnumerable<RectangleInfo> tempselectRects = new List<RectangleInfo>();
-                tempselectRects = RectanglesHome.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
-                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
-                if (tempselectRects != null)
+                Rect rect = new Rect(Canvas.GetLeft(nowSelect), Canvas.GetTop(nowSelect), nowSelect.Width, nowSelect.Height);
+                RectangleInfo tempselectRect = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                    || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+                //判斷畫面上有沒有這顆Die
+                if (tempselectRect != null)
                 {
+                    //判斷之前Map有沒有點過，若有要把外框顏色變回來
                     if (selectHomeRectangle != null)
                     {
-                        foreach (var item in selectHomeRectangle)
-                        {
-                            int index = RectanglesHome.IndexOf(item);
-                            if (index >= 0)
-                            {
-                                SetHomeRectangle?.Invoke(RectanglesHome[index].Col, RectanglesHome[index].Row, tempHomeLogAssignRectangles[index].Fill, tempRecipeRectangles[index].Fill);
-                            }
-                        }
+                        var oldRectangle = tempHomeLogAssignRectangles.Where(n => n.Col == selectHomeRectangle.Col && n.Row == selectHomeRectangle.Row).FirstOrDefault();
+                        SetHomeRectangle?.Invoke(selectHomeRectangle.Col, selectHomeRectangle.Row, oldRectangle.Fill, oldRectangle.Fill);
                     }
-                    foreach (var item in tempselectRects)
-                    {
-                        int index = RectanglesHome.IndexOf(item);
-                        if (index >= 0)
-                        {
-                            var ss = RectanglesHome[index].Fill;
-                            SetHomeRectangle?.Invoke(RectanglesHome[index].Col, RectanglesHome[index].Row, tempHomeLogAssignRectangles[index].Fill, Brushes.Red);
-                        }
-                    }
-                    selectHomeRectangle = tempselectRects;
+                    //把外框顏色變成紅色
+                    SetHomeRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, tempselectRect.Fill, Brushes.Red);
+                    SetHomeFocusCenter?.Invoke(tempselectRect.Col, tempselectRect.Row);
+                    selectHomeRectangle = tempselectRect;
                 }
             }
             catch (Exception ex)
@@ -232,40 +231,30 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-        private void ChangeRecipeMappingSelect(Rectangle nowSelectRange)
+        /// <summary>
+        /// 更改目前在Recipe頁面Map的Die外框顏色，選擇到的外框是紅色，不是的變回來
+        /// </summary>
+        /// <param name="nowSelect"></param>
+        private void ChangeRecipeMappingSelect(Rectangle nowSelect)
         {
             try
             {
-                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
-                IEnumerable<RectangleInfo> tempselectRects = new List<RectangleInfo>();
-                tempselectRects = Rectangles.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
-                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
-                if (tempselectRects != null)
+                Rect rect = new Rect(Canvas.GetLeft(nowSelect), Canvas.GetTop(nowSelect), nowSelect.Width, nowSelect.Height);
+                RectangleInfo tempselectRect = Rectangles.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                  || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+                //判斷畫面上有沒有這顆Die
+                if (tempselectRect != null)
                 {
-                    if (this.selectRecipeRectangle != null)
+                    //判斷之前Map有沒有點過，若有要把外框顏色變回來
+                    if (selectRecipeRectangle != null)
                     {
-                        foreach (var item in selectRecipeRectangle)
-                        {
-                            int index = Rectangles.IndexOf(item);
-                            var index2 = tempRecipeRectangles
-                                .Select((rect2, idx) => new { rect2, idx })
-                                .FirstOrDefault(x => x.rect2.Col == item.Col && x.rect2.Row == item.Row).idx;
-
-                            if (index >= 0)
-                            {
-                                SetRectangle?.Invoke(Rectangles[index].Col, Rectangles[index].Row, Rectangles[index].Fill, tempRecipeRectangles[index2].Fill);
-                            }
-                        }
+                        var oldRectangle = tempRecipeRectangles.Where(n => n.Col == selectRecipeRectangle.Col && n.Row == selectRecipeRectangle.Row).FirstOrDefault();
+                        SetRectangle?.Invoke(selectRecipeRectangle.Col, selectRecipeRectangle.Row, oldRectangle.Fill, oldRectangle.Fill);
                     }
-                    foreach (var item in tempselectRects)
-                    {
-                        int index = Rectangles.IndexOf(item);
-                        if (index >= 0)
-                        {
-                            SetRectangle?.Invoke(Rectangles[index].Col, Rectangles[index].Row, Rectangles[index].Fill, Brushes.Red);
-                        }
-                    }
-                    selectRecipeRectangle = tempselectRects;
+                    //把外框顏色變成紅色
+                    SetRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, tempselectRect.Fill, Brushes.Red);
+                    SetFocusCenter?.Invoke(tempselectRect.Col, tempselectRect.Row);
+                    selectRecipeRectangle = tempselectRect;
                 }
             }
             catch (Exception ex)
@@ -297,9 +286,8 @@ namespace WLS3200Gen2
                 //還沒對位，MAP點位不能移動
                 if (isRecipeAlignment == false) return;
                 Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
-                RectangleInfo tempselectRects = Rectangles.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
-                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight)).FirstOrDefault();
-
+                RectangleInfo tempselectRects = Rectangles.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
                 //移動
                 if (tempselectRects != null)
                 {
