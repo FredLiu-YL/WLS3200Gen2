@@ -91,7 +91,7 @@ namespace WLS3200Gen2.Model
             }
             MicroDetection = new MicroDetection(camera, microscope, axes, dos, dis, machineSetting.CamerasPixelTable);
             StackLight = new StackLight(dos);
-        
+
         }
         public async Task<bool> BeforeHomeCheck()
         {
@@ -207,19 +207,19 @@ namespace WLS3200Gen2.Model
                     switch (i)
                     {
                         case 0:
-                            axisConfig.Add(machineSetting.TableXConfig);
+                            axisConfig.Add(machineSetting.TableXConfig.Copy());
                             break;
                         case 1:
-                            axisConfig.Add(machineSetting.TableYConfig);
+                            axisConfig.Add(machineSetting.TableYConfig.Copy());
                             break;
                         case 2:
-                            axisConfig.Add(machineSetting.TableZConfig);
+                            axisConfig.Add(machineSetting.TableZConfig.Copy());
                             break;
                         case 3:
-                            axisConfig.Add(machineSetting.TableRConfig);
+                            axisConfig.Add(machineSetting.TableRConfig.Copy());
                             break;
                         case 4:
-                            axisConfig.Add(machineSetting.RobotAxisConfig);
+                            axisConfig.Add(machineSetting.RobotAxisConfig.Copy());
                             break;
                     }
                     //switch (i)
@@ -276,16 +276,16 @@ namespace WLS3200Gen2.Model
                         switch (i)
                         {
                             case 0:
-                                axisConfig.Add(machineSetting.TableXConfig);
+                                axisConfig.Add(machineSetting.TableXConfig.Copy());
                                 break;
                             case 1:
-                                axisConfig.Add(machineSetting.TableYConfig);
+                                axisConfig.Add(machineSetting.TableYConfig.Copy());
                                 break;
                             case 2:
-                                axisConfig.Add(machineSetting.TableZConfig);
+                                axisConfig.Add(machineSetting.TableZConfig.Copy());
                                 break;
                             case 3:
-                                axisConfig.Add(machineSetting.TableRConfig);
+                                axisConfig.Add(machineSetting.TableRConfig.Copy());
                                 break;
                         }
                     }
@@ -297,19 +297,19 @@ namespace WLS3200Gen2.Model
                         switch (i)
                         {
                             case 0:
-                                axisConfig.Add(machineSetting.TableXConfig);
+                                axisConfig.Add(machineSetting.TableXConfig.Copy());
                                 break;
                             case 1:
-                                axisConfig.Add(machineSetting.TableYConfig);
+                                axisConfig.Add(machineSetting.TableYConfig.Copy());
                                 break;
                             case 2:
-                                axisConfig.Add(machineSetting.TableZConfig);
+                                axisConfig.Add(machineSetting.TableZConfig.Copy());
                                 break;
                             case 3:
-                                axisConfig.Add(machineSetting.TableRConfig);
+                                axisConfig.Add(machineSetting.TableRConfig.Copy());
                                 break;
                             case 4:
-                                axisConfig.Add(machineSetting.RobotAxisConfig);
+                                axisConfig.Add(machineSetting.RobotAxisConfig.Copy());
                                 break;
                         }
                     }

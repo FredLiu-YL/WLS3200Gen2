@@ -46,11 +46,12 @@ namespace WLS3200Gen2
         /// </summary>
         public MainViewModel()
         {
-            isSimulate = true;
+            isSimulate = false;
 
             //   machineSetting.Load();
             if (!Directory.Exists(systemPath))
                 Directory.CreateDirectory(systemPath);
+
 
 
             machineSettingPath = $"{systemPath}\\MachineSetting.json";
@@ -59,11 +60,22 @@ namespace WLS3200Gen2
             {
                 machineSetting = new MachineSetting();
                 //  machineSetting.LoadPortCount = LoadPortQuantity.Single; //¥þ´¼¬O³æPort
+                machineSetting.IsSimulate = true;
                 machineSetting.Save(machineSettingPath);
             }
             else
             {
                 machineSetting = AbstractRecipe.Load<MachineSetting>(machineSettingPath);
+            }
+
+            isSimulate = machineSetting.IsSimulate;
+            if (isSimulate)
+            {
+                IsLoadwaferComplete = true;
+                IsMacroComplete = true;
+                IsAlignerComplete = true;
+                IsLocateComplete = true;
+                IsDetectionComplete = true;
             }
 
             processSettingPath = $"{systemPath}\\ProcessSettingPath.json";
@@ -90,6 +102,7 @@ namespace WLS3200Gen2
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
             machine.MacroReady += MacroOperate;
+            machine.AlignmentReady += AlignmentOperate;
             machine.SetWaferStatus += UpdateCassetteUI;
         }
 

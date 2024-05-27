@@ -234,8 +234,6 @@
                                 <ColumnDefinition Width="0.33*"/>
                             </Grid.ColumnDefinitions>
                             <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding MainImage}" />
-                            <!--<views:VirtualCanvas Margin="0,0,-2,-2" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding HomeMapImage}" ItemsSource="{Binding HomeMapDrawings}"   
-                                                 AddShapeAction="{Binding AddHomeMapShapeAction}" ClearShapeAction="{Binding ClearHomeMapShapeAction}" RemoveShapeAction="{Binding RemoveHomeMapShapeAction}" />-->
                             <GroupBox Grid.Column="1"  >
                                 <GroupBox.Header>
                                     <StackPanel Orientation="Horizontal">
@@ -316,11 +314,13 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
+                                        <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <GroupBox Header="WaferID Picture" FontSize="15" Grid.Column="0">
-                                        <Image Grid.Column="0" Grid.Row="2" Source ="{Binding ResultImage}"/>
+                                        <!--<Image Grid.Column="0" Grid.Row="2" Source ="{Binding ResultImage}"/>-->
+                                        <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding ResultImage}" />
                                     </GroupBox>
-                                    <GroupBox Header="Key In" FontSize="15" Grid.Column="1">
+                                    <GroupBox Header="Key In" FontSize="15" Grid.Column="1" Grid.ColumnSpan="2">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition />
@@ -396,7 +396,8 @@
                                                     </StackPanel>
                                                 </TabItem.Header>
                                                 <Grid>
-                                                    <UserControlUC:WorkholderUC Grid.Column="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top"  />
+                                                    <UserControlUC:WorkholderUC Grid.Column="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
+                                                                                TableXMaxVel ="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="Top"  />
                                                 </Grid>
                                             </TabItem>
                                             <TabItem Height="35">
@@ -406,7 +407,7 @@
                                                     </StackPanel>
                                                 </TabItem.Header>
                                                 <Grid>
-                                                    <microscope:BXFMUC Grid.Column="0" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,-111,0" HorizontalAlignment="Left" Width="565" Grid.ColumnSpan="2" />
+                                                    <microscope:BXFMUC Grid.Column="0" Microscope="{Binding Microscope}"   MicroscopeParam="{Binding MicroscopeParam}" Margin="0,10,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
                                                 </Grid>
                                             </TabItem>
                                         </TabControl>
@@ -521,21 +522,21 @@
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
-                                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
-                                                      FontSize="10" 
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}" Grid.ColumnSpan="2"   >
+                                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionHomePointList}" FontSize="10"
+                                                    CanUserSortColumns="False" AutoGenerateColumns="False" SelectionUnit="FullRow"
+                                                    SelectedIndex="{Binding SelectDetectionHomePointList}" Grid.ColumnSpan="2"   >
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                             <i:InvokeCommandAction Command="{Binding HomeDetectionPointListDoubleClickCommand}"/>
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>
                                                     <DataGrid.Columns >
-                                                        <DataGridTextColumn  Width="50"  Header="Idx"  Binding="{Binding IndexX}"  />
-                                                        <DataGridTextColumn  Width="50"  Header="Col"  Binding="{Binding IndexX}"  />
-                                                        <DataGridTextColumn  Width="55"  Header="Row"  Binding="{Binding IndexY}"  />
-                                                        <DataGridTextColumn  Width="120"  Header="PositionX"  Binding="{Binding Position.X}"  />
-                                                        <DataGridTextColumn  Width="120"  Header="PositionY"  Binding="{Binding Position.Y}"  />
-                                                        <DataGridTextColumn  Width="80"  Header="BinCode"  Binding="{Binding Code}"  />
+                                                        <DataGridTextColumn  Width="50"  Header="Idx"  Binding="{Binding IndexX}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="50"  Header="Col"  Binding="{Binding IndexX}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="55"  Header="Row"  Binding="{Binding IndexY}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="120"  Header="PositionX"  Binding="{Binding Position.X}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="120"  Header="PositionY"  Binding="{Binding Position.Y}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="80"  Header="BinCode"  Binding="{Binding Code}" IsReadOnly="True" />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </Grid>
@@ -583,7 +584,8 @@
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
-                                                <UserControlUC:WorkholderUC Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,10,0,0" Height="190" Width="320" Grid.ColumnSpan="3"/>
+                                                <UserControlUC:WorkholderUC Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
+                                                                            TableXMaxVel="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,10,0,0" Height="190" Width="320" Grid.ColumnSpan="3"/>
                                             </Grid>
                                         </TabItem>
                                     </TabControl>
@@ -658,30 +660,16 @@
                             <ColumnDefinition Width="1.3*"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <TabControl  Margin="0,0,0,0" Grid.Row="0" SelectedIndex="1">
-                            <TabItem>
-                                <viewsNew:WaferMappingCanvas Margin="0,0,0,0" Grid.Row="0" IsShowBar="True"  ImageSource="{Binding MapImage}" ItemsSource="{Binding MapDrawings}"   
-                                                     IsMoveEnable="{Binding MapIsMoveEnable}"    MousePixcel="{Binding MapMousePixcel}"     AddShapeAction="{Binding AddMapShapeAction}" ClearShapeAction="{Binding ClearMapShapeAction}" RemoveShapeAction="{Binding RemoveMapShapeAction}" SaveAction="{Binding SaveMappingAction}"  >
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                                            <i:InvokeCommandAction Command="{Binding SelectMappingDieCommand}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </viewsNew:WaferMappingCanvas>
-
-                            </TabItem>
-                            <TabItem>
-                                <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetRectangle}" MappingImageOperate="{Binding MappingOp}" 
-                                                             Dies="{Binding DieArray}" BincodeInFomation="{Binding MapBincodeList}" MapImage="{Binding MappingTable}" MousePixcel="{Binding NewMapMousePixcel}" Rectangles="{Binding Rectangles}" SelectRectangles ="{Binding SelectRectangles}" >
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                                            <i:InvokeCommandAction Command="{Binding DoubleClickRecipeNewMappingDieCommand}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </UserControlUC:MappingCanvas>
-                            </TabItem>
-                        </TabControl>
-
+                        <UserControlUC:MappingCanvas DrawingRectangle="{Binding SetRectangle}" MappingImageOperate="{Binding MappingRecipeOp}" Dies="{Binding DieArray}" 
+                                                     BincodeInFomation="{Binding MapBincodeList}" MapImage="{Binding MappingTable}" MousePixcel="{Binding NewMapMousePixcel}" 
+                                                     Rectangles="{Binding Rectangles}" SelectRectangles ="{Binding SelectRectangles}"
+                                                     DrawSize="{Binding RecipeMapDrawSize}" DrawCuttingline="{Binding RecipeMapDrawCuttingline}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                    <i:InvokeCommandAction Command="{Binding DoubleClickRecipeNewMappingDieCommand}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </UserControlUC:MappingCanvas>
                         <Grid  Grid.Column="1"  >
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="0.75*"/>
@@ -711,14 +699,17 @@
                                         </Grid.RowDefinitions>
                                         <Button Grid.Column="0" Grid.ColumnSpan="2" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
                                         <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
-
+                                        <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
                                     </Grid>
 
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Grid.Row="0" Header="BinCode">
+                                <GroupBox Grid.Column="1" Grid.Row="0" Header="Grab">
+                                    <Button Grid.Column="0" Grid.Row="0" Content="GrabSaveAs" FontSize="20" Height="50" Width="150"  Command="{Binding GrabSaveAsCommand}"  />
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Grid.Row="1" Header="BinCode">
                                     <Button Grid.Column="0" Grid.Row="2" Content="Bincode Edit" Command="{Binding RecipeBincodeEditCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
                                 </GroupBox>
-                                <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
+
                             </Grid>
 
 
@@ -1112,7 +1103,7 @@
                                                             <RowDefinition />
                                                             <RowDefinition />
                                                             <RowDefinition />
-                                                            
+
                                                         </Grid.RowDefinitions>
 
                                                         <UserControlUC:LocateUC  Grid.Row="0" MainImage="{Binding MainImage}"  Height="650"  MatchParam1="{Binding LocateParam1}" MatchParam2="{Binding LocateParam2}" MatchParam3="{Binding LocateParam3}" 
@@ -1120,6 +1111,11 @@
                                                         <GroupBox Grid.Row="1" FontSize="16"  Header="Locate Microscpe Param">
                                                             <DataGrid  Margin="0" ItemsSource="{Binding LocateParamList}"  CanUserSortColumns="False" 
                                                                        AutoGenerateColumns="False" SelectionUnit="FullRow"  Height="100" IsReadOnly="True" >
+                                                                <i:Interaction.Triggers>
+                                                                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                                                                        <i:InvokeCommandAction Command="{Binding LocateParamListDoubleClickCommand}"/>
+                                                                    </i:EventTrigger>
+                                                                </i:Interaction.Triggers>
                                                                 <DataGrid.Columns >
                                                                     <DataGridTextColumn  Width="60"  Header="Lens"  Binding="{Binding LensIndex}" IsReadOnly="True"/>
                                                                     <DataGridTextColumn  Width="65"  Header="Cube"  Binding="{Binding CubeIndex}" IsReadOnly="True"/>
@@ -1139,10 +1135,28 @@
 
                                                         </Border>
 
-                                                        <Button Grid.Row="4" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />
+
                                                     </Grid>
-
-
+                                                    <Grid>
+                                                        <Grid.RowDefinitions >
+                                                            <RowDefinition/>
+                                                            <RowDefinition/>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions >
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0" Orientation ="Horizontal" >
+                                                            <Label Content="X" Width="70" FontSize="26" />
+                                                            <TextBox Text="{Binding LocateX}"    FontSize="22"   Width="70" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="1" Orientation ="Horizontal" >
+                                                            <Label Content="Y" Width="70" FontSize="26" />
+                                                            <TextBox Text="{Binding LocateY}"    FontSize="22"   Width="70" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        </StackPanel>
+                                                        <Button Grid.Row="1" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />
+                                                    </Grid>
+                                                    <TextBlock />
                                                 </StackPanel>
 
 
@@ -1189,7 +1203,7 @@
                                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                                 <StackPanel  Margin="1"  Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                                                    <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" 
+                                                    <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}" CanUserSortColumns="False" 
                                                     AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}" Height="795"  >
                                                         <i:Interaction.Triggers>
                                                             <i:EventTrigger EventName="PreviewMouseDoubleClick">
@@ -1274,8 +1288,8 @@
                                             <RowDefinition />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
-                                        <Button Grid.Column="0" Grid.Row="0" Content="Grab" FontSize="20" Height="50" Width="150"  Command="{Binding GrabCommand}"  />
-                                        <Button Grid.Column="0" Grid.Row="1"  Width="60"  Height="60"   >
+                                              
+                                        <Button Grid.Column="0" Grid.Row="0"  Width="60"  Height="60"   >
                                             <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="PreviewMouseDown">
@@ -1286,7 +1300,7 @@
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                         </Button>
-                                        <Button Grid.Column="1" Grid.Row="2"  Width="60"  Height="60"   >
+                                        <Button Grid.Column="1" Grid.Row="1"  Width="60"  Height="60" >
                                             <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowDownBold" />
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="PreviewMouseDown">
@@ -1297,8 +1311,18 @@
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                         </Button>
+                                        <Grid Grid.Row="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.25*"/>
+                                                <ColumnDefinition Width="0.5*"/>
+                                                <ColumnDefinition Width="0.25*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Grid.Row="1" Content="平台Z:" VerticalContentAlignment="Center" FontSize="14"/>
+                                            <TextBox  Grid.Column="1" Grid.Row="1" IsReadOnly="True" Text="{Binding TablePosZ}"  Width="65" VerticalAlignment="Center" HorizontalAlignment="Left"  FontSize="15"/>
+                                        </Grid>
                                     </Grid>
-                                    <UserControlUC:WorkholderUC Grid.Column ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="350" Height="200" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                    <UserControlUC:WorkholderUC Grid.Column ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
+                                                                TableXMaxVel ="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="350" Height="200" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
                                 </Grid>
                             </Grid>
                         </GroupBox>
@@ -1356,7 +1380,7 @@
                                         <ColumnDefinition Width="1.2*" />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <Grid Grid.Column="0">
+                                    <Grid Grid.Column="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="0.27*"/>
                                             <ColumnDefinition Width="0.42*" />
@@ -1408,7 +1432,7 @@
 
                                     </Grid>
 
-                                    <StackPanel Grid.Column="1">
+                                    <StackPanel Grid.Column="0">
                                         <Button Margin="3" Height="40" Content="Home" Command="{Binding Home}"/>
                                         <Button Margin="3" Height="40" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
                                         <Button Margin="3" Height="40" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Aligner" Command="{Binding PickWaferFromAligner}"/>
@@ -1614,13 +1638,19 @@
                         <Grid Margin="-5">
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="0.2*"/>
+                                <ColumnDefinition Width="0.6*"/>
                                 <ColumnDefinition Width="0.4*"/>
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0.3*"/>
-                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="0.1*"/>
+                                    <ColumnDefinition Width="0.2*"/>
+                                    <ColumnDefinition Width="0.05*"/>
+                                    <ColumnDefinition Width="0.2*"/>
+                                    <ColumnDefinition Width="0.05*"/>
+                                    <ColumnDefinition Width="0.2*"/>
+                                    <ColumnDefinition Width="0.05*"/>
+                                    <ColumnDefinition Width="0.2*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="0.1*"/>
@@ -1638,33 +1668,81 @@
                                     <RowDefinition Height="0.1*"/>
                                 </Grid.RowDefinitions>
 
-                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+                                <Border Grid.Row="1" Grid.ColumnSpan="8" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
                                 <TextBlock  Text="Lens Ratio" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
 
-                                <Label Grid.Row="1"  Grid.Column="0" Content="Lens" FontSize="15" VerticalAlignment="Bottom" />
-                                <Label Grid.Row="1"  Grid.Column="1" Content="um/pixal" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="0" Content="" FontSize="15" VerticalAlignment="Bottom" />
+                                <Grid Grid.Row="1"  Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0"  Grid.Column="3" Content="um/pixal" FontSize="13" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="3" Content="X" FontSize="13" VerticalAlignment="Bottom" />
+                                </Grid>
+                                <Grid Grid.Row="1"  Grid.Column="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0"  Grid.Column="3" Content="um/pixal" FontSize="13" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="3" Content="Y" FontSize="13" VerticalAlignment="Bottom" />
+                                </Grid>
+                                <Grid Grid.Row="1"  Grid.Column="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0"  Grid.Column="3" Content="offset " FontSize="13" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="3" Content="pixel X" FontSize="13" VerticalAlignment="Bottom" />
+                                </Grid>
+                                <Grid Grid.Row="1"  Grid.Column="7">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0"  Grid.Column="3" Content="offset " FontSize="13" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="7" Content="pixel Y" FontSize="13" VerticalAlignment="Bottom" />
+                                </Grid>
 
-                                <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].Ratio }" VerticalAlignment="Bottom"  Grid.Column="1" />
+
+                                <Label Grid.Row="2"  Grid.Column="0" FontSize="15" Content="1." VerticalAlignment="Bottom" />
+                                <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="3" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="5" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="7" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
+                                <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="3" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="5" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="7" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
+                                <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="3" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="5" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="7" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
+                                <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="3" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="5" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="7" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].Ratio}" VerticalAlignment="Bottom"  Grid.Column="1" />
+                                <TextBox Grid.Column="1" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="3" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="5" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="7" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
+                                
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0.2*"/>
-                                    <ColumnDefinition Width="0.35*"/>
                                     <ColumnDefinition Width="0.1*"/>
-                                    <ColumnDefinition Width="0.35*"/>
+                                    <ColumnDefinition Width="0.4*"/>
+                                    <ColumnDefinition Width="0.1*"/>
+                                    <ColumnDefinition Width="0.4*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="0.1*"/>
@@ -1687,9 +1765,9 @@
 
 
 
-                                <Label Grid.Row="1"  Grid.Column="0" Content="Lens" FontSize="15" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="1"  Grid.Column="0" Content="" FontSize="15" VerticalAlignment="Bottom" />
                                 <Label Grid.Row="1"  Grid.Column="1" Content="Z Pos" FontSize="15" VerticalAlignment="Bottom" />
-                                <Label Grid.Row="1"  Grid.Column="3" Content="Aberation Value" FontSize="15" VerticalAlignment="Bottom"/>
+                                <Label Grid.Row="1"  Grid.Column="3" Content="Aberation" FontSize="13" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
                                 <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AutoFocusPosition}"  Grid.Column="1"  VerticalAlignment="Bottom" />
@@ -1714,8 +1792,8 @@
                                 <Border   Grid.Row="9" Grid.Column ="0" Grid.ColumnSpan="4" Grid.RowSpan="3" BorderBrush="Teal" BorderThickness="1" />
                                 <TextBlock Grid.Row="8"  Text="AF Limit" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
 
-                                <Label Grid.Row="9"  Grid.Column="1" Content="Positive Limit" FontSize="15" VerticalAlignment="Bottom" />
-                                <Label Grid.Row="9"  Grid.Column="3" Content="Negative Limit" FontSize="15" VerticalAlignment="Bottom"/>
+                                <Label Grid.Row="9"  Grid.Column="1" Content="Positive Limit" FontSize="11" VerticalAlignment="Bottom" />
+                                <Label Grid.Row="9"  Grid.Column="3" Content="Negative Limit" FontSize="11" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="10"  Grid.Column="0" Content="Z:" FontSize="15" VerticalAlignment="Bottom" />
                                 <TextBox Grid.Row="10" Text=" "  Grid.Column="1" />

@@ -44,12 +44,12 @@ namespace WLS3200Gen2
         private Action<MappingOperate> create;
         private Action<int, int, Brush, Brush> setHomeRectangle;
         private Action<int, int, Brush, Brush> setRectangle;
-        private System.Windows.Point mapmousePixcel, newHomeMapMousePixcel, newMapMousePixcel;
+        private System.Windows.Point newHomeMapMousePixcel, newMapMousePixcel;
         private List<RectangleInfo> rectanglesHome = new List<RectangleInfo>();
         private List<RectangleInfo> rectangles = new List<RectangleInfo>();
-        private Point homeMapDrawSize;
-        private double homeMapDrawCuttingline = 3000;
-        private Point homeMapToPixelScale;
+        private Point homeMapDrawSize, recipeMapDrawSize;
+        private double homeMapDrawCuttingline = 3000, recipeMapDrawCuttingline = 3000;
+        private Point homeMapToPixelScale, recipeMapToPixelScale;
         /// <summary>
         /// Map顯示Die的狀況
         /// </summary>
@@ -88,9 +88,11 @@ namespace WLS3200Gen2
             set => SetValue(ref selectRectangles, value);
         }
         public Action<MappingOperate> MappingHomeOp { get => createHome; set => SetValue(ref createHome, value); }
-        public Action<MappingOperate> MappingOp { get => create; set => SetValue(ref create, value); }
+        public Action<MappingOperate> MappingRecipeOp { get => create; set => SetValue(ref create, value); }
         public Point HomeMapDrawSize { get => homeMapDrawSize; set => SetValue(ref homeMapDrawSize, value); }
+        public Point RecipeMapDrawSize { get => recipeMapDrawSize; set => SetValue(ref recipeMapDrawSize, value); }
         public double HomeMapDrawCuttingline { get => homeMapDrawCuttingline; set => SetValue(ref homeMapDrawCuttingline, value); }
+        public double RecipeMapDrawCuttingline { get => recipeMapDrawCuttingline; set => SetValue(ref recipeMapDrawCuttingline, value); }
 
 
         private (Die[] dice, BincodeInfo[] mapBincodes) CreateDummyBincode(int col, int row)
@@ -158,6 +160,9 @@ namespace WLS3200Gen2
         {
             try
             {
+                //是否在運行中的Micro檢查
+                if (isRunningMicroDetection == false) return;
+
                 Rectangle nowSelectRange = new Rectangle
                 {
                     Stroke = Brushes.Red,
@@ -168,6 +173,19 @@ namespace WLS3200Gen2
                 Canvas.SetLeft(nowSelectRange, NewHomeMapMousePixcel.X);
                 Canvas.SetTop(nowSelectRange, NewHomeMapMousePixcel.Y);
                 ChangeHomeMappingSelect(nowSelectRange);
+
+                //移動
+                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                RectangleInfo tempselectRects = RectanglesHome.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight)).FirstOrDefault();
+
+                if (tempselectRects != null)
+                {
+                    int index = RectanglesHome.IndexOf(tempselectRects);
+                    var moveDie = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(n => n.IndexX == RectanglesHome[index].Col && n.IndexY == RectanglesHome[index].Row);
+                    var transPos = machine.MicroDetection.TransForm.TransPoint(new Point(moveDie.MapTransX, moveDie.MapTransY));
+                    await machine.MicroDetection.TableMoveToAsync(transPos);
+                }
             }
             catch (Exception ex)
             {
@@ -214,25 +232,11 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-
-
-        /// <summary>
-        /// Recipe端畫面互動
-        /// </summary>
-        public ICommand DoubleClickRecipeNewMappingDieCommand => new RelayCommand(async () =>
+        private void ChangeRecipeMappingSelect(Rectangle nowSelectRange)
         {
             try
             {
-                Rectangle selectRange = new Rectangle
-                {
-                    Stroke = Brushes.Red,
-                    StrokeThickness = 5,
-                    Width = 0,
-                    Height = 0
-                };
-                Canvas.SetLeft(selectRange, NewMapMousePixcel.X);
-                Canvas.SetTop(selectRange, NewMapMousePixcel.Y);
-                var rect = new Rect(Canvas.GetLeft(selectRange), Canvas.GetTop(selectRange), selectRange.Width, selectRange.Height);
+                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
                 IEnumerable<RectangleInfo> tempselectRects = new List<RectangleInfo>();
                 tempselectRects = Rectangles.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
                                    || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
@@ -267,9 +271,51 @@ namespace WLS3200Gen2
             catch (Exception ex)
             {
 
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Recipe端畫面互動
+        /// </summary>
+        public ICommand DoubleClickRecipeNewMappingDieCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                Rectangle nowSelectRange = new Rectangle
+                {
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 5,
+                    Width = 0,
+                    Height = 0
+                };
+                Canvas.SetLeft(nowSelectRange, NewMapMousePixcel.X);
+                Canvas.SetTop(nowSelectRange, NewMapMousePixcel.Y);
+
+                ChangeRecipeMappingSelect(nowSelectRange);
+
+                //還沒對位，MAP點位不能移動
+                if (isRecipeAlignment == false) return;
+                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                RectangleInfo tempselectRects = Rectangles.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                   || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight)).FirstOrDefault();
+
+                //移動
+                if (tempselectRects != null)
+                {
+                    var nowMoveDie = mainRecipe.DetectRecipe.WaferMap.Dies.Where(n => n.IndexX == tempselectRects.Col && n.IndexY == tempselectRects.Row).FirstOrDefault();
+                    var transPos = transForm.TransPoint(new Point(nowMoveDie.MapTransX, nowMoveDie.MapTransY));
+                    await machine.MicroDetection.TableMoveToAsync(transPos);
+                }
+            }
+            catch (Exception ex)
+            {
+
                 MessageBox.Show(ex.Message);
             }
         });
+
+
         public ICommand TestLoadRecipePageCommand => new RelayCommand(() =>
         {
             try
@@ -297,7 +343,7 @@ namespace WLS3200Gen2
                 MapBincodeList = bincodeInfos.ToArray();
                 DieArrayHome = mainRecipe.DetectRecipe.WaferMap.Dies;// dummy.dice;
                 DieArray = mainRecipe.DetectRecipe.WaferMap.Dies;// dummy.dice;
-                MappingOp?.Invoke(MappingOperate.Create); //產生圖片
+                MappingRecipeOp?.Invoke(MappingOperate.Create); //產生圖片
                 tempRecipeRectangles = new List<RectangleInfo>();
                 foreach (var item in Rectangles)
                 {
@@ -343,28 +389,29 @@ namespace WLS3200Gen2
         public ICommand TestDect2Command => new RelayCommand(() =>
         {
 
-            MappingOp?.Invoke(MappingOperate.Clear);
+            MappingRecipeOp?.Invoke(MappingOperate.Clear);
         });
         public ICommand TestDect3Command => new RelayCommand(() =>
         {
-            MappingOp?.Invoke(MappingOperate.Fit);
+            MappingRecipeOp?.Invoke(MappingOperate.Fit);
         });
 
 
         /// <summary>
         /// 重新設定檢查點資訊
         /// </summary>
-        private void ResetDetectionRunningPointList()
+        public void ResetDetectionRunningPointList()
         {
             try
             {
-                if (DetectionPointListLog == null)
+                if (DetectionHomePointList == null)
                 {
-                    DetectionPointListLog = new ObservableCollection<DetectionPoint>();
+                    DetectionHomePointList = new ObservableCollection<DetectionPoint>();
                 }
+                DetectionHomePointList.Clear();
                 foreach (var item in DetectionPointList)
                 {
-                    DetectionPointListLog.Add(new DetectionPoint()
+                    DetectionHomePointList.Add(new DetectionPoint()
                     {
                         IndexX = item.IndexX,
                         IndexY = item.IndexY,
@@ -578,7 +625,7 @@ namespace WLS3200Gen2
                 }
                 MapBincodeList = bincodeInfos.ToArray();
                 DieArray = detectionRecipe.WaferMap.Dies;// dummy.dice;
-                MappingOp?.Invoke(MappingOperate.Create); //產生圖片
+                MappingRecipeOp?.Invoke(MappingOperate.Create); //產生圖片
             }
             catch (Exception ex)
             {
@@ -595,13 +642,13 @@ namespace WLS3200Gen2
             try
             {
                 if (detectionRecipe.DetectionPoints == null) return;
-                MappingOp?.Invoke(MappingOperate.Clear); //清除劃過的圖片
+                MappingRecipeOp?.Invoke(MappingOperate.Clear); //清除劃過的圖片
                 foreach (var item in detectionRecipe.DetectionPoints)
                 {
                     Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
                     if (die != null)
                     {
-                        NewRecipeMapDieColorChange(false, die, Brushes.Yellow);
+                        RecipeMapDieColorChange(false, die, Brushes.Yellow);
                     }
                 }
 
@@ -616,7 +663,7 @@ namespace WLS3200Gen2
         /// </summary>
         /// <param name="die"></param>
         /// <param name="brush"></param>
-        private void NewRecipeMapDieColorChange(bool isDoubleClickSelected, Die die, Brush stroke)
+        private void RecipeMapDieColorChange(bool isDoubleClickSelected, Die die, Brush stroke)
         {
             try
             {

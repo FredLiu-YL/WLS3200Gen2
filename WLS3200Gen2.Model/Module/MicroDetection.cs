@@ -49,7 +49,7 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.PixelTable = PixelTable;
             opticalAlignment.FiducialRecord += AlignRecord;
-            opticalAlignment.AlignmentManual += AlignManual;
+            
         }
         public bool IsInitial { get; set; } = false;
         /// <summary>
@@ -83,8 +83,6 @@ namespace WLS3200Gen2.Model.Module
         /// 對位結果紀錄 (圖像 對位座標(pxel))
         /// </summary>
         public event Action<BitmapSource, Point?, int> FiducialRecord;
-
-
         /// <summary>
         /// 手動對位 
         /// </summary>
@@ -194,7 +192,7 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task Run(Wafer currentWafer, MainRecipe mainRecipe, ProcessSetting processSetting, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(Wafer currentWafer, MainRecipe mainRecipe, MicroscopeLens[] lensSetting, ProcessSetting processSetting, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             try
             {
@@ -243,7 +241,7 @@ namespace WLS3200Gen2.Model.Module
 
 
                     //對位
-                    ITransform transForm = await Alignment(recipe.AlignRecipe);
+                    ITransform transForm = await Alignment(recipe.AlignRecipe, lensSetting[detectionPoint.LensIndex]);
                     TransForm = transForm;
                     cancelToken.Token.ThrowIfCancellationRequested();
                     await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
@@ -286,7 +284,7 @@ namespace WLS3200Gen2.Model.Module
                     else
                     {
                         Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
-                        var cc = await micro;
+                        currentWafer.ProcessStatus.Micro = await micro;
                     }
                 }
                 else
@@ -371,14 +369,14 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         /// <param name="bmp"></param>
         /// <returns></returns>
-        public async Task<ITransform> Alignment(AlignmentRecipe recipe)
+        public async Task<ITransform> Alignment(AlignmentRecipe recipe, MicroscopeLens lensSetting)
         {
             try
             {
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 opticalAlignment.WriteLog = WriteLog;
                 WriteLog?.Invoke("Wafer Alignment Start");
-                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas);
+                ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas, lensSetting);
                 WriteLog?.Invoke("Wafer Alignment End");
                 return transForm;
             }
@@ -411,11 +409,12 @@ namespace WLS3200Gen2.Model.Module
         //預留拿到對位結果後 可以做其他事
         private void AlignRecord(BitmapSource bitmap, Point? pixel, int number)
         {
-
             FiducialRecord?.Invoke(bitmap, pixel, number);
         }
-
-
+        public void AlignmentManualAdd()
+        {
+            opticalAlignment.AlignmentManual += AlignManual;
+        }
 
         private void ObservableDetection()
         {

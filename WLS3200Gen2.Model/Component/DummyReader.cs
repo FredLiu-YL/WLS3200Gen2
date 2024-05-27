@@ -27,7 +27,7 @@ namespace WLS3200Gen2.Model.Component
         public Task<string> ReadAsync()
         {
             Score = 0;
-            return (Task<string>)Task.CompletedTask;
+            return Task.Run(() => "123456");
         }
 
         public void SetParam(int paramID)

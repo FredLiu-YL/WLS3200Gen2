@@ -326,9 +326,8 @@ namespace WLS3200Gen2.Model.Module
                         await tempAligner.Run(eFEMtionRecipe.AlignerWaferIDAngle);
                         //WaferID讀取   
                         string result = await Reader.ReadAsync();
-
                         //如果讀取失敗自己KeyIn
-                        if (false)
+                        if (result == "")
                         {
                             Task<String> waferID = WaferIDReady?.Invoke(pauseToken, cancelToken);
                             var cc = await waferID;

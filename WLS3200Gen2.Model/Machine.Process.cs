@@ -29,6 +29,8 @@ namespace WLS3200Gen2.Model
 
         public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MacroReady;
 
+        public event Func<PauseTokenSource, CancellationTokenSource, double, double, Task<Point>> AlignmentReady;
+
 
         public event Action<Wafer> SetWaferStatus;
 
@@ -136,11 +138,13 @@ namespace WLS3200Gen2.Model
                                 // nextWafer = processWafers.Dequeue();
 
                                 //預載一片在Macro上
-
-                                taskLoad = PreLoad(nextWafer, processSetting);
+                                if (nextWafer != null)
+                                {
+                                    taskLoad = PreLoad(nextWafer, processSetting);
+                                }
                                 //執行主設備動作 
                                 await focusZWafertask;
-                                await MicroDetection.Run(currentWafer, recipe, processSetting, pts, cts);
+                                await MicroDetection.Run(currentWafer, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, pts, cts);
                                 SetWaferStatusToUI(currentWafer);
                                 if (pts.IsPaused)
                                 {
@@ -170,7 +174,10 @@ namespace WLS3200Gen2.Model
                                 await Feeder.AlignerToStandByAsync(currentWafer.ProcessStatus.WaferID);
                                 await Feeder.UnLoadWaferToCassette(currentWafer, processSetting.IsLoadport1);
                                 //預載一片在Macro上
-                                taskLoad = PreLoad(nextWafer, processSetting);
+                                if (nextWafer != null)
+                                {
+                                    taskLoad = PreLoad(nextWafer, processSetting);
+                                }
                             }
 
                             await Task.Delay(300);

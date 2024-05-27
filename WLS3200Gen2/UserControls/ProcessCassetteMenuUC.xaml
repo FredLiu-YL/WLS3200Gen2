@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls" xmlns:usercontrols="clr-namespace:YuanliCore.Model.UserControls"
              mc:Ignorable="d" 
               x:Name="CassetteMenu"
-             d:DesignHeight="250" d:DesignWidth="50">
+             d:DesignHeight="250" d:DesignWidth="100">
     <Grid  DataContext="{Binding ElementName=CassetteMenu}" >
         <Grid.RowDefinitions>
             <RowDefinition Height="0.05*" />

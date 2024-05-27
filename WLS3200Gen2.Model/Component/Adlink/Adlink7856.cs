@@ -275,13 +275,13 @@ namespace WLS3200Gen2.Model.Component.Adlink
         {
             try
             {
-                ChkAxisStop(id, 180);
+                ChkAxisStop(id, 60);
                 //int pos = (int)(Axes[id].Position + distance * Axes[id].Ratio);
                 int axisID = axisRealID[Axes[id].AxisID];
                 int ret = APS168Lib.APS_relative_move(axisID, (int)(distance * Axes[id].Ratio), (int)(Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio));
                 if (ret == 0)
                 {
-                    ChkAxisStop(id, 180);
+                    //ChkAxisStop(id, 180);
                 }
             }
             catch (Exception ex)
@@ -296,12 +296,12 @@ namespace WLS3200Gen2.Model.Component.Adlink
         {
             try
             {
-                ChkAxisStop(id, 180);
+                ChkAxisStop(id, 60);
                 int axisID = axisRealID[Axes[id].AxisID];
                 int ret = APS168Lib.APS_absolute_move(axisID, (int)(position * Axes[id].Ratio), (int)(Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio));
                 if (ret == 0)
                 {
-                    ChkAxisStop(id, 180);
+                    //ChkAxisStop(id, 180);
                 }
             }
             catch (Exception ex)

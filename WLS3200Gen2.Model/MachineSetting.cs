@@ -13,6 +13,7 @@ namespace WLS3200Gen2.Model
 {
     public class MachineSetting : AbstractRecipe
     {
+        public bool IsSimulate { get; set; }
         public string MotionSettingFileName { get; set; }
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();
         public AxisConfig TableYConfig { get; set; } = new AxisConfig();
@@ -116,7 +117,7 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public string StrongLamp2COM { get; set; }
         /// <summary>
-        /// 
+        /// 鏡頭參數
         /// </summary>
         public IEnumerable<MicroscopeLens> MicroscopeLensDefault { get; set; }
     }

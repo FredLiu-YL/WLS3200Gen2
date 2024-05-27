@@ -26,7 +26,7 @@ namespace WLS3200Gen2
         private double tableWaferCatchPositionX, tableWaferCatchPositionY, tableWaferCatchPositionZ, tableWaferCatchPositionR;
         private double robotAxisStandbyPosition, robotAxisLoadPort1TakePosition, robotAxisLoadPort2TakePosition;
         private double robotAxisAligner1TakePosition, robotAxisAligner2TakePosition, robotAxisMacroTakePosition, robotAxisMicroTakePosition;
-        private MicroscopeLens[] microscopeLensDefault = new MicroscopeLens[6];
+        private ObservableCollection<MicroscopeLens> microscopeLensDefault = new ObservableCollection<MicroscopeLens>();
         //public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
         public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
@@ -44,7 +44,7 @@ namespace WLS3200Gen2
         public double RobotAxisAligner2TakePosition { get => robotAxisAligner2TakePosition; set => SetValue(ref robotAxisAligner2TakePosition, value); }
         public double RobotAxisMacroTakePosition { get => robotAxisMacroTakePosition; set => SetValue(ref robotAxisMacroTakePosition, value); }
         public double RobotAxisMicroTakePosition { get => robotAxisMicroTakePosition; set => SetValue(ref robotAxisMicroTakePosition, value); }
-        public MicroscopeLens[] MicroscopeLensDefault { get => microscopeLensDefault; set => SetValue(ref microscopeLensDefault, value); }
+        public ObservableCollection<MicroscopeLens> MicroscopeLensDefault { get => microscopeLensDefault; set => SetValue(ref microscopeLensDefault, value); }
 
         public ICommand SaveSettingCommand => new RelayCommand(() =>
         {
@@ -98,11 +98,11 @@ namespace WLS3200Gen2
                 machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
 
 
-                machineSetting.TableXConfig = TableXConfig;
-                machineSetting.TableYConfig = TableYConfig;
-                machineSetting.TableZConfig = TableZConfig;
-                machineSetting.TableRConfig = TableRConfig;
-                machineSetting.RobotAxisConfig = RobotAxisConfig;
+                machineSetting.TableXConfig = TableXConfig.Copy();
+                machineSetting.TableYConfig = TableYConfig.Copy();
+                machineSetting.TableZConfig = TableZConfig.Copy();
+                machineSetting.TableRConfig = TableRConfig.Copy();
+                machineSetting.RobotAxisConfig = RobotAxisConfig.Copy();
                 machineSetting.MicroscopeLensDefault = MicroscopeLensDefault;
                 machineSetting.Save(machineSettingPath);
                 Customers.Clear();

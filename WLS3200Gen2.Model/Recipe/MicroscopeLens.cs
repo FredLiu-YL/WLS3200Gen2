@@ -10,11 +10,29 @@ namespace WLS3200Gen2.Model.Recipe
 {
     public class MicroscopeLens : INotifyPropertyChanged
     {
-        private double ratio, autoFocusPosition, aberationPosition;
+        private string lensName;
+        private double ratioX, ratioY, offsetPixelX, offsetPixelY, autoFocusPosition, aberationPosition;
         /// <summary>
-        /// 比例um/pixal
+        /// 鏡頭名稱
         /// </summary>
-        public double Ratio { get => ratio; set => SetValue(ref ratio, value); }
+        public string LensName { get => lensName; set => SetValue(ref lensName, value); }
+        /// <summary>
+        /// X比例um/pixal
+        /// </summary>
+        public double RatioX { get => ratioX; set => SetValue(ref ratioX, value); }
+        /// <summary>
+        /// Y比例um/pixal
+        /// </summary>
+        public double RatioY { get => ratioY; set => SetValue(ref ratioY, value); }
+        /// <summary>
+        /// X比例um/pixal
+        /// </summary>
+        public double OffsetPixelX { get => offsetPixelX; set => SetValue(ref offsetPixelX, value); }
+        /// <summary>
+        /// Y比例um/pixal
+        /// </summary>
+        public double OffsetPixelY { get => offsetPixelY; set => SetValue(ref offsetPixelY, value); }
+
         /// <summary>
         /// 自動對焦高度
         /// </summary>

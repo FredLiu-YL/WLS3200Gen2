@@ -27,6 +27,12 @@ namespace WLS3200Gen2.UserControls
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty TableYProperty = DependencyProperty.Register(nameof(TableY), typeof(Axis), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty TableXMaxVelProperty = DependencyProperty.Register(nameof(TableXMaxVel), typeof(double), typeof(WorkholderUC),
+                                                                                      new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty TableYMaxVelProperty = DependencyProperty.Register(nameof(TableYMaxVel), typeof(double), typeof(WorkholderUC),
+                                                                                      new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
         public static readonly DependencyProperty HighIsCheckedProperty = DependencyProperty.Register(nameof(HighIsChecked), typeof(bool), typeof(WorkholderUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty LowIsCheckedProperty = DependencyProperty.Register(nameof(LowIsChecked), typeof(bool), typeof(WorkholderUC),
@@ -88,9 +94,16 @@ namespace WLS3200Gen2.UserControls
             get => (Axis)GetValue(TableYProperty);
             set => SetValue(TableYProperty, value);
         }
-
-
-
+        public double TableXMaxVel
+        {
+            get => (double)GetValue(TableXMaxVelProperty);
+            set => SetValue(TableXMaxVelProperty, value);
+        }
+        public double TableYMaxVel
+        {
+            get => (double)GetValue(TableYMaxVelProperty);
+            set => SetValue(TableYMaxVelProperty, value);
+        }
         public ICommand TableContinueMoveCommand => new RelayCommand<string>(async key =>
         {
             try
@@ -109,13 +122,14 @@ namespace WLS3200Gen2.UserControls
                 }
                 if (tableMoveType == TableMoveType.Low)
                 {
-                    TableX.AxisVelocity.MaxVel = 50000 / 10;
-                    TableY.AxisVelocity.MaxVel = 50000 / 10;
+
+                    TableX.AxisVelocity.MaxVel = TableXMaxVel / 10;
+                    TableY.AxisVelocity.MaxVel = TableYMaxVel / 10;
                 }
                 else
                 {
-                    TableX.AxisVelocity.MaxVel = 50000;
-                    TableY.AxisVelocity.MaxVel = 50000 ;
+                    TableX.AxisVelocity.MaxVel = TableXMaxVel;
+                    TableY.AxisVelocity.MaxVel = TableYMaxVel;
                 }
                 //var dis = Math.Round(Convert.ToDouble(TableDistance));
                 if (tableMoveType == TableMoveType.High || tableMoveType == TableMoveType.Low)

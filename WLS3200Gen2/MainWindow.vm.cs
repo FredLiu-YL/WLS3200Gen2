@@ -45,7 +45,8 @@ namespace WLS3200Gen2
         private Axis tableX, tableY, tableR, tableZ;
         private Axis robotAxis;
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
-        private double tablePosX, tablePosY, tablePosR;
+        private double tableXMaxVel, tableYMaxVel;
+        private double tablePosX, tablePosY, tablePosZ, tablePosR;
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
@@ -60,7 +61,6 @@ namespace WLS3200Gen2
 
         private bool isRefresh, isInitialComplete, isWaferInSystem;
         private LoadPortQuantity loadportQuantity;
-        private bool mapIsMoveEnable = true;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
         {
@@ -68,7 +68,8 @@ namespace WLS3200Gen2
             set { SetValue(ref cassetteUC, value); }
         }
         public ICommand AddButtonAction { get; set; }
-
+        public double TableXMaxVel { get => tableXMaxVel; set => SetValue(ref tableXMaxVel, value); }
+        public double TableYMaxVel { get => tableYMaxVel; set => SetValue(ref tableYMaxVel, value); }
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
         public Axis TableY { get => tableY; set => SetValue(ref tableY, value); }
         public Axis TableR { get => tableR; set => SetValue(ref tableR, value); }
@@ -86,16 +87,14 @@ namespace WLS3200Gen2
         //刷新座標
         public double TablePosX { get => tablePosX; set => SetValue(ref tablePosX, value); }
         public double TablePosY { get => tablePosY; set => SetValue(ref tablePosY, value); }
+        public double TablePosZ { get => tablePosZ; set => SetValue(ref tablePosZ, value); }
         public double TablePosR { get => tablePosR; set => SetValue(ref tablePosR, value); }
 
         public string Version { get => version; set => SetValue(ref version, value); }
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
 
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
-        public WriteableBitmap MapImage { get => mapImage; set => SetValue(ref mapImage, value); }
         public WriteableBitmap HomeMapImage { get => homeMapImage; set => SetValue(ref homeMapImage, value); }
-
-        public System.Windows.Point MapMousePixcel { get => mapmousePixcel; set => SetValue(ref mapmousePixcel, value); }
 
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
@@ -118,31 +117,14 @@ namespace WLS3200Gen2
         /// </summary>
         public ICommand RemoveHomeMapShapeAction { get; set; }
         /// <summary>
-        /// 新增 Shape
-        /// </summary>
-        public ICommand AddMapShapeAction { get; set; }
-        /// <summary>
-        /// 新增 Shape
-        /// </summary>
-        public ICommand RemoveMapShapeAction { get; set; }
-        /// <summary>
         /// 清除 Shape
         /// </summary>
         public ICommand ClearHomeMapShapeAction { get; set; }
-        /// <summary>
-        /// 清除 Shape
-        /// </summary>
-        public ICommand ClearMapShapeAction { get; set; }
-        /// <summary>
-        /// 儲存 Shape
-        /// </summary>
-        public ICommand SaveMappingAction { get; set; }
-        public bool MapIsMoveEnable
-        {
-            get => mapIsMoveEnable;
-            set => SetValue(ref mapIsMoveEnable, value);
-        }
 
+        /// <summary>
+        /// 對位結果紀錄 (圖像 對位座標(pxel))
+        /// </summary>
+        public event Action<double, double> RefreshChangeHomeMap;
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
         {
             try
@@ -181,6 +163,7 @@ namespace WLS3200Gen2
                 else
                 {
                     //直接關掉程式!
+                    machine.MicroDetection.Camera.Open();
                 }
 
                 if (machineSetting.BincodeListDefault == null)
@@ -228,18 +211,19 @@ namespace WLS3200Gen2
                 DigitalInputs = machine.GetInputs();
                 DigitalOutputs = machine.GetOutputs();
 
-                TableXConfig = machineSetting.TableXConfig;
-                TableYConfig = machineSetting.TableYConfig;
-                TableRConfig = machineSetting.TableRConfig;
-                TableZConfig = machineSetting.TableZConfig;
-                RobotAxisConfig = machineSetting.RobotAxisConfig;
+                TableXConfig = machineSetting.TableXConfig.Copy();
+                TableYConfig = machineSetting.TableYConfig.Copy();
+                TableRConfig = machineSetting.TableRConfig.Copy();
+                TableZConfig = machineSetting.TableZConfig.Copy();
+                RobotAxisConfig = machineSetting.RobotAxisConfig.Copy();
 
+                TableXMaxVel = TableXConfig.MoveVel.MaxVel;
+                TableYMaxVel = TableYConfig.MoveVel.MaxVel;
                 IsAutoSave = ProcessSetting.IsAutoSave;
                 IsAutoFocus = ProcessSetting.IsAutoFocus;
 
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
-                TabControlSelectedIndex = 0;
 
 
                 WriteLog("Equipment Ready．．．");
@@ -253,11 +237,12 @@ namespace WLS3200Gen2
                 CameraLive();
                 machine.MicroDetection.FiducialRecord += FiducialRecord;
                 machine.MicroDetection.AlignManual += AlignmentOperate;
+                machine.MicroDetection.AlignmentManualAdd();
                 machine.MicroDetection.DetectionRecord += DetectionRecord;
                 machine.MicroDetection.MicroReady += MicroOperate;
                 machine.Feeder.WaferIDRecord += WaferIDRecord;
                 machine.Feeder.WaferIDReady += WaferIDOperate;
-
+                RefreshChangeHomeMap += RefreshChange;
 
 
                 isInitialComplete = true;
@@ -273,8 +258,6 @@ namespace WLS3200Gen2
                 // 讀取BMP檔案
                 BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
 
-
-                MapImage = new WriteableBitmap(bitmap);
                 HomeMapImage = new WriteableBitmap(bitmap);
                 //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
@@ -352,7 +335,35 @@ namespace WLS3200Gen2
                 string code = extendedArgs.Code;
                 if (propertyName == "Assign")
                 {
-                    Assign(code);
+                    if (isRunningMicroDetection)
+                    {
+                        Point mapPoint = machine.MicroDetection.TransForm.TransInvertPoint(new Point(TablePosX, TablePosY));
+                        var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
+                        Rectangle nowSelectRange = new Rectangle
+                        {
+                            Stroke = Brushes.Red,
+                            StrokeThickness = 5,
+                            Width = 0,
+                            Height = 0
+                        };
+                        Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
+                        Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+                        ChangeHomeMappingSelect(nowSelectRange);
+
+                        //移動
+                        Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                        RectangleInfo tempselectRects = RectanglesHome.Where(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                           || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight)).FirstOrDefault();
+                        if (tempselectRects != null)
+                        {
+                            nowAssignDie = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(r => r.IndexX == tempselectRects.Col && r.IndexY == tempselectRects.Row);
+                            Assign(code);
+                        }
+                        else
+                        {
+                            nowAssignDie = null;
+                        }
+                    }
                 }
             }
         }
@@ -366,10 +377,8 @@ namespace WLS3200Gen2
                     BincodeInfo assignBincodeInfo = mainRecipe.DetectRecipe.BincodeList.Where(r => r.Code == binCode).FirstOrDefault();
                     if (assignBincodeInfo != null && nowAssignDie != null)
                     {
-                        Point nowTablePos = machine.MicroDetection.TransForm.TransPoint(new Point(nowAssignDie.MapTransX, nowAssignDie.MapTransY));
-                        ShowNowTablePosInWaferMapDie(nowTablePos.X, nowTablePos.Y);
                         //執行中的
-                        foreach (DetectionPoint item in DetectionPointListLog)
+                        foreach (DetectionPoint item in DetectionHomePointList)
                         {
                             if (item.IndexX == nowAssignDie.IndexX && item.IndexY == nowAssignDie.IndexY)
                             {
@@ -390,13 +399,35 @@ namespace WLS3200Gen2
         /// </summary>
         /// <param name="nowTablePosX"></param>
         /// <param name="nowTablePosY"></param>
-        private void ShowNowTablePosInWaferMapDie(double nowTablePosX, double nowTablePosY)
+        private void ShowNowTablePosInHomeWaferMapDie(double nowTablePosX, double nowTablePosY)
         {
             try
             {
-                Point mapPoint = machine.MicroDetection.TransForm.TransInvertPoint(new Point(nowTablePosX, nowTablePosY));
+                Point mapPoint = new Point(nowTablePosX, nowTablePosY);
+                mapPoint = machine.MicroDetection.TransForm.TransInvertPoint(new Point(nowTablePosX, nowTablePosY));
                 homeMapToPixelScale = MapPointToMapImagePixelScale(HomeMapDrawSize.X, HomeMapDrawSize.Y, HomeMapDrawCuttingline);
-                var transMapMousePixcel = new Point(homeMapToPixelScale.X * mapPoint.X, homeMapToPixelScale.Y * mapPoint.Y);
+                var die00 = mainRecipe.DetectRecipe.WaferMap.Dies[0];
+                var transMapMousePixcelX = 0.0;
+                var transMapMousePixcelY = 0.0;
+                if (die00.MapTransX == die00.OperationPixalX)
+                {
+                    transMapMousePixcelX = homeMapToPixelScale.X * mapPoint.X + HomeMapDrawSize.X / 2;
+                }
+                else
+                {
+                    transMapMousePixcelX = homeMapToPixelScale.X * (die00.MapTransX + die00.OperationPixalX - mapPoint.X) + HomeMapDrawSize.X / 2;
+                }
+
+                if (die00.MapTransY == die00.OperationPixalY)
+                {
+                    transMapMousePixcelY = homeMapToPixelScale.Y * mapPoint.Y + HomeMapDrawSize.Y / 2;
+                }
+                else
+                {
+                    transMapMousePixcelY = homeMapToPixelScale.Y * (die00.MapTransY + die00.OperationPixalY - mapPoint.Y) + HomeMapDrawSize.Y / 2;
+                }
+
+                var transMapMousePixcel = new Point(transMapMousePixcelX, transMapMousePixcelY);
 
                 Rectangle nowSelectRange = new Rectangle
                 {
@@ -407,6 +438,7 @@ namespace WLS3200Gen2
                 };
                 Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
                 Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+
                 var rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
                 RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
                                  || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
@@ -429,11 +461,13 @@ namespace WLS3200Gen2
         {
             try
             {
+                //var mapPoint11 = new Point(transDie.OperationPixalX, transDie.OperationPixalY);
+                //var mapImagePoint11 = new Point((drawWidth + drawCuttingline) * 3 + startPoint.X / 2, (drawHeight + drawCuttingline) * 7 + startPoint.Y / 2);
+                //var scale1 = new Point((mapImagePoint11.X - startPoint.X / 2) / mapPoint11.X, (mapImagePoint11.Y - startPoint.Y / 2) / mapPoint11.Y);
                 Point startPoint = new Point(drawWidth, drawHeight);
-                var transDie = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == 1 && d.IndexY == 1).FirstOrDefault();
-                var mapPoint11 = new Point(transDie.MapTransX, transDie.MapTransY);
-                var mapImagePoint11 = new Point(startPoint.X + ((drawWidth + drawCuttingline) * 1), startPoint.Y + ((drawHeight + drawCuttingline) * 1));
-                var scale = new Point(mapImagePoint11.X / mapPoint11.X, mapImagePoint11.Y / mapPoint11.Y);
+                var transDie = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == 3 && d.IndexY == 7).FirstOrDefault();
+                var scale2 = new Point((drawWidth + drawCuttingline) / transDie.DieSize.Width, (drawHeight + drawCuttingline) / transDie.DieSize.Height);
+                var scale = scale2;
                 return scale;
             }
             catch (Exception)
@@ -460,7 +494,13 @@ namespace WLS3200Gen2
                 }
                 if (machine.MicroDetection != null && machine.MicroDetection.Camera != null)
                 {
-                    machine.MicroDetection.Camera.Stop();
+                    try
+                    {
+                        machine.MicroDetection.Camera.Stop();
+                    }
+                    catch (Exception ex)
+                    {
+                    }
                 }
 
 
@@ -577,6 +617,45 @@ namespace WLS3200Gen2
             }
 
         }
+        private void RefreshChange(double tablePosX, double tablePosY)
+        {
+            try
+            {
+                lock (lockUpdateMapObj)
+                {
+                    if (isUpdateMap == false && updateMapTransForm != null)
+                    {
+                        isUpdateMap = true;
+                        App.Current.Dispatcher.Invoke((Action)(() =>
+                        {
+                            var mapPoint = updateMapTransForm.TransInvertPoint(new Point(tablePosX, tablePosY));
+                            var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
+                            Rectangle nowSelectRange = new Rectangle
+                            {
+                                Stroke = Brushes.Red,
+                                StrokeThickness = 5,
+                                Width = 0,
+                                Height = 0
+                            };
+                            Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
+                            Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+                            //var rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                            //RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                            //                 || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+                            ChangeHomeMappingSelect(nowSelectRange);
+                            isUpdateMap = false;
+                        }));
+                        while (isUpdateMap)
+                        {
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+        }
 
         private async Task RefreshPos()
         {
@@ -590,7 +669,13 @@ namespace WLS3200Gen2
                         //var pos = atfMachine.Table_Module.GetPostion();
                         TablePosX = machine.MicroDetection.AxisX.Position;
                         TablePosY = machine.MicroDetection.AxisY.Position;
+                        TablePosZ = machine.MicroDetection.AxisZ.Position;
                         TablePosR = machine.MicroDetection.AxisR.Position;
+                        if (isRunningMicroDetection)
+                        {
+                            RefreshChange(TablePosX, TablePosY);
+                            //RefreshChangeHomeMap?.Invoke(TablePosX, TablePosY);
+                        }
                         //if (atfMachine.AFModule.AFSystem != null)
                         //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
 
@@ -681,11 +766,7 @@ namespace WLS3200Gen2
             var dis = machine.MicroDetection.Camera.Grab();
             try
             {
-
-
                 MainImage = new WriteableBitmap(camera.Width, camera.Height, 96, 96, camera.PixelFormat, null);
-
-
                 camlive = camera.Frames.ObserveLatestOn(TaskPoolScheduler.Default) //取最新的資料 ；TaskPoolScheduler.Default  表示在另外一個執行緒上執行
                              .ObserveOn(DispatcherScheduler.Current)  //將訂閱資料轉換成柱列順序丟出 ；DispatcherScheduler.Current  表示在主執行緒上執行
                              .Subscribe(frame =>

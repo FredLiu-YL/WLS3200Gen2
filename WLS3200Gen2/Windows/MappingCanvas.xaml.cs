@@ -33,7 +33,7 @@ namespace WLS3200Gen2.UserControls
     public partial class MappingCanvas : UserControl, INotifyPropertyChanged
     {
         private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
-
+        private int pixelX, pixelY;
         //    private const double ScaleRate = 0.1; // 縮放比率
         //    private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
 
@@ -130,6 +130,10 @@ namespace WLS3200Gen2.UserControls
             get => (int)GetValue(RowProperty);
             set => SetValue(RowProperty, value);
         }
+        public int PixelX
+        { get => pixelX; set => SetValue(ref pixelX, value); }
+        public int PixelY
+        { get => pixelY; set => SetValue(ref pixelY, value); }
         public Die[] Dies
         {
             get => (Die[])GetValue(DiesProperty);
@@ -601,6 +605,14 @@ namespace WLS3200Gen2.UserControls
                 dragStartPoint = dragEndPoint;
 
 
+            }
+            try
+            {
+                PixelX = (int)currentPoint.X;
+                PixelY = (int)currentPoint.Y;
+            }
+            catch (Exception)
+            {
             }
             //計算當下滑鼠指向哪一顆
             var dieIndwx = Rectangles.Where(r => r.Rectangle.Contains(currentPoint)).FirstOrDefault();

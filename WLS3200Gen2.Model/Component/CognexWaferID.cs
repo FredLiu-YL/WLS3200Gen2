@@ -95,7 +95,15 @@ namespace WLS3200Gen2.Model.Component
                         cvsInSight.ManualAcquire();
                         var cc = cvsInSight.JobInfo.ActiveJobFile;
                         Image = cvsInSight.Results.Image.ToBitmap();
-                        return cvsInSight.Results.Cells[12].ToString();
+                        Score = Convert.ToDouble(cvsInSight.Results.Cells[11].ToString()) * 100;
+                        if (Score >= 100)
+                        {
+                            return cvsInSight.Results.Cells[12].ToString();
+                        }
+                        else
+                        {
+                            return "";
+                        }
                         //_InSight.Results.Image.Save("", System.Drawing.Imaging.ImageFormat.Bmp);
                     }
                     else

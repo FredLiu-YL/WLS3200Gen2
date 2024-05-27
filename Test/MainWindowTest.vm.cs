@@ -191,8 +191,8 @@ namespace Test
 
                 //await Micro.HomeAsync();
 
-                //Reader = new CognexWaferID();
-                //Reader.Initial();
+                Reader = new CognexWaferID();
+                Reader.Initial();
 
                 if (loadPortCount == LoadPortQuantity.Single)
                 {

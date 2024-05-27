@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using WLS3200Gen2.Model.Recipe;
 using YuanliCore.AffineTransform;
 using YuanliCore.Data;
 using YuanliCore.ImageProcess.Match;
@@ -43,7 +44,7 @@ namespace WLS3200Gen2.Model.Module
         /// </summary>
         public event Func<PauseTokenSource, CancellationTokenSource, double, double, Task<Point>> AlignmentManual;
 
-        public async Task<ITransform> Alignment(LocateParam[] fiducialDatas)
+        public async Task<ITransform> Alignment(LocateParam[] fiducialDatas, MicroscopeLens lensSetting)
         {
             BitmapSource image = null;
             try
@@ -52,7 +53,8 @@ namespace WLS3200Gen2.Model.Module
                 //移動到每一個樣本的 "拍照座標"做取像 ，計算出實際座標
                 foreach (LocateParam fiducial in fiducialDatas)
                 {
-
+                    //目前鏡頭lens 1pixel行走距離
+                    PixelTable = new Point(lensSetting.RatioX, lensSetting.RatioY);
                     int number = fiducialDatas.ToList().IndexOf(fiducial);
                     WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
 
@@ -66,12 +68,11 @@ namespace WLS3200Gen2.Model.Module
                     {
                         retryCount = 1;
                     }
+                    await TableMoveToAsync(movePos.X, movePos.Y);
+                    await Task.Delay(500);
+                    //取像有機會取到模糊圖像或者平台尚未定位，所以多次Retry
                     for (int count = 1; count <= retryCount; count++)
                     {
-                        //移動到取像位子
-                        await TableMoveToAsync(movePos.X, movePos.Y);
-                        await Task.Delay(500);
-                        //取像有機會取到模糊圖像或者平台尚未定位
                         int errorReTryCount = 0;
                         while (true)
                         {
@@ -80,7 +81,10 @@ namespace WLS3200Gen2.Model.Module
                                 //取像
                                 image = camera.GrabAsync();
                                 actualPos = await FindFiducial(image, movePos.X, movePos.Y, number);
-                                //               movePos = actualPos;
+                                //移動到取像位子
+                                movePos = actualPos;
+                                await TableMoveToAsync(movePos.X, movePos.Y);
+                                await Task.Delay(100);
                                 break;
                             }
                             catch (Exception ex)
@@ -93,7 +97,9 @@ namespace WLS3200Gen2.Model.Module
                                         await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
                                         Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, movePos.X, movePos.Y);
                                         actualPos = await alignmentManual;
-                                    }                                
+                                        count = retryCount;
+                                        break;
+                                    }
                                     else
                                         throw ex;
                                 }
@@ -102,8 +108,8 @@ namespace WLS3200Gen2.Model.Module
                             }
                         }
                     }
-                    //移動到中心
-                    //    await TableMoveToAsync(actualPos.X, actualPos.Y);
+                    //加上鏡頭偏差
+                    //actualPos = new Point(actualPos.X - lensSetting.RatioX * lensSetting.OffsetPixelX, actualPos.Y - lensSetting.RatioY * lensSetting.OffsetPixelY);
                     targetPos.Add(actualPos);
 
                     if (CancelToken != null && PauseToken != null)
@@ -148,10 +154,10 @@ namespace WLS3200Gen2.Model.Module
 
                 if (CancelToken != null && PauseToken != null)
                 {
-                  //  CancelToken.Token.ThrowIfCancellationRequested();
-                  //  await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-                  //  Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, currentPosX, currentPosY);
-                  //  actualPos = await alignmentManual;
+                    //  CancelToken.Token.ThrowIfCancellationRequested();
+                    //  await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                    //  Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, currentPosX, currentPosY);
+                    //  actualPos = await alignmentManual;
                 }
                 else
                 {
