@@ -68,6 +68,9 @@ namespace WLS3200Gen2
         private MacroStatus macroStatus = new MacroStatus();
         private bool isAutoSave, isTestRun, isAutoFocus;
         private string recipeName;
+        private double manualdistance, manualarea;
+
+
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
         /// <summary>
         /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
@@ -104,6 +107,9 @@ namespace WLS3200Gen2
         public bool IsTestRun { get => isTestRun; set => SetValue(ref isTestRun, value); }
         public bool IsAutoFocus { get => isAutoFocus; set => SetValue(ref isAutoFocus, value); }
         public String RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }
+        public double ManualDistance { get => manualdistance; set => SetValue(ref manualdistance, value); }
+        public double ManualArea { get => manualarea; set => SetValue(ref manualarea, value); }
+
         public ICommand RunCommand => new RelayCommand(async () =>
         {
             try
@@ -491,6 +497,112 @@ namespace WLS3200Gen2
                 MessageBox.Show(ex.Message);
             }
         });
+        public ICommand ManualCaliperCommand => new RelayCommand<string>((param) =>
+        {
+            try
+            {
+                var w = MainImage.Width;
+                var h = MainImage.Height;
+                ROIShape shape = null;
+                ClearShapeManualAction.Execute(ManualDrawings);
+
+                switch (param)
+                {
+                    case "Ruler": //劃出直線
+
+                        shape = new ROILine
+                        {
+                            X1 = w / 2 - 200,
+                            Y1 = h / 2,
+                            X2 = w / 2 + 200,
+                            Y2 = h / 2,
+                            StrokeThickness = 2,
+                            Stroke = System.Windows.Media.Brushes.Red,
+                            IsInteractived = true
+                        };
+                        break;
+
+                    case "Rect"://劃出可旋轉的矩形
+                        shape = new ROIRotatedRect
+                        {
+                            X = w / 2,
+                            Y = h / 2,
+                            LengthX = 100,
+                            LengthY = 100,
+                            StrokeThickness = 2,
+                            Stroke = System.Windows.Media.Brushes.Red,
+                            IsInteractived = true
+                        };
+                        break;
+
+                    case "Circle"://劃出可旋轉的矩形
+                        shape = new ROICircle
+                        {
+                            X = w / 2,
+                            Y = h / 2,
+                            Radius = 100,
+                            StrokeThickness = 2,
+                            Stroke = System.Windows.Media.Brushes.Red,
+                            IsInteractived = true
+                        };
+                        break;
+
+                }
+
+
+
+                AddShapeManualAction.Execute(shape);
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+        });
+
+        public ICommand ManualCaliperCalculateCommand => new RelayCommand(() =>
+        {
+            //需要 Binding 到UI 顯示的數值
+            double distance = 0;
+            double area = 0;
+            double width = 0;
+            double height = 0;
+            var shape = ManualDrawings.FirstOrDefault();
+            if (shape != null)
+            {
+                if (shape is ROILine)
+                {
+                    ROILine line = shape as ROILine;
+
+                    width = Math.Abs(line.X2 - line.X1); //最大外接矩形的寬
+                    height = Math.Abs(line.Y2 - line.Y1);
+                    ManualDistance = Math.Round(Math.Sqrt(width * width + height * height), 3);
+
+
+                }
+                else if (shape is ROIRotatedRect)
+                {
+                    ROIRotatedRect rect = shape as ROIRotatedRect;
+                    width = rect.LengthX * 2;
+                    height = rect.LengthY * 2;
+                    ManualArea = Math.Round(width * height, 3);
+
+
+                }
+                else if (shape is ROICircle)
+                {
+                    ROICircle circle = shape as ROICircle;
+                    width = circle.Radius * 2;
+                    height = circle.Radius * 2;
+                    ManualArea = Math.Round(Math.PI * Math.Pow(circle.Radius, 2), 3);
+
+
+                }
+
+            }
+        });
+
         public ICommand MacroPASSOperateCommand => new RelayCommand(async () =>
         {
             try

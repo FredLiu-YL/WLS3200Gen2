@@ -234,7 +234,15 @@
                                 <ColumnDefinition Width="0.67*"/>
                                 <ColumnDefinition Width="0.33*"/>
                             </Grid.ColumnDefinitions>
-                            <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding MainImage}" />
+                            <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding MainImage}"  ItemsSource="{Binding ManualDrawings}"   
+                                        AddShapeAction="{Binding AddShapeManualAction}" ClearShapeAction="{Binding ClearShapeManualAction}" >
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseUp">
+                                        <command:EventToCommand Command="{Binding ManualCaliperCalculateCommand}"   />
+                                    </i:EventTrigger>
+                                    
+                                </i:Interaction.Triggers>
+                            </views:VirtualCanvas>
                             <GroupBox Grid.Column="1"  >
                                 <GroupBox.Header>
                                     <StackPanel Orientation="Horizontal">
@@ -512,20 +520,21 @@
                                             </TabItem.Header>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="268*"/>
-                                                    <ColumnDefinition Width="71*"/>
+                                                    <ColumnDefinition Width="260*"/>
+                                                    <ColumnDefinition Width="60*"/>
+                                                   
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
                                                     <RowDefinition/>
                                                     <RowDefinition Height="231"/>
                                                 </Grid.RowDefinitions>
-                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,225" Grid.ColumnSpan="2" Grid.RowSpan="2">
+                                                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,-6">
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
                                                 <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionHomePointList}" FontSize="10"
                                                     CanUserSortColumns="False" AutoGenerateColumns="False" SelectionUnit="FullRow"
-                                                    SelectedIndex="{Binding SelectDetectionHomePointList}" Grid.ColumnSpan="2"   >
+                                                    SelectedIndex="{Binding SelectDetectionHomePointList}"    >
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                             <i:InvokeCommandAction Command="{Binding HomeDetectionPointListDoubleClickCommand}"/>
@@ -540,6 +549,33 @@
                                                         <DataGridTextColumn  Width="80"  Header="BinCode"  Binding="{Binding Code}" IsReadOnly="True" />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
+                                                <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+
+                                                    <Button Grid.Row="0"  Content="{materialDesign:PackIcon Kind=Ruler}" Command="{Binding ManualCaliperCommand}" CommandParameter="Ruler" />
+                                                    <Button  Grid.Row="1"   Command="{Binding ManualCaliperCommand}" CommandParameter="Rect" >
+                                                        <materialDesign:PackIcon  Width="30" Height="30" Kind="VectorRectangle" />
+                                                    </Button>
+                                                    <Button  Grid.Row="2"   Command="{Binding ManualCaliperCommand}" CommandParameter="Circle" >
+                                                        <materialDesign:PackIcon  Width="30" Height="30" Kind="VectorCircle" />
+                                                    </Button>
+                                                    <Button  Grid.Row="3" Content="{materialDesign:PackIcon Kind=Calculator}" Command="{Binding ManualCaliperCalculateCommand}"   />
+                                                    <StackPanel Grid.Row="4" Orientation="Horizontal">
+                                                        <Label Width="60" Content="Length" FontSize="16" />
+                                                        <TextBlock Width="60" Text="{Binding ManualDistance}" />
+                                                    </StackPanel>
+                                                    <StackPanel Grid.Row="5" Orientation="Horizontal">
+                                                        <Label Width="60" Content="Area" FontSize="16" />
+                                                        <TextBlock Width="60" Text="{Binding ManualArea}" />
+                                                    </StackPanel>
+                                                </Grid>
                                             </Grid>
                                         </TabItem>
                                         <TabItem  Height="30">

@@ -50,6 +50,8 @@ namespace WLS3200Gen2
         private LocateParam locateParam2 = new LocateParam(102);//Locate pattern 從100號開始
         private LocateParam locateParam3 = new LocateParam(103);//Locate pattern 從100號開始
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
+        private ObservableCollection<ROIShape> manualdrawings = new ObservableCollection<ROIShape>();
+        
         private ObservableCollection<ROIShape> mapDrawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> homeMapDrawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
@@ -347,6 +349,10 @@ namespace WLS3200Gen2
         /// 取得或設定 shape 
         /// </summary>
         public ObservableCollection<ROIShape> Drawings { get => drawings; set => SetValue(ref drawings, value); }
+        /// <summary>
+        /// 手動量測工具
+        /// </summary>
+        public ObservableCollection<ROIShape>  ManualDrawings { get => manualdrawings; set => SetValue(ref manualdrawings, value); }
         public ObservableCollection<ROIShape> HomeMapDrawings { get => homeMapDrawings; set => SetValue(ref homeMapDrawings, value); }
 
         public bool IsDie { get => isDie; set => SetValue(ref isDie, value); }
