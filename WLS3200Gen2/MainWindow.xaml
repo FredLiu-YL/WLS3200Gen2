@@ -520,8 +520,8 @@
                                             </TabItem.Header>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="260*"/>
-                                                    <ColumnDefinition Width="60*"/>
+                                                    <ColumnDefinition Width="80*"/>
+                                                    <ColumnDefinition Width="20*"/>
                                                    
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
@@ -549,7 +549,7 @@
                                                         <DataGridTextColumn  Width="80"  Header="BinCode"  Binding="{Binding Code}" IsReadOnly="True" />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
-                                                <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
+                                                <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition/>
                                                         <RowDefinition/>
@@ -559,14 +559,14 @@
                                                         <RowDefinition/>
                                                     </Grid.RowDefinitions>
 
-                                                    <Button Grid.Row="0"  Content="{materialDesign:PackIcon Kind=Ruler}" Command="{Binding ManualCaliperCommand}" CommandParameter="Ruler" />
-                                                    <Button  Grid.Row="1"   Command="{Binding ManualCaliperCommand}" CommandParameter="Rect" >
+                                                    <Button Grid.Row="0"  Height="40" Content="{materialDesign:PackIcon Kind=Ruler}" Command="{Binding ManualCaliperCommand}" CommandParameter="Ruler" />
+                                                    <Button  Grid.Row="1"  Height="40" Command="{Binding ManualCaliperCommand}" CommandParameter="Rect" >
                                                         <materialDesign:PackIcon  Width="30" Height="30" Kind="VectorRectangle" />
                                                     </Button>
-                                                    <Button  Grid.Row="2"   Command="{Binding ManualCaliperCommand}" CommandParameter="Circle" >
+                                                    <Button  Grid.Row="2"  Height="40"  Command="{Binding ManualCaliperCommand}" CommandParameter="Circle" >
                                                         <materialDesign:PackIcon  Width="30" Height="30" Kind="VectorCircle" />
                                                     </Button>
-                                                    <Button  Grid.Row="3" Content="{materialDesign:PackIcon Kind=Calculator}" Command="{Binding ManualCaliperCalculateCommand}"   />
+                                                    <Button  Grid.Row="3"  Height="40" Content="{materialDesign:PackIcon Kind=Calculator}" Command="{Binding ManualCaliperCalculateCommand}"   />
                                                     <StackPanel Grid.Row="4" Orientation="Horizontal">
                                                         <Label Width="60" Content="Length" FontSize="16" />
                                                         <TextBlock Width="60" Text="{Binding ManualDistance}" />
