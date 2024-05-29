@@ -17,7 +17,7 @@ namespace WLS3200Gen2.Module
         private DigitalOutput ledRed, ledGreen, ledBlue, ledYellow, buzzer;
         private bool isVolume;//蜂鳴器功能開
         private bool isReflash;
-        private Task reflashTask;
+        public Task ReflashTask;
         public StackLight(DigitalOutput[] outputs)
         {
             isVolume = false;
@@ -28,7 +28,7 @@ namespace WLS3200Gen2.Module
             this.buzzer = outputs[15];
             SwitchStates(MachineStates.IDLE);
             isReflash = true;
-            reflashTask = Task.Run(Reflash);
+            ReflashTask = Task.Run(Reflash);
         }
 
         public MachineStates Status => machinestatus;

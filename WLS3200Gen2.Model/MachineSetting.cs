@@ -13,6 +13,8 @@ namespace WLS3200Gen2.Model
 {
     public class MachineSetting : AbstractRecipe
     {
+        public string LogPath { get; set; }
+        public string ResultPath { get; set; }
         public bool IsSimulate { get; set; }
         public string MotionSettingFileName { get; set; }
         public AxisConfig TableXConfig { get; set; } = new AxisConfig();

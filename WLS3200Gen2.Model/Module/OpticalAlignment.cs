@@ -37,7 +37,7 @@ namespace WLS3200Gen2.Model.Module
         public PauseTokenSource PauseToken { get; set; }
         public CancellationTokenSource CancelToken { get; set; }
         public Point PixelTable { get; set; }
-        public Action<string> WriteLog { get; set; }
+        public Action<YuanliCore.Logger.LogType, string> WriteLog { get; set; }
         public Action<BitmapSource, Point?, int> FiducialRecord { get; set; }
         /// <summary>
         /// 對位失敗 手動對位
@@ -56,7 +56,7 @@ namespace WLS3200Gen2.Model.Module
                     //目前鏡頭lens 1pixel行走距離
                     PixelTable = new Point(lensSetting.RatioX, lensSetting.RatioY);
                     int number = fiducialDatas.ToList().IndexOf(fiducial);
-                    WriteLog($"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
+                    WriteLog(YuanliCore.Logger.LogType.PROCESS, $"Move To Fiducial : { fiducial.IndexY}-{ fiducial.IndexY}  Position:{fiducial.GrabPositionX},{fiducial.GrabPositionY}  ");
 
                     int retryCount = 3;
                     Point movePos = new Point(fiducial.GrabPositionX, fiducial.GrabPositionY);
@@ -149,7 +149,7 @@ namespace WLS3200Gen2.Model.Module
             if (result.Length == 0)
             {
                 FiducialRecord?.Invoke(image, null, number);
-                WriteLog($"Search failed ");
+                WriteLog(YuanliCore.Logger.LogType.ALARM, $"Search failed ");
                 //沒搜尋到  要做些處置(目前沒做事)  改到外層去做事
 
                 if (CancelToken != null && PauseToken != null)

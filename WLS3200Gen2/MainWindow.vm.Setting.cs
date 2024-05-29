@@ -26,6 +26,7 @@ namespace WLS3200Gen2
         private double tableWaferCatchPositionX, tableWaferCatchPositionY, tableWaferCatchPositionZ, tableWaferCatchPositionR;
         private double robotAxisStandbyPosition, robotAxisLoadPort1TakePosition, robotAxisLoadPort2TakePosition;
         private double robotAxisAligner1TakePosition, robotAxisAligner2TakePosition, robotAxisMacroTakePosition, robotAxisMicroTakePosition;
+        private string logPath, resultPath;
         private ObservableCollection<MicroscopeLens> microscopeLensDefault = new ObservableCollection<MicroscopeLens>();
         //public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
@@ -44,6 +45,8 @@ namespace WLS3200Gen2
         public double RobotAxisAligner2TakePosition { get => robotAxisAligner2TakePosition; set => SetValue(ref robotAxisAligner2TakePosition, value); }
         public double RobotAxisMacroTakePosition { get => robotAxisMacroTakePosition; set => SetValue(ref robotAxisMacroTakePosition, value); }
         public double RobotAxisMicroTakePosition { get => robotAxisMicroTakePosition; set => SetValue(ref robotAxisMicroTakePosition, value); }
+        public string LogPath { get => logPath; set => SetValue(ref logPath, value); }
+        public string ResultPath { get => resultPath; set => SetValue(ref resultPath, value); }
         public ObservableCollection<MicroscopeLens> MicroscopeLensDefault { get => microscopeLensDefault; set => SetValue(ref microscopeLensDefault, value); }
 
         public ICommand SaveSettingCommand => new RelayCommand(() =>
@@ -87,6 +90,8 @@ namespace WLS3200Gen2
                 //machineSetting.RobotAxisConfig.HomeVel = new VelocityParams(30000, 0.2);
                 //machineSetting.RobotAxisConfig.HomeMode = HomeModes.ORGAndIndex;
 
+                machineSetting.LogPath = LogPath;
+                machineSetting.ResultPath = ResultPath;
 
                 machineSetting.TableWaferCatchPosition = new Point(TableWaferCatchPositionX, TableWaferCatchPositionY);
                 machineSetting.TableWaferCatchPositionZ = TableWaferCatchPositionZ;
@@ -106,7 +111,11 @@ namespace WLS3200Gen2
                 machineSetting.MicroscopeLensDefault = MicroscopeLensDefault;
                 machineSetting.Save(machineSettingPath);
                 Customers.Clear();
-
+                MicroscopeParam.LensName.Clear();
+                for (int i = 1; i < MicroscopeLensDefault.Count; i++)
+                {
+                    MicroscopeParam.LensName.Add(MicroscopeLensDefault[i].LensName);
+                }
             }
             catch (Exception ex)
             {

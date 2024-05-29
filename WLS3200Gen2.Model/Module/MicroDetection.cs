@@ -49,7 +49,7 @@ namespace WLS3200Gen2.Model.Module
             opticalAlignment = new OpticalAlignment(AxisX, AxisY, Camera);
             opticalAlignment.PixelTable = PixelTable;
             opticalAlignment.FiducialRecord += AlignRecord;
-            
+
         }
         public bool IsInitial { get; set; } = false;
         /// <summary>
@@ -78,7 +78,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary>
         /// 流程動作文字記錄
         /// </summary>
-        public event Action<string> WriteLog;
+        public event Action<YuanliCore.Logger.LogType, string> WriteLog;
         /// <summary>
         /// 對位結果紀錄 (圖像 對位座標(pxel))
         /// </summary>
@@ -108,11 +108,11 @@ namespace WLS3200Gen2.Model.Module
                 //    await AxisZ.HomeAsync();
                 //});
                 //await Task.Run(() => { });
-                WriteLog?.Invoke("Micro Homing Start");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro Homing Start");
 
                 await AxisZ.HomeAsync();
 
-                WriteLog?.Invoke("AxisZ Homing End");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "AxisZ Homing End");
 
                 Task axisXHome = AxisX.HomeAsync();
 
@@ -126,7 +126,7 @@ namespace WLS3200Gen2.Model.Module
 
                 await Task.WhenAll(axisXHome, axisYHome, axisRHome, microscopeHome1);
                 IsInitial = true;
-                WriteLog?.Invoke("Micro Homing End");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro Homing End");
             }
             catch (Exception ex)
             {
@@ -192,7 +192,7 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task Run(Wafer currentWafer, MainRecipe mainRecipe, MicroscopeLens[] lensSetting, ProcessSetting processSetting, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(Wafer currentWafer, MainRecipe mainRecipe, MicroscopeLens[] lensSetting, ProcessSetting processSetting, string savePath, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             try
             {
@@ -248,8 +248,7 @@ namespace WLS3200Gen2.Model.Module
 
 
                     //創建存檔各片存檔的路徑
-                    GrabSavePicturTime = DateTime.Now.ToString("yyyyMMddHHmm");
-                    GrabSaveFolder = CreateMicroFolder(GrabSavePicturTime, mainRecipe.Name, currentWafer);
+                    GrabSaveFolder = savePath;
 
                     GrabTitleIdx = 0;
                     if (processSetting.IsAutoSave)
@@ -258,7 +257,7 @@ namespace WLS3200Gen2.Model.Module
                         foreach (DetectionPoint point in recipe.DetectionPoints)
                         {
                             GrabTitleIdx += 1;
-                            WriteLog?.Invoke($"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
+                            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, $"Move To Detection Position :[{point.IndexX} - {point.IndexY}] ");
                             //轉換成對位後實際座標
                             var newPos = new Point(point.Position.X + recipe.AlignRecipe.OffsetX, point.Position.Y + recipe.AlignRecipe.OffsetY);
                             var transPosition = transForm.TransPoint(newPos);
@@ -375,9 +374,9 @@ namespace WLS3200Gen2.Model.Module
             {
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 opticalAlignment.WriteLog = WriteLog;
-                WriteLog?.Invoke("Wafer Alignment Start");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Wafer Alignment Start");
                 ITransform transForm = await opticalAlignment.Alignment(recipe.FiducialDatas, lensSetting);
-                WriteLog?.Invoke("Wafer Alignment End");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Wafer Alignment End");
                 return transForm;
             }
             catch (Exception ex)

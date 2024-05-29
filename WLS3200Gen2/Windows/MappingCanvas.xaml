@@ -4,12 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
+             xmlns:usercontrols="clr-namespace:WLS3200Gen2.UserControls"
              mc:Ignorable="d"    x:Name="Mapping"
              d:DesignHeight="650" d:DesignWidth="600" Loaded="Mapping_Loaded">
     <UserControl.Resources>
         <local:ImagePositionConverter x:Key="ImagePositionConverter"/>
     </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=Mapping}"   >
+        <Grid.Resources>
+            <usercontrols:StatusToVisibility  x:Key="CvrVisibility" />
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
@@ -18,11 +22,11 @@
             <Button Content="Fit"  Command="{Binding BtnOperateCommand}"  CommandParameter="fit" Cursor="Hand"  />
             <Button Content="+" Click="ZoomIn_Click"/>
             <Button Content="-" Click="ZoomOut_Click" Cursor="Hand" />
-            <Button Content="Create"  Command="{Binding BtnOperateCommand}"  CommandParameter="createRetagle"  Cursor="Hand"  />
-            <Button Content="SelectAdd"  Command="{Binding BtnOperateCommand}" CommandParameter="selectAdd"     />
-            <Button Content="SelectDel"  Command="{Binding BtnOperateCommand}" CommandParameter="selectDel"     />
-            <Button Content="Touch"   Command="{Binding BtnOperateCommand}" CommandParameter="touch"    />
-            <Button Content="Clear"    Command="{Binding BtnOperateCommand}" CommandParameter="clear"  />
+            <!--<Button Content="Create"  Command="{Binding BtnOperateCommand}"  CommandParameter="createRetagle"  Cursor="Hand"  />-->
+            <Button Content="SelectAdd" Visibility="{Binding AddTypeVisibility}" Command="{Binding BtnOperateCommand}" CommandParameter="selectAdd"     />
+            <Button Content="SelectDel" Visibility="{Binding AddTypeVisibility}" Command="{Binding BtnOperateCommand}" CommandParameter="selectDel"     />
+            <Button Content="Touch" Visibility="{Binding AddTypeVisibility}"  Command="{Binding BtnOperateCommand}" CommandParameter="touch"    />
+            <Button Content="Clear" Visibility="{Binding AddTypeVisibility}"   Command="{Binding BtnOperateCommand}" CommandParameter="clear"  />
             <TextBlock Width="30" Text="{Binding Col}" FontSize="16" />
             <TextBlock Width="30" Text="{Binding Row}"   FontSize="16" />
             <TextBlock Width="30" Text="_" FontSize="16" />
@@ -35,11 +39,11 @@
                 <Grid x:Name="myGrid" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
-                       
+
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
-                        
+
                     </Grid.RowDefinitions>
                     <Image  Grid.Column="0" Grid.Row="0"  Source="{Binding MapImage}"  HorizontalAlignment="Center" VerticalAlignment="Center"  />
                     <Canvas  Grid.Column="0" Grid.Row="0" x:Name="canvas" >

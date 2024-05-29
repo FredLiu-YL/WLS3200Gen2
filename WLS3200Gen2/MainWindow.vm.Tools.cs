@@ -17,7 +17,9 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 await machine.Feeder.Robot.Home();
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -47,9 +49,11 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 await machine.Feeder.AlignerL.Home();
                 await machine.Feeder.AlignerL.ReleaseWafer();
                 await machine.Feeder.WaferAlignerToStandBy();
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -63,8 +67,10 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 machine.MicroDetection.TableVacuum.Off();
                 await machine.Feeder.WaferMicroToStandBy();
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -78,7 +84,9 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 await machine.Feeder.WaferMacroToStandBy();
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -94,9 +102,11 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 RecipeLastArmStation = Model.ArmStation.Cassette1;
                 Wafer currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
                 await machine.Feeder.UnLoadWaferToCassette(currentWafer, true);
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -110,7 +120,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
+                IsCanWorkEFEMTrans = false;
                 RecipeLastArmStation = Model.ArmStation.Align;
                 machine.Feeder.AlignerL.Home().Wait();
                 await machine.Feeder.WaferStandByToAligner();
@@ -119,6 +129,7 @@ namespace WLS3200Gen2
                 {
                     throw new Exception("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
                 }
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -132,16 +143,12 @@ namespace WLS3200Gen2
         {
             try
             {
-                Task micro = machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
-                Task robot = machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMicroTakePosition);
-                await Task.WhenAll(micro, robot);
+                IsCanWorkEFEMTrans = false;
+                await machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
                 machine.MicroDetection.TableVacuum.On();
                 WaferProcessStatus station = new WaferProcessStatus();
                 await machine.Feeder.LoadToMicroAsync(station);
-                if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
-                {
-                    throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
-                }
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -155,13 +162,11 @@ namespace WLS3200Gen2
         {
             try
             {
+                IsCanWorkEFEMTrans = false;
                 RecipeLastArmStation = Model.ArmStation.Macro;
                 machine.Feeder.Macro.FixWafer();
                 await machine.Feeder.WaferStandByToMacroAsync();
-                if (machine.Feeder.Macro.IsLockOK == false)
-                {
-                    throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
-                }
+                IsCanWorkEFEMTrans = true;
             }
             catch (Exception ex)
             {
@@ -192,6 +197,32 @@ namespace WLS3200Gen2
                         break;
                     case "Macro":
                         await machine.Feeder.RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        });
+        public ICommand MicroMoveCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                switch (key)
+                {
+                    case "X":
+                        await machine.MicroDetection.AxisX.MoveToAsync(machineSetting.TableWaferCatchPosition.X);
+                        break;
+                    case "Y":
+                        await machine.MicroDetection.AxisY.MoveToAsync(machineSetting.TableWaferCatchPosition.Y);
+                        break;
+                    case "Z":
+                        await machine.MicroDetection.AxisZ.MoveToAsync(machineSetting.TableWaferCatchPositionZ);
+                        break;
+                    case "R":
+                        await machine.MicroDetection.AxisR.MoveToAsync(machineSetting.TableWaferCatchPositionR);
                         break;
                 }
             }

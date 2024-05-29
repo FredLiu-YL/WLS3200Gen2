@@ -217,7 +217,8 @@ namespace WLS3200Gen2
                     if (selectHomeRectangle != null)
                     {
                         var oldRectangle = tempHomeLogAssignRectangles.Where(n => n.Col == selectHomeRectangle.Col && n.Row == selectHomeRectangle.Row).FirstOrDefault();
-                        SetHomeRectangle?.Invoke(selectHomeRectangle.Col, selectHomeRectangle.Row, oldRectangle.Fill, oldRectangle.Fill);
+                        var orgRectangles = RectanglesHome.Where(n => n.Col == selectHomeRectangle.Col && n.Row == selectHomeRectangle.Row).FirstOrDefault();
+                        SetHomeRectangle?.Invoke(selectHomeRectangle.Col, selectHomeRectangle.Row, orgRectangles.Fill, oldRectangle.Fill);
                     }
                     //把外框顏色變成紅色
                     SetHomeRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, tempselectRect.Fill, Brushes.Red);
@@ -249,11 +250,11 @@ namespace WLS3200Gen2
                     if (selectRecipeRectangle != null)
                     {
                         var oldRectangle = tempRecipeRectangles.Where(n => n.Col == selectRecipeRectangle.Col && n.Row == selectRecipeRectangle.Row).FirstOrDefault();
-                        SetRectangle?.Invoke(selectRecipeRectangle.Col, selectRecipeRectangle.Row, oldRectangle.Fill, oldRectangle.Fill);
+                        var orgRectangles = Rectangles.Where(n => n.Col == selectRecipeRectangle.Col && n.Row == selectRecipeRectangle.Row).FirstOrDefault();
+                        SetRectangle?.Invoke(selectRecipeRectangle.Col, selectRecipeRectangle.Row, orgRectangles.Fill, oldRectangle.Fill);
                     }
                     //把外框顏色變成紅色
                     SetRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, tempselectRect.Fill, Brushes.Red);
-                    SetFocusCenter?.Invoke(tempselectRect.Col, tempselectRect.Row);
                     selectRecipeRectangle = tempselectRect;
                 }
             }
@@ -283,18 +284,20 @@ namespace WLS3200Gen2
 
                 ChangeRecipeMappingSelect(nowSelectRange);
 
-                //還沒對位，MAP點位不能移動
-                if (isRecipeAlignment == false) return;
                 Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
                 RectangleInfo tempselectRects = Rectangles.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
                                    || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
-                //移動
-                if (tempselectRects != null)
+                if (tempselectRects == null) return;
+                //還沒對位，MAP點位不能移動
+                if (isRecipeAlignment)
                 {
+                    //移動
                     var nowMoveDie = mainRecipe.DetectRecipe.WaferMap.Dies.Where(n => n.IndexX == tempselectRects.Col && n.IndexY == tempselectRects.Row).FirstOrDefault();
                     var transPos = transForm.TransPoint(new Point(nowMoveDie.MapTransX, nowMoveDie.MapTransY));
                     await machine.MicroDetection.TableMoveToAsync(transPos);
                 }
+                SetFocusCenter?.Invoke(tempselectRects.Col, tempselectRects.Row);
+
             }
             catch (Exception ex)
             {
@@ -637,6 +640,38 @@ namespace WLS3200Gen2
                     if (die != null)
                     {
                         RecipeMapDieColorChange(false, die, Brushes.Yellow);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        /// <summary>
+        /// 顯示Recipe端Map圖AddType點位
+        /// </summary>
+        /// <param name="detectionRecipe"></param>
+        public void ShowRecipeMapImgaeAddType(DetectionRecipe detectionRecipe)
+        {
+            try
+            {
+                if (detectionRecipe.DetectionPoints == null) return;
+                MappingRecipeOp?.Invoke(MappingOperate.Clear); //清除劃過的圖片
+                foreach (var item in detectionRecipe.DetectionPoints)
+                {
+                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
+                    if (die != null)
+                    {
+                        var result = Rectangles
+                                  .Select((rect, idx) => new { rect, idx })
+                                  .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
+                        var result2 = tempRecipeRectangles
+                                         .Select((rect, idx) => new { rect, idx })
+                                         .FirstOrDefault(x => x.rect.Col == die.IndexX && x.rect.Row == die.IndexY);
+                        SetRectangle?.Invoke(Rectangles[result.idx].Col, Rectangles[result.idx].Row,
+                                             tempRecipeRectangles[result2.idx].Fill, tempRecipeRectangles[result2.idx].Fill);
                     }
                 }
 

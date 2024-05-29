@@ -21,7 +21,7 @@ namespace WLS3200Gen2.Model
 
 
 
-        public event Action<string> WriteLog;
+        public event Action<YuanliCore.Logger.LogType, string> WriteLog;
         /// <summary>
         /// 需要切換Recipe的委派  
         /// </summary>
@@ -40,11 +40,13 @@ namespace WLS3200Gen2.Model
         {
 
             Wafer currentWafer = null;
+            string currentSavePath = "";
+            string nextSavePath = "";
             try
             {
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
-                WriteLog?.Invoke("ProcessInitial ");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, machineSetting, pts, cts);
 
                 //轉換Cassette 與WAFER檢查資訊給流程使用
@@ -58,12 +60,12 @@ namespace WLS3200Gen2.Model
                 //因為Loadport 先掃完wafer才傳進來 ， 由主流程控制走向(由上往下取)    所有流程前進判斷都靠這個
                 //Queue<Wafer> processWafers = new Queue<Wafer>(wafers);//主流程走向(由上往下取)
                 Queue<Wafer> processWafers = new Queue<Wafer>(wafers.Reverse());//主流程走向(由下往上取)
-                CreateProcessFolder();
+
 
 
                 await Task.Run(async () =>
                 {
-                    WriteLog?.Invoke("Process Start");
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Process Start");
                     Wafer nextWafer = null;
                     Task taskLoad = Task.CompletedTask;
                     Task taskUnLoad = Task.CompletedTask;
@@ -79,7 +81,7 @@ namespace WLS3200Gen2.Model
                             if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
                             MainRecipe recipe = ChangeRecipe.Invoke();
                             InspectionReport report = new InspectionReport();
-
+                            currentSavePath = CreateProcessFolder(recipe.Name, currentWafer.CassetteIndex);
                             currentWafer.Dies = recipe.DetectRecipe.WaferMap.Dies;
                             //需不需要在Macro檢查
                             if (currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select)
@@ -102,20 +104,16 @@ namespace WLS3200Gen2.Model
                                 await Feeder.LoadMacroToAlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
                                 SetWaferStatusToUI(currentWafer);
                             }
-                            else
-                            {
-                                //等待退片完成
-                                await taskUnLoad;
-                                //等待預載完成
-                                await taskLoad;
-                                //WaferID確認+角度轉到平台角度
-                                await Feeder.AlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
-                                SetWaferStatusToUI(currentWafer);
-                            }
+                            //等待退片完成
+                            await taskUnLoad;
+                            //等待預載完成
+                            await taskLoad;
+                            //WaferID確認+角度轉到平台角度
+                            await Feeder.AlignerAsync(currentWafer.ProcessStatus.WaferID, recipe.EFEMRecipe);
+                            SetWaferStatusToUI(currentWafer);
                             // ProcessPause();
                             cts.Token.ThrowIfCancellationRequested();
                             await pts.Token.WaitWhilePausedAsync(cts.Token);
-
 
                             taskLoad = Task.CompletedTask;
 
@@ -144,7 +142,7 @@ namespace WLS3200Gen2.Model
                                 }
                                 //執行主設備動作 
                                 await focusZWafertask;
-                                await MicroDetection.Run(currentWafer, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, pts, cts);
+                                await MicroDetection.Run(currentWafer, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, nextSavePath, pts, cts);
                                 SetWaferStatusToUI(currentWafer);
                                 if (pts.IsPaused)
                                 {
@@ -191,7 +189,7 @@ namespace WLS3200Gen2.Model
                             w.ProcessStatus.WaferID == WaferProcessStatus.Select ||
                             w.ProcessStatus.Micro == WaferProcessStatus.Select).Count();
 
-                            WriteLog?.Invoke($"Remaining number of wafers : {waferusableCount} ");
+                            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, $"Remaining number of wafers : {waferusableCount} ");
                             //判斷卡匣空了
                             if (nextWafer == null)
                             {
@@ -209,6 +207,7 @@ namespace WLS3200Gen2.Model
             }
             catch (FlowException ex)
             {
+                WriteLog(YuanliCore.Logger.LogType.ALARM, ex.Message);
                 MessageBox.Show(ex.Message);
             }
             catch (Exception ex)
@@ -222,7 +221,7 @@ namespace WLS3200Gen2.Model
                 SetWaferStatusToUI(currentWafer);
                 Feeder.ProcessEnd();
                 cts.Dispose();
-                WriteLog?.Invoke("Process Finish ");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Process Finish ");
             }
         }
         public async Task ProcessPause()
@@ -275,7 +274,7 @@ namespace WLS3200Gen2.Model
                 //晶面檢查
                 if (station == WaferProcessStatus.Select)
                 {
-                    WriteLog?.Invoke("Macro Top Inspection Start");
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Macro Top Inspection Start");
                     Task taskLampControl1 = Feeder.LampControl1.ChangeLightAsync(eFEMtionRecipe.MacroTopLeftLightValue);
                     Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(eFEMtionRecipe.MacroTopRightLightValue);
                     await Feeder.Macro.GoInnerRingCheckPos();
@@ -289,7 +288,7 @@ namespace WLS3200Gen2.Model
                     }
                     await Feeder.Macro.HomeInnerRing();
                     station = WaferProcessStatus.Complate;
-                    WriteLog?.Invoke("Macro Top Inspection End");
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Macro Top Inspection End");
                 }
             }
             catch (Exception ex)
@@ -306,7 +305,7 @@ namespace WLS3200Gen2.Model
                 //晶背檢查
                 if (station == WaferProcessStatus.Select)
                 {
-                    WriteLog?.Invoke("Macro Back Inspection Start");
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Macro Back Inspection Start");
                     Task taskLampControl1 = Feeder.LampControl1.ChangeLightAsync(eFEMtionRecipe.MacroBackLeftLightValue);
                     Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(eFEMtionRecipe.MacroBackRightLightValue);
                     await Feeder.Macro.GoOuterRingCheckPos();
@@ -324,7 +323,7 @@ namespace WLS3200Gen2.Model
                     //翻回來
                     await Feeder.Macro.HomeOuterRing();
                     station = WaferProcessStatus.Complate;
-                    WriteLog?.Invoke("Macro Back Inspection End");
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Macro Back Inspection End");
                 }
             }
             catch (Exception ex)
@@ -345,15 +344,36 @@ namespace WLS3200Gen2.Model
             await Task.WhenAll(taskLampControl1, taskLampControl2);
         }
 
-        private void CreateProcessFolder()
+        private string CreateProcessFolder(string recipeName, int waferIndex)
         {
-            var date = DateTime.Now.Date.ToString("yyyy-MM-dd");
-            var path = "C:\\WLS3200\\" + date;
-            if (!Directory.Exists(path))
+            try
+            {
+                if (!Directory.Exists(machineSetting.ResultPath))
+                {
+                    //新增資料夾
+                    Directory.CreateDirectory(machineSetting.ResultPath);
+                }
+                var date = DateTime.Now.ToString("yyyyMMddHHmm");
+                var path = machineSetting.ResultPath + "\\" + date + "_" + recipeName;
+                if (!Directory.Exists(path))
+                {
+                    //新增資料夾
+                    Directory.CreateDirectory(path);
+                }
+                path = machineSetting.ResultPath + "\\" + date + "_" + recipeName + "\\Wafer" + waferIndex.ToString().PadLeft(2, '0');
+                if (!Directory.Exists(path))
+                {
+                    //新增資料夾
+                    Directory.CreateDirectory(path);
+                }
+
+
+                return path;
+            }
+            catch (Exception ex)
             {
 
-                //新增資料夾
-                Directory.CreateDirectory(path);
+                throw ex;
             }
 
         }

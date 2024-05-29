@@ -78,8 +78,19 @@ namespace WLS3200Gen2
         private string topMoveContent = "TopMove", backMoveContent = "BackMove";
         private readonly object lockObjEFEMTrans = new object();
         private bool isCanWorkEFEMTrans = true;
-        private bool isMapEnd = true;
-        private bool isDie, isDieSub, isDieInSideAll, isPosition, isRecipeAlignment = false;
+        private bool isDie, isDieSub, isDieInSideAll, isPosition;
+        /// <summary>
+        /// 在Recipe頁面是否已經對完位
+        /// </summary>
+        private bool isRecipeAlignment = false;
+        /// <summary>
+        /// 是否正在MapAdd模式
+        /// </summary>
+        private bool isMapAdding = false;
+        /// <summary>
+        /// MapAdd防彈跳
+        /// </summary>
+        private bool isRecipeMapEnd = true;
         /// <summary>
         /// 畫圖的參數
         /// </summary>
@@ -94,6 +105,7 @@ namespace WLS3200Gen2
                 if (!isInitialComplete) return isMainHomePageSelect;
                 if (isMainHomePageSelect)
                 {
+                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the HomePage");
                     ShowHomeMapImgae(mainRecipe.DetectRecipe);
                     ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
                     if (isRunCommand == false)
@@ -239,7 +251,7 @@ namespace WLS3200Gen2
         /// 是否可運作EFEM
         /// </summary>
         public bool IsCanWorkEFEMTrans { get => isCanWorkEFEMTrans; set => SetValue(ref isCanWorkEFEMTrans, value); }
-        public bool IsMapEnd { get => isMapEnd; set => SetValue(ref isMapEnd, value); }
+        public bool IsMapEnd { get => isRecipeMapEnd; set => SetValue(ref isRecipeMapEnd, value); }
         public double AlignerMicroAngle { get => alignerMicroAngle; set => SetValue(ref alignerMicroAngle, value); }
         public double AlignerWaferIDAngle { get => alignerWaferIDAngle; set => SetValue(ref alignerWaferIDAngle, value); }
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
@@ -370,10 +382,19 @@ namespace WLS3200Gen2
                 //開一個Task是因為要等畫面切完之後，再來變化
                 Task.Run(async () =>
                 {
-                    await Task.Delay(500);
-                    ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
-                    ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+                    await Task.Delay(50);
                     isRecipeMapShow = true;
+                    App.Current.Dispatcher.Invoke((Action)(() =>
+                    {
+                        try
+                        {
+                            ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
+                            ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }));
                 });
             }
             else
@@ -406,7 +427,7 @@ namespace WLS3200Gen2
 
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
-            WriteLog("Enter the RecipePage");
+            WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the RecipePage");
         }
         //離開recipe頁面會執行
         private void UnLoadRecipePage()
@@ -429,7 +450,7 @@ namespace WLS3200Gen2
             }
 
             IsLoadwaferPageSelect = true;
-            WriteLog("Enter the ToolsPage");
+            WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the ToolsPage");
         }
         private void UnLoadToolsPage()
         {
@@ -447,6 +468,8 @@ namespace WLS3200Gen2
                 IsMainHomePageSelect = true;
                 return;
             }
+            LogPath = machineSetting.LogPath;
+            ResultPath = machineSetting.ResultPath;
 
             TableWaferCatchPositionX = machineSetting.TableWaferCatchPosition.X;
             TableWaferCatchPositionY = machineSetting.TableWaferCatchPosition.Y;
@@ -468,12 +491,30 @@ namespace WLS3200Gen2
                     }
                 }
             }
-            WriteLog("Enter the SettingPage");
+            WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the SettingPage");
         }
         //離開recipe頁面會執行
         private void UnLoadSettingPage()
         {
+            try
+            {
+                machineSetting.TableWaferCatchPosition = new Point(TableWaferCatchPositionX, TableWaferCatchPositionY);
+                machineSetting.TableWaferCatchPositionZ = TableWaferCatchPositionZ;
+                machineSetting.TableWaferCatchPositionR = TableWaferCatchPositionR;
+                machineSetting.RobotAxisLoadPort1TakePosition = RobotAxisLoadPort1TakePosition;
+                machineSetting.RobotAxisLoadPort2TakePosition = RobotAxisLoadPort2TakePosition;
+                machineSetting.RobotAxisAlignTakePosition = RobotAxisAligner1TakePosition;
+                machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
+                machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
 
+                machineSetting.LogPath = LogPath;
+                machineSetting.ResultPath = ResultPath;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
 
@@ -548,7 +589,19 @@ namespace WLS3200Gen2
                 throw ex;
             }
         });
+        //MoveToPickZ
+        public ICommand MoveToPickZCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                await machine.MicroDetection.AxisZ.MoveToAsync(machineSetting.TableWaferCatchPositionZ);
+            }
+            catch (Exception ex)
+            {
 
+                throw ex;
+            }
+        });
         public ICommand TableTestCommand => new RelayCommand(async () =>
         {
             try
@@ -1350,7 +1403,7 @@ namespace WLS3200Gen2
 
                     //依序轉換完對位前座標  ，轉換成對位後座標 塞回機械座標
 
-
+                    updateRecipeMapTransform = transForm;
                     foreach (Die die in mainRecipe.DetectRecipe.WaferMap.Dies)
                     {
                         Point pos = transForm.TransPoint(new Point(die.PosX, die.PosY));
@@ -1471,33 +1524,51 @@ namespace WLS3200Gen2
                 if (MapAdd == "MAP ADD")
                 {
                     IsMapEnd = false;
+                    isMapAdding = true;
                     MappingRecipeOp?.Invoke(MappingOperate.Clear);
+                    await Task.Delay(50);
+                    mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
+                    ShowRecipeMapImgaeAddType(mainRecipe.DetectRecipe);
+                    MappingRecipeOp?.Invoke(MappingOperate.StartAdd);
                     MapAdd = "END";
                     IsMapEnd = true;
                 }
                 else
                 {
                     IsMapEnd = false;
+                    MappingRecipeOp?.Invoke(MappingOperate.EndAdd);
+                    await Task.Delay(50);
                     //將SelectRectangles全部加填進去，然後用當前的參數
-                    DetectionPoint point = new DetectionPoint();
-                    point.MicroscopeLightValue = Microscope.LightValue;
-                    point.MicroscopeApertureValue = Microscope.ApertureValue;
-                    point.LensIndex = Microscope.LensIndex;
-                    point.MicroscopePosition = Microscope.Position;//machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AutoFocusPosition;
-                    point.MicroscopeAberationPosition = Microscope.AberationPosition; //machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AberationPosition;
-                    point.CubeIndex = Microscope.CubeIndex;
-                    point.Filter1Index = Microscope.Filter1Index;
-                    point.Filter2Index = Microscope.Filter2Index;
-                    point.Filter3Index = Microscope.Filter3Index;
-
+                    DetectionPoint pointParam = new DetectionPoint();
+                    pointParam.MicroscopeLightValue = Microscope.LightValue;
+                    pointParam.MicroscopeApertureValue = Microscope.ApertureValue;
+                    pointParam.LensIndex = Microscope.LensIndex;
+                    pointParam.MicroscopePosition = Microscope.Position;//machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AutoFocusPosition;
+                    pointParam.MicroscopeAberationPosition = Microscope.AberationPosition; //machineSetting.MicroscopeLensDefault.ElementAt(Microscope.LensIndex).AberationPosition;
+                    pointParam.CubeIndex = Microscope.CubeIndex;
+                    pointParam.Filter1Index = Microscope.Filter1Index;
+                    pointParam.Filter2Index = Microscope.Filter2Index;
+                    pointParam.Filter3Index = Microscope.Filter3Index;
+                    DetectionPointList.Clear();
                     foreach (var item in SelectRectangles)
                     {
                         int idxX = item.Col;
                         int idxY = item.Row;
                         var haveSameXY = DetectionPointList.FirstOrDefault(d => d.IndexX == idxX && d.IndexY == idxY);
                         Die die = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(d => d.IndexX == idxX && d.IndexY == idxY);
-                        if (item.Fill == Brushes.Yellow && haveSameXY == null && die != null)
+                        if (item.Fill == Brushes.Yellow && die != null)
                         {
+                            DetectionPoint point = new DetectionPoint();
+                            point.MicroscopeLightValue = pointParam.MicroscopeLightValue;
+                            point.MicroscopeApertureValue = pointParam.MicroscopeApertureValue;
+                            point.LensIndex = pointParam.LensIndex;
+                            point.MicroscopePosition = pointParam.MicroscopePosition;
+                            point.MicroscopeAberationPosition = pointParam.MicroscopeAberationPosition;
+                            point.CubeIndex = pointParam.CubeIndex;
+                            point.Filter1Index = pointParam.Filter1Index;
+                            point.Filter2Index = pointParam.Filter2Index;
+                            point.Filter3Index = pointParam.Filter3Index;
+
                             point.IndexX = idxX;
                             point.IndexY = idxY;
                             //var newPos = transForm.TransInvertPoint(new Point(die.MapTransX, die.MapTransY));
@@ -1509,6 +1580,7 @@ namespace WLS3200Gen2
                     mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
                     ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
                     IsMapEnd = true;
+                    isMapAdding = false;
                 }
             }
             catch (Exception ex)
@@ -1681,7 +1753,15 @@ namespace WLS3200Gen2
 
         private async void SampleMoveAction(Point pos)
         {
-            await machine.MicroDetection.TableMoveToAsync(pos);
+            try
+            {
+                await machine.MicroDetection.TableMoveToAsync(pos);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
         private void SetLocateParamToRecipe()
         {

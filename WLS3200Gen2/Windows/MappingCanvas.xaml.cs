@@ -34,6 +34,7 @@ namespace WLS3200Gen2.UserControls
     {
         private Point startPoint = new Point(20, 20); //定義繪圖的起點位置(主要是讓方框圖像留邊)
         private int pixelX, pixelY;
+        private Visibility addTypeVisibility = Visibility.Hidden;
         //    private const double ScaleRate = 0.1; // 縮放比率
         //    private ScaleTransform scaleTransform = new ScaleTransform(1, 1); // 初始縮放比例為 1
 
@@ -121,10 +122,6 @@ namespace WLS3200Gen2.UserControls
             get => (ObservableCollection<Die>)GetValue(SelectDiesProperty);
             set => SetValue(SelectDiesProperty, value);
         }
-
-
-
-
         public int Col
         {
             get => (int)GetValue(ColProperty);
@@ -139,6 +136,8 @@ namespace WLS3200Gen2.UserControls
         { get => pixelX; set => SetValue(ref pixelX, value); }
         public int PixelY
         { get => pixelY; set => SetValue(ref pixelY, value); }
+        public Visibility AddTypeVisibility
+        { get => addTypeVisibility; set => SetValue(ref addTypeVisibility, value); }
         public Die[] Dies
         {
             get => (Die[])GetValue(DiesProperty);
@@ -566,9 +565,13 @@ namespace WLS3200Gen2.UserControls
                     {
                         foreach (var item in selectRects)
                         {
-                            int index = SelectRectangles.IndexOf(item);
-                            if (index >= 0)
+
+                            var cc = SelectRectangles
+                                .Select((rect2, idx) => new { rect2, idx })
+                                .FirstOrDefault(x => x.rect2.Col == item.Col && x.rect2.Row == item.Row);
+                            if (cc != null && cc.idx >= 0)
                             {
+                                int index = cc.idx;
                                 canvas.Children.RemoveAt(index);
                                 SelectRectangles.RemoveAt(index);
                             }
@@ -712,6 +715,22 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
+                SwitchMode(par);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+
+            }
+        });
+        private void SwitchMode(string par)
+        {
+            try
+            {
                 switch (par)
                 {
                     case "selectAdd":
@@ -748,18 +767,14 @@ namespace WLS3200Gen2.UserControls
                     default:
                         break;
                 }
-
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show(ex.Message);
+                throw ex;
             }
-            finally
-            {
+        }
 
-            }
-        });
         private void CreateRetagle_Click(object sender, RoutedEventArgs e)
         {
 
@@ -806,6 +821,16 @@ namespace WLS3200Gen2.UserControls
                 case MappingOperate.Clear:
                     SelectRectangles.Clear();
                     canvas.Children.Clear();
+                    break;
+                case MappingOperate.StartAdd:
+                    //SelectRectangles.Clear();
+                    //canvas.Children.Clear();
+                    AddTypeVisibility = Visibility.Visible;
+                    SwitchMode("selectAdd");
+                    break;
+                case MappingOperate.EndAdd:
+                    AddTypeVisibility = Visibility.Hidden;
+                    SwitchMode("touch");
                     break;
                 default:
                     break;
@@ -914,5 +939,30 @@ namespace WLS3200Gen2.UserControls
         Create,
         Fit,
         Clear,
+        StartAdd,
+        EndAdd
+    }
+    public class StatusToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool status)
+            {
+                if (status)
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Hidden;
+                }
+            }
+            return Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

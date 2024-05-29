@@ -130,10 +130,26 @@ namespace WLS3200Gen2
             }
         }
 
-        private void WriteLog(string message)
+        private void WriteLog(YuanliCore.Logger.LogType logType,string message)
         {
-
-            LogMessage = $"[{ Account.CurrentAccount.Name}] {message}  ";
+            switch (logType)
+            {
+                case YuanliCore.Logger.LogType.PROCESS:
+                    LogMessage = $"[PROCESS][{ Account.CurrentAccount.Name}] {message}  ";
+                    break;
+                case YuanliCore.Logger.LogType.TRIG:
+                    LogMessage = $"[TRIG][{ Account.CurrentAccount.Name}] {message}  ";
+                    break;
+                case YuanliCore.Logger.LogType.ERROR:
+                    LogMessage = $"[ERROR][{ Account.CurrentAccount.Name}] {message}  ";
+                    break;
+                case YuanliCore.Logger.LogType.ALARM:
+                    LogMessage = $"[Alarm][{ Account.CurrentAccount.Name}] {message}  ";
+                    break;
+                default:
+                    break;
+            }
+            
         }
 
 

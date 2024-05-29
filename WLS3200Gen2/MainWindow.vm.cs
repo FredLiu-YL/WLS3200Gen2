@@ -200,11 +200,19 @@ namespace WLS3200Gen2
                     BincodeListUpdate(machineSetting.BincodeListDefault);
                 }
 
-
-
-
-                //BincodeList.Add(new BincodeInfo());
-
+                MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
+                for (int i = 0; i < MicroscopeLensDefault.Count; i++)
+                {
+                    if (MicroscopeLensDefault[i] == null)
+                    {
+                        MicroscopeLensDefault[i] = new MicroscopeLens();
+                    }
+                }
+                MicroscopeParam.LensName.Clear();
+                for (int i = 1; i < MicroscopeLensDefault.Count; i++)
+                {
+                    MicroscopeParam.LensName.Add(MicroscopeLensDefault[i].LensName);
+                }
 
                 TableX = machine.MicroDetection.AxisX;
                 TableY = machine.MicroDetection.AxisY;
@@ -234,11 +242,11 @@ namespace WLS3200Gen2
                 IsAutoSave = ProcessSetting.IsAutoSave;
                 IsAutoFocus = ProcessSetting.IsAutoFocus;
 
-                InformationUCVisibility = Visibility.Visible;
+                InformationUCVisibility = Visibility.Hidden;
                 WorkholderUCVisibility = Visibility.Collapsed;
 
 
-                WriteLog("Equipment Ready．．．");
+                WriteLog(YuanliCore.Logger.LogType.PROCESS, "Equipment Ready．．．");
 
                 isRefresh = true;
                 taskRefresh1 = Task.Run(RefreshPos);
@@ -504,16 +512,8 @@ namespace WLS3200Gen2
                     return;
 
                 }
-                if (machine.MicroDetection != null && machine.MicroDetection.Camera != null)
-                {
-                    try
-                    {
-                        machine.MicroDetection.Camera.Stop();
-                    }
-                    catch (Exception ex)
-                    {
-                    }
-                }
+                machine.Disopse();
+                
                 isRefresh = false;
                 // 如果使用者選擇 "是"，則允許視窗關閉
                 e.Cancel = false;
@@ -607,7 +607,7 @@ namespace WLS3200Gen2
                 IsMainHomePageSelect = true;
                 return;
             }
-            WriteLog("Enter the SecurityPage");
+            WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the SecurityPage");
         }
 
 
@@ -617,6 +617,12 @@ namespace WLS3200Gen2
             if (isInitialComplete)
             {
                 //軸 修改參數存檔
+                machineSetting.TableXConfig = TableXConfig.Copy();
+                machineSetting.TableYConfig = TableYConfig.Copy();
+                machineSetting.TableRConfig = TableRConfig.Copy();
+                machineSetting.TableZConfig = TableZConfig.Copy();
+                machineSetting.RobotAxisConfig = RobotAxisConfig.Copy();
+
                 machineSetting.Save(machineSettingPath);
             }
 
@@ -688,7 +694,7 @@ namespace WLS3200Gen2
                             };
                             Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
                             Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
-                            ChangeHomeMappingSelect(nowSelectRange);
+                            ChangeRecipeMappingSelect(nowSelectRange);
 
                             Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
                             RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
@@ -731,7 +737,7 @@ namespace WLS3200Gen2
                             RefreshHomeMap(TablePosX, TablePosY);
 
                         }
-                        if (true)
+                        if (isRecipeAlignment && isMapAdding == false)
                         {
                             RefreshRecipeMap(TablePosX, TablePosY);
                         }

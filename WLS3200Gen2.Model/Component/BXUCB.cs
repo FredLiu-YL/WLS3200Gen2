@@ -216,7 +216,7 @@ namespace WLS3200Gen2.Model.Component
                     double distance = 0;
                     string str = "";
                     int nowCount = 0;
-
+                  
                     while (true)
                     {
                         nowPos = GetAberationPosition();
@@ -771,6 +771,7 @@ namespace WLS3200Gen2.Model.Component
                {
                    string str = "";
                    int nowCount = 0;
+                   AFOff();
                    while (true)
                    {
                        if (distance > 0)
@@ -819,6 +820,7 @@ namespace WLS3200Gen2.Model.Component
                     double distance = 0;
                     string str = "";
                     int nowCount = 0;
+                    AFOff();
                     while (true)
                     {
                         nowPos = this.Position;

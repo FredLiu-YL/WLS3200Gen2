@@ -701,15 +701,15 @@
                                         </Grid.RowDefinitions>
                                         <Button Grid.Column="0" Grid.ColumnSpan="2" Content="MapLayout Edit" FontSize="20" Height="50" Width="200" Command="{Binding EditMappingCommand}"  />
                                         <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="5" Content="Load Map" FontSize="20" Height="50" Width="140" Command="{Binding LoadMappingCommand}" />
-                                        <Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />
+                                        <!--<Button Grid.Row="1" Grid.Column="1" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding MappingTestCommand}" Cursor="Hand" />-->
                                     </Grid>
 
                                 </GroupBox>
                                 <GroupBox Grid.Column="1" Grid.Row="0" Header="Grab">
-                                    <Button Grid.Column="0" Grid.Row="0" Content="GrabSaveAs" FontSize="20" Height="50" Width="150"  Command="{Binding GrabSaveAsCommand}"  />
+                                    <Button Grid.Column="0" Grid.Row="0" Content="GrabSaveAs" FontSize="20" Height="40" Width="150"  Command="{Binding GrabSaveAsCommand}"  />
                                 </GroupBox>
                                 <GroupBox Grid.Column="1" Grid.Row="1" Header="BinCode">
-                                    <Button Grid.Column="0" Grid.Row="2" Content="Bincode Edit" Command="{Binding RecipeBincodeEditCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
+                                    <Button Grid.Column="0" Grid.Row="2" Content="Bincode Edit" FontSize="20" Command="{Binding RecipeBincodeEditCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40" HorizontalAlignment="Center"  />
                                 </GroupBox>
 
                             </Grid>
@@ -1156,7 +1156,8 @@
                                                             <Label Content="Y" Width="70" FontSize="26" />
                                                             <TextBox Text="{Binding LocateY}"    FontSize="22"   Width="70" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                         </StackPanel>
-                                                        <Button Grid.Row="1" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />
+                                                        <Button Grid.Row="1" Grid.Column="0" Content="Move To PickZ" FontSize="20" Width="200" Height="40" HorizontalAlignment="Left"  Command="{Binding MoveToPickZCommand}" Cursor="Hand" />
+                                                        <!--<Button Grid.Row="1" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />-->
                                                     </Grid>
                                                     <TextBlock />
                                                 </StackPanel>
@@ -1198,9 +1199,8 @@
                                             <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2"   >
                                                 <Button Margin="5" Content="ADD"  FontSize="24" Height="50" Width="100" Command="{Binding AddDetectionCommand}"  />
                                                 <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130" Command="{Binding RemoveDetectionCommand}"  />
-                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="130" Command="{Binding EditDetectionCommand}"  />
+                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="85" Command="{Binding EditDetectionCommand}"  />
                                                 <Button Margin="5" Content="{Binding MapAdd}" IsEnabled="{Binding IsMapEnd}" FontSize="24" Height="50" Width="150" Command="{Binding MapAddDetectionCommand}"  />
-
                                             </StackPanel>
                                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
@@ -1290,7 +1290,6 @@
                                             <RowDefinition />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
-
                                         <Button Grid.Column="0" Grid.Row="0"  Width="60"  Height="60"   >
                                             <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
                                             <i:Interaction.Triggers>
@@ -1302,7 +1301,7 @@
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                         </Button>
-                                        <Button Grid.Column="1" Grid.Row="1"  Width="60"  Height="60" >
+                                        <Button Grid.Column="0" Grid.Row="1"  Width="60"  Height="60" >
                                             <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowDownBold" />
                                             <i:Interaction.Triggers>
                                                 <i:EventTrigger EventName="PreviewMouseDown">
@@ -1313,7 +1312,7 @@
                                                 </i:EventTrigger>
                                             </i:Interaction.Triggers>
                                         </Button>
-                                        <Grid Grid.Row="2">
+                                        <Grid Grid.Row="2" Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="0.25*"/>
                                                 <ColumnDefinition Width="0.5*"/>
@@ -1348,18 +1347,22 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="UnLoadWafer" FontSize="24" Grid.ColumnSpan="2" >
+                    <GroupBox Grid.Column="0" Header="UnLoadWafer" FontSize="24" Grid.ColumnSpan="3" >
                         <Grid >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="2*"/>
-                                <RowDefinition/>
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="0.5*"/>
 
                             </Grid.RowDefinitions>
                             <GroupBox Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                      Grid.Column="1"
+                                      Grid.ColumnSpan="2"
+                                      Grid.RowSpan="2"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                      Header="Robot" Style="{StaticResource MaterialDesignGroupBox}">
@@ -1379,39 +1382,40 @@
                                         </Style>
                                     </Grid.Resources>
                                     <Grid.ColumnDefinitions >
-                                        <ColumnDefinition Width="1.2*" />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="0.25*" />
+                                        <ColumnDefinition Width="0.25*"/>
+                                        <ColumnDefinition Width="0.25*"/>
+                                        <ColumnDefinition Width="0.25*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Column="4" Grid.Row="7" Grid.RowSpan="4">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="0.27*"/>
                                             <ColumnDefinition Width="0.42*" />
                                             <ColumnDefinition Width="0.31*"/>
-
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="46"/>
                                             <RowDefinition Height="46*"/>
                                             <RowDefinition Height="46*"/>
-                                            <RowDefinition Height="47"/>
-                                            <RowDefinition Height="47*"/>
-                                            <RowDefinition Height="47*"/>
-                                            <RowDefinition Height="47*"/>
-                                            <RowDefinition Height="47*"/>
-                                            <RowDefinition Height="47*"/>
-                                            <RowDefinition Height="47*"/>
-                                            <RowDefinition Height="46*"/>
-                                            <RowDefinition Height="46*"/>
-                                            <RowDefinition Height="47*"/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock  Grid.Row="8" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
-                                        <Border Grid.Row="9" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" >
+                                        <TextBlock  Grid.Row="0" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
+                                        <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" >
                                             <Grid>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition/>
                                                     <RowDefinition/>
-                                                    <RowDefinition/>
-
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>
@@ -1434,27 +1438,44 @@
 
                                     </Grid>
 
-                                    <StackPanel Grid.Column="0">
-                                        <Button Margin="3" Height="40" Content="Home" Command="{Binding Home}"/>
-                                        <Button Margin="3" Height="40" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
-                                        <Button Margin="3" Height="40" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Aligner" Command="{Binding PickWaferFromAligner}"/>
-                                        <Button Margin="3" Height="40" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Micro" Command="{Binding PickWaferFromMicro}"/>
-                                        <Button Margin="3" Height="40" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Macro" Command="{Binding PickWaferFromMacro}"/>
+                                    <Button Grid.Column="0" Grid.Row="0" Margin="3" Height="40" Width="250" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Home" Command="{Binding Home}"/>
+
+                                    <Button Grid.Column="0" Grid.Row="3" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
+                                    <Button Grid.Column="0" Grid.Row="4" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
+
+                                    <Button Grid.Column="0" Grid.Row="6" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
+                                    <Button Grid.Column="0" Grid.Row="7" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
+
+                                    <Button Grid.Column="1" Grid.Row="1" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Aligner" Command="{Binding PickWaferFromAligner}"/>
+                                    <Button Grid.Column="1" Grid.Row="2" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Aligner" Command="{Binding PutWaferToAligner}"/>
+
+                                    <Button Grid.Column="2" Grid.Row="5" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Micro" Command="{Binding PickWaferFromMicro}"/>
+                                    <Button Grid.Column="2" Grid.Row="6" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Micro" Command="{Binding PutWaferToMicro}"/>
+
+                                    <Button Grid.Column="1" Grid.Row="8" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Macro" Command="{Binding PickWaferFromMacro}"/>
+                                    <Button Grid.Column="1" Grid.Row="9" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Macro" Command="{Binding PutWaferToMacro}"/>
 
 
-                                        <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
-                                        <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Aligner" Command="{Binding PutWaferToAligner}"/>
-                                        <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Micro" Command="{Binding PutWaferToMicro}"/>
-                                        <Button Margin="3" Height="40" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Macro" Command="{Binding PutWaferToMacro}"/>
-                                    </StackPanel>
+
+
+
+
                                 </Grid>
 
                             </GroupBox>
-                            <GroupBox Grid.Column="1" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                            <GroupBox Grid.Column="0" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                       Style="{StaticResource MaterialDesignGroupBox}"  >
                                 <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" IsLoadPortParamReadOnly="True" />
+                            </GroupBox>
+                            <GroupBox Grid.Column="0" Header="Load Port2" Grid.Row="1" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                      
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" 
+                                      Style="{StaticResource MaterialDesignGroupBox}" >
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}" IsLoadPortParamReadOnly="False" />
+
                             </GroupBox>
                             <Grid Grid.Column="1" Grid.Row="1" >
                                 <!--<UserControlUC:MappingCanvasTest />-->
@@ -1475,165 +1496,168 @@
                 </TabItem.Header>
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="0.75*"/>
-                        <RowDefinition Height="0.25*"/>
+                        <RowDefinition Height="0.9*"/>
+                        <RowDefinition Height="0.1*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.3*"/>
                         <ColumnDefinition Width="0.3*"/>
                         <ColumnDefinition Width="0.4*"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                    <GroupBox Grid.Column="0" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                     Header="Axis Settings" Style="{StaticResource MaterialDesignGroupBox}">
+                                     Header="Settings" Style="{StaticResource MaterialDesignGroupBox}">
                         <Grid Margin="-5">
-                            <Grid.Resources>
-                                <Style x:Key="TextStyle" TargetType="Label">
-                                    <Setter Property="FontSize" Value="10" />
-                                    <!-- 需要自行參考 Style name  TextStyle -->
-                                </Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="FontSize" Value="10" />
-                                    <!--  預設所有 TextBox -->
-                                </Style>
-                                <Style TargetType="Label">
-                                    <Setter Property="FontSize" Value="10" />
-                                    <!--  預設所有 TextBox -->
-                                </Style>
-                            </Grid.Resources>
-                            <Grid.ColumnDefinitions >
-                                <ColumnDefinition Width="0.5*" />
-                                <ColumnDefinition Width="0.5*"/>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0.4*"/>
-                                    <ColumnDefinition Width="0.3*"/>
-                                    <ColumnDefinition Width="0.3*"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock  Text="Save Path" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
+                            <Border Margin="-2" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" />
+                            <StackPanel Orientation="Vertical"   Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2">
+                                <Label Grid.Row="1"  Grid.Column="0" FontSize="18" HorizontalAlignment="Left"  VerticalAlignment="Center" Content="Log:" Width="55"/>
+                                <TextBox Grid.Row="1" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18" Text="{Binding LogPath}"  Grid.Column="1"  Width="500"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical"   Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" >
+                                <Label Grid.Row="1"  Grid.Column="0" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Result:"/>
+                                <TextBox Grid.Row="1" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18" Text="{Binding ResultPath}"  Grid.Column="1"  Width="500"/>
+                            </StackPanel>
+                            <Grid Margin="-2" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" Grid.RowSpan="9">
+                                <Grid.Resources>
+                                    <Style x:Key="TextStyle" TargetType="Label">
+                                        <Setter Property="FontSize" Value="10" />
+                                        <!-- 需要自行參考 Style name  TextStyle -->
+                                    </Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="FontSize" Value="10" />
+                                        <!--  預設所有 TextBox -->
+                                    </Style>
+                                    <Style TargetType="Label">
+                                        <Setter Property="FontSize" Value="10" />
+                                        <!--  預設所有 TextBox -->
+                                    </Style>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions >
+                                    <ColumnDefinition Width="0.5*" />
+                                    <ColumnDefinition Width="0.5*"/>
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="47"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="47*"/>
-                                </Grid.RowDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.4*"/>
+                                        <ColumnDefinition Width="0.3*"/>
+                                        <ColumnDefinition Width="0.3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="47"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="47*"/>
+                                    </Grid.RowDefinitions>
 
-                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" >
+                                    <TextBlock  Text="Robot Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
+                                    <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" />
 
-                                </Border>
-                                <TextBlock  Text="Robot Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
-
-                                <Label Grid.Row="1"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port1:"/>
-                                <TextBox Grid.Row="1" Text="{Binding RobotAxisLoadPort1TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort1"/>
-
-
-                                <Label Grid.Row="2"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port2:"/>
-                                <TextBox Grid.Row="2" Text="{Binding RobotAxisLoadPort2TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort2"/>
-
-                                <Label Grid.Row="3"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner1:"/>
-                                <TextBox Grid.Row="3" Text="{Binding RobotAxisAligner1TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner1"/>
-
-                                <Label Grid.Row="4"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner2:"/>
-                                <TextBox Grid.Row="4" Text="{Binding RobotAxisAligner2TakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner2"/>
-
-                                <Label Grid.Row="5"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Macro:"/>
-                                <TextBox Grid.Row="5" Text="{Binding RobotAxisMacroTakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="5"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Macro"/>
+                                    <Label Grid.Row="1"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port1:"/>
+                                    <TextBox Grid.Row="1" Text="{Binding RobotAxisLoadPort1TakePosition}"  Grid.Column="1" />
+                                    <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort1"/>
 
 
-                                <Label Grid.Row="6"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Micro:"/>
-                                <TextBox Grid.Row="6" Text="{Binding RobotAxisMicroTakePosition}"  Grid.Column="1" />
-                                <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
+                                    <Label Grid.Row="2"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Load Port2:"/>
+                                    <TextBox Grid.Row="2" Text="{Binding RobotAxisLoadPort2TakePosition}"  Grid.Column="1" />
+                                    <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort2"/>
 
-                                <TextBlock  Grid.Row="8" Grid.ColumnSpan="3"  Text="Micro Vacuum" FontWeight="Bold" Foreground="Teal" />
-                                <Border Grid.Row="9" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" >
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
+                                    <Label Grid.Row="3"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner1:"/>
+                                    <TextBox Grid.Row="3" Text="{Binding RobotAxisAligner1TakePosition}"  Grid.Column="1" />
+                                    <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner1"/>
 
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
+                                    <Label Grid.Row="4"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Aligner2:"/>
+                                    <TextBox Grid.Row="4" Text="{Binding RobotAxisAligner2TakePosition}"  Grid.Column="1" />
+                                    <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Aligner2"/>
 
-                                        <Label Grid.Row="0" Content="8 Inch" />
-                                        <Label Grid.Row="1" Content="12 Inch" />
-                                        <Button Margin="2" Grid.Row="0" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
-                                        <Button Margin="2" Grid.Row="0"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
-                                        <Button Margin="2" Grid.Row="1" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
-                                        <Button Margin="2" Grid.Row="1"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
-                                        <usercontrols:SignalUC Grid.Row="0" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="False" />
-                                        <usercontrols:SignalUC Grid.Row="1" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="False" />
-                                    </Grid>
-                                </Border>
+                                    <Label Grid.Row="5"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Macro:"/>
+                                    <TextBox Grid.Row="5" Text="{Binding RobotAxisMacroTakePosition}"  Grid.Column="1" />
+                                    <Button Grid.Row="5"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Macro"/>
 
 
-                            </Grid>
+                                    <Label Grid.Row="6"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Micro:"/>
+                                    <TextBox Grid.Row="6" Text="{Binding RobotAxisMicroTakePosition}"  Grid.Column="1" />
+                                    <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
 
-                            <Grid Grid.Column="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0.35*"/>
-                                    <ColumnDefinition Width="0.35*"/>
-                                    <ColumnDefinition Width="0.3*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="47"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="47*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="46*"/>
-                                    <RowDefinition Height="47*"/>
-                                </Grid.RowDefinitions>
+                                </Grid>
 
-                                <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
-                                <TextBlock  Text="Wafer Pick/Put Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                <Grid Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.35*"/>
+                                        <ColumnDefinition Width="0.35*"/>
+                                        <ColumnDefinition Width="0.3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="47"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="47*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="46*"/>
+                                        <RowDefinition Height="47*"/>
+                                    </Grid.RowDefinitions>
 
-                                <Label Grid.Row="1"  Grid.Column="0" Content="Axis X:" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="1" Text="{Binding TableWaferCatchPositionX }"  Grid.Column="1" />
-                                <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                    <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+                                    <TextBlock  Text="Wafer Pick/Put Axis" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
 
-                                <Label Grid.Row="2"  Grid.Column="0" Content="Axis Y:" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="2" Text="{Binding TableWaferCatchPositionY }"  Grid.Column="1" />
-                                <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                    <Label Grid.Row="1"  Grid.Column="0" Content="Axis X:" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="1" Text="{Binding TableWaferCatchPositionX }"  Grid.Column="1" />
+                                    <Button Grid.Row="1"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding MicroMoveCommand}"  CommandParameter="X"/>
 
-                                <Label Grid.Row="3"  Grid.Column="0" Content="Axis Z:" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="3" Text="{Binding TableWaferCatchPositionZ}"  Grid.Column="1" />
-                                <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                    <Label Grid.Row="2"  Grid.Column="0" Content="Axis Y:" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="2" Text="{Binding TableWaferCatchPositionY }"  Grid.Column="1" />
+                                    <Button Grid.Row="2"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding MicroMoveCommand}"  CommandParameter="Y"/>
 
-                                <Label Grid.Row="4"  Grid.Column="0" Content="Axis T:" FontSize="15" VerticalAlignment="Center"/>
-                                <TextBox Grid.Row="4" Text="{Binding TableWaferCatchPositionR}"  Grid.Column="1" />
-                                <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="LoadPort"/>
+                                    <Label Grid.Row="3"  Grid.Column="0" Content="Axis Z:" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="3" Text="{Binding TableWaferCatchPositionZ}"  Grid.Column="1" />
+                                    <Button Grid.Row="3"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding MicroMoveCommand}"  CommandParameter="Z"/>
+
+                                    <Label Grid.Row="4"  Grid.Column="0" Content="Axis R:" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="4" Text="{Binding TableWaferCatchPositionR}"  Grid.Column="1" />
+                                    <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding MicroMoveCommand}"  CommandParameter="R"/>
+                                </Grid>
                             </Grid>
                         </Grid>
-
                     </GroupBox>
-                    <GroupBox Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Background="DarkGray"
+
+                    <GroupBox Grid.Column="1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                      Header="Microscope Settings" Style="{StaticResource MaterialDesignGroupBox}" >
@@ -1653,6 +1677,8 @@
                                     <ColumnDefinition Width="0.2*"/>
                                     <ColumnDefinition Width="0.05*"/>
                                     <ColumnDefinition Width="0.2*"/>
+                                    <ColumnDefinition Width="0.05*"/>
+                                    <ColumnDefinition Width="0.2*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="0.1*"/>
@@ -1668,10 +1694,13 @@
                                     <RowDefinition Height="0.1*"/>
                                     <RowDefinition Height="0.1*"/>
                                     <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
                                 </Grid.RowDefinitions>
 
-                                <Border Grid.Row="1" Grid.ColumnSpan="8" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
-                                <TextBlock  Text="Lens Ratio" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                <Border Grid.Row="1" Grid.ColumnSpan="10" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+                                <TextBlock  Text="Lens Ratio" Grid.ColumnSpan="5" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
 
                                 <Label Grid.Row="1"  Grid.Column="0" Content="" FontSize="15" VerticalAlignment="Bottom" />
                                 <Grid Grid.Row="1"  Grid.Column="1">
@@ -1707,37 +1736,97 @@
                                     <Label Grid.Row="1"  Grid.Column="7" Content="pixel Y" FontSize="13" VerticalAlignment="Bottom" />
                                 </Grid>
 
+                                <Grid Grid.Row="1"  Grid.Column="9">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0"  Grid.Column="3" Content="lens " FontSize="13" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="7" Content="Name" FontSize="13" VerticalAlignment="Bottom" />
+                                </Grid>
 
                                 <Label Grid.Row="2"  Grid.Column="0" FontSize="15" Content="1." VerticalAlignment="Bottom" />
                                 <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="3" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="5" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="7" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="9" Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].LensName }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" />
                                 <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="3" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="5" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="7" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="9" Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].LensName }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" />
                                 <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="3" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="5" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="7" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="9" Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].LensName }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" />
                                 <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="3" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="5" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="7" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="9" Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].LensName }" FontSize="15" VerticalAlignment="Bottom"/>
 
                                 <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" />
                                 <TextBox Grid.Column="1" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].RatioX}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="3" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].RatioY}" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="5" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].OffsetPixelX }" FontSize="15" VerticalAlignment="Bottom"/>
                                 <TextBox Grid.Column="7" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].OffsetPixelY }" FontSize="15" VerticalAlignment="Bottom"/>
+                                <TextBox Grid.Column="9" Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].LensName }" FontSize="15" VerticalAlignment="Bottom"/>
 
+                                <Grid Grid.Row="8" Grid.ColumnSpan="10" Grid.RowSpan="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.1*"/>
+                                        <ColumnDefinition Width="0.4*"/>
+                                        <ColumnDefinition Width="0.1*"/>
+                                        <ColumnDefinition Width="0.4*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0"  Text="AF Default" Grid.ColumnSpan="4" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
+                                    <Border Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
+
+
+
+
+                                    <Label Grid.Row="1"  Grid.Column="0" Content="" FontSize="15" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="1" Content="Z Pos" FontSize="15" VerticalAlignment="Bottom" />
+                                    <Label Grid.Row="1"  Grid.Column="3" Content="Aberation" FontSize="13" VerticalAlignment="Bottom"/>
+
+                                    <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                    <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AutoFocusPosition}"  Grid.Column="1"  VerticalAlignment="Bottom" />
+                                    <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom" />
+
+                                    <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                    <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                    <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom" />
+
+                                    <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                    <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                    <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
+
+                                    <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                    <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                    <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
+
+                                    <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                                    <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
+                                    <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
+                                </Grid>
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
@@ -1760,36 +1849,12 @@
                                     <RowDefinition Height="0.1*"/>
                                     <RowDefinition Height="0.1*"/>
                                     <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
+                                    <RowDefinition Height="0.1*"/>
                                 </Grid.RowDefinitions>
 
-                                <Border Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="7" BorderBrush="Teal" BorderThickness="1" />
-                                <TextBlock  Text="AF Default" Grid.ColumnSpan="4" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
 
-
-
-                                <Label Grid.Row="1"  Grid.Column="0" Content="" FontSize="15" VerticalAlignment="Bottom" />
-                                <Label Grid.Row="1"  Grid.Column="1" Content="Z Pos" FontSize="15" VerticalAlignment="Bottom" />
-                                <Label Grid.Row="1"  Grid.Column="3" Content="Aberation" FontSize="13" VerticalAlignment="Bottom"/>
-
-                                <Label Grid.Row="2"  Grid.Column="0" Content="1." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AutoFocusPosition}"  Grid.Column="1"  VerticalAlignment="Bottom" />
-                                <TextBox Grid.Row="2" Text="{Binding MicroscopeLensDefault[1].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom" />
-
-                                <Label Grid.Row="3"  Grid.Column="0" Content="2." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
-                                <TextBox Grid.Row="3" Text="{Binding MicroscopeLensDefault[2].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom" />
-
-                                <Label Grid.Row="4"  Grid.Column="0" Content="3." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
-                                <TextBox Grid.Row="4" Text="{Binding MicroscopeLensDefault[3].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
-
-                                <Label Grid.Row="5"  Grid.Column="0" Content="4." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
-                                <TextBox Grid.Row="5" Text="{Binding MicroscopeLensDefault[4].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
-
-                                <Label Grid.Row="6"  Grid.Column="0" Content="5." FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AutoFocusPosition}"  Grid.Column="1" VerticalAlignment="Bottom"/>
-                                <TextBox Grid.Row="6" Text="{Binding MicroscopeLensDefault[5].AberationPosition}"  Grid.Column="3" VerticalAlignment="Bottom"/>
 
                                 <Border   Grid.Row="9" Grid.Column ="0" Grid.ColumnSpan="4" Grid.RowSpan="3" BorderBrush="Teal" BorderThickness="1" />
                                 <TextBlock Grid.Row="8"  Text="AF Limit" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" VerticalAlignment="Top" />
@@ -1952,17 +2017,14 @@
                     <Grid Grid.Row="1" Grid.Column="3">
                         <Grid.RowDefinitions>
                             <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Row="0" Grid.Column="2" Height="60" Content="Default Bincode" FontSize="26" Command="{Binding DefaultBincodeEditCommand}"     />
-                        <Button Grid.Row="2" Grid.Column="2" Height="60" Content="Save" FontSize="30" Command="{Binding SaveSettingCommand}"     />
+                        <Button Grid.Row="0" Grid.Column="0" Height="60" Content="Default Bincode" FontSize="26" Command="{Binding DefaultBincodeEditCommand}"     />
+                        <Button Grid.Row="0" Grid.Column="2" Height="60" Content="Save" FontSize="30" Command="{Binding SaveSettingCommand}"     />
                     </Grid>
 
                 </Grid>
@@ -2059,39 +2121,32 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="150*"/>
-                                <RowDefinition Height="300*"/>
-                                <RowDefinition Height="200*"/>
-
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="0.5*"/>
                             </Grid.RowDefinitions>
-                            <GroupBox Header="Robot" materialDesign:ColorZoneAssist.Background="DarkGray"
+                            <GroupBox Grid.Column="0" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2">
-                                <UserControlUC:RobotUnitUC Margin="-5" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }" />
+                                      Style="{StaticResource MaterialDesignGroupBox}" >
+                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" IsLoadPortParamReadOnly="False" />
                             </GroupBox>
-                            <GroupBox Grid.Row="2" Grid.Column="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                            <GroupBox Grid.Row="0" Grid.Column="1" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
                                      Header="Aligner" Style="{StaticResource MaterialDesignGroupBox}">
                                 <UserControlUC:AlignerUnitUC Grid.Column="0" Grid.Row="2" Margin="-5" Aligner="{Binding Aligner}" AlignerUIShow="{Binding AlignerUIShow }"    />
                             </GroupBox>
-
-
-
-                            <GroupBox Grid.Column="1" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
-                                    materialDesign:ColorZoneAssist.Foreground="White"
-                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
-                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
-                                <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort1}" LoadPortWafers="{Binding LoadPort1Wafers}" LoadPortUIShow ="{Binding LoadPortUIShow}" IsLoadPortParamReadOnly="False" />
-
-                            </GroupBox>
-                            <GroupBox Grid.Column="2" Header="Load Port2" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
+                            <GroupBox Grid.Column="0" Header="Load Port2" Grid.Row="1" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
                                     materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" 
-                                      Style="{StaticResource MaterialDesignGroupBox}" Grid.RowSpan="2" >
+                                      Style="{StaticResource MaterialDesignGroupBox}"  >
                                 <UserControlUC:LoadPortUnitUC Margin="-5" LoadPort="{Binding LoadPort2}" LoadPortWafers="{Binding LoadPort2Wafers}" LoadPortUIShow ="{Binding LoadPort2UIShow}" IsLoadPortParamReadOnly="False" />
-
+                            </GroupBox>
+                            <GroupBox Grid.Column="2" Header="Robot" materialDesign:ColorZoneAssist.Background="DarkGray"
+                                    materialDesign:ColorZoneAssist.Foreground="White"
+                                    materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="20"
+                                      Style="{StaticResource MaterialDesignGroupBox}" >
+                                <UserControlUC:RobotUnitUC Margin="-5" Robot="{Binding Robot}" RobotStaus="{Binding RobotStaus }" />
                             </GroupBox>
                         </Grid>
                     </TabItem>

@@ -23,7 +23,7 @@ namespace WLS3200Gen2.Model
 
             try
             {
-                WriteLog?.Invoke("Initial");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Initial");
 
                 motionController = ControlEntity();
                 loadPort = LoadPortEntity();
@@ -59,7 +59,7 @@ namespace WLS3200Gen2.Model
                 //將初始化後的元件 傳進模組內(分配io點位 以及 軸號)
                 AssignComponent();
 
-                WriteLog?.Invoke("Initial End");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Initial End");
             }
             catch (Exception ex)
             {
@@ -75,6 +75,42 @@ namespace WLS3200Gen2.Model
         {
             try
             {
+                if (MicroDetection != null)
+                {
+                    try
+                    {
+                        if (MicroDetection.Camera != null)
+                        {
+                            MicroDetection.Camera.Stop();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                    try
+                    {
+                        if (MicroDetection.Microscope != null)
+                        {
+                            MicroDetection.Microscope.ChangeLightAsync(0).Wait();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw;
+                    }
+                    try
+                    {
+                        if (StackLight != null)
+                        {
+                            StackLight.Dispose();
+                            StackLight.ReflashTask.Wait();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -178,7 +214,7 @@ namespace WLS3200Gen2.Model
 
         private ILoadPort LoadPortEntity()
         {
-            WriteLog?.Invoke("loadPort Initial");
+            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "loadPort Initial");
             ILoadPort loadPort = null;
 
             if (isSimulate)

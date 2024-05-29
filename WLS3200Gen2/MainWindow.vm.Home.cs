@@ -126,7 +126,7 @@ namespace WLS3200Gen2
                     isRunCommand = true;
 
                     IsRunning = true;
-                    WriteLog("Process Start");
+                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Process Start");
                     //產生當下時間的資料夾
                     processDataPath = CreateProcessFolder();
 
@@ -168,15 +168,14 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
-                WriteLog(ex.Message);
+                WriteLog(YuanliCore.Logger.LogType.ERROR, ex.Message);
                 MessageBox.Show(ex.Message);
                 isRunCommand = false;
-
-                SwitchStates(MachineStates.Alarm);
+                SwitchStates(MachineStates.Emergency);
             }
             finally
             {
-                WriteLog("Process Finish");
+                WriteLog(YuanliCore.Logger.LogType.PROCESS, "Process Finish");
 
             }
         });
@@ -286,7 +285,7 @@ namespace WLS3200Gen2
                         isRecipeMapShow = false;
                     }
                     ResetDetectionRunningPointList();
-                    WriteLog("Load Recipe :" + recipename);
+                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Load Recipe :" + recipename);
                 }
 
             }
@@ -321,7 +320,7 @@ namespace WLS3200Gen2
                     mainRecipe.Name = recipename;
                     mainRecipe.RecipeSave(path, recipename);
                     RecipeName = recipename;
-                    WriteLog("Save Recipe :" + recipename);
+                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Save Recipe :" + recipename);
                 }
             }
             catch (Exception ex)
