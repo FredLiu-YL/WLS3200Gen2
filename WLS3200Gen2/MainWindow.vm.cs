@@ -112,6 +112,14 @@ namespace WLS3200Gen2
         /// </summary>
         public ICommand ClearShapeAction { get; set; }
         /// <summary>
+        /// 新增 手動量測Shape
+        /// </summary>
+        public ICommand AddShapeManualAction { get; set; }
+        /// <summary>
+        /// 清除 手動量測Shape
+        /// </summary>
+        public ICommand ClearShapeManualAction { get; set; }
+        /// <summary>
         /// 新增 Shape
         /// </summary>
         public ICommand AddHomeMapShapeAction { get; set; }
@@ -304,7 +312,7 @@ namespace WLS3200Gen2
             catch (Exception ex)
             {
                 SwitchStates(MachineStates.Alarm);
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
             finally
             {
