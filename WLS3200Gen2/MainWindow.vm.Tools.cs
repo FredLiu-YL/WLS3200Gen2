@@ -146,7 +146,8 @@ namespace WLS3200Gen2
                 IsCanWorkEFEMTrans = false;
                 await machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
                 machine.MicroDetection.TableVacuum.On();
-                WaferProcessStatus station = new WaferProcessStatus();
+                Wafer station = new Wafer(1);
+
                 await machine.Feeder.LoadToMicroAsync(station);
                 IsCanWorkEFEMTrans = true;
             }

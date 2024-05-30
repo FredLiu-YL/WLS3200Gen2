@@ -67,5 +67,10 @@ namespace WLS3200Gen2
             double ss = 0;
             ss = 3;
         }
+
+        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString(); // 將行索引加 1 作為 Header 顯示
+        }
     }
 }

@@ -105,7 +105,7 @@ namespace WLS3200Gen2.UserControls
 
                 if (MacroTop == WaferProcessStatus.Select)
                     MacroTop = WaferProcessStatus.NotSelect;
-                else
+                else if (MacroTop == WaferProcessStatus.NotSelect || MacroTop == WaferProcessStatus.Pass)
                     MacroTop = WaferProcessStatus.Select;
             }
             catch (Exception ex)
@@ -121,7 +121,7 @@ namespace WLS3200Gen2.UserControls
 
                 if (MacroBack == WaferProcessStatus.Select)
                     MacroBack = WaferProcessStatus.NotSelect;
-                else if (MacroBack == WaferProcessStatus.NotSelect)
+                else if (MacroBack == WaferProcessStatus.NotSelect || MacroBack == WaferProcessStatus.Pass)
                     MacroBack = WaferProcessStatus.Select;
             }
             catch (Exception ex)
@@ -136,7 +136,7 @@ namespace WLS3200Gen2.UserControls
             {
                 if (WaferID == WaferProcessStatus.Select)
                     WaferID = WaferProcessStatus.NotSelect;
-                else if (WaferID == WaferProcessStatus.NotSelect)
+                else if (WaferID == WaferProcessStatus.NotSelect || WaferID == WaferProcessStatus.Pass)
                     WaferID = WaferProcessStatus.Select;
             }
             catch (Exception ex)
@@ -151,7 +151,7 @@ namespace WLS3200Gen2.UserControls
             {
                 if (Micro == WaferProcessStatus.Select)
                     Micro = WaferProcessStatus.NotSelect;
-                else if (Micro == WaferProcessStatus.NotSelect)
+                else if (Micro == WaferProcessStatus.NotSelect || Micro == WaferProcessStatus.Pass)
                     Micro = WaferProcessStatus.Select;
 
             }

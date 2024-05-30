@@ -62,6 +62,14 @@ namespace WLS3200Gen2.Model.Component
             return Task.CompletedTask;
         }
 
+        public Task WaferIDRun1(double degree1, double degree2)
+        {
+            return Task.CompletedTask;
+        }
 
+        public Task WaferIDRun2()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

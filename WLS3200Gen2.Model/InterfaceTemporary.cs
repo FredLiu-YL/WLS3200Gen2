@@ -482,6 +482,18 @@ namespace WLS3200Gen2.Model
         /// <returns></returns>
         Task Run(double degree);
         /// <summary>
+        /// 移動到WaferID idReaderDegree角度(但是兩個角度要先設定)
+        /// </summary>
+        /// <param name="idReaderDegree"></param>
+        /// <param name="notchDegree"></param>
+        /// <returns></returns>
+        Task WaferIDRun1(double idReaderDegree, double notchDegree);
+        /// <summary>
+        /// 移動到WaferID第二個角度(要先WaferIDRun1移動過完成後再來下)
+        /// </summary>
+        /// <returns></returns>
+        Task WaferIDRun2();
+        /// <summary>
         /// 鎖住Aligner Wafer
         /// </summary>
         Task FixWafer();

@@ -216,12 +216,13 @@ namespace WLS3200Gen2
                     //判斷之前Map有沒有點過，若有要把外框顏色變回來
                     if (selectHomeRectangle != null)
                     {
+                        var recipeRectangle = tempRecipeRectangles.Where(n => n.Col == selectHomeRectangle.Col && n.Row == selectHomeRectangle.Row).FirstOrDefault();
                         var oldRectangle = tempHomeLogAssignRectangles.Where(n => n.Col == selectHomeRectangle.Col && n.Row == selectHomeRectangle.Row).FirstOrDefault();
-                        var orgRectangles = RectanglesHome.Where(n => n.Col == selectHomeRectangle.Col && n.Row == selectHomeRectangle.Row).FirstOrDefault();
-                        SetHomeRectangle?.Invoke(selectHomeRectangle.Col, selectHomeRectangle.Row, orgRectangles.Fill, oldRectangle.Fill);
+                        SetHomeRectangle?.Invoke(selectHomeRectangle.Col, selectHomeRectangle.Row, oldRectangle.Fill, recipeRectangle.Fill);
                     }
                     //把外框顏色變成紅色
-                    SetHomeRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, tempselectRect.Fill, Brushes.Red);
+                    var oldRectangle2 = tempHomeLogAssignRectangles.Where(n => n.Col == tempselectRect.Col && n.Row == tempselectRect.Row).FirstOrDefault();
+                    SetHomeRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, oldRectangle2.Fill, Brushes.Red);
                     SetHomeFocusCenter?.Invoke(tempselectRect.Col, tempselectRect.Row);
                     selectHomeRectangle = tempselectRect;
                 }
@@ -249,12 +250,13 @@ namespace WLS3200Gen2
                     //判斷之前Map有沒有點過，若有要把外框顏色變回來
                     if (selectRecipeRectangle != null)
                     {
-                        var oldRectangle = tempRecipeRectangles.Where(n => n.Col == selectRecipeRectangle.Col && n.Row == selectRecipeRectangle.Row).FirstOrDefault();
+                        var recipeRectangle = tempRecipeRectangles.Where(n => n.Col == selectRecipeRectangle.Col && n.Row == selectRecipeRectangle.Row).FirstOrDefault();
                         var orgRectangles = Rectangles.Where(n => n.Col == selectRecipeRectangle.Col && n.Row == selectRecipeRectangle.Row).FirstOrDefault();
-                        SetRectangle?.Invoke(selectRecipeRectangle.Col, selectRecipeRectangle.Row, orgRectangles.Fill, oldRectangle.Fill);
+                        SetRectangle?.Invoke(selectRecipeRectangle.Col, selectRecipeRectangle.Row, orgRectangles.Fill, recipeRectangle.Fill);
                     }
                     //把外框顏色變成紅色
-                    SetRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, tempselectRect.Fill, Brushes.Red);
+                    var orgRectangles2 = Rectangles.Where(n => n.Col == tempselectRect.Col && n.Row == tempselectRect.Row).FirstOrDefault();
+                    SetRectangle?.Invoke(tempselectRect.Col, tempselectRect.Row, orgRectangles2.Fill, Brushes.Red);
                     selectRecipeRectangle = tempselectRect;
                 }
             }
@@ -400,10 +402,13 @@ namespace WLS3200Gen2
                     DetectionHomePointList = new ObservableCollection<DetectionPoint>();
                 }
                 DetectionHomePointList.Clear();
+                int indexHeader = 0;
                 foreach (var item in DetectionPointList)
                 {
+                    indexHeader++;
                     DetectionHomePointList.Add(new DetectionPoint()
                     {
+                        IndexHeader = indexHeader,
                         IndexX = item.IndexX,
                         IndexY = item.IndexY,
                         Position = item.Position,
@@ -417,7 +422,7 @@ namespace WLS3200Gen2
                         MicroscopeApertureValue = item.MicroscopeApertureValue,
                         MicroscopePosition = item.MicroscopePosition,
                         MicroscopeAberationPosition = item.MicroscopeAberationPosition
-                    });
+                    }); ;
                 }
             }
             catch (Exception ex)

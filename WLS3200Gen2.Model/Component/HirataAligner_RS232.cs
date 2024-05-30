@@ -148,6 +148,99 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Aligner Run:" + ex);
             }
         }
+        public Task WaferIDRun1(double idReaderDegree, double notchDegree)
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    int nowCount = 0;
+                    while (true)
+                    {
+                        AlignerItems alignerItems = new AlignerItems();
+                        alignerItems = Set_IDReadPos(idReaderDegree * 10);
+                        if (alignerItems.IsSetOK == true)
+                        {
+                            alignerItems = new AlignerItems();
+                            alignerItems = Set_FindNotchPos(notchDegree * 10);
+                            if (alignerItems.IsSetOK == true)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                nowCount++;
+                                if (nowCount > TimeOutRetryCount)
+                                {
+                                    throw new Exception("Set Degree Error");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("Set Degree Error");
+                            }
+                        }
+                    }
+                    nowCount = 0;
+                    while (true)
+                    {
+                        AlignerItems alignerItems = new AlignerItems();
+                        alignerItems = Command_MovIDReadPos();
+                        if (alignerItems.IsMovOK == true)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("Move FindNotch Error");
+                            }
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Aligner Run:" + ex);
+            }
+        }
+        public Task WaferIDRun2()
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    int nowCount = 0;
+                    while (true)
+                    {
+                        AlignerItems alignerItems = new AlignerItems();
+                        alignerItems = Command_MovIDReadPosOKThanMoveFindNotchPos();
+                        if (alignerItems.IsMovOK == true)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            nowCount++;
+                            if (nowCount > TimeOutRetryCount)
+                            {
+                                throw new Exception("Move FindNotch Error");
+                            }
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Aligner Run:" + ex);
+            }
+        }
         public Task FixWafer()
         {
             try
@@ -408,37 +501,69 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Move_IDReadPos(AlignerItems alignerItems)
+        public AlignerItems Command_MovIDReadPos()
         {
+            //await Task.Run(async () =>
+            //{
+            //    try
+            //    {
+            //        alignerItems.IsMovOK = false;
+            //        alignerItems.IsDone = false;
+            //        List<string> str3 = new List<string>();
+            //        str3 = SendGetMessage("MOV:OTN2;", true);
+            //        foreach (var item in str3)
+            //        {
+            //            if (item.Contains("MOV"))
+            //            {
+            //                alignerItems.IsMovOK = true;
+            //            }
+            //            if (item.Contains("INF"))
+            //            {
+            //                alignerItems.IsDone = true;
+            //            }
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+
+            //        throw ex;
+            //    }
+            //});
             try
             {
-                await Task.Run(async () =>
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems.IsMovOK = false;
+                alignerItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("MOV:OTN2;", true);
+                bool isMovOK = false;
+                bool isINF = false;
+                foreach (var item in str3)
                 {
-                    try
+                    if (item.Contains("MOV"))
                     {
-                        alignerItems.IsMovOK = false;
-                        alignerItems.IsDone = false;
-                        List<string> str3 = new List<string>();
-                        str3 = SendGetMessage("MOV:OTN2;", true);
-                        foreach (var item in str3)
-                        {
-                            if (item.Contains("MOV"))
-                            {
-                                alignerItems.IsMovOK = true;
-                            }
-                            if (item.Contains("INF"))
-                            {
-                                alignerItems.IsDone = true;
-                            }
-                        }
+                        isMovOK = true;
                     }
-                    catch (Exception ex)
+                    if (item.Contains("INF"))
                     {
-
-                        throw ex;
+                        isINF = true;
                     }
-                });
-
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
+                    }
+                }
+                if (isMovOK == true && isINF == true)
+                {
+                    alignerItems.IsMovOK = true;
+                }
+                return alignerItems;
             }
             catch (Exception ex)
             {
@@ -451,36 +576,77 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Move_IDReadPosOKThanMoveFindNotchPos(AlignerItems alignerItems)
+        public AlignerItems Command_MovIDReadPosOKThanMoveFindNotchPos()
         {
             try
             {
-                await Task.Run(async () =>
+                //await Task.Run(async () =>
+                //{
+                //    try
+                //    {
+                //        alignerItems.IsMovOK = false;
+                //        alignerItems.IsDone = false;
+                //        List<string> str3 = new List<string>();
+                //        str3 = SendGetMessage("MOV:N2TS;", true);
+                //        foreach (var item in str3)
+                //        {
+                //            if (item.Contains("MOV"))
+                //            {
+                //                alignerItems.IsMovOK = true;
+                //            }
+                //            if (item.Contains("INF"))
+                //            {
+                //                alignerItems.IsDone = true;
+                //            }
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+
+                //        throw ex;
+                //    }
+                //});
+                try
                 {
-                    try
+                    AlignerItems alignerItems = new AlignerItems();
+                    alignerItems.IsMovOK = false;
+                    alignerItems.IsDone = false;
+                    List<string> str3 = new List<string>();
+                    str3 = SendGetMessage("MOV:N2TS;", true);
+                    bool isMovOK = false;
+                    bool isINF = false;
+                    foreach (var item in str3)
                     {
-                        alignerItems.IsMovOK = false;
-                        alignerItems.IsDone = false;
-                        List<string> str3 = new List<string>();
-                        str3 = SendGetMessage("MOV:N2TS;", true);
-                        foreach (var item in str3)
+                        if (item.Contains("MOV"))
                         {
-                            if (item.Contains("MOV"))
-                            {
-                                alignerItems.IsMovOK = true;
-                            }
-                            if (item.Contains("INF"))
-                            {
-                                alignerItems.IsDone = true;
-                            }
+                            isMovOK = true;
+                        }
+                        if (item.Contains("INF"))
+                        {
+                            isINF = true;
+                        }
+                        if (item.Contains("ABS"))
+                        {
+                            //abnormal finish 
+                            //取得error code
+                            //更新error狀態
+                            int error_code_idx = item.IndexOf("/");
+                            string error_code = item.Substring(error_code_idx + 1, 2);
+                            alignerItems.ErrorCode = error_code;
+                            alignerItems.IsError = true;
                         }
                     }
-                    catch (Exception ex)
+                    if (isMovOK == true && isINF == true)
                     {
-
-                        throw ex;
+                        alignerItems.IsMovOK = true;
                     }
-                });
+                    return alignerItems;
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
 
             }
             catch (Exception ex)
@@ -704,50 +870,50 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="alignerItems"></param>
         /// <returns></returns>
-        public async Task Set_IDReadPos(AlignerItems alignerItems)
+        public AlignerItems Set_IDReadPos(double degree)
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                AlignerItems alignerItems = new AlignerItems();
+                alignerItems.IsSetOK = false;
+                alignerItems.IsDone = false;
+                List<string> str3 = new List<string>();
+                str3 = SendGetMessage("SET:OFS2" + degree + ";", true);//alignerItems.AlignerPos.FindNotchPos
+                bool isSetOK = false;
+                bool isINF = false;
+                foreach (var item in str3)
                 {
-                    alignerItems.IsSetOK = false;
-                    alignerItems.IsDone = false;
-                    List<string> str3 = new List<string>();
-                    str3 = SendGetMessage("SET:OFS2" + alignerItems.AlignerPos.IDReadPos + ";", true);
-                    bool isSetOK = false;
-                    bool isINF = false;
-                    foreach (var item in str3)
+                    if (item.Contains("SET"))
                     {
-                        if (item.Contains("SET"))
-                        {
-                            isSetOK = true;
-                        }
-                        if (item.Contains("INF"))
-                        {
-                            isINF = true;
-                        }
-                        if (item.Contains("ABS"))
-                        {
-                            //abnormal finish 
-                            //取得error code
-                            //更新error狀態
-                            int error_code_idx = item.IndexOf("/");
-                            string error_code = item.Substring(error_code_idx + 1, 2);
-                            alignerItems.ErrorCode = error_code;
-                            alignerItems.IsError = true;
-                        }
+                        isSetOK = true;
                     }
-                    if (isSetOK == true && isINF == true)
+                    if (item.Contains("INF"))
                     {
-                        alignerItems.IsSetOK = true;
+                        isINF = true;
+                    }
+                    if (item.Contains("ABS"))
+                    {
+                        //abnormal finish 
+                        //取得error code
+                        //更新error狀態
+                        int error_code_idx = item.IndexOf("/");
+                        string error_code = item.Substring(error_code_idx + 1, 2);
+                        alignerItems.ErrorCode = error_code;
+                        alignerItems.IsError = true;
                     }
                 }
-                catch (Exception ex)
+                if (isSetOK == true && isINF == true)
                 {
+                    alignerItems.IsSetOK = true;
+                }
+                return alignerItems;
+            }
+            catch (Exception ex)
+            {
 
-                    throw ex;
-                }
-            });
+                throw ex;
+            }
+
         }
         /// <summary>
         /// Aligner異常重置

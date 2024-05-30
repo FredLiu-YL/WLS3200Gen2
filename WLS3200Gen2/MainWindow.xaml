@@ -240,7 +240,7 @@
                                     <i:EventTrigger EventName="MouseUp">
                                         <command:EventToCommand Command="{Binding ManualCaliperCalculateCommand}"   />
                                     </i:EventTrigger>
-                                    
+
                                 </i:Interaction.Triggers>
                             </views:VirtualCanvas>
                             <GroupBox Grid.Column="1"  >
@@ -321,15 +321,16 @@
                             <TabItem Header="WaferID" Height="10" Visibility="{Binding InformationUCVisibility}" >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="157*"/>
+                                        <ColumnDefinition Width="207*"/>
+                                        <ColumnDefinition Width="364*"/>
+                                        <ColumnDefinition Width="364*"/>
                                     </Grid.ColumnDefinitions>
-                                    <GroupBox Header="WaferID Picture" FontSize="15" Grid.Column="0">
+                                    <GroupBox Header="WaferID Picture" FontSize="15" Grid.Column="0" Grid.ColumnSpan="2">
                                         <!--<Image Grid.Column="0" Grid.Row="2" Source ="{Binding ResultImage}"/>-->
-                                        <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding ResultImage}" />
+                                        <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding HomeResultImage}" />
                                     </GroupBox>
-                                    <GroupBox Header="Key In" FontSize="15" Grid.Column="1" Grid.ColumnSpan="2">
+                                    <GroupBox Header="Key In" FontSize="15" Grid.Column="2" Grid.ColumnSpan="2">
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition />
@@ -437,8 +438,8 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions >
-                                            <RowDefinition Height="0.2*"/>
-                                            <RowDefinition Height="0.8*"/>
+                                            <RowDefinition Height="0.23*"/>
+                                            <RowDefinition Height="0.77*"/>
                                         </Grid.RowDefinitions>
                                         <GroupBox  Grid.Column="0" Grid.ColumnSpan="2" Header="Now Idx" FontSize="12">
 
@@ -522,7 +523,7 @@
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="80*"/>
                                                     <ColumnDefinition Width="20*"/>
-                                                   
+
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
                                                     <RowDefinition/>
@@ -532,21 +533,21 @@
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
-                                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionHomePointList}" FontSize="10"
+                                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding DetectionHomePointList}" FontSize="15"
                                                     CanUserSortColumns="False" AutoGenerateColumns="False" SelectionUnit="FullRow"
-                                                    SelectedIndex="{Binding SelectDetectionHomePointList}"    >
+                                                    SelectedIndex="{Binding SelectDetectionHomePointList}" LoadingRow="DataGrid_LoadingRow">
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                             <i:InvokeCommandAction Command="{Binding HomeDetectionPointListDoubleClickCommand}"/>
                                                         </i:EventTrigger>
                                                     </i:Interaction.Triggers>
                                                     <DataGrid.Columns >
-                                                        <DataGridTextColumn  Width="50"  Header="Idx"  Binding="{Binding IndexX}" IsReadOnly="True" />
-                                                        <DataGridTextColumn  Width="50"  Header="Col"  Binding="{Binding IndexX}" IsReadOnly="True" />
-                                                        <DataGridTextColumn  Width="55"  Header="Row"  Binding="{Binding IndexY}" IsReadOnly="True" />
-                                                        <DataGridTextColumn  Width="120"  Header="PositionX"  Binding="{Binding Position.X}" IsReadOnly="True" />
-                                                        <DataGridTextColumn  Width="120"  Header="PositionY"  Binding="{Binding Position.Y}" IsReadOnly="True" />
-                                                        <DataGridTextColumn  Width="80"  Header="BinCode"  Binding="{Binding Code}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="60"  Header="Idx"  Binding="{Binding IndexHeader }" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="80"  Header="Col"  Binding="{Binding IndexX}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="80"  Header="Row"  Binding="{Binding IndexY}" IsReadOnly="True" />
+                                                        <!--<DataGridTextColumn  Width="120"  Header="PositionX"  Binding="{Binding Position.X}" IsReadOnly="True" />
+                                                        <DataGridTextColumn  Width="120"  Header="PositionY"  Binding="{Binding Position.Y}" IsReadOnly="True" />-->
+                                                        <DataGridTextColumn  Width="120"  Header="BinCode"  Binding="{Binding Code}" IsReadOnly="True" />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                                 <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
@@ -644,8 +645,8 @@
                                             <StackPanel Orientation="Vertical" Grid.Column="0" Grid.Row="1" Margin="-8,0,-8,0">
 
                                                 <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Height="60">
-                                                    <Button Content="PASS" Command="{Binding MacroPASSOperateCommand}"  Width="150" Height="40" Margin="5,0,0,0"/>
-                                                    <Button Content="Reject" Command="{Binding MacroRejectOperateCommand}"   Width="150" Height="40" Margin="55,0,0,0"/>
+                                                    <Button Content="PASS" IsEnabled="{Binding IsMacroJudge}" Command="{Binding MacroPASSOperateCommand}"  Width="150" Height="40" Margin="5,0,0,0"/>
+                                                    <Button Content="Reject" IsEnabled="{Binding IsMacroJudge}" Command="{Binding MacroRejectOperateCommand}"   Width="150" Height="40" Margin="55,0,0,0"/>
                                                 </StackPanel>
 
 
@@ -657,11 +658,18 @@
                                         <GroupBox Grid.Column="1" Header="WorkItem" FontSize="15" Grid.ColumnSpan="2" >
                                             <Grid>
                                                 <Grid.RowDefinitions >
-                                                    <RowDefinition Height="0.15*"/>
-                                                    <RowDefinition Height="0.85*"/>
+                                                    <RowDefinition Height="0.5*"/>
+                                                    <RowDefinition Height="0.5*"/>
                                                 </Grid.RowDefinitions>
-                                                <Button Grid.Column="1" Grid.Row="0" Width="140" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Grab" Margin="5,0,0,0" />
-                                                <UserControlUC:MacroUnitUC Grid.Column="3" Grid.Row="1" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" />
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="0.15*"/>
+                                                    <ColumnDefinition Width="0.25*"/>
+                                                    <ColumnDefinition Width="0.6*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Content="Done" IsEnabled="{Binding IsMacroDone}" Grid.Column="0" Grid.RowSpan="2" Grid.Row ="0" Command="{Binding DoneOperateCommand}"  Width="80" Height="40" Margin="5,0,0,0"/>
+                                                <Button Content="Top Again" IsEnabled="{Binding IsMacroDone}" Grid.Column="1" Grid.Row ="0" Command="{Binding TopAgainOperateCommand}"  Width="120" Height="40" Margin="5,0,0,0"/>
+                                                <Button Content="Back Again" IsEnabled="{Binding IsMacroDone}" Grid.Column="1" Grid.Row ="1" Command="{Binding BackAgainOperateCommand}"  Width="120" Height="40" Margin="5,0,0,0"/>
+                                                <UserControlUC:MacroUnitUC Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center"   Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" ShowChangeMacro="Hidden"  />
                                             </Grid>
                                         </GroupBox>
                                     </Grid>
@@ -984,7 +992,7 @@
                                                                 <ColumnDefinition Width="0.7*"/>
                                                                 <ColumnDefinition Width="0.3*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                            <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" IsEnabled="{Binding IsCanWorkEFEMTrans}" ShowChangeMacro="Visible"  />
                                                             <Grid Grid.Column="1">
                                                                 <Grid.RowDefinitions >
                                                                     <RowDefinition Height="0.5*"/>
@@ -1133,7 +1141,7 @@
                                                 <TextBlock  Text="Locate Setting"  Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2"/>
                                             </Border>
                                             <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2">
-                                                <StackPanel  Margin="2,2,2,10"    Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                <StackPanel      Orientation="Vertical"   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
 
                                                     <Grid>
                                                         <Grid.RowDefinitions >
@@ -1192,10 +1200,10 @@
                                                             <Label Content="Y" Width="70" FontSize="26" />
                                                             <TextBox Text="{Binding LocateY}"    FontSize="22"   Width="70" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                         </StackPanel>
-                                                        <Button Grid.Row="1" Grid.Column="0" Content="Move To PickZ" FontSize="20" Width="200" Height="40" HorizontalAlignment="Left"  Command="{Binding MoveToPickZCommand}" Cursor="Hand" />
+
                                                         <!--<Button Grid.Row="1" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />-->
+                                                        <Button Grid.Row="1" Grid.Column="0" Content="Move To PickZ" FontSize="20" Width="200" Height="40" HorizontalAlignment="Left"  Command="{Binding MoveToPickZCommand}" Cursor="Hand" />
                                                     </Grid>
-                                                    <TextBlock />
                                                 </StackPanel>
 
 

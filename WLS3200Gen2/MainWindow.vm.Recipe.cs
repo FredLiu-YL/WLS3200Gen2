@@ -51,7 +51,7 @@ namespace WLS3200Gen2
         private LocateParam locateParam3 = new LocateParam(103);//Locate pattern 從100號開始
         private ObservableCollection<ROIShape> drawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> manualdrawings = new ObservableCollection<ROIShape>();
-        
+
         private ObservableCollection<ROIShape> mapDrawings = new ObservableCollection<ROIShape>();
         private ObservableCollection<ROIShape> homeMapDrawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
@@ -108,12 +108,12 @@ namespace WLS3200Gen2
                 if (isMainHomePageSelect)
                 {
                     WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the HomePage");
-                    ShowHomeMapImgae(mainRecipe.DetectRecipe);
-                    ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
                     if (isRunCommand == false)
                     {
+                        ResetTempAssign();
                         ResetDetectionRunningPointList();
                     }
+                    ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
                 }
                 return isMainHomePageSelect;
             }
@@ -364,7 +364,7 @@ namespace WLS3200Gen2
         /// <summary>
         /// 手動量測工具
         /// </summary>
-        public ObservableCollection<ROIShape>  ManualDrawings { get => manualdrawings; set => SetValue(ref manualdrawings, value); }
+        public ObservableCollection<ROIShape> ManualDrawings { get => manualdrawings; set => SetValue(ref manualdrawings, value); }
         public ObservableCollection<ROIShape> HomeMapDrawings { get => homeMapDrawings; set => SetValue(ref homeMapDrawings, value); }
 
         public bool IsDie { get => isDie; set => SetValue(ref isDie, value); }
@@ -1223,7 +1223,7 @@ namespace WLS3200Gen2
                                     await Task.WhenAll(micro, microZ, robot);
                                 }
                                 machine.MicroDetection.TableVacuum.On();
-                                WaferProcessStatus station = new WaferProcessStatus();
+                                Wafer station = new Wafer(1);
                                 await machine.Feeder.LoadToMicroAsync(station);
                                 if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
                                 {
@@ -1765,8 +1765,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                MessageBox.Show(ex.Message);
             }
         }
         private void SetLocateParamToRecipe()

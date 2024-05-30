@@ -49,13 +49,15 @@ namespace WLS3200Gen2
 
         private ProcessSetting processSetting;
         private Visibility informationUIVisibility, workholderUCVisibility;
-        private WriteableBitmap resultImage;
+        private WriteableBitmap homeResultImage, resultImage;
         private int tabControlSelectedIndex = 0; // 0:Process Infomation   1:Alignment  2:Micro  3 :Macro
         private bool isOperateUI = true;
+        private bool isMacroJudge = false, isMacroDone = false;
         private double manualPosX, manualPosY;
         private string waferIDManualKeyIn;
         private MachineStates machinestatus = MachineStates.IDLE;
         private WaferProcessStatus macroJudgeOperation;
+        private ProcessStation macroDoneOperation = new ProcessStation(1);
         private WaferProcessStatus microJudgeOperation = WaferProcessStatus.Pass;
         private bool isLoadport1, isLoadport2;
         private IMicroscope microscope;
@@ -76,7 +78,8 @@ namespace WLS3200Gen2
         /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
         /// </summary>
         public bool IsOperateUI { get => isOperateUI; set => SetValue(ref isOperateUI, value); }
-
+        public bool IsMacroJudge { get => isMacroJudge; set => SetValue(ref isMacroJudge, value); }
+        public bool IsMacroDone { get => isMacroDone; set => SetValue(ref isMacroDone, value); }
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
         public ProcessSetting ProcessSetting { get => processSetting; set => SetValue(ref processSetting, value); }
@@ -84,6 +87,7 @@ namespace WLS3200Gen2
         public Visibility processVisibility = Visibility.Visible;
         public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
         public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
+        public WriteableBitmap HomeResultImage { get => homeResultImage; set => SetValue(ref homeResultImage, value); }
         public WriteableBitmap ResultImage { get => resultImage; set => SetValue(ref resultImage, value); }
         public int TabControlSelectedIndex { get => tabControlSelectedIndex; set => SetValue(ref tabControlSelectedIndex, value); }
         public double ManualPosX { get => manualPosX; set => SetValue(ref manualPosX, value); }
@@ -152,6 +156,7 @@ namespace WLS3200Gen2
                     isWaferInSystem = await machine.BeforeHomeCheck();
                     if (isWaferInSystem)
                     {
+                        //WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, $"Remaining number of wafers : {waferusableCount} ");
                         MessageBox.Show("Wafer In System!! Please RemoveWafer", "Wafer In System", MessageBoxButton.YesNo);
                     }
                     else
@@ -320,7 +325,7 @@ namespace WLS3200Gen2
                 bool isDialogResult = (bool)win.ShowDialog();
                 if (isDialogResult)
                 {
-
+                    mainRecipe.DetectRecipe.WaferMap.MapImage = null;
                     var recipename = win.FileName;
                     // machine.BonderRecipe.Save(win.FilePathName);
                     mainRecipe.Name = recipename;
@@ -475,7 +480,8 @@ namespace WLS3200Gen2
             {
                 BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
                 DetectionPoint point = new DetectionPoint();
-                Wafer currentWafer = new Wafer(1);
+                point.IndexX = MicroCheckNowIndexX;
+                point.IndexY = MicroCheckNowIndexY;
                 DetectionRecord(bmp, point);
             }
             catch (Exception ex)
@@ -515,7 +521,7 @@ namespace WLS3200Gen2
                             Y1 = h / 2,
                             X2 = w / 2 + 200,
                             Y2 = h / 2,
-                            StrokeThickness = 2,
+                            StrokeThickness = 5,
                             Stroke = System.Windows.Media.Brushes.Red,
                             IsInteractived = true
                         };
@@ -528,7 +534,7 @@ namespace WLS3200Gen2
                             Y = h / 2,
                             LengthX = 100,
                             LengthY = 100,
-                            StrokeThickness = 2,
+                            StrokeThickness = 5,
                             Stroke = System.Windows.Media.Brushes.Red,
                             IsInteractived = true
                         };
@@ -540,7 +546,7 @@ namespace WLS3200Gen2
                             X = w / 2,
                             Y = h / 2,
                             Radius = 100,
-                            StrokeThickness = 2,
+                            StrokeThickness = 5,
                             Stroke = System.Windows.Media.Brushes.Red,
                             IsInteractived = true
                         };
@@ -625,6 +631,53 @@ namespace WLS3200Gen2
                 macroJudgeOperation = WaferProcessStatus.Reject;
                 await machine.ProcessResume();
 
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand DoneOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                await machine.ProcessResume();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand TopAgainOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                macroDoneOperation.MacroTop = WaferProcessStatus.Select;
+                await machine.ProcessResume();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand BackAgainOperateCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                macroDoneOperation.MacroBack = WaferProcessStatus.Select;
+                await machine.ProcessResume();
             }
             catch (Exception ex)
             {
@@ -907,7 +960,8 @@ namespace WLS3200Gen2
         private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
             machine.ProcessPause();//暫停
-
+            IsMacroDone = false;
+            IsMacroJudge = true;
             //切到Macro 頁面
             TabControlSelectedIndex = 4;
             IsOperateUI = false;
@@ -917,6 +971,26 @@ namespace WLS3200Gen2
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
             return macroJudgeOperation;
+        }
+        private async Task<ProcessStation> MacroDoneOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        {
+            machine.ProcessPause();//暫停
+            IsMacroJudge = false;
+            IsMacroDone = true;
+            macroDoneOperation = new ProcessStation(1);
+            //切到Macro 頁面
+            TabControlSelectedIndex = 4;
+            IsOperateUI = false;
+            cts.Token.ThrowIfCancellationRequested();
+            await pts.Token.WaitWhilePausedAsync(cts.Token);
+            //切到Infomation頁面
+            IsMacroDone = false;
+            if (!(macroDoneOperation.MacroTop == WaferProcessStatus.Select || macroDoneOperation.MacroBack == WaferProcessStatus.Select))
+            {
+                TabControlSelectedIndex = 0;
+            }
+            IsOperateUI = true;
+            return macroDoneOperation;
         }
         private async Task<Point> AlignmentOperate(PauseTokenSource pts, CancellationTokenSource cts, double grabPosX, double grabPosY)
         {
@@ -939,7 +1013,6 @@ namespace WLS3200Gen2
                 IsOperateUI = false;
                 cts.Token.ThrowIfCancellationRequested();
                 await pts.Token.WaitWhilePausedAsync(cts.Token);
-
                 //切到Infomation頁面
                 TabControlSelectedIndex = 0;
                 IsOperateUI = true;
@@ -961,25 +1034,63 @@ namespace WLS3200Gen2
             //切到Infomation頁面
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
-            microJudgeOperation = WaferProcessStatus.Complate;
+            try
+            {
+                TableX.AxisVelocity.MaxVel = TableXMaxVel;
+                TableY.AxisVelocity.MaxVel = TableYMaxVel;
+            }
+            catch (Exception ex)
+            {
+            }
+            microJudgeOperation = WaferProcessStatus.Pass;
             return microJudgeOperation;
         }
         private async Task<String> WaferIDOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {
-            pts.IsPaused = true;
-            machine.ProcessPause();//暫停
-            WaferIDManualKeyIn = "";
-            //切到Micro 頁面
-            TabControlSelectedIndex = 1;
-            //machine.Feeder.Reader.ReadAsync();
-            ResultImage = new WriteableBitmap(machine.Feeder.Reader.Image.ToBitmapSource());
-            IsOperateUI = false;
-            cts.Token.ThrowIfCancellationRequested();
-            await pts.Token.WaitWhilePausedAsync(cts.Token);
-            //切到Infomation頁面
-            TabControlSelectedIndex = 0;
-            IsOperateUI = true;
-            return WaferIDManualKeyIn;
+            if (ProcessSetting.IsTestRun)
+            {
+                TabControlSelectedIndex = 1;
+                await Task.Delay(50);//等切過去TableIndex再來變化，不然第一次還沒初始，圖像不會顯示
+                App.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    try
+                    {
+                        HomeResultImage = new WriteableBitmap(machine.Feeder.Reader.Image.ToBitmapSource());
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }));
+                await Task.Delay(1000);
+                TabControlSelectedIndex = 0;
+                return "Test";
+            }
+            else
+            {
+                pts.IsPaused = true;
+                machine.ProcessPause();//暫停
+                WaferIDManualKeyIn = "";
+                //切到Micro 頁面
+                TabControlSelectedIndex = 1;
+                await Task.Delay(50);//等切過去TableIndex再來變化，不然第一次還沒初始，圖像不會顯示
+                IsOperateUI = false;
+                App.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    try
+                    {
+                        HomeResultImage = new WriteableBitmap(machine.Feeder.Reader.Image.ToBitmapSource());
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }));
+                cts.Token.ThrowIfCancellationRequested();
+                await pts.Token.WaitWhilePausedAsync(cts.Token);
+                //切到Infomation頁面
+                TabControlSelectedIndex = 0;
+                IsOperateUI = true;
+                return WaferIDManualKeyIn;
+            }
         }
         private void WaferIDRecord(BitmapSource bitmap)
         {

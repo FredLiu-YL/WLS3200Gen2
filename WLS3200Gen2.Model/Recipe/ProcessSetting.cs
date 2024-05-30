@@ -36,7 +36,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// <summary>
         /// 是否要測試模式
         /// </summary>
-        public bool IsTestRun { get; set; } = false ;
+        public bool IsTestRun { get; set; } = false;
         public bool RemoteDefectPoint { get; set; }
         /// <summary>
         /// 晶圓檢查站點 //陣列0  是第25片 放在cassette最上面
@@ -47,7 +47,37 @@ namespace WLS3200Gen2.Model.Recipe
         /// </summary>
         public bool IsReadWaferID { get; set; }
 
-
+        public ProcessSetting Copy()
+        {
+            // 复制 ProcessStation 数组
+            ProcessStation[] copiedProcessStation = new ProcessStation[this.ProcessStation.Length];
+            for (int i = 0; i < this.ProcessStation.Length; i++)
+            {
+                // 对于每个 ProcessStation，创建一个新的实例并复制属性
+                copiedProcessStation[i] = new ProcessStation(this.ProcessStation[i].CassetteIndex)
+                {
+                    // 假设 ProcessStation 有一些属性，你需要将它们逐个复制到新实例中
+                    MacroTop = this.ProcessStation[i].MacroTop,
+                    MacroBack = this.ProcessStation[i].MacroBack,
+                    WaferID = this.ProcessStation[i].WaferID,
+                    Micro = this.ProcessStation[i].Micro,
+                    Totally = this.ProcessStation[i].Totally,
+                    CassetteIndex = this.ProcessStation[i].CassetteIndex,
+                };
+            }
+            return new ProcessSetting
+            {
+                Inch = this.Inch,
+                IsLoadport1 = this.IsLoadport1,
+                IsLoadport2 = this.IsLoadport2,
+                IsAutoSave = this.IsAutoSave,
+                IsAutoFocus = this.IsAutoFocus,
+                IsTestRun = this.IsTestRun,
+                RemoteDefectPoint = this.RemoteDefectPoint,
+                ProcessStation = copiedProcessStation,
+                IsReadWaferID = this.IsReadWaferID
+            };
+        }
 
     }
 

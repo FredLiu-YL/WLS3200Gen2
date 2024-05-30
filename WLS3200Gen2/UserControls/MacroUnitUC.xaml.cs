@@ -29,6 +29,9 @@ namespace WLS3200Gen2.UserControls
                                                                                          new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty MacroStatusProperty = DependencyProperty.Register(nameof(MacroStatus), typeof(MacroStatus), typeof(MacroUnitUC),
                                                                                  new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public static readonly DependencyProperty ShowChangeMacroProperty = DependencyProperty.Register(nameof(ShowChangeMacro), typeof(Visibility), typeof(MacroUnitUC),
+                                                                                         new FrameworkPropertyMetadata(Visibility.Collapsed, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public MacroUnitUC()
         {
             InitializeComponent();
@@ -37,6 +40,11 @@ namespace WLS3200Gen2.UserControls
         {
             get => (IMacro)GetValue(MacroProperty);
             set => SetValue(MacroProperty, value);
+        }
+        public Visibility ShowChangeMacro
+        {
+            get => (Visibility)GetValue(ShowChangeMacroProperty);
+            set => SetValue(ShowChangeMacroProperty, value);
         }
         public MacroStatus MacroStatus
         {
@@ -223,11 +231,11 @@ namespace WLS3200Gen2.UserControls
                         switch (key)
                         {
                             case "Y+":
-                                Macro.OuterRingRollYMoveToAsync(Macro.InnerRingRollYPositionPEL);
+                                Macro.OuterRingRollYMoveToAsync(Macro.OuterRingRollYPositionPEL);
                                 //Macro.OuterRingRollY_Move(true);
                                 break;
                             case "Y-":
-                                Macro.OuterRingRollYMoveToAsync(Macro.InnerRingRollYPositionNEL);
+                                Macro.OuterRingRollYMoveToAsync(Macro.OuterRingRollYPositionNEL);
                                 //Macro.OuterRingRollY_Move(false);
                                 break;
                         }

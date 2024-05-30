@@ -170,16 +170,7 @@ namespace WLS3200Gen2
                 else
                 {
                     //直接關掉程式!
-                    if (machine.MicroDetection != null && machine.MicroDetection.Camera != null)
-                    {
-                        try
-                        {
-                            machine.MicroDetection.Camera.Stop();
-                        }
-                        catch (Exception ex)
-                        {
-                        }
-                    }
+                    machine.Disopse();
                     isRefresh = false;
                     await Task.Delay(500);
                     Application.Current.Shutdown();
@@ -521,7 +512,7 @@ namespace WLS3200Gen2
 
                 }
                 machine.Disopse();
-                
+
                 isRefresh = false;
                 // 如果使用者選擇 "是"，則允許視窗關閉
                 e.Cancel = false;

@@ -281,7 +281,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 int ret = APS168Lib.APS_relative_move(axisID, (int)(distance * Axes[id].Ratio), (int)(Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio));
                 if (ret == 0)
                 {
-                    //ChkAxisStop(id, 180);
+                    ChkAxisStop(id, 180);
                 }
             }
             catch (Exception ex)
@@ -301,7 +301,7 @@ namespace WLS3200Gen2.Model.Component.Adlink
                 int ret = APS168Lib.APS_absolute_move(axisID, (int)(position * Axes[id].Ratio), (int)(Axes[id].AxisVelocity.MaxVel * Axes[id].Ratio));
                 if (ret == 0)
                 {
-                    //ChkAxisStop(id, 180);
+                    ChkAxisStop(id, 180);
                 }
             }
             catch (Exception ex)

@@ -38,9 +38,13 @@ namespace WLS3200Gen2.Model.Recipe
 
     public class DetectionPoint : INotifyPropertyChanged
     {
-        private int indexX, indexY;
+        private int indexHeader = 0, indexX, indexY;
         private Point position;
         private String code;
+        /// <summary>
+        /// 標題的Index
+        /// </summary>
+        public int IndexHeader { get => indexHeader; set => SetValue(ref indexHeader, value); }
         /// <summary>
         /// 檢測位置的Index X
         /// </summary>

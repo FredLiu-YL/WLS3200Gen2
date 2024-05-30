@@ -82,8 +82,18 @@ namespace YuanliCore.Data
         /// </summary>
         public int CassetteIndex { get => cassetteIndex; set => SetValue(ref cassetteIndex, value); }
 
-
-
+        public ProcessStation Copy()
+        {
+            return new ProcessStation(this.CassetteIndex)
+            {
+                MacroTop = this.MacroTop,
+                MacroBack = this.MacroBack,
+                WaferID = this.WaferID,
+                Micro = this.Micro,
+                Totally = this.Totally,
+                CassetteIndex = this.CassetteIndex
+            };
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

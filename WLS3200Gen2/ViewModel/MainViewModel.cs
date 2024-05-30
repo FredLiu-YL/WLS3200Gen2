@@ -102,6 +102,7 @@ namespace WLS3200Gen2
             machine.ChangeRecipe += ChangeRecipe;
             machine.WriteLog += WriteLog;
             machine.MacroReady += MacroOperate;
+            machine.MacroDoneReady += MacroDoneOperate;
             machine.AlignmentReady += AlignmentOperate;
             machine.SetWaferStatus += UpdateCassetteUI;
         }

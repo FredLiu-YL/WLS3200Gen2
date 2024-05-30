@@ -196,6 +196,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro Start");
                 DetectionRecipe recipe = mainRecipe.DetectRecipe;
                 if (IsTableVacuum.IsSignal)
                 {
@@ -249,7 +250,6 @@ namespace WLS3200Gen2.Model.Module
 
                     //創建存檔各片存檔的路徑
                     GrabSaveFolder = savePath;
-
                     GrabTitleIdx = 0;
                     if (processSetting.IsAutoSave)
                     {
@@ -278,6 +278,7 @@ namespace WLS3200Gen2.Model.Module
                                                                // pauseToken.IsPaused = true;
                             cancelToken.Token.ThrowIfCancellationRequested();
                             await pauseToken.Token.WaitWhilePausedAsync(cancelToken.Token);
+                            currentWafer.ProcessStatus.Micro = WaferProcessStatus.Pass;
                         }
                     }
                     else
@@ -285,6 +286,7 @@ namespace WLS3200Gen2.Model.Module
                         Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
                         currentWafer.ProcessStatus.Micro = await micro;
                     }
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro End");
                 }
                 else
                 {
