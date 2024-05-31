@@ -1038,7 +1038,7 @@ namespace WLS3200Gen2
                 return new Point(ManualPosX, ManualPosY);//最後UI任何操作都會寫入ManualPosX Y 的座標 ，離開之前傳回座標給流程
             }
         }
-        private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts, Die[] dies)
+        private async Task<(WaferProcessStatus, Die[])> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts, Die[] dies)
         {
             pts.IsPaused = true;
             machine.ProcessPause();//暫停
@@ -1082,7 +1082,7 @@ namespace WLS3200Gen2
                 throw;
             }
             microJudgeOperation = WaferProcessStatus.Pass;
-            return microJudgeOperation;
+            return (microJudgeOperation, dies);
         }
         private async Task<String> WaferIDOperate(PauseTokenSource pts, CancellationTokenSource cts)
         {

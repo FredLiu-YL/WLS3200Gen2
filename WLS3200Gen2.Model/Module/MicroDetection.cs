@@ -96,7 +96,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary> 
         /// 
         /// </summary>
-        public event Func<PauseTokenSource, CancellationTokenSource, Die[], Task<WaferProcessStatus>> MicroReady;
+        public event Func<PauseTokenSource, CancellationTokenSource, Die[], Task<(WaferProcessStatus, Die[])>> MicroReady;
 
         public ITransform TransForm { get; set; }
         public async Task Home()
@@ -283,9 +283,10 @@ namespace WLS3200Gen2.Model.Module
                     }
                     else
                     {
-                        Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk, report.WaferMapping.Dies);
-                        currentWafer.ProcessStatus.Micro = await micro;
-
+                        Task<(WaferProcessStatus, Die[])> micro = MicroReady?.Invoke(pst, ctk, report.WaferMapping.Dies);
+                        await micro;
+                        currentWafer.ProcessStatus.Micro = micro.Result.Item1;
+                        report.WaferMapping.Dies = micro.Result.Item2;
                         //SinfWaferMapping sinfWaferMapping = (SinfWaferMapping)report.WaferMapping.Copy();
                         //sinfWaferMapping.SaveWaferFile("");
                     }
