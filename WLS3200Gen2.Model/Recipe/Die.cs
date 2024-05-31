@@ -51,6 +51,21 @@ namespace YuanliCore.Data
         /// </summary>
         public Size DieSize { get; set; }
 
-
+        public Die Copy()
+        {
+            return new Die()
+            {
+                IndexX = this.IndexX,
+                IndexY = this.IndexY,
+                OperationPixalX = this.OperationPixalX,
+                OperationPixalY = this.OperationPixalY,
+                MapTransX = this.MapTransX,
+                MapTransY = this.MapTransY,
+                PosX = this.PosX,
+                PosY = this.PosY,
+                BinCode = this.BinCode,
+                DieSize = this.DieSize,
+            };
+        }
     }
 }

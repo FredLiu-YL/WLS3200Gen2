@@ -96,7 +96,7 @@ namespace WLS3200Gen2.Model.Module
         /// <summary> 
         /// 
         /// </summary>
-        public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MicroReady;
+        public event Func<PauseTokenSource, CancellationTokenSource, Die[], Task<WaferProcessStatus>> MicroReady;
 
         public ITransform TransForm { get; set; }
         public async Task Home()
@@ -192,7 +192,7 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task Run(Wafer currentWafer, MainRecipe mainRecipe, MicroscopeLens[] lensSetting, ProcessSetting processSetting, string savePath, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(Wafer currentWafer, InspectionReport report, MainRecipe mainRecipe, MicroscopeLens[] lensSetting, ProcessSetting processSetting, string savePath, PauseTokenSource pst, CancellationTokenSource ctk)
         {
             try
             {
@@ -283,9 +283,13 @@ namespace WLS3200Gen2.Model.Module
                     }
                     else
                     {
-                        Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk);
+                        Task<WaferProcessStatus> micro = MicroReady?.Invoke(pst, ctk, report.WaferMapping.Dies);
                         currentWafer.ProcessStatus.Micro = await micro;
+
+                        //SinfWaferMapping sinfWaferMapping = (SinfWaferMapping)report.WaferMapping.Copy();
+                        //sinfWaferMapping.SaveWaferFile("");
                     }
+                    //report.WaferMapping.SaveWaferFile("");
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro End");
                 }
                 else

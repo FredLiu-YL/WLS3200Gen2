@@ -738,25 +738,6 @@ namespace WLS3200Gen2
             }
 
         });
-        /// <summary>
-        /// 顯示主畫面Map圖片
-        /// </summary>
-        /// <param name="detectionRecipe"></param>
-        public void ShowHomeMapImgae(DetectionRecipe detectionRecipe)
-        {
-            try
-            {
-                if (detectionRecipe.WaferMap != null && detectionRecipe.WaferMap.MapImage != null)
-                {
-                    HomeMapImage = new WriteableBitmap(mainRecipe.DetectRecipe.WaferMap.MapImage.ToBitmapSource());
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
 
 
 
@@ -868,7 +849,7 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer())
                                 {
                                     throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
                                 }
@@ -936,7 +917,7 @@ namespace WLS3200Gen2
                             //片子上一個狀態先記錄起來
                             Model.ArmStation oldArmStation = RecipeLastArmStation;
                             //確認手臂有無片
-                            if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                            if (EFEMTransWaferBeforeCheckRobotHaveWafer())
                             {
                                 throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
                             }
@@ -1000,7 +981,7 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer())
                                 {
                                     throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
                                 }
@@ -1112,12 +1093,12 @@ namespace WLS3200Gen2
                 Task.Delay(1000).Wait();
                 if (machine.Feeder.Robot.IsLockOK)
                 {
-                    return false;
+                    return true;
                 }
                 else
                 {
                     machine.Feeder.Robot.ReleaseWafer().Wait();
-                    return true;
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -1203,7 +1184,7 @@ namespace WLS3200Gen2
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
-                                if (EFEMTransWaferBeforeCheckRobotHaveWafer() == false)
+                                if (EFEMTransWaferBeforeCheckRobotHaveWafer())
                                 {
                                     throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
                                 }

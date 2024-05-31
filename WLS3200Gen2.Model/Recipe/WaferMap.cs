@@ -38,7 +38,7 @@ namespace WLS3200Gen2.Model.Recipe
         /// 每個Die的資訊
         /// </summary>
         public Die[] Dies { get; set; }
-        
+
         /// <summary>
         /// Wafer尺寸(um)
         /// </summary>
@@ -52,10 +52,6 @@ namespace WLS3200Gen2.Model.Recipe
         /// 列總數
         /// </summary>
         public int RowCount { get; set; }
-        /// <summary>
-        /// 樣本圖片 
-        /// </summary>
-        public Frame<byte[]> MapImage { get; set; }
         public string Lot_ID { get; set; }
         public int Wafer_Idx { get; set; }
         public int Count_Row { get; set; }
@@ -68,6 +64,36 @@ namespace WLS3200Gen2.Model.Recipe
         public double DieSize_Y { get; set; }
         public double Start_LeftX { get; set; }
         public double Start_TopY { get; set; }
+
+        public WaferMapping Copy()
+        {
+            Die[] copiedDies = new Die[this.Dies.Length];
+            for (int i = 0; i < this.Dies.Length; i++)
+            {
+                copiedDies[i] = this.Dies[i].Copy();
+            }
+
+            return new WaferMapping(false, false)
+            {
+                OriginPoint = this.OriginPoint,
+                NotchDirection = this.NotchDirection,
+                MapCenterPoint = this.MapCenterPoint,
+                WaferSize = this.WaferSize,
+                ColumnCount = this.ColumnCount,
+                RowCount = this.RowCount,
+                Lot_ID = this.Lot_ID,
+                Wafer_Idx = this.Wafer_Idx,
+                Count_Row = this.Count_Row,
+                Count_Column = this.Count_Column,
+                Unit = this.Unit,
+                DieSize_X = this.DieSize_X,
+                DieSize_Y = this.DieSize_Y,
+                Start_LeftX = this.Start_LeftX,
+                Start_TopY = this.Start_TopY,
+                Dies = copiedDies
+
+            };
+        }
     }
 
     public class SinfWaferMapping : WaferMapping

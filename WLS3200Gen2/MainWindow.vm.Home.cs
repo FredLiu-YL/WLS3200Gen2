@@ -32,6 +32,7 @@ namespace WLS3200Gen2
     {
         private ObservableCollection<ProcessStation> processStations = new ObservableCollection<ProcessStation>();
         private string logMessage;
+        private string loadPortContent = "Load";
         private bool isRunning = false;
         private bool isRunCommand = false;
         private readonly object lockAssignObj = new object();
@@ -51,7 +52,7 @@ namespace WLS3200Gen2
         private Visibility informationUIVisibility, workholderUCVisibility;
         private WriteableBitmap homeResultImage, resultImage;
         private int tabControlSelectedIndex = 0; // 0:Process Infomation   1:Alignment  2:Micro  3 :Macro
-        private bool isOperateUI = true;
+        private bool isOperateUI = true, isCanChangeRecipe = true;
         private bool isMacroJudge = false, isMacroDone = false;
         private double manualPosX, manualPosY;
         private string waferIDManualKeyIn;
@@ -78,9 +79,11 @@ namespace WLS3200Gen2
         /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
         /// </summary>
         public bool IsOperateUI { get => isOperateUI; set => SetValue(ref isOperateUI, value); }
+        public bool IsCanChangeRecipe { get => isCanChangeRecipe; set => SetValue(ref isCanChangeRecipe, value); }
         public bool IsMacroJudge { get => isMacroJudge; set => SetValue(ref isMacroJudge, value); }
         public bool IsMacroDone { get => isMacroDone; set => SetValue(ref isMacroDone, value); }
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
+        public string LoadPortContent { get => loadPortContent; set => SetValue(ref loadPortContent, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
         public ProcessSetting ProcessSetting { get => processSetting; set => SetValue(ref processSetting, value); }
 
@@ -133,8 +136,8 @@ namespace WLS3200Gen2
 
                 if (isRunCommand == false)
                 {
+                    IsCanChangeRecipe = false;
                     isRunCommand = true;
-
                     IsRunning = true;
                     WriteLog(YuanliCore.Logger.LogType.TRIG, "Process Start");
                     //產生當下時間的資料夾
@@ -170,6 +173,7 @@ namespace WLS3200Gen2
 
                     isRunCommand = false;
                     IsRunning = false;
+                    IsCanChangeRecipe = true;
                 }
                 else
                 {
@@ -222,7 +226,7 @@ namespace WLS3200Gen2
                 InformationUCVisibility = Visibility.Visible;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
-                IsRunning = false;
+                IsRunning = true;
 
                 SwitchStates(MachineStates.RUNNING);
                 await machine.ProcessResume();
@@ -261,9 +265,9 @@ namespace WLS3200Gen2
 
         public ICommand ReadRecipeCommand => new RelayCommand(async () =>
         {
-
             try
             {
+                IsCanChangeRecipe = false;
                 string path = $"{systemPath}\\Recipe\\";
 
                 if (!Directory.Exists(path))
@@ -281,7 +285,6 @@ namespace WLS3200Gen2
                     RecipeName = recipename;
                     mainRecipe.Name = recipename;
                     mainRecipe.Load(path, recipename);
-                    ShowHomeMapImgae(mainRecipe.DetectRecipe);
                     SetRecipeToLoadWaferParam();
                     SetRecipeToLocateParam();
                     SetRecipeToDetectionParam();
@@ -298,11 +301,12 @@ namespace WLS3200Gen2
                     ResetDetectionRunningPointList();
                     WriteLog(YuanliCore.Logger.LogType.TRIG, "Load Recipe :" + recipename);
                 }
+                IsCanChangeRecipe = true;
 
             }
             catch (Exception ex)
             {
-
+                IsCanChangeRecipe = true;
                 MessageBox.Show(ex.Message);
             }
         });
@@ -325,7 +329,6 @@ namespace WLS3200Gen2
                 bool isDialogResult = (bool)win.ShowDialog();
                 if (isDialogResult)
                 {
-                    mainRecipe.DetectRecipe.WaferMap.MapImage = null;
                     var recipename = win.FileName;
                     // machine.BonderRecipe.Save(win.FilePathName);
                     mainRecipe.Name = recipename;
@@ -350,22 +353,37 @@ namespace WLS3200Gen2
                 {
                     throw new Exception("Loadport Wrong choice");
                 }
-
+                IsCanChangeRecipe = false;
                 SwitchStates(MachineStates.RUNNING);
 
-                if (IsLoadport1)
+                if (LoadPortContent == "Load")
                 {
-
-                    await machine.Feeder.LoadPortL.Load();
-                    wafers = machine.Feeder.LoadPortL.Slot;
+                    if (IsLoadport1)
+                    {
+                        await machine.Feeder.LoadPortL.Load();
+                        wafers = machine.Feeder.LoadPortL.Slot;
+                    }
+                    else if (IsLoadport2)
+                    {
+                        await machine.Feeder.LoadPortR.Load();
+                        wafers = machine.Feeder.LoadPortR.Slot;
+                    }
+                    LoadPortContent = "UnLoad";
                 }
-                else if (IsLoadport2)
+                else
                 {
-                    await machine.Feeder.LoadPortR.Load();
-                    wafers = machine.Feeder.LoadPortR.Slot;
+                    if (IsLoadport1)
+                    {
+                        await machine.Feeder.LoadPortL.Home();
+                        wafers = machine.Feeder.LoadPortL.Slot;
+                    }
+                    else if (IsLoadport2)
+                    {
+                        await machine.Feeder.LoadPortR.Home();
+                        wafers = machine.Feeder.LoadPortR.Slot;
+                    }
+                    LoadPortContent = "Load";
                 }
-
-
 
                 ProcessStations.Clear();
                 //陣列第一個位置是第25片 ， cassette最上面是第25片 ， 所以要從上往下排
@@ -382,6 +400,7 @@ namespace WLS3200Gen2
                     ProcessStations.Add(temp);
                 }
                 SwitchStates(MachineStates.IDLE);
+                IsCanChangeRecipe = true; ;
             }
             catch (Exception ex)
             {
@@ -1019,7 +1038,7 @@ namespace WLS3200Gen2
                 return new Point(ManualPosX, ManualPosY);//最後UI任何操作都會寫入ManualPosX Y 的座標 ，離開之前傳回座標給流程
             }
         }
-        private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        private async Task<WaferProcessStatus> MicroOperate(PauseTokenSource pts, CancellationTokenSource cts, Die[] dies)
         {
             pts.IsPaused = true;
             machine.ProcessPause();//暫停
@@ -1041,6 +1060,26 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+            }
+            try
+            {
+                foreach (var item in dies)
+                {
+                    RectangleInfo rectangleInfo = tempHomeLogAssignRectangles.FirstOrDefault(n => n.Col == item.IndexX && n.Row == item.IndexY);
+                    if (rectangleInfo != null)
+                    {
+                        BincodeInfo bincodeInfo = BincodeList.FirstOrDefault(n => n.Color == rectangleInfo.Fill);
+                        if (bincodeInfo != null)
+                        {
+                            item.BinCode = bincodeInfo.Code;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
             microJudgeOperation = WaferProcessStatus.Pass;
             return microJudgeOperation;

@@ -14,5 +14,6 @@ namespace WLS3200Gen2.Model
     public class InspectionReport
     {
         public Wafer WaferResult { get; set; }
+        public WaferMapping WaferMapping { get; set; }
     }
 }

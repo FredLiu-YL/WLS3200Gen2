@@ -54,7 +54,7 @@ namespace WLS3200Gen2.Model
                 var copiedProcessSetting = processSetting.Copy();
                 if (processSetting.IsTestRun)
                 {
-                    testCount = 10;
+                    testCount = 20;
                 }
                 for (int i = 0; i < testCount; i++)
                 {
@@ -97,6 +97,8 @@ namespace WLS3200Gen2.Model
                                 if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
                                 MainRecipe recipe = ChangeRecipe.Invoke();
                                 InspectionReport report = new InspectionReport();
+                                report.WaferMapping = (SinfWaferMapping)recipe.DetectRecipe.WaferMap.Copy();
+
                                 currentSavePath = CreateResultFolder(recipe.Name, resultTime, currentWafer.CassetteIndex);
                                 currentWafer.Dies = recipe.DetectRecipe.WaferMap.Dies;
                                 //需不需要在Macro檢查
@@ -160,7 +162,7 @@ namespace WLS3200Gen2.Model
                                     }
                                     //執行主設備動作 
                                     await focusZWafertask;
-                                    await MicroDetection.Run(currentWafer, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, currentSavePath, pts, cts);
+                                    await MicroDetection.Run(currentWafer, report, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, currentSavePath, pts, cts);
                                     SetWaferStatusToUI(currentWafer);
                                     if (pts.IsPaused)
                                     {

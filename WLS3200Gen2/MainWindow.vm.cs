@@ -61,7 +61,7 @@ namespace WLS3200Gen2
         private string processDataPath;
 
         private bool isRefresh, isInitialComplete, isWaferInSystem;
-        private LoadPortQuantity loadportQuantity;
+        private LoadPortQuantity loadportQuantity = LoadPortQuantity.Pair;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
         {
@@ -148,6 +148,8 @@ namespace WLS3200Gen2
                 LogMessage = "Initial ．．．";
                 machine.Initial();
                 SwitchStates(MachineStates.RUNNING);
+                IsCanChangeRecipe = false;
+                IsOperateUI = false;
                 //加入 LOG功能到各模組 一定要放在  machine.Initial()後面
                 machine.MicroDetection.WriteLog += WriteLog;
                 machine.Feeder.WriteLog += WriteLog;
@@ -199,12 +201,15 @@ namespace WLS3200Gen2
                     BincodeListUpdate(machineSetting.BincodeListDefault);
                 }
 
-                MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
-                for (int i = 0; i < MicroscopeLensDefault.Count; i++)
+                if (machineSetting.MicroscopeLensDefault != null)
                 {
-                    if (MicroscopeLensDefault[i] == null)
+                    MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
+                    for (int i = 0; i < MicroscopeLensDefault.Count; i++)
                     {
-                        MicroscopeLensDefault[i] = new MicroscopeLens();
+                        if (MicroscopeLensDefault[i] == null)
+                        {
+                            MicroscopeLensDefault[i] = new MicroscopeLens();
+                        }
                     }
                 }
                 MicroscopeParam.LensName.Clear();
@@ -262,15 +267,16 @@ namespace WLS3200Gen2
                 machine.Feeder.WaferIDRecord += WaferIDRecord;
                 machine.Feeder.WaferIDReady += WaferIDOperate;
 
+                for (int i = 0; i < 25; i++)
+                {
+                    ToolLoadPort1ComboBox.Add((i + 1).ToString());
+                }
 
 
                 isInitialComplete = true;
 
                 //載入機台設定LoadPort 數量  給UI作卡控
                 LoadportQuantity = machineSetting.LoadPortCount;
-
-
-
 
 
                 if (!File.Exists("MAP1.bmp")) throw new Exception("模擬情境下需要放一張圖片到執行檔資料夾 取名MAP1.bmp");
@@ -299,6 +305,8 @@ namespace WLS3200Gen2
 
                 Customers.Add(new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" });
                 SwitchStates(MachineStates.IDLE);
+                IsCanChangeRecipe = true;
+                IsOperateUI = true;
             }
             catch (Exception ex)
             {
@@ -753,6 +761,14 @@ namespace WLS3200Gen2
                                 MicroscopeParam.LightValue = machine.MicroDetection.Microscope.LightValue;
                             }
                         }
+                        if (isMainToolsPageSelect)
+                        {
+                            IsMicroVaccum8 = digitalInputs[4].IsSignal;
+                            IsMicroVaccum12 = digitalInputs[5].IsSignal;
+                            IsMacroVaccum8 = digitalInputs[6].IsSignal;
+                            IsMacroVaccum12 = digitalInputs[7].IsSignal;
+                            IsAlignerVaccum12 = machine.Feeder.AlignerL.IsLockOK;
+                        }
                         if (isMainSecurityPageSelect)
                         {
                             if (machine.Feeder.LoadPortL != null)
@@ -874,6 +890,37 @@ namespace WLS3200Gen2
                 default:
                     return false;
 
+            }
+
+
+
+        }
+
+        //当值从绑定目标传播给绑定源时，调用此方法ConvertBack
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+    /// <summary>
+    /// 如果是雙Port 就把loadport有關功能打開
+    /// </summary>
+    public class IsLoadPortVisibleConver : IValueConverter
+    {
+        //当值从绑定源传播给绑定目标时，调用方法Convert
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+
+            switch ((LoadPortQuantity)value)
+            {
+                case LoadPortQuantity.Single:
+                    return Visibility.Hidden;
+
+                case LoadPortQuantity.Pair:
+                    return Visibility.Visible;
+
+                default:
+                    return Visibility.Hidden;
             }
 
 

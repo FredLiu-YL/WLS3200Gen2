@@ -49,14 +49,11 @@ namespace WLS3200Gen2.Model.Recipe
 
         public ProcessSetting Copy()
         {
-            // 复制 ProcessStation 数组
             ProcessStation[] copiedProcessStation = new ProcessStation[this.ProcessStation.Length];
             for (int i = 0; i < this.ProcessStation.Length; i++)
             {
-                // 对于每个 ProcessStation，创建一个新的实例并复制属性
                 copiedProcessStation[i] = new ProcessStation(this.ProcessStation[i].CassetteIndex)
                 {
-                    // 假设 ProcessStation 有一些属性，你需要将它们逐个复制到新实例中
                     MacroTop = this.ProcessStation[i].MacroTop,
                     MacroBack = this.ProcessStation[i].MacroBack,
                     WaferID = this.ProcessStation[i].WaferID,

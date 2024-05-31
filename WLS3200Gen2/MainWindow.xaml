@@ -44,6 +44,7 @@
         <Grid.Resources>
             <ResourceDictionary>
                 <wls3200gen2:IsLoadPortEnableConver  x:Key="CvrIsLoadPortEnable" />
+                <wls3200gen2:IsLoadPortVisibleConver  x:Key="CvrIsLoadPortVisible" />
                 <Style TargetType="{x:Type Border}" x:Key="HorizontalDividerBorder">
                     <Setter Property="Background" Value="{DynamicResource MaterialDesignDivider}"/>
                     <Setter Property="UseLayoutRounding" Value="True"/>
@@ -173,10 +174,10 @@
                                         <TextBlock  Text="{Binding RecipeName}" Height="30" VerticalAlignment="Center" FontSize="24"  Grid.Column="3"/>
                                     </GroupBox>
 
-                                    <Button  Command="{Binding ReadRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Load"  Grid.Column="0" BorderThickness="0"  Background="#FF6D879E"  >
+                                    <Button IsEnabled="{Binding IsCanChangeRecipe}" Command="{Binding ReadRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Load"  Grid.Column="0" BorderThickness="0"  Background="#FF6D879E"  >
                                         <materialDesign:PackIcon Kind="FileDocumentArrowRight" Height="50" Width="60" />
                                     </Button>
-                                    <Button   Command="{Binding SaveRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Save" Grid.Column="1" BorderThickness="0" Background="#FF6D879E"  >
+                                    <Button IsEnabled="{Binding IsCanChangeRecipe}" Command="{Binding SaveRecipeCommand}" Margin="5,0,5,0" Height="60"  ToolTip="Save" Grid.Column="1" BorderThickness="0" Background="#FF6D879E"  >
                                         <materialDesign:PackIcon Kind="ContentSave" Height="50" Width="60"  />
                                     </Button>
                                 </Grid>
@@ -222,7 +223,7 @@
                                 <materialDesign:PackIcon  Width="60" Height="60" Kind="Stop" />
                             </Button>
 
-                            <UserControlUC:ProcessMenuUC Grid.Column="4" IsAutoSave="{Binding IsAutoSave}" IsDieAllPhoto="{Binding IsDieAllPhoto}" IsWaferCirclePhoto="{Binding IsWaferCirclePhoto}" IsTestRun="{Binding IsTestRun}"/>
+                            <UserControlUC:ProcessMenuUC Grid.Column="4" IsEnabled="{Binding IsCanChangeRecipe}" IsAutoSave="{Binding IsAutoSave}" IsDieAllPhoto="{Binding IsDieAllPhoto}" IsWaferCirclePhoto="{Binding IsWaferCirclePhoto}" IsTestRun="{Binding IsTestRun}"/>
                             <Border Grid.Column="5"    BorderBrush="DeepSkyBlue"  BorderThickness="2">
                                 <UserControlUC:MachineStateUC Status="{Binding Machinestatus}"/>
                             </Border>
@@ -262,9 +263,9 @@
                                             <ColumnDefinition />
 
                                         </Grid.ColumnDefinitions>
-                                        <RadioButton Grid.Column="0"  Height="40" Width="100" Content="Load port1"  GroupName="GroupChoiceChipOutline" IsChecked="{Binding IsLoadport1}" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
-                                        <RadioButton Grid.Column="1"  Height="40" Width="100" Content="Load port2" GroupName="GroupChoiceChipOutline" IsChecked="{Binding IsLoadport2}"  Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}"  />
-                                        <Button Grid.Row="1" Content="Scan" Command="{Binding SlotMappingCommand}" />
+                                        <RadioButton Grid.Column="0" IsEnabled="{Binding IsCanChangeRecipe}" Height="40" Width="100" Content="Load port1"  GroupName="GroupChoiceChipOutline" IsChecked="{Binding IsLoadport1}" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
+                                        <RadioButton Grid.Column="1" IsEnabled="{Binding IsCanChangeRecipe}" Height="40" Width="100" Content="Load port2" GroupName="GroupChoiceChipOutline" IsChecked="{Binding IsLoadport2}"  Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Visibility ="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortVisible}}" />
+                                        <Button Grid.Column="0" Grid.Row="1" Content="Scan" Command="{Binding SlotMappingCommand}" IsEnabled="{Binding IsCanChangeRecipe}" Width="150" />
                                         <UserControlUC:ProcessCassetteMenuUC  Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" ProcessStation="{Binding ProcessStations}"/>
 
                                     </Grid>
@@ -1442,70 +1443,106 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                         <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+
                                     </Grid.RowDefinitions>
 
-                                    <Grid Grid.Column="4" Grid.Row="7" Grid.RowSpan="4">
+
+
+                                    <Button Grid.Column="0" Grid.Row="0" Margin="3" Height="50" Width="250" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Home" Command="{Binding Home}"/>
+
+                                    <ComboBox Grid.Column="0" Grid.Row="3" SelectedIndex="{Binding ToolLoadPort1Index}" IsEnabled="{Binding IsCanWorkEFEMTrans}" ItemsSource="{Binding ToolLoadPort1ComboBox}" Height="50" Width="250" FontSize="15"/>
+                                    <Button Grid.Column="0" Grid.Row="4" Margin="3" Height="50" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
+                                    <Button Grid.Column="0" Grid.Row="5" Margin="3" Height="50" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
+
+                                    <ComboBox Grid.Column="0" Grid.Row="7" SelectedIndex="{Binding ToolLoadPort1Index}" IsEnabled="{Binding IsCanWorkEFEMTrans}" ItemsSource="{Binding ToolLoadPort1ComboBox}" Height="50" Width="250" FontSize="15" Visibility ="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortVisible}}"/>
+                                    <Button Grid.Column="0" Grid.Row="8" Margin="3" Height="50" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}" Visibility ="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortVisible}}" />
+                                    <Button Grid.Column="0" Grid.Row="9" Margin="3" Height="50" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}" Visibility="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortVisible}}"/>
+
+                                    <Button Grid.Column="1" Grid.Row="1" Margin="3" Height="50" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Aligner" Command="{Binding PickWaferFromAligner}"/>
+                                    <Button Grid.Column="1" Grid.Row="2" Margin="3" Height="50" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Aligner" Command="{Binding PutWaferToAligner}"/>
+
+                                    <Button Grid.Column="2" Grid.Row="6" Margin="3" Height="50" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Micro" Command="{Binding PickWaferFromMicro}"/>
+                                    <Button Grid.Column="2" Grid.Row="7" Margin="3" Height="50" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Micro" Command="{Binding PutWaferToMicro}"/>
+
+                                    <Button Grid.Column="1" Grid.Row="10" Margin="3" Height="50" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Macro" Command="{Binding PickWaferFromMacro}"/>
+                                    <Button Grid.Column="1" Grid.Row="11" Margin="3" Height="50" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Macro" Command="{Binding PutWaferToMacro}"/>
+
+                                    <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="0.27*"/>
-                                            <ColumnDefinition Width="0.42*" />
-                                            <ColumnDefinition Width="0.31*"/>
+                                            <ColumnDefinition Width="0.5*"/>
+                                            <ColumnDefinition Width="0.5*" />
                                         </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="46*"/>
-                                            <RowDefinition Height="46*"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock  Grid.Row="0" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
-                                        <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="3"  BorderBrush="Teal" BorderThickness="1" >
+                                        <Border Grid.Row="0"  BorderBrush="Teal" BorderThickness="1" >
                                             <Grid>
                                                 <Grid.RowDefinitions>
+                                                    <RowDefinition/>
                                                     <RowDefinition/>
                                                     <RowDefinition/>
                                                 </Grid.RowDefinitions>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition/>
                                                     <ColumnDefinition/>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-
-                                                <Label Grid.Row="0" Content="8 Inch" />
-                                                <Label Grid.Row="1" Content="12 Inch" />
-                                                <Button Margin="2" Grid.Row="0" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
-                                                <Button Margin="2" Grid.Row="0"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
-                                                <Button Margin="2" Grid.Row="1" Grid.Column="2" Background="CadetBlue" BorderBrush="CadetBlue" Content="On" Command="{Binding VaccumOn}"/>
-                                                <Button Margin="2" Grid.Row="1"  Grid.Column="3" Background="CadetBlue" BorderBrush="CadetBlue" Content="Off" Command="{Binding VaccumOff}"/>
-                                                <usercontrols:SignalUC Grid.Row="0" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="False" />
-                                                <usercontrols:SignalUC Grid.Row="1" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                <TextBlock  Grid.Row="0" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
+                                                <Label Grid.Row="1" Content="12 Inch" Grid.RowSpan="2" VerticalAlignment="Center" />
+                                                <usercontrols:SignalUC HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="{Binding IsAlignerVaccum12}" />
                                             </Grid>
                                         </Border>
-
-
                                     </Grid>
-
-                                    <Button Grid.Column="0" Grid.Row="0" Margin="3" Height="40" Width="250" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Home" Command="{Binding Home}"/>
-
-                                    <Button Grid.Column="0" Grid.Row="3" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
-                                    <Button Grid.Column="0" Grid.Row="4" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
-
-                                    <Button Grid.Column="0" Grid.Row="6" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" Content="Pick Wafer From LoadPort" Command="{Binding PickWaferFromLoadPort}"/>
-                                    <Button Grid.Column="0" Grid.Row="7" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortEnable}}" Content="Put Wafer To LoadPort" Command="{Binding PutWaferToLoadPort}"/>
-
-                                    <Button Grid.Column="1" Grid.Row="1" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Aligner" Command="{Binding PickWaferFromAligner}"/>
-                                    <Button Grid.Column="1" Grid.Row="2" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Aligner" Command="{Binding PutWaferToAligner}"/>
-
-                                    <Button Grid.Column="2" Grid.Row="5" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Micro" Command="{Binding PickWaferFromMicro}"/>
-                                    <Button Grid.Column="2" Grid.Row="6" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Micro" Command="{Binding PutWaferToMicro}"/>
-
-                                    <Button Grid.Column="1" Grid.Row="8" Margin="3" Height="40" Width="250" Background="YellowGreen" BorderBrush="YellowGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Pick Wafer From Macro" Command="{Binding PickWaferFromMacro}"/>
-                                    <Button Grid.Column="1" Grid.Row="9" Margin="3" Height="40" Width="250" Foreground="Black" Background="LightGreen" BorderBrush="LightGreen" IsEnabled="{Binding IsCanWorkEFEMTrans}" Content="Put Wafer To Macro" Command="{Binding PutWaferToMacro}"/>
-
-
-
-
-
-
+                                    <Grid Grid.Column="2" Grid.Row="10" Grid.RowSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.5*"/>
+                                            <ColumnDefinition Width="0.5*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Row="0"  BorderBrush="Teal" BorderThickness="1" >
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock  Grid.Row="0" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
+                                                <Label Grid.Row="1" Content="8 Inch" />
+                                                <usercontrols:SignalUC HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="{Binding IsMacroVaccum8}" />
+                                                <Label Grid.Row="2" Content="12 Inch" />
+                                                <usercontrols:SignalUC HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="{Binding IsMacroVaccum12}" />
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    <Grid Grid.Column="4" Grid.Row="6" Grid.RowSpan="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.5*"/>
+                                            <ColumnDefinition Width="0.5*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Row="0"  BorderBrush="Teal" BorderThickness="1" >
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock  Grid.Row="0" Grid.ColumnSpan="3"  Text="Vacuum" FontWeight="Bold" Foreground="Teal" />
+                                                <Label Grid.Row="1" Content="8 Inch" />
+                                                <usercontrols:SignalUC HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1"   Margin="2" Width="20" Height="20" IsSignal="{Binding IsMicroVaccum8}" />
+                                                <Label Grid.Row="2" Content="12 Inch" />
+                                                <usercontrols:SignalUC HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" Margin="2" Width="20" Height="20" IsSignal="{Binding IsMicroVaccum12}" />
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
                                 </Grid>
-
                             </GroupBox>
                             <GroupBox Grid.Column="0" Header="Load Port1" Grid.Row="0" materialDesign:ColorZoneAssist.Background="DarkGray"
                                     materialDesign:ColorZoneAssist.Foreground="White"
