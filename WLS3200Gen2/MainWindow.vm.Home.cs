@@ -34,6 +34,8 @@ namespace WLS3200Gen2
         private ObservableCollection<ProcessStation> processStations = new ObservableCollection<ProcessStation>();
         private string logMessage;
         private string loadPortContent = "Load";
+        private Visibility processVisibility = Visibility.Visible, stopVisibility = Visibility.Hidden;
+        private bool isHome = false;
         private bool isRunning = false;
         private bool isRunCommand = false;
         private readonly object lockAssignObj = new object();
@@ -41,7 +43,8 @@ namespace WLS3200Gen2
         private readonly object lockRecipeMapObj = new object();
         private bool isUpdateHomeMap = false;
         private bool isUpdateRecipeMap = false;
-        private PackIconKind volume = PackIconKind.VolumeOff;
+        private PackIconKind pausePackIcon = PackIconKind.Home;
+        private PackIconKind volumePackIcon = PackIconKind.VolumeOff;
         private ITransform updateHomeMapTransform { get; set; }
         private ITransform updateRecipeMapTransform { get; set; }
         private Die nowAssignDie;
@@ -75,8 +78,9 @@ namespace WLS3200Gen2
         private string recipeName;
         private double manualdistance, manualarea;
 
-
+        public PackIconKind PausePackIcon { get => pausePackIcon; set => SetValue(ref pausePackIcon, value); }
         public bool IsRunning { get => isRunning; set => SetValue(ref isRunning, value); }
+        public PackIconKind VolumePackIcon { get => volumePackIcon; set => SetValue(ref volumePackIcon, value); }
         /// <summary>
         /// 在很多情況下 流程進行到一半需要人為操作 ，此時需要卡控不必要按鈕鎖住
         /// </summary>
@@ -87,9 +91,8 @@ namespace WLS3200Gen2
         public string LogMessage { get => logMessage; set => SetValue(ref logMessage, value); }
         public string LoadPortContent { get => loadPortContent; set => SetValue(ref loadPortContent, value); }
         public Visibility ProcessVisibility { get => processVisibility; set => SetValue(ref processVisibility, value); }
+        public Visibility StopVisibility { get => stopVisibility; set => SetValue(ref stopVisibility, value); }
         public ProcessSetting ProcessSetting { get => processSetting; set => SetValue(ref processSetting, value); }
-
-        public Visibility processVisibility = Visibility.Visible;
         public Visibility InformationUCVisibility { get => informationUIVisibility; set => SetValue(ref informationUIVisibility, value); }
         public Visibility WorkholderUCVisibility { get => workholderUCVisibility; set => SetValue(ref workholderUCVisibility, value); }
         public WriteableBitmap HomeResultImage { get => homeResultImage; set => SetValue(ref homeResultImage, value); }
@@ -206,16 +209,41 @@ namespace WLS3200Gen2
         {
             try
             {
-                WriteLog(YuanliCore.Logger.LogType.TRIG, "Pause");
-                if (Machinestatus == MachineStates.Emergency)
+                if (isHome)
                 {
-                    MessageBox.Show("Not available in emergencies", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Pause");
+                    if (Machinestatus == MachineStates.Emergency)
+                    {
+                        MessageBox.Show("Not available in emergencies", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    IsRunning = false;
+                    SwitchStates(MachineStates.PAUSED);
+                    await machine.ProcessPause();
+                    ProcessVisibility = Visibility.Visible;
                 }
-                IsRunning = false;
-                SwitchStates(MachineStates.PAUSED);
-                await machine.ProcessPause();
-                ProcessVisibility = Visibility.Visible;
+                else
+                {
+                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Home");
+                    isWaferInSystem = await machine.BeforeHomeCheck();
+                    MessageBoxResult result = MessageBoxResult.Yes;
+
+                    if (isWaferInSystem)
+                    {
+                        result = MessageBox.Show("Wafer In System!! StartHome??", "StartHome", MessageBoxButton.YesNo);
+                    }
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        WriteLog(YuanliCore.Logger.LogType.TRIG, "Home Start");
+                        await machine.Home();
+                        PausePackIcon = PackIconKind.Pause;
+                        ProcessVisibility = Visibility.Visible;
+                        StopVisibility = Visibility.Visible;
+                        isHome = true;
+                        WriteLog(YuanliCore.Logger.LogType.TRIG, "Home End");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -717,24 +745,13 @@ namespace WLS3200Gen2
             {
             }
         });
-
-        public PackIconKind Volume { get => volume; set => SetValue(ref volume, value); }
         public ICommand VolumeOffCommand => new RelayCommand(async () =>
         {
             try
             {
                 if (machine.StackLight != null)
                 {
-                    if (Volume == PackIconKind.VolumeHigh)
-                    {
-                        Volume = PackIconKind.VolumeOff;
-                        machine.StackLight.VolumeOff();
-                    }
-                    else
-                    {
-                        Volume = PackIconKind.VolumeHigh;
-                        machine.StackLight.VolumeOn();
-                    }
+                    machine.StackLight.VolumeOff();
                 }
             }
             catch (Exception ex)

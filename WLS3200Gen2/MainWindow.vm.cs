@@ -164,43 +164,43 @@ namespace WLS3200Gen2
                 machine.MicroDetection.WriteLog += WriteLog;
                 machine.Feeder.WriteLog += WriteLog;
 
-
                 await Task.Delay(10);//顯示UI 
-                isWaferInSystem = true;
-                isWaferInSystem = await machine.BeforeHomeCheck();
-                MessageBoxResult result = MessageBoxResult.Yes;
+                //先將相機開啟
+                machine.MicroDetection.Camera.Open();
 
-                if (isWaferInSystem)
-                {
-                    result = MessageBox.Show("Wafer In System!! StartHome??", "StartHome", MessageBoxButton.YesNo);
-                }
+                //isWaferInSystem = true;
+                //isWaferInSystem = await machine.BeforeHomeCheck();
+                //MessageBoxResult result = MessageBoxResult.Yes;
+                //if (isWaferInSystem)
+                //{
+                //    result = MessageBox.Show("Wafer In System!! StartHome??", "StartHome", MessageBoxButton.YesNo);
+                //}
 
-                if (result == MessageBoxResult.Yes)
-                {
-                    await machine.Home();
-                }
-                else
-                {
-                    //直接關掉程式!
-                    machine.Disopse();
-                    isRefresh = false;
-                    await Task.Delay(500);
-                    Application.Current.Shutdown();
-                    machine.MicroDetection.Camera.Open();
-                }
+                //if (result == MessageBoxResult.Yes)
+                //{
+                //    await machine.Home();
+                //}
+                //else
+                //{
+                //    //直接關掉程式!
+                //    machine.Disopse();
+                //    isRefresh = false;
+                //    await Task.Delay(500);
+                //    Application.Current.Shutdown();
 
+                //}
                 if (machineSetting.BincodeListDefault == null)
                 {
                     BincodeInfo bincode1 = new BincodeInfo
                     {
-                        Code = "B01",
-                        Describe = "TES_TEST123",
+                        Code = "000",
+                        Describe = "OK",
                         Color = Brushes.Blue
                     };
                     BincodeInfo bincode2 = new BincodeInfo
                     {
-                        Code = "B02",
-                        Describe = "ABc_TEST123",
+                        Code = "999",
+                        Describe = "Error",
                         Color = Brushes.GreenYellow
                     };
                     BincodeList.Add(bincode1);

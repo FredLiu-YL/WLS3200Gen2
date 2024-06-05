@@ -969,29 +969,43 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Macro Start ");
-                await Robot.PutWafer_Standby(ArmStation.Macro);
-                await Robot.PutWafer_GoIn(ArmStation.Macro);
-                await Robot.ReleaseWafer();
-                Macro.FixWafer();
-                await Robot.PutWafer_PutDown(ArmStation.Macro);
-                Task taskDelay = Task.Delay(vaccumDelay);
-                await Robot.PutWafer_Retract(ArmStation.Macro);
-                await Robot.PutWafer_Safety(ArmStation.Macro);
-                //等一下真空建立
-                for (int i = 0; i <= 2; i++)
+                if (Macro.IsInnerCanMoveStartPos && Macro.IsOuterCanMoveStartPos)
                 {
-                    await taskDelay;
-                    if (Macro.IsLockOK)
+                    await Robot.PutWafer_Standby(ArmStation.Macro);
+                    await Robot.PutWafer_GoIn(ArmStation.Macro);
+                    await Robot.ReleaseWafer();
+                    Macro.FixWafer();
+                    await Robot.PutWafer_PutDown(ArmStation.Macro);
+                    Task taskDelay = Task.Delay(vaccumDelay);
+                    await Robot.PutWafer_Retract(ArmStation.Macro);
+                    await Robot.PutWafer_Safety(ArmStation.Macro);
+                    //等一下真空建立
+                    for (int i = 0; i <= 2; i++)
                     {
-                        WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Macro End ");
-                        return;
+                        await taskDelay;
+                        if (Macro.IsLockOK)
+                        {
+                            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Macro End ");
+                            return;
+                        }
+                        else
+                        {
+                            taskDelay = Task.Delay(vaccumDelay);
+                        }
+                    }
+                    throw new FlowException("WaferStandByToMacro:FixWafer Error!!");
+                }
+                else
+                {
+                    if (Macro.IsInnerCanMoveStartPos)
+                    {
+                        throw new FlowException("WaferMacroToStandBy:Inner Ring Is In Top!!");
                     }
                     else
                     {
-                        taskDelay = Task.Delay(vaccumDelay);
+                        throw new FlowException("WaferMacroToStandBy:Outer Ring Is In Top!!");
                     }
                 }
-                throw new FlowException("WaferStandByToMacro:FixWafer Error!!");
             }
             catch (Exception ex)
             {
@@ -1003,30 +1017,44 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Macro Start ");
-                await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
-                await Robot.PutWafer_Standby(ArmStation.Macro);
-                await Robot.PutWafer_GoIn(ArmStation.Macro);
-                await Robot.ReleaseWafer();
-                Macro.FixWafer();
-                await Robot.PutWafer_PutDown(ArmStation.Macro);
-                Task taskDelay = Task.Delay(vaccumDelay);
-                await Robot.PutWafer_Retract(ArmStation.Macro);
-                await Robot.PutWafer_Safety(ArmStation.Macro);
-                //等一下真空建立
-                for (int i = 0; i <= 2; i++)
+                if (Macro.IsInnerCanMoveStartPos && Macro.IsOuterCanMoveStartPos)
                 {
-                    await taskDelay;
-                    if (Macro.IsLockOK)
+                    await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
+                    await Robot.PutWafer_Standby(ArmStation.Macro);
+                    await Robot.PutWafer_GoIn(ArmStation.Macro);
+                    await Robot.ReleaseWafer();
+                    Macro.FixWafer();
+                    await Robot.PutWafer_PutDown(ArmStation.Macro);
+                    Task taskDelay = Task.Delay(vaccumDelay);
+                    await Robot.PutWafer_Retract(ArmStation.Macro);
+                    await Robot.PutWafer_Safety(ArmStation.Macro);
+                    //等一下真空建立
+                    for (int i = 0; i <= 2; i++)
                     {
-                        WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Macro End ");
-                        return;
+                        await taskDelay;
+                        if (Macro.IsLockOK)
+                        {
+                            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Macro End ");
+                            return;
+                        }
+                        else
+                        {
+                            taskDelay = Task.Delay(vaccumDelay);
+                        }
+                    }
+                    throw new FlowException("WaferStandByToMacro:FixWafer Error!!");
+                }
+                else
+                {
+                    if (Macro.IsInnerCanMoveStartPos)
+                    {
+                        throw new FlowException("WaferMacroToStandBy:Inner Ring Is In Top!!");
                     }
                     else
                     {
-                        taskDelay = Task.Delay(vaccumDelay);
+                        throw new FlowException("WaferMacroToStandBy:Outer Ring Is In Top!!");
                     }
                 }
-                throw new FlowException("WaferStandByToMacro:FixWafer Error!!");
             }
             catch (Exception ex)
             {
@@ -1065,33 +1093,48 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "UnLoad From Macro Start ");
-                Macro.ReleaseWafer();
-                await Robot.PickWafer_Standby(ArmStation.Macro);
-                await Robot.PickWafer_GoIn(ArmStation.Macro);
-                await Robot.FixWafer();
-                await Robot.PickWafer_LiftUp(ArmStation.Macro);
-                Task taskDelay = Task.Delay(vaccumDelay);
-                for (int i = 0; i <= 2; i++)//等一下真空建立
+                if (Macro.IsInnerCanMoveStartPos && Macro.IsOuterCanMoveStartPos)
                 {
-                    await taskDelay;
-                    if (Robot.IsLockOK)
+                    Macro.ReleaseWafer();
+                    await Robot.PickWafer_Standby(ArmStation.Macro);
+                    await Robot.PickWafer_GoIn(ArmStation.Macro);
+                    await Robot.FixWafer();
+                    await Robot.PickWafer_LiftUp(ArmStation.Macro);
+                    Task taskDelay = Task.Delay(vaccumDelay);
+                    for (int i = 0; i <= 2; i++)//等一下真空建立
                     {
-                        await Robot.PickWafer_Retract(ArmStation.Macro);
-                        await Robot.PickWafer_Safety(ArmStation.Macro);
-                        WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "UnLoad From Macro End ");
-                        return;
+                        await taskDelay;
+                        if (Robot.IsLockOK)
+                        {
+                            await Robot.PickWafer_Retract(ArmStation.Macro);
+                            await Robot.PickWafer_Safety(ArmStation.Macro);
+                            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "UnLoad From Macro End ");
+                            return;
+                        }
+                        else
+                        {
+                            taskDelay = Task.Delay(vaccumDelay);
+                        }
+                    }
+                    await Robot.ReleaseWafer();
+                    await Robot.PickWafer_GoIn(ArmStation.Macro);
+                    Macro.FixWafer();
+                    await Robot.PickWafer_Standby(ArmStation.Macro);
+                    await Robot.PickWafer_Safety(ArmStation.Macro);
+                    throw new FlowException("WaferMacroToStandBy:FixWafer Error!!");
+                }
+                else
+                {
+                    if (Macro.IsInnerCanMoveStartPos)
+                    {
+                        throw new FlowException("WaferMacroToStandBy:Inner Ring Is In Top!!");
                     }
                     else
                     {
-                        taskDelay = Task.Delay(vaccumDelay);
+                        throw new FlowException("WaferMacroToStandBy:Outer Ring Is In Top!!");
                     }
                 }
-                await Robot.ReleaseWafer();
-                await Robot.PickWafer_GoIn(ArmStation.Macro);
-                Macro.FixWafer();
-                await Robot.PickWafer_Standby(ArmStation.Macro);
-                await Robot.PickWafer_Safety(ArmStation.Macro);
-                throw new FlowException("WaferMacroToStandBy:FixWafer Error!!");
+
             }
             catch (Exception ex)
             {
@@ -1103,34 +1146,48 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "UnLoad From Macro Start ");
-                await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
-                Macro.ReleaseWafer();
-                await Robot.PickWafer_Standby(ArmStation.Macro);
-                await Robot.PickWafer_GoIn(ArmStation.Macro);
-                await Robot.FixWafer();
-                await Robot.PickWafer_LiftUp(ArmStation.Macro);
-                Task taskDelay = Task.Delay(vaccumDelay);
-                for (int i = 0; i <= 2; i++)//等一下真空建立
+                if (Macro.IsInnerCanMoveStartPos && Macro.IsOuterCanMoveStartPos)
                 {
-                    await taskDelay;
-                    if (Robot.IsLockOK)
+                    await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
+                    Macro.ReleaseWafer();
+                    await Robot.PickWafer_Standby(ArmStation.Macro);
+                    await Robot.PickWafer_GoIn(ArmStation.Macro);
+                    await Robot.FixWafer();
+                    await Robot.PickWafer_LiftUp(ArmStation.Macro);
+                    Task taskDelay = Task.Delay(vaccumDelay);
+                    for (int i = 0; i <= 2; i++)//等一下真空建立
                     {
-                        await Robot.PickWafer_Retract(ArmStation.Macro);
-                        await Robot.PickWafer_Safety(ArmStation.Macro);
-                        WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "UnLoad From Macro End ");
-                        return;
+                        await taskDelay;
+                        if (Robot.IsLockOK)
+                        {
+                            await Robot.PickWafer_Retract(ArmStation.Macro);
+                            await Robot.PickWafer_Safety(ArmStation.Macro);
+                            WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "UnLoad From Macro End ");
+                            return;
+                        }
+                        else
+                        {
+                            taskDelay = Task.Delay(vaccumDelay);
+                        }
+                    }
+                    await Robot.ReleaseWafer();
+                    await Robot.PickWafer_GoIn(ArmStation.Macro);
+                    Macro.FixWafer();
+                    await Robot.PickWafer_Standby(ArmStation.Macro);
+                    await Robot.PickWafer_Safety(ArmStation.Macro);
+                    throw new FlowException("WaferMacroToStandBy:FixWafer Error!!");
+                }
+                else
+                {
+                    if (Macro.IsInnerCanMoveStartPos)
+                    {
+                        throw new FlowException("WaferMacroToStandBy:Inner Ring Is In Top!!");
                     }
                     else
                     {
-                        taskDelay = Task.Delay(vaccumDelay);
+                        throw new FlowException("WaferMacroToStandBy:Outer Ring Is In Top!!");
                     }
                 }
-                await Robot.ReleaseWafer();
-                await Robot.PickWafer_GoIn(ArmStation.Macro);
-                Macro.FixWafer();
-                await Robot.PickWafer_Standby(ArmStation.Macro);
-                await Robot.PickWafer_Safety(ArmStation.Macro);
-                throw new FlowException("WaferMacroToStandBy:FixWafer Error!!");
             }
             catch (Exception ex)
             {

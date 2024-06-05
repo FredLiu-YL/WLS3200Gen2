@@ -187,7 +187,7 @@
                                   materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding IsRunning}"
                                   materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
                                   materialDesign:ButtonProgressAssist.Value="-1"
-                                   Visibility="{Binding ProcessVisibility}" 
+                                  Visibility="{Binding ProcessVisibility}" 
                                   Command="{Binding RunCommand}"
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}">
@@ -212,11 +212,12 @@
                                   Style="{StaticResource MaterialDesignFloatingActionButton}"
                                  Command="{Binding PauseCommand}"
                                   ToolTip="MaterialDesignFloatingActionButton" Cursor="Hand">
-                                <materialDesign:PackIcon  Width="50" Height="50" Kind="Pause" />
+                                <materialDesign:PackIcon  Width="50" Height="50" Kind="{Binding PausePackIcon}" />
                             </Button>
 
                             <Button Grid.Column="3" Width="70" Height="70"
                                   Command="{Binding StopCommand}"
+                                  Visibility="{Binding StopVisibility}"
                                   IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                                   Style="{StaticResource MaterialDesignFloatingActionButton}"
                                   ToolTip="MaterialDesignFloatingActionButton">
@@ -877,9 +878,9 @@
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions >
                                                 <RowDefinition Height="0.05*"/>
-                                                <RowDefinition Height="0.55*"/>
-                                                <RowDefinition Height="0.20*"/>
-                                                <RowDefinition Height="0.20*"/>
+                                                <RowDefinition Height="0.65*"/>
+                                                <RowDefinition Height="0.15*"/>
+                                                <RowDefinition Height="0.15*"/>
                                             </Grid.RowDefinitions>
                                             <Border Grid.ColumnSpan="2" BorderThickness="3" BorderBrush="{DynamicResource PrimaryHueMidBrush}" Margin="0,2,0,2" >
                                                 <TextBlock  Text="Macro Setting"  Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>
@@ -892,7 +893,8 @@
                                                     </Grid.ColumnDefinitions>
                                                     <Grid.RowDefinitions >
                                                         <RowDefinition Height="0.12*"/>
-                                                        <RowDefinition Height="0.40*"/>
+                                                        <RowDefinition Height="0.1*"/>
+                                                        <RowDefinition Height="0.30*"/>
                                                         <RowDefinition Height="0.48*"/>
                                                     </Grid.RowDefinitions>
                                                     <Grid.Resources>
@@ -902,7 +904,7 @@
                                                             <Setter Property="Background" Value="White"/>
                                                         </Style>
                                                     </Grid.Resources>
-                                                    <GroupBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
+                                                    <GroupBox Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="0,0,0,0" materialDesign:ColorZoneAssist.Background="DeepSkyBlue" materialDesign:ColorZoneAssist.Foreground="White"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="12" Header="Light" Style="{StaticResource GroupBoxStyle}">
                                                         <Grid>
                                                             <Grid.ColumnDefinitions >
@@ -911,15 +913,25 @@
                                                             </Grid.ColumnDefinitions>
                                                             <Grid.RowDefinitions >
                                                                 <RowDefinition Height="0.3*"/>
-                                                                <RowDefinition Height="0.7*"/>
+                                                                <RowDefinition Height="0.35*"/>
+                                                                <RowDefinition Height="0.35*"/>
                                                             </Grid.RowDefinitions>
                                                             <TextBlock Grid.Column="0" Grid.Row="0"   Text="Left" FontSize="15"  VerticalAlignment="Top"    HorizontalAlignment="Center" Margin="0,-5,0,-5"/>
                                                             <TextBlock Grid.Column="1" Grid.Row="0"   Text="Right" FontSize="15"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,-5,0,-5"/>
                                                             <UserControlUC:LampUnitUC Grid.Column="0" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25" LampControl="{Binding LampControl1}" LampUIShow="{Binding LampControl1Param}" />
                                                             <UserControlUC:LampUnitUC Grid.Column="1" Grid.Row="1" Margin="10,0,0,0" HorizontalAlignment="Left" Width="250" Height="25" LampControl="{Binding LampControl2}" LampUIShow="{Binding LampControl2Param}"/>
+                                                            <Grid Grid.Column="1" Grid.Row="2">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="0.45*"/>
+                                                                    <ColumnDefinition Width="0.1*"/>
+                                                                    <ColumnDefinition Width="0.45*"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <Button Grid.Column="0" Grid.Row="2" Content="SetToTop" Command="{Binding SetLightValueCommand}" CommandParameter="SetToTop"  Width="100" Height="30" HorizontalAlignment="Center" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                                <Button Grid.Column="2" Grid.Row="2" Content="SetToBack" Command="{Binding SetLightValueCommand}" CommandParameter="SetToBack"  Width="100" Height="30" HorizontalAlignment="Center" FontSize="12" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
+                                                            </Grid>
                                                         </Grid>
                                                     </GroupBox>
-                                                    <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                                    <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="0.75*"/>
                                                             <ColumnDefinition Width="0.25*"/>
@@ -935,11 +947,11 @@
                                                                     <RowDefinition />
                                                                 </Grid.RowDefinitions>
                                                                 <Grid.ColumnDefinitions >
-                                                                    <ColumnDefinition Width="0.18*"/>
-                                                                    <ColumnDefinition Width="0.18*"/>
-                                                                    <ColumnDefinition Width="0.18*"/>
-                                                                    <ColumnDefinition Width="0.18*"/>
-                                                                    <ColumnDefinition Width="0.28*"/>
+                                                                    <ColumnDefinition Width="66*"/>
+                                                                    <ColumnDefinition Width="66*"/>
+                                                                    <ColumnDefinition Width="65*"/>
+                                                                    <ColumnDefinition Width="66*"/>
+                                                                    <ColumnDefinition Width="101"/>
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <TextBlock Grid.Column="0" Grid.Row="0"   Text="Pitch X:" FontSize="20"  VerticalAlignment="Center" />
@@ -987,7 +999,7 @@
                                                         </GroupBox>
                                                     </Grid>
 
-                                                    <GroupBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,0"  Style="{StaticResource GroupBoxStyle}"
+                                                    <GroupBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,0,0,0"  Style="{StaticResource GroupBoxStyle}"
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="14" Header="Control"  >
                                                         <Grid >
                                                             <Grid.ColumnDefinitions >
@@ -1053,9 +1065,9 @@
                                         <Grid Grid.Row="0">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="0.05*"/>
-                                                <RowDefinition Height="0.55*"/>
-                                                <RowDefinition Height="0.2*"/>
-                                                <RowDefinition Height="0.2*"/>
+                                                <RowDefinition Height="0.65*"/>
+                                                <RowDefinition Height="0.15*"/>
+                                                <RowDefinition Height="0.15*"/>
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions >
                                                 <ColumnDefinition/>
@@ -2257,7 +2269,7 @@
                     IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                     Style="{StaticResource MaterialDesignIconButton}"  Command="{Binding VolumeOffCommand}"  ToolTip="Mute" Foreground="#FF010910">
 
-                    <materialDesign:PackIcon Width="70" Height="70" Kind="{Binding Volume}"  />
+                    <materialDesign:PackIcon Width="70" Height="70" Kind="{Binding VolumePackIcon}"  />
                 </Button>
             </Grid>
             <Grid Grid.Row="2" >

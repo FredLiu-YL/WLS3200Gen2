@@ -43,7 +43,6 @@ namespace WLS3200Gen2.Model
 
             Wafer currentWafer = null;
             string currentSavePath = "";
-            string nextSavePath = "";
             try
             {
                 pts = new PauseTokenSource();
@@ -51,6 +50,7 @@ namespace WLS3200Gen2.Model
                 isAbort = false;
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, machineSetting, pts, cts);
+                //StackLight.VolumeOn();
                 int testCount = 1;
                 var copiedProcessSetting = processSetting.Copy();
                 if (processSetting.IsTestRun)
@@ -215,6 +215,10 @@ namespace WLS3200Gen2.Model
                                 //判斷卡匣空了
                                 if (nextWafer == null)
                                 {
+                                    if (isAbort)
+                                    {
+                                        testCount = 100;
+                                    }
                                     break;
                                 }
                                 currentWafer = nextWafer; //將下一片的資料轉成當前WAFER資料

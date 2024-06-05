@@ -377,7 +377,8 @@ namespace WLS3200Gen2
         //Recipe進入會執行
         private void LoadRecipePage()
         {
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right || Machinestatus == YuanliCore.Machine.Base.MachineStates.RUNNING)
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right ||
+                Machinestatus == YuanliCore.Machine.Base.MachineStates.RUNNING || isHome == false)
             {
                 IsMainRecipePageSelect = false;
                 IsMainHomePageSelect = true;
@@ -471,7 +472,8 @@ namespace WLS3200Gen2
         }
         private void LoadToolsPage()
         {
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right ||
+                isHome == false)
             {
                 IsMainToolsPageSelect = false;
                 IsMainHomePageSelect = true;
@@ -1248,6 +1250,30 @@ namespace WLS3200Gen2
             {
                 MessageBox.Show(ex.Message);
                 IsCanWorkEFEMTrans = true;
+            }
+        });
+        public ICommand SetLightValueCommand => new RelayCommand<string>(async key =>
+        {
+            try
+            {
+                switch (key)
+                {
+                    case "SetToTop":
+                        MacroTopLeftLightValue = LampControl1Param.LightValue;
+                        MacroTopRightLightValue = LampControl2Param.LightValue;
+                        break;
+                    case "SetToBack":
+                        MacroBackLeftLightValue = LampControl1Param.LightValue;
+                        MacroBackRightLightValue = LampControl2Param.LightValue;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         });
         public ICommand MacroCommand => new RelayCommand<string>(async key =>
