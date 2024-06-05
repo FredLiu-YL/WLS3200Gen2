@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using Nito.AsyncEx;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -63,8 +64,9 @@ namespace WLS3200Gen2
         private int moveIndexX, moveIndexY, detectionIndexX, detectionIndexY;
         private double locateX, locateY;
         private bool isLocate;
-        private int selectDetectionHomePointList, selectDetectionPointList;
-        private bool isRecipeMapShow;
+        private int selectDetectionHomePointList;
+        private ObservableCollection<int> selectRecipeDetectionPointList = new ObservableCollection<int>();
+        private bool isFirstRecipePageSelect = true, isRecipeMapShow;
         private bool isMainHomePageSelect, isMainRecipePageSelect, isMainSettingPageSelect, isMainToolsPageSelect, isMainSecurityPageSelect;
         private bool isLoadwaferPageSelect, isMacroPageSelect, isAlignerPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
@@ -329,7 +331,7 @@ namespace WLS3200Gen2
         /// 需要檢查的點(Recipe)
         /// </summary>
         public ObservableCollection<DetectionPoint> DetectionPointList { get => detectionPointList; set => SetValue(ref detectionPointList, value); }
-        public int SelectDetectionPointList { get => selectDetectionPointList; set => SetValue(ref selectDetectionPointList, value); }
+        public ObservableCollection<int> SelectRecipeDetectionPointList { get => selectRecipeDetectionPointList; set => SetValue(ref selectRecipeDetectionPointList, value); }
         public LocateParam LocateParam1 { get => locateParam1; set => SetValue(ref locateParam1, value); }
         public LocateParam LocateParam2 { get => locateParam2; set => SetValue(ref locateParam2, value); }
         public LocateParam LocateParam3 { get => locateParam3; set => SetValue(ref locateParam3, value); }
@@ -382,12 +384,33 @@ namespace WLS3200Gen2
                 return;
             }
 
+            //如果是第一次進來RecipePageSelect ZoomFitManualAction
+            if (isFirstRecipePageSelect)
+            {
+                Task.Run(async () =>
+                {
+                    //這裡的Await是要重新刷新UI才可以讓ZoomFitManualAction有效果
+                    await Task.Delay(50);
+                    App.Current.Dispatcher.Invoke((Action)(() =>
+                    {
+                        try
+                        {
+                            ZoomRcipeFitManualAction.Execute(Drawings);
+                            isFirstRecipePageSelect = false;
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }));
+                });
+            }
             //為什麼要在這邊判斷，因為要先切到Recipe頁面再來畫圖才會出現
             if (isRecipeMapShow == false && mainRecipe.DetectRecipe.WaferMap != null)
             {
                 //開一個Task是因為要等畫面切完之後，再來變化
                 Task.Run(async () =>
                 {
+                    //這裡的Await是要重新刷新UI才可以讓ZoomFitManualAction有效果
                     await Task.Delay(50);
                     isRecipeMapShow = true;
                     App.Current.Dispatcher.Invoke((Action)(() =>
@@ -678,7 +701,12 @@ namespace WLS3200Gen2
                     mainRecipe.DetectRecipe.WaferMap = new SinfWaferMapping(true, false);
                     mainRecipe.DetectRecipe.WaferMap = m_Sinf;
 
-                    ShowDetectionHomeMapImgae(mainRecipe.DetectRecipe);
+                    ShowHomeNewMapImage(mainRecipe.DetectRecipe);
+                    ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
+                    ResetDetectionRunningPointList();
+
+                    ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
+                    ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
                 }
             }
             else
@@ -706,10 +734,9 @@ namespace WLS3200Gen2
                 //    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 //}
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show(ex.Message);
             }
         });
         public ICommand RecipeBincodeEditCommand => new RelayCommand(() =>
@@ -720,11 +747,7 @@ namespace WLS3200Gen2
                     BincodeList = new ObservableCollection<BincodeInfo>();
 
                 BincodeSettingWindow settingWindow = new BincodeSettingWindow(BincodeList);
-
-
                 settingWindow.ShowDialog();
-
-
                 BincodeList = settingWindow.BincodeList;
                 if (mainRecipe.DetectRecipe.BincodeList != null)
                 {
@@ -1452,7 +1475,7 @@ namespace WLS3200Gen2
                 Die die = dies.Where(d => d.IndexX == MoveIndexX && d.IndexY == MoveIndexY).FirstOrDefault();
                 if (die == null) throw new Exception("No This Die");
                 //設計座標轉換對位後座標
-                Point transPos = transForm.TransPoint(new Point(die.MapTransX, die.MapTransY));
+                Point transPos = transForm.TransPoint(new Point(die.MapTransX + mainRecipe.DetectRecipe.AlignRecipe.OffsetX, die.MapTransY + mainRecipe.DetectRecipe.AlignRecipe.OffsetY));
 
                 await machine.MicroDetection.TableMoveToAsync(new Point(transPos.X, transPos.Y));
             }
@@ -1580,18 +1603,66 @@ namespace WLS3200Gen2
         {
             try
             {
-                if (DetectionPointList.Count > SelectDetectionPointList)
+                int selectRecipeIndex = -1;
+                //顯示
+                if (SelectRecipeDetectionPointList.Count >= 1)
                 {
-                    int idxX = DetectionPointList[SelectDetectionPointList].IndexX;
-                    int idxY = DetectionPointList[SelectDetectionPointList].IndexY;
-                    int count = DetectionPointList.Count(d => d.IndexX == idxX && d.IndexY == idxY);
-                    DetectionPointList.RemoveAt(SelectDetectionPointList);
-                    Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == idxX && d.IndexY == idxY).FirstOrDefault();
-                    if (die != null && count == 1)
+                    selectRecipeIndex = SelectRecipeDetectionPointList[0];
+                }
+                if (selectRecipeIndex >= 0)
+                {
+                    if (DetectionPointList.Count > selectRecipeIndex)
                     {
-                        RecipeMapDieColorChange(false, die, null);
+                        int idxX = DetectionPointList[selectRecipeIndex].IndexX;
+                        int idxY = DetectionPointList[selectRecipeIndex].IndexY;
+                        int count = DetectionPointList.Count(d => d.IndexX == idxX && d.IndexY == idxY);
+                        DetectionPointList.RemoveAt(selectRecipeIndex);
+                        Die die = mainRecipe.DetectRecipe.WaferMap.Dies.Where(d => d.IndexX == idxX && d.IndexY == idxY).FirstOrDefault();
+                        if (die != null && count == 1)
+                        {
+                            RecipeMapDieColorChange(false, die, null);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        });
+        public ICommand EditDetectionCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
+                int selectRecipeIndex = -1;
+                //顯示
+                if (SelectRecipeDetectionPointList.Count >= 1)
+                {
+                    selectRecipeIndex = SelectRecipeDetectionPointList[0];
+                }
+                if (selectRecipeIndex >= 0)
+                {
+                    ObservableCollection<int> nowSelectRecipeDetectionPointList = SelectRecipeDetectionPointList;
+                    DetectionEditWindow detectionEditWindow = new DetectionEditWindow(DetectionPointList[selectRecipeIndex], Microscope);
+                    detectionEditWindow.ShowDialog();
+                    if (detectionEditWindow.DetectionPointList != null && detectionEditWindow.DetectionPointList.Count > 0)
+                    {
+                        for (int i = 0; i < nowSelectRecipeDetectionPointList.Count; i++)
+                        {
+                            int index = nowSelectRecipeDetectionPointList[i];
+                            DetectionPointList[index].LensIndex = detectionEditWindow.DetectionPointList[0].LensIndex;
+                            DetectionPointList[index].CubeIndex = detectionEditWindow.DetectionPointList[0].CubeIndex;
+                            DetectionPointList[index].Filter1Index = detectionEditWindow.DetectionPointList[0].Filter1Index;
+                            DetectionPointList[index].Filter2Index = detectionEditWindow.DetectionPointList[0].Filter2Index;
+                            DetectionPointList[index].Filter3Index = detectionEditWindow.DetectionPointList[0].Filter3Index;
+                            DetectionPointList[index].MicroscopeLightValue = detectionEditWindow.DetectionPointList[0].MicroscopeLightValue;
+                            DetectionPointList[index].MicroscopeApertureValue = detectionEditWindow.DetectionPointList[0].MicroscopeApertureValue;
+                        }
+                    }
+                    detectionEditWindow = null;
+                }
+
             }
             catch (Exception ex)
             {
@@ -1602,53 +1673,62 @@ namespace WLS3200Gen2
         {
             try
             {
+                int selectRecipeIndex = -1;
                 //顯示
-                int idxX = DetectionPointList[SelectDetectionPointList].IndexX;
-                int idxY = DetectionPointList[SelectDetectionPointList].IndexY;
-                var showDie = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY);
-                Point mapPoint = new Point(showDie.MapTransX,
-                                           showDie.MapTransY);
-
-                recipeMapToPixelScale = MapPointToMapImagePixelScale(RecipeMapDrawSize.X, RecipeMapDrawSize.Y, HomeMapDrawCuttingline);
-                var die00 = mainRecipe.DetectRecipe.WaferMap.Dies[0];
-                var transMapMousePixcelX = 0.0;
-                var transMapMousePixcelY = 0.0;
-                if (die00.MapTransX == die00.OperationPixalX)
+                if (SelectRecipeDetectionPointList.Count >= 1)
                 {
-                    transMapMousePixcelX = recipeMapToPixelScale.X * mapPoint.X + RecipeMapDrawSize.X / 2;
+                    selectRecipeIndex = SelectRecipeDetectionPointList[0];
                 }
-                else
+                if (selectRecipeIndex >= 0)
                 {
-                    transMapMousePixcelX = recipeMapToPixelScale.X * (die00.MapTransX + die00.OperationPixalX - mapPoint.X) + RecipeMapDrawSize.X / 2;
+
+                    int idxX = DetectionPointList[selectRecipeIndex].IndexX;
+                    int idxY = DetectionPointList[selectRecipeIndex].IndexY;
+                    var showDie = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(die => die.IndexX == idxX && die.IndexY == idxY);
+                    Point mapPoint = new Point(showDie.MapTransX,
+                                               showDie.MapTransY);
+
+                    recipeMapToPixelScale = MapPointToMapImagePixelScale(RecipeMapDrawSize.X, RecipeMapDrawSize.Y, HomeMapDrawCuttingline);
+                    var die00 = mainRecipe.DetectRecipe.WaferMap.Dies[0];
+                    var transMapMousePixcelX = 0.0;
+                    var transMapMousePixcelY = 0.0;
+                    if (die00.MapTransX == die00.OperationPixalX)
+                    {
+                        transMapMousePixcelX = recipeMapToPixelScale.X * mapPoint.X + RecipeMapDrawSize.X / 2;
+                    }
+                    else
+                    {
+                        transMapMousePixcelX = recipeMapToPixelScale.X * (die00.MapTransX + die00.OperationPixalX - mapPoint.X) + RecipeMapDrawSize.X / 2;
+                    }
+
+                    if (die00.MapTransY == die00.OperationPixalY)
+                    {
+                        transMapMousePixcelY = recipeMapToPixelScale.Y * mapPoint.Y + RecipeMapDrawSize.Y / 2;
+                    }
+                    else
+                    {
+                        transMapMousePixcelY = recipeMapToPixelScale.Y * (die00.MapTransY + die00.OperationPixalY - mapPoint.Y) + RecipeMapDrawSize.Y / 2;
+                    }
+                    var transMapMousePixcel = new Point(transMapMousePixcelX, transMapMousePixcelY);
+
+                    Rectangle nowSelectRange = new Rectangle
+                    {
+                        Stroke = Brushes.Red,
+                        StrokeThickness = 5,
+                        Width = 0,
+                        Height = 0
+                    };
+                    Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
+                    Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+
+                    ChangeRecipeMappingSelect(nowSelectRange);
+
+                    //還沒對位，MAP點位不能移動
+                    if (isRecipeAlignment == false) return;
+                    //移動
+                    var transPos = transForm.TransPoint(new Point(DetectionPointList[selectRecipeIndex].Position.X + mainRecipe.DetectRecipe.AlignRecipe.OffsetX, DetectionPointList[selectRecipeIndex].Position.Y + mainRecipe.DetectRecipe.AlignRecipe.OffsetY));
+                    await machine.MicroDetection.TableMoveToAsync(transPos);
                 }
-
-                if (die00.MapTransY == die00.OperationPixalY)
-                {
-                    transMapMousePixcelY = recipeMapToPixelScale.Y * mapPoint.Y + RecipeMapDrawSize.Y / 2;
-                }
-                else
-                {
-                    transMapMousePixcelY = recipeMapToPixelScale.Y * (die00.MapTransY + die00.OperationPixalY - mapPoint.Y) + RecipeMapDrawSize.Y / 2;
-                }
-                var transMapMousePixcel = new Point(transMapMousePixcelX, transMapMousePixcelY);
-
-                Rectangle nowSelectRange = new Rectangle
-                {
-                    Stroke = Brushes.Red,
-                    StrokeThickness = 5,
-                    Width = 0,
-                    Height = 0
-                };
-                Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
-                Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
-
-                ChangeRecipeMappingSelect(nowSelectRange);
-
-                //還沒對位，MAP點位不能移動
-                if (isRecipeAlignment == false) return;
-                //移動
-                var transPos = transForm.TransPoint(new Point(DetectionPointList[SelectDetectionPointList].Position.X, DetectionPointList[SelectDetectionPointList].Position.Y));
-                await machine.MicroDetection.TableMoveToAsync(transPos);
             }
             catch (Exception ex)
             {
@@ -1914,7 +1994,6 @@ namespace WLS3200Gen2
             mainRecipe.DetectRecipe.DetectionPoints = DetectionPointList;
         }
     }
-
     public class WaferUIData : INotifyPropertyChanged
     {
         private WaferProcessStatus waferStates;
@@ -1937,6 +2016,106 @@ namespace WLS3200Gen2
         {
             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+    }
+    public static class DataGridSelectedIndexBehavior
+    {
+        public static readonly DependencyProperty SelectedItemsProperty =
+            DependencyProperty.RegisterAttached(
+                "SelectedItems",
+                typeof(IList),
+                typeof(DataGridSelectedIndexBehavior),
+                new PropertyMetadata(null, OnSelectedItemsChanged));
+
+        public static void SetSelectedItems(DependencyObject element, IList value)
+        {
+            element.SetValue(SelectedItemsProperty, value);
+        }
+
+        public static IList GetSelectedItems(DependencyObject element)
+        {
+            return (IList)element.GetValue(SelectedItemsProperty);
+        }
+
+        private static void OnSelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DataGrid dataGrid)
+            {
+                if (e.OldValue is IList oldList)
+                {
+                    dataGrid.SelectionChanged -= OnDataGridSelectionChanged;
+                }
+
+                if (e.NewValue is IList newList)
+                {
+                    dataGrid.SelectionChanged += OnDataGridSelectionChanged;
+                }
+            }
+        }
+
+        private static void OnDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is DataGrid dataGrid)
+            {
+                var selectedItems = GetSelectedItems(dataGrid);
+                if (selectedItems == null) return;
+
+                selectedItems.Clear();
+                foreach (var item in dataGrid.SelectedItems)
+                {
+                    selectedItems.Add(dataGrid.Items.IndexOf(item));
+                }
+            }
+        }
+    }
+    public static class DataGridSelectedItemsBehavior
+    {
+        public static readonly DependencyProperty SelectedItemsProperty =
+            DependencyProperty.RegisterAttached(
+                "SelectedItems",
+                typeof(IList),
+                typeof(DataGridSelectedItemsBehavior),
+                new PropertyMetadata(null, OnSelectedItemsChanged));
+
+        public static void SetSelectedItems(DependencyObject element, IList value)
+        {
+            element.SetValue(SelectedItemsProperty, value);
+        }
+
+        public static IList GetSelectedItems(DependencyObject element)
+        {
+            return (IList)element.GetValue(SelectedItemsProperty);
+        }
+
+        private static void OnSelectedItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DataGrid dataGrid)
+            {
+                if (e.OldValue is IList oldList)
+                {
+                    dataGrid.SelectionChanged -= OnDataGridSelectionChanged;
+                }
+
+                if (e.NewValue is IList newList)
+                {
+                    dataGrid.SelectionChanged += OnDataGridSelectionChanged;
+                }
+            }
+        }
+
+        private static void OnDataGridSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is DataGrid dataGrid)
+            {
+                IList selectedItems = GetSelectedItems(dataGrid);
+                if (selectedItems == null) return;
+
+                selectedItems.Clear();
+                foreach (var item in dataGrid.SelectedItems)
+                {
+                    selectedItems.Add(item);
+                }
+            }
         }
     }
 }

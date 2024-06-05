@@ -189,7 +189,7 @@ namespace WLS3200Gen2
                 {
                     int index = RectanglesHome.IndexOf(tempselectRects);
                     var moveDie = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(n => n.IndexX == RectanglesHome[index].Col && n.IndexY == RectanglesHome[index].Row);
-                    var transPos = machine.MicroDetection.TransForm.TransPoint(new Point(moveDie.MapTransX, moveDie.MapTransY));
+                    var transPos = machine.MicroDetection.TransForm.TransPoint(new Point(moveDie.MapTransX + mainRecipe.DetectRecipe.AlignRecipe.OffsetX, moveDie.MapTransY + mainRecipe.DetectRecipe.AlignRecipe.OffsetY));
                     await machine.MicroDetection.TableMoveToAsync(transPos);
                 }
             }
@@ -295,7 +295,7 @@ namespace WLS3200Gen2
                 {
                     //移動
                     var nowMoveDie = mainRecipe.DetectRecipe.WaferMap.Dies.Where(n => n.IndexX == tempselectRects.Col && n.IndexY == tempselectRects.Row).FirstOrDefault();
-                    var transPos = transForm.TransPoint(new Point(nowMoveDie.MapTransX, nowMoveDie.MapTransY));
+                    var transPos = transForm.TransPoint(new Point(nowMoveDie.MapTransX + mainRecipe.DetectRecipe.AlignRecipe.OffsetX, nowMoveDie.MapTransY + mainRecipe.DetectRecipe.AlignRecipe.OffsetY));
                     await machine.MicroDetection.TableMoveToAsync(transPos);
                 }
                 SetFocusCenter?.Invoke(tempselectRects.Col, tempselectRects.Row);

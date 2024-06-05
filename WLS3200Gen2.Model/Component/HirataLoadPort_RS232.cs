@@ -1330,7 +1330,7 @@ namespace WLS3200Gen2.Model.Component
                 {
                     int delayTime = 200;
                     int timeOut1 = 10 * 1000;
-                    int timeOut2 = 600 * 1000;
+                    int timeOut2 = 300 * 1000;
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
                     serialPort.DiscardInBuffer();

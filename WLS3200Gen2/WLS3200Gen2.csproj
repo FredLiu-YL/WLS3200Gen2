@@ -172,6 +172,9 @@
     <Compile Include="UserControls\ReaderUnitUC.xaml.cs">
       <DependentUpon>ReaderUnitUC.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\DetectionEditWindow.xaml.cs">
+      <DependentUpon>DetectionEditWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MappingCanvasWindow.xaml.cs">
       <DependentUpon>MappingCanvasWindow.xaml</DependentUpon>
     </Compile>
@@ -273,6 +276,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\ReaderUnitUC.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DetectionEditWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1088,6 +1088,7 @@ namespace WLS3200Gen2.Model.Module
                 }
                 await Robot.ReleaseWafer();
                 await Robot.PickWafer_GoIn(ArmStation.Macro);
+                Macro.FixWafer();
                 await Robot.PickWafer_Standby(ArmStation.Macro);
                 await Robot.PickWafer_Safety(ArmStation.Macro);
                 throw new FlowException("WaferMacroToStandBy:FixWafer Error!!");
@@ -1126,6 +1127,7 @@ namespace WLS3200Gen2.Model.Module
                 }
                 await Robot.ReleaseWafer();
                 await Robot.PickWafer_GoIn(ArmStation.Macro);
+                Macro.FixWafer();
                 await Robot.PickWafer_Standby(ArmStation.Macro);
                 await Robot.PickWafer_Safety(ArmStation.Macro);
                 throw new FlowException("WaferMacroToStandBy:FixWafer Error!!");

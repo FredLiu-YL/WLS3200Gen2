@@ -5,16 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WLS3200Gen2" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"  WindowStartupLocation="CenterScreen"  
-           x:Name="BincodeSetting"
+        x:Name="BincodeSetting"
         Title="BincodeSettingWindow" Height="450" Width="320">
     <Grid DataContext="{Binding ElementName=BincodeSetting}"  >
         <DataGrid Margin="0" ItemsSource="{Binding BincodeList}"  CanUserSortColumns="False" Height="300"
                                                     AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectList}"   >
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="PreviewMouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding MouseCombineClickCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
             <DataGrid.Columns >
                 <DataGridTemplateColumn Header="Color" Width="70"  >
                     <DataGridTemplateColumn.CellTemplate>
@@ -27,12 +22,7 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn  Width="70"  Header="Code"  Binding="{Binding Code}"    />
                 <DataGridTextColumn  Width="120"  Header="Describe"  Binding="{Binding Describe}"  />
-         
- 
             </DataGrid.Columns>
-
-
         </DataGrid>
-
     </Grid>
 </Window>

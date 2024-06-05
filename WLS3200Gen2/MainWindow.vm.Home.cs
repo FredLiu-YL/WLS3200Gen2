@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using MaterialDesignThemes.Wpf;
 using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,7 @@ namespace WLS3200Gen2
         private readonly object lockRecipeMapObj = new object();
         private bool isUpdateHomeMap = false;
         private bool isUpdateRecipeMap = false;
+        private PackIconKind volume = PackIconKind.VolumeOff;
         private ITransform updateHomeMapTransform { get; set; }
         private ITransform updateRecipeMapTransform { get; set; }
         private Die nowAssignDie;
@@ -121,6 +123,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Run");
                 if (IsLoadport1 == IsLoadport2)
                 {
                     MessageBox.Show("Loadport Wrong choice");
@@ -136,10 +139,11 @@ namespace WLS3200Gen2
 
                 if (isRunCommand == false)
                 {
+                    ProcessVisibility = Visibility.Hidden;
                     IsCanChangeRecipe = false;
                     isRunCommand = true;
                     IsRunning = true;
-                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Process Start");
+                    WriteLog(YuanliCore.Logger.LogType.PROCESS, "Process Start");
                     //產生當下時間的資料夾
                     processDataPath = CreateProcessFolder();
 
@@ -174,10 +178,12 @@ namespace WLS3200Gen2
                     isRunCommand = false;
                     IsRunning = false;
                     IsCanChangeRecipe = true;
+                    ProcessVisibility = Visibility.Visible;
                 }
                 else
                 {
                     await machine.ProcessResume();
+                    ProcessVisibility = Visibility.Hidden;
                 }
 
             }
@@ -200,14 +206,16 @@ namespace WLS3200Gen2
         {
             try
             {
-
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Pause");
+                if (Machinestatus == MachineStates.Emergency)
+                {
+                    MessageBox.Show("Not available in emergencies", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 IsRunning = false;
-                // ProcessVisibility = Visibility.Hidden;
-
                 SwitchStates(MachineStates.PAUSED);
                 await machine.ProcessPause();
-
-
+                ProcessVisibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -227,10 +235,9 @@ namespace WLS3200Gen2
                 WorkholderUCVisibility = Visibility.Collapsed;
                 TabControlSelectedIndex = 0;
                 IsRunning = true;
-
+                ProcessVisibility = Visibility.Hidden;
                 SwitchStates(MachineStates.RUNNING);
                 await machine.ProcessResume();
-                ProcessVisibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -246,11 +253,10 @@ namespace WLS3200Gen2
         {
             try
             {
-                await machine.ProcessStop();
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Stop");
+                await machine.Abort();
                 IsRunning = false;
-                ProcessVisibility = Visibility.Visible;
-                SwitchStates(MachineStates.IDLE);
-
+                //SwitchStates(MachineStates.IDLE);
             }
             catch (Exception ex)
             {
@@ -302,7 +308,9 @@ namespace WLS3200Gen2
                     WriteLog(YuanliCore.Logger.LogType.TRIG, "Load Recipe :" + recipename);
                 }
                 IsCanChangeRecipe = true;
-
+                //SinfWaferMapping sinfWaferMapping = new SinfWaferMapping(true, true);
+                //sinfWaferMapping = (SinfWaferMapping)mainRecipe.DetectRecipe.WaferMap;
+                //sinfWaferMapping.SaveWaferFile("C://Users//USER//Documents//0603.txt", false, false);
             }
             catch (Exception ex)
             {
@@ -354,6 +362,7 @@ namespace WLS3200Gen2
                     throw new Exception("Loadport Wrong choice");
                 }
                 IsCanChangeRecipe = false;
+                IsOperateUI = false;
                 SwitchStates(MachineStates.RUNNING);
 
                 if (LoadPortContent == "Load")
@@ -400,7 +409,8 @@ namespace WLS3200Gen2
                     ProcessStations.Add(temp);
                 }
                 SwitchStates(MachineStates.IDLE);
-                IsCanChangeRecipe = true; ;
+                IsCanChangeRecipe = true;
+                IsOperateUI = true;
             }
             catch (Exception ex)
             {
@@ -707,12 +717,25 @@ namespace WLS3200Gen2
             {
             }
         });
+
+        public PackIconKind Volume { get => volume; set => SetValue(ref volume, value); }
         public ICommand VolumeOffCommand => new RelayCommand(async () =>
         {
             try
             {
-
-
+                if (machine.StackLight != null)
+                {
+                    if (Volume == PackIconKind.VolumeHigh)
+                    {
+                        Volume = PackIconKind.VolumeOff;
+                        machine.StackLight.VolumeOff();
+                    }
+                    else
+                    {
+                        Volume = PackIconKind.VolumeHigh;
+                        machine.StackLight.VolumeOn();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -773,7 +796,9 @@ namespace WLS3200Gen2
                 {
                     int index = RectanglesHome.IndexOf(tempselectRects);
                     var moveDie = mainRecipe.DetectRecipe.WaferMap.Dies.FirstOrDefault(n => n.IndexX == RectanglesHome[index].Col && n.IndexY == RectanglesHome[index].Row);
-                    var transPos = machine.MicroDetection.TransForm.TransPoint(new Point(moveDie.MapTransX, moveDie.MapTransY));
+                    var transPos = machine.MicroDetection.TransForm.TransPoint(
+                        new Point(moveDie.MapTransX + mainRecipe.DetectRecipe.AlignRecipe.OffsetX, moveDie.MapTransY + mainRecipe.DetectRecipe.AlignRecipe.OffsetY)
+                        );
                     await machine.MicroDetection.TableMoveToAsync(transPos);
                 }
             }
@@ -1057,12 +1082,6 @@ namespace WLS3200Gen2
             {
                 TableX.AxisVelocity.MaxVel = TableXMaxVel;
                 TableY.AxisVelocity.MaxVel = TableYMaxVel;
-            }
-            catch (Exception ex)
-            {
-            }
-            try
-            {
                 foreach (var item in dies)
                 {
                     RectangleInfo rectangleInfo = tempHomeLogAssignRectangles.FirstOrDefault(n => n.Col == item.IndexX && n.Row == item.IndexY);
@@ -1075,11 +1094,21 @@ namespace WLS3200Gen2
                         }
                     }
                 }
+                App.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    try
+                    {
+                        ResetDetectionRunningPointList();
+                        ResetTempAssign();
+                        ShowDetectionHomeNewMapImgae(mainRecipe.DetectRecipe);
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
             }
             microJudgeOperation = WaferProcessStatus.Pass;
             return (microJudgeOperation, dies);

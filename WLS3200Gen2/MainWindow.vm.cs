@@ -120,6 +120,14 @@ namespace WLS3200Gen2
         /// </summary>
         public ICommand ClearShapeManualAction { get; set; }
         /// <summary>
+        /// Fit 縮放到最適合的大小
+        /// </summary>
+        public ICommand ZoomFitManualAction { get; set; }
+        /// <summary>
+        /// Fit 縮放到最適合的大小
+        /// </summary>
+        public ICommand ZoomRcipeFitManualAction { get; set; }
+        /// <summary>
         /// 新增 Shape
         /// </summary>
         public ICommand AddHomeMapShapeAction { get; set; }
@@ -136,6 +144,8 @@ namespace WLS3200Gen2
         {
             try
             {
+                InformationUCVisibility = Visibility.Hidden;
+                WorkholderUCVisibility = Visibility.Collapsed;
                 Assembly thisAssem = typeof(MainViewModel).Assembly;
                 AssemblyName thisAssemName = thisAssem.GetName();
 
@@ -272,6 +282,9 @@ namespace WLS3200Gen2
                     ToolLoadPort1ComboBox.Add((i + 1).ToString());
                 }
 
+                //這裡的Await是要重新刷新UI才可以讓ZoomFitManualAction有效果
+                await Task.Delay(50);
+                ZoomFitManualAction.Execute(Drawings);
 
                 isInitialComplete = true;
 
@@ -752,13 +765,21 @@ namespace WLS3200Gen2
                         //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;
 
 
-                        if (isMainRecipePageSelect || isMainSecurityPageSelect)
+                        if (isMainRecipePageSelect || isMainSecurityPageSelect || isMainHomePageSelect)
                         {
                             if (machine.MicroDetection.Microscope != null)
                             {
                                 MicroscopeParam.Position = Convert.ToInt32(machine.MicroDetection.Microscope.Position);
                                 MicroscopeParam.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
                                 MicroscopeParam.LightValue = machine.MicroDetection.Microscope.LightValue;
+                            }
+                            if (machine.Feeder.LampControl1 != null)
+                            {
+                                LampControl1Param.LightValue = machine.Feeder.LampControl1.LightValue;
+                            }
+                            if (machine.Feeder.LampControl2 != null)
+                            {
+                                LampControl2Param.LightValue = machine.Feeder.LampControl2.LightValue;
                             }
                         }
                         if (isMainToolsPageSelect)

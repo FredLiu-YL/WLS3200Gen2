@@ -18,7 +18,7 @@ namespace WLS3200Gen2.Model
 
         private PauseTokenSource pts = new PauseTokenSource();
         private CancellationTokenSource cts = new CancellationTokenSource();
-
+        private bool isAbort = false;
 
 
         public event Action<YuanliCore.Logger.LogType, string> WriteLog;
@@ -48,6 +48,7 @@ namespace WLS3200Gen2.Model
             {
                 pts = new PauseTokenSource();
                 cts = new CancellationTokenSource();
+                isAbort = false;
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "ProcessInitial ");
                 Feeder.ProcessInitial(processSetting.Inch, machineSetting, pts, cts);
                 int testCount = 1;
@@ -58,6 +59,7 @@ namespace WLS3200Gen2.Model
                 }
                 for (int i = 0; i < testCount; i++)
                 {
+                    //測試跑，重新Reset要運作的項目
                     for (int j = 0; j < processSetting.ProcessStation.Length; j++)
                     {
                         processSetting.ProcessStation[j].MacroTop = copiedProcessSetting.ProcessStation[j].MacroTop;
@@ -86,7 +88,7 @@ namespace WLS3200Gen2.Model
                         Task taskLoad = Task.CompletedTask;
                         Task taskUnLoad = Task.CompletedTask;
                         //第一次執行 避免第一片就沒有要做 所以會搜尋到需要做的WAFER為止             
-                        currentWafer = SearchLoadWafer(processWafers);
+                        currentWafer = SearchLoadWafer(processWafers, false);
                         if (currentWafer != null)
                         {
                             //先載一片
@@ -97,7 +99,7 @@ namespace WLS3200Gen2.Model
                                 if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
                                 MainRecipe recipe = ChangeRecipe.Invoke();
                                 InspectionReport report = new InspectionReport();
-                                report.WaferMapping = (SinfWaferMapping)recipe.DetectRecipe.WaferMap.Copy();
+                                report.WaferMapping = recipe.DetectRecipe.WaferMap.Copy();
 
                                 currentSavePath = CreateResultFolder(recipe.Name, resultTime, currentWafer.CassetteIndex);
                                 currentWafer.Dies = recipe.DetectRecipe.WaferMap.Dies;
@@ -152,8 +154,7 @@ namespace WLS3200Gen2.Model
                                     Feeder.MicroFixed = MicroVacuumOn;//委派 顯微鏡的固定方式
                                     await Feeder.LoadToMicroAsync(currentWafer);// currentWafer = await Feeder.LoadToMicroAsync(currentWafer);
 
-                                    nextWafer = SearchLoadWafer(processWafers);
-                                    // nextWafer = processWafers.Dequeue();
+                                    nextWafer = SearchLoadWafer(processWafers, isAbort);
 
                                     //預載一片在Macro上
                                     if (nextWafer != null)
@@ -186,7 +187,7 @@ namespace WLS3200Gen2.Model
                                 }
                                 else
                                 {
-                                    nextWafer = SearchLoadWafer(processWafers);
+                                    nextWafer = SearchLoadWafer(processWafers, isAbort);
                                     // nextWafer = processWafers.Dequeue();
                                     //退片
                                     await Feeder.AlignerToStandByAsync(currentWafer);
@@ -222,6 +223,7 @@ namespace WLS3200Gen2.Model
                         }
                     });
                 }
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Process Finish ");
             }
             catch (OperationCanceledException canceleEx)
             {
@@ -243,7 +245,6 @@ namespace WLS3200Gen2.Model
                 SetWaferStatusToUI(currentWafer);
                 Feeder.ProcessEnd();
                 cts.Dispose();
-                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Process Finish ");
             }
         }
         public async Task ProcessPause()
@@ -254,27 +255,35 @@ namespace WLS3200Gen2.Model
         {
             pts.IsPaused = false;
         }
-
         public async Task ProcessStop()
         {
             cts.Cancel();
-
         }
-
-        private Wafer SearchLoadWafer(Queue<Wafer> processWafers)
+        public async Task Abort()
         {
-            //避免沒有要做 所以會搜尋到需要做的WAFER為止
-            while (true)
+            isAbort = true;
+        }
+        private Wafer SearchLoadWafer(Queue<Wafer> processWafers, bool isAbort)
+        {
+            //Abort全部退片
+            if (isAbort)
             {
-                if (processWafers.Count == 0) return null;
-
-                var currentWafer = processWafers.Dequeue();
-                if (currentWafer.ProcessStatus.WaferID == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select
-                || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select || currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)
+                return null;
+            }
+            else
+            {
+                //避免沒有要做 所以會搜尋到需要做的WAFER為止
+                while (true)
                 {
-                    return currentWafer;
-                }
+                    if (processWafers.Count == 0) return null;
 
+                    var currentWafer = processWafers.Dequeue();
+                    if (currentWafer.ProcessStatus.WaferID == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select
+                    || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select || currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)
+                    {
+                        return currentWafer;
+                    }
+                }
             }
         }
         private async Task PreLoad(Wafer wafer, ProcessSetting processSetting)

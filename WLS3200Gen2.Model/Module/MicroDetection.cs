@@ -287,10 +287,8 @@ namespace WLS3200Gen2.Model.Module
                         await micro;
                         currentWafer.ProcessStatus.Micro = micro.Result.Item1;
                         report.WaferMapping.Dies = micro.Result.Item2;
-                        //SinfWaferMapping sinfWaferMapping = (SinfWaferMapping)report.WaferMapping.Copy();
-                        //sinfWaferMapping.SaveWaferFile("");
+                        SaveSinfResult(GrabSaveFolder + "\\Result.txt", report.WaferMapping.Dies, mainRecipe.DetectRecipe.WaferMap);
                     }
-                    //report.WaferMapping.SaveWaferFile("");
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro End");
                 }
                 else
@@ -307,6 +305,25 @@ namespace WLS3200Gen2.Model.Module
             {
                 currentWafer.ProcessStatus.Micro = WaferProcessStatus.Reject;
                 throw ex;
+            }
+        }
+        /// <summary>
+        /// 儲存成sinf格式(orgWaferMapping要拿原始的WaferMapping)
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="dies"></param>
+        /// <param name="orgWaferMapping"></param>
+        private void SaveSinfResult(string path, Die[] dies, WaferMapping orgWaferMapping)
+        {
+            try
+            {
+                SinfWaferMapping sinfWaferMapping = (SinfWaferMapping)orgWaferMapping;
+                SinfWaferMapping sinfWaferMapping2 = sinfWaferMapping.Copy();
+                sinfWaferMapping2.Dies = dies;
+                sinfWaferMapping.SaveWaferFile(GrabSaveFolder + "\\Result.txt", false, false);
+            }
+            catch (Exception ex)
+            {
             }
         }
         private string CreateMicroFolder(string nowTime, string recipeName, Wafer currentWafer)

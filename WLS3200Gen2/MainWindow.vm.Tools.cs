@@ -38,6 +38,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -113,6 +114,8 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                await machine.Feeder.AlignerL.FixWafer();
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -150,6 +153,8 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                machine.MicroDetection.TableVacuum.On();
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -185,6 +190,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -216,6 +222,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -258,6 +265,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -324,6 +332,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -384,6 +393,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                IsCanWorkEFEMTrans = true;
                 MessageBox.Show(ex.Message);
             }
             finally

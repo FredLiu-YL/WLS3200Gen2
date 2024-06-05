@@ -236,7 +236,7 @@
                                 <ColumnDefinition Width="0.33*"/>
                             </Grid.ColumnDefinitions>
                             <views:VirtualCanvas Grid.Row="1"   ImageSource="{Binding MainImage}"  ItemsSource="{Binding ManualDrawings}"   
-                                        AddShapeAction="{Binding AddShapeManualAction}" ClearShapeAction="{Binding ClearShapeManualAction}" >
+                                        AddShapeAction="{Binding AddShapeManualAction}" ClearShapeAction="{Binding ClearShapeManualAction}" ZoomFitAction="{Binding ZoomFitManualAction}" >
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="MouseUp">
                                         <command:EventToCommand Command="{Binding ManualCaliperCalculateCommand}"   />
@@ -265,7 +265,7 @@
                                         </Grid.ColumnDefinitions>
                                         <RadioButton Grid.Column="0" IsEnabled="{Binding IsCanChangeRecipe}" Height="40" Width="100" Content="Load port1"  GroupName="GroupChoiceChipOutline" IsChecked="{Binding IsLoadport1}" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
                                         <RadioButton Grid.Column="1" IsEnabled="{Binding IsCanChangeRecipe}" Height="40" Width="100" Content="Load port2" GroupName="GroupChoiceChipOutline" IsChecked="{Binding IsLoadport2}"  Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" Visibility ="{Binding LoadportQuantity, Converter={StaticResource CvrIsLoadPortVisible}}" />
-                                        <Button Grid.Column="0" Grid.Row="1" Content="Scan" Command="{Binding SlotMappingCommand}" IsEnabled="{Binding IsCanChangeRecipe}" Width="150" />
+                                        <Button Grid.Column="0" Grid.Row="1" Content="{Binding LoadPortContent}" Command="{Binding SlotMappingCommand}" IsEnabled="{Binding IsCanChangeRecipe}" Width="150" />
                                         <UserControlUC:ProcessCassetteMenuUC  Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="2" ProcessStation="{Binding ProcessStations}"/>
 
                                     </Grid>
@@ -723,7 +723,8 @@
                                 <RowDefinition  Height="0.25*"/>
                             </Grid.RowDefinitions>
 
-                            <views:VirtualCanvas Grid.Row="0"  Grid.Column="0" ImageSource="{Binding MainImage}" ItemsSource="{Binding Drawings}"   MousePixcel="{Binding MousePixcel}" AddShapeAction="{Binding AddShapeAction}" ClearShapeAction="{Binding ClearShapeAction}" />
+                            <views:VirtualCanvas Grid.Row="0"  Grid.Column="0" ImageSource="{Binding MainImage}" ItemsSource="{Binding Drawings}" MousePixcel="{Binding MousePixcel}"
+                                                 AddShapeAction="{Binding AddShapeAction}" ClearShapeAction="{Binding ClearShapeAction}" ZoomFitAction="{Binding ZoomRcipeFitManualAction}"/>
                             <Grid Grid.Row="1" Grid.Column="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -934,11 +935,11 @@
                                                                     <RowDefinition />
                                                                 </Grid.RowDefinitions>
                                                                 <Grid.ColumnDefinitions >
-                                                                    <ColumnDefinition Width="0.19*"/>
-                                                                    <ColumnDefinition Width="0.19*"/>
-                                                                    <ColumnDefinition Width="0.19*"/>
-                                                                    <ColumnDefinition Width="0.19*"/>
-                                                                    <ColumnDefinition Width="0.24*"/>
+                                                                    <ColumnDefinition Width="0.18*"/>
+                                                                    <ColumnDefinition Width="0.18*"/>
+                                                                    <ColumnDefinition Width="0.18*"/>
+                                                                    <ColumnDefinition Width="0.18*"/>
+                                                                    <ColumnDefinition Width="0.28*"/>
                                                                 </Grid.ColumnDefinitions>
 
                                                                 <TextBlock Grid.Column="0" Grid.Row="0"   Text="Pitch X:" FontSize="20"  VerticalAlignment="Center" />
@@ -990,8 +991,8 @@
                                                               materialDesign:ColorZoneAssist.Mode="Custom"   FontSize="14" Header="Control"  >
                                                         <Grid >
                                                             <Grid.ColumnDefinitions >
-                                                                <ColumnDefinition Width="0.7*"/>
-                                                                <ColumnDefinition Width="0.3*"/>
+                                                                <ColumnDefinition Width="0.75*"/>
+                                                                <ColumnDefinition Width="0.25*"/>
                                                             </Grid.ColumnDefinitions>
                                                             <UserControlUC:MacroUnitUC Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"  Macro="{Binding Macro}" MacroStatus="{Binding MacroStatus}" IsEnabled="{Binding IsCanWorkEFEMTrans}" ShowChangeMacro="Visible"  />
                                                             <Grid Grid.Column="1">
@@ -1004,7 +1005,10 @@
                                                                     <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
                                                                     <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
                                                                 </StackPanel>
-
+                                                                <StackPanel Grid.Row="2"   Grid.Column="1" Orientation="Horizontal">
+                                                                    <TextBlock   Text="Vacuum:" FontSize="20"  VerticalAlignment="Center" />
+                                                                    <usercontrols:SignalUC Margin="2" Width="20" Height="20" IsSignal="False" />
+                                                                </StackPanel>
                                                             </Grid>
 
                                                         </Grid>
@@ -1176,7 +1180,7 @@
                                                         </GroupBox>
                                                         <Border Grid.Row="2" BorderBrush="Black" BorderThickness="2" >
                                                             <StackPanel Orientation="Horizontal" >
-                                                                <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}" Width="150" Height="40"/>
+                                                                <Button Margin="2" Content="Confirm" Command="{Binding ParamConfirmCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40"/>
                                                                 <Button Margin="2" Content="Locate Run" Command="{Binding LocateRunCommand}" IsEnabled="{Binding IsCanWorkEFEMTrans}" Width="150" Height="40"/>
                                                             </StackPanel>
 
@@ -1251,7 +1255,9 @@
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                                 <StackPanel  Margin="1"  Orientation="Vertical"  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                                                     <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}" CanUserSortColumns="False" 
-                                                    AutoGenerateColumns="False" SelectionUnit="FullRow" SelectedIndex="{Binding SelectDetectionPointList}" Height="795"  >
+                                                               SelectionMode ="Extended" SelectionUnit="FullRow" DataGrid.CanUserAddRows ="False" 
+                                                               wls3200gen2:DataGridSelectedIndexBehavior.SelectedItems="{Binding SelectRecipeDetectionPointList}"
+                                                               AutoGenerateColumns="False" Height="795"  >
                                                         <i:Interaction.Triggers>
                                                             <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                                 <i:InvokeCommandAction Command="{Binding DetectionPointListDoubleClickCommand}"/>
@@ -2251,7 +2257,7 @@
                     IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
                     Style="{StaticResource MaterialDesignIconButton}"  Command="{Binding VolumeOffCommand}"  ToolTip="Mute" Foreground="#FF010910">
 
-                    <materialDesign:PackIcon Width="70" Height="70" Kind="VolumeOff"  />
+                    <materialDesign:PackIcon Width="70" Height="70" Kind="{Binding Volume}"  />
                 </Button>
             </Grid>
             <Grid Grid.Row="2" >

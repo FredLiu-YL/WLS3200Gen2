@@ -108,6 +108,35 @@ namespace WLS3200Gen2.Model.Recipe
         {
 
         }
+        public SinfWaferMapping Copy()
+        {
+            Die[] copiedDies = new Die[this.Dies.Length];
+            for (int i = 0; i < this.Dies.Length; i++)
+            {
+                copiedDies[i] = this.Dies[i].Copy();
+            }
+
+            return new SinfWaferMapping(false, false)
+            {
+                OriginPoint = this.OriginPoint,
+                NotchDirection = this.NotchDirection,
+                MapCenterPoint = this.MapCenterPoint,
+                WaferSize = this.WaferSize,
+                ColumnCount = this.ColumnCount,
+                RowCount = this.RowCount,
+                Lot_ID = this.Lot_ID,
+                Wafer_Idx = this.Wafer_Idx,
+                Count_Row = this.Count_Row,
+                Count_Column = this.Count_Column,
+                Unit = this.Unit,
+                DieSize_X = this.DieSize_X,
+                DieSize_Y = this.DieSize_Y,
+                Start_LeftX = this.Start_LeftX,
+                Start_TopY = this.Start_TopY,
+                Dies = copiedDies
+
+            };
+        }
         /// <summary>
         /// path路徑 isMotionXMirror是否要映射X isMotionYMirror是否要映射Y
         /// </summary>
@@ -144,9 +173,9 @@ namespace WLS3200Gen2.Model.Recipe
                 Size waferSize = new Size();
                 if (System.IO.File.Exists(path))
                 {
-                    Dies_result = new DieDraw[0, 0];
+                    dies_result = new DieDraw[0, 0];
                     ReadSinf(path);
-                    Dies_result = RotateMap(posDirection, Dies_result, isMotionXMirror, isMotionYMirror);
+                    dies_result = RotateMap(posDirection, dies_result, isMotionXMirror, isMotionYMirror);
                     if (posDirection == Direction.Right_Button || posDirection == Direction.Left_Top)
                     {
                         MapCenterPoint = new Point(mapCenter.X, mapCenter.Y);
@@ -155,24 +184,24 @@ namespace WLS3200Gen2.Model.Recipe
                     {
                         MapCenterPoint = new Point(mapCenter.Y, mapCenter.X);
                     }
-                    die = new Die[Dies_result.GetLength(0) * Dies_result.GetLength(1)];
+                    die = new Die[dies_result.GetLength(0) * dies_result.GetLength(1)];
                     int idx = 0;
-                    ColumnCount = Dies_result.GetLength(0);
-                    RowCount = Dies_result.GetLength(1);
-                    for (int i = 0; i < Dies_result.GetLength(0); i++)
+                    ColumnCount = dies_result.GetLength(0);
+                    RowCount = dies_result.GetLength(1);
+                    for (int i = 0; i < dies_result.GetLength(0); i++)
                     {
-                        for (int j = 0; j < Dies_result.GetLength(1); j++)
+                        for (int j = 0; j < dies_result.GetLength(1); j++)
                         {
                             die[idx] = new Die
                             {
-                                IndexX = Dies_result[i, j].TransIndexX,
-                                IndexY = Dies_result[i, j].TransIndexY,
-                                OperationPixalX = Dies_result[i, j].TransPositionX,
-                                OperationPixalY = Dies_result[i, j].TransPositionY,
-                                MapTransX = Dies_result[i, j].MapTransX,
-                                MapTransY = Dies_result[i, j].MapTransY,
-                                BinCode = Dies_result[i, j].TransDieData,
-                                DieSize = new Size(Dies_result[i, j].DieSizeX, Dies_result[i, j].DieSizeY)
+                                IndexX = dies_result[i, j].TransIndexX,
+                                IndexY = dies_result[i, j].TransIndexY,
+                                OperationPixalX = dies_result[i, j].TransPositionX,
+                                OperationPixalY = dies_result[i, j].TransPositionY,
+                                MapTransX = dies_result[i, j].MapTransX,
+                                MapTransY = dies_result[i, j].MapTransY,
+                                BinCode = dies_result[i, j].TransDieData,
+                                DieSize = new Size(dies_result[i, j].DieSizeX, dies_result[i, j].DieSizeY)
                             };
                             idx++;
                         }
@@ -185,44 +214,104 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
-        public void SaveWaferFile(string path)
+        public void SaveWaferFile(string path, bool isMotionXMirror, bool isMotionYMirror)
         {
             try
             {
-                string mappingDrawBinCode_NoDraw = "";
-                int startDraw_X = 9999999;
-                int endDraw_X = -1;
-                int startDraw_Y = 9999999;
-                int endDraw_Y = -1;
-                int CountX = Dies_result.GetLength(0);
-                int CountY = Dies_result.GetLength(1);
-                for (int i = 0; i < CountX; i++)
+                List<string> lines = new List<string>();
+                lines.Add("DEVICE:" + Device_Name);
+                lines.Add("LOT:" + Lot_ID);
+                lines.Add("WAFER:" + Wafer_Idx);
+                lines.Add("FNLOC:" + Notch_Degree);
+                lines.Add("ROWCT:" + Count_Row);
+                lines.Add("COLCT:" + Count_Column);
+                lines.Add("BCEQU:" + Bin_Codes);
+                lines.Add("REFPX:" + Ref_PointX);
+                lines.Add("REFPY:" + Ref_PointY);
+                lines.Add("DUTMS:" + Unit);
+                int scale = 1;
+                if (Unit.ToUpper() == "MM")
                 {
-                    for (int j = 0; j < CountY; j++)
-                    {
-                        if (Dies_result[i, j].DieData != mappingDrawBinCode_NoDraw)
-                        {
-                            if (startDraw_X > i)
-                            {
-                                startDraw_X = i;
-                            }
-                            if (endDraw_X < i)
-                            {
-                                endDraw_X = i;
-                            }
+                    scale = 1000;
+                }
+                lines.Add("XDIES:" + DieSize_X / scale);
+                lines.Add("YDIES:" + DieSize_Y / scale);
 
-                            if (startDraw_Y > j)
+                if (Mode == SinfMode.Sinf_Dir || Mode == SinfMode.Sinf_Dir_Total)
+                {
+                    lines.Add("LEFT_X:" + Start_LeftX);
+                    lines.Add("TOP_Y:" + Start_TopY);
+                    lines.Add("X_INC_DIR:" + Direction_X);
+                    lines.Add("Y_INC_DIR:" + Direction_Y);
+                    if (Mode == SinfMode.Sinf_Dir_Total)
+                    {
+                        lines.Add("TOTAL_DIE:" + Count_Column * Count_Row);
+                    }
+                }
+
+                if (isMotionYMirror)
+                {
+                    if (isMotionXMirror)
+                    {
+                        for (int j = Count_Row; j >= 0; j--)
+                        {
+                            int startX = Count_Column;
+                            string rowString = Dies.FirstOrDefault(die => die.IndexX == startX && die.IndexY == j).BinCode;
+                            for (int i = Count_Column - 1; i >= 0; i--)
                             {
-                                startDraw_Y = j;
+                                var date = Dies.FirstOrDefault(die => die.IndexX == i && die.IndexY == j).BinCode;
+                                rowString += " " + date;
                             }
-                            if (endDraw_Y < j)
+                            lines.Add("RowData:" + rowString);
+                        }
+                    }
+                    else
+                    {
+                        for (int j = Count_Row; j >= 0; j--)
+                        {
+                            int startX = 0;
+                            string rowString = Dies.FirstOrDefault(die => die.IndexX == startX && die.IndexY == j).BinCode;
+                            for (int i = 1; i < Count_Column; i++)
                             {
-                                endDraw_Y = j;
+                                var date = Dies.FirstOrDefault(die => die.IndexX == i && die.IndexY == j).BinCode;
+                                rowString += " " + date;
                             }
+                            lines.Add("RowData:" + rowString);
                         }
                     }
                 }
-                SaveAS(path, startDraw_X, endDraw_X, startDraw_Y, endDraw_Y);
+                else
+                {
+                    if (isMotionXMirror)
+                    {
+                        for (int j = 0; j < Count_Row; j++)
+                        {
+                            int startX = Count_Column;
+                            string rowString = Dies.FirstOrDefault(die => die.IndexX == startX && die.IndexY == j).BinCode;
+                            for (int i = Count_Column - 1; i >= 0; i--)
+                            {
+                                var date = Dies.FirstOrDefault(die => die.IndexX == i && die.IndexY == j).BinCode;
+                                rowString += " " + date;
+                            }
+                            lines.Add("RowData:" + rowString);
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 0; j < Count_Row; j++)
+                        {
+                            int startX = 0;
+                            string rowString = Dies.FirstOrDefault(die => die.IndexX == startX && die.IndexY == j).BinCode;
+                            for (int i = 1; i < Count_Column; i++)
+                            {
+                                var date = Dies.FirstOrDefault(die => die.IndexX == i && die.IndexY == j).BinCode;
+                                rowString += " " + date;
+                            }
+                            lines.Add("RowData:" + rowString);
+                        }
+                    }
+                }
+                System.IO.File.WriteAllLines(path, lines);
             }
             catch (Exception)
             {
@@ -248,7 +337,7 @@ namespace WLS3200Gen2.Model.Recipe
         private string Direction_Y { get; set; }
         private double Total_Die { get; set; }
         public List<BincodeInfo> BinCode_result { get; set; } = new List<BincodeInfo>();
-        private DieDraw[,] Dies_result { get; set; }
+        private DieDraw[,] dies_result { get; set; }
 
         private Direction posDirection;
 
@@ -394,7 +483,7 @@ namespace WLS3200Gen2.Model.Recipe
 
                 int total_Y = Count_Row;
 
-                Dies_result = new DieDraw[total_X, total_Y];
+                dies_result = new DieDraw[total_X, total_Y];
 
                 string[] mapline;
                 for (int i = startIdx; i <= lines.Length - 1; i++)
@@ -408,15 +497,15 @@ namespace WLS3200Gen2.Model.Recipe
                         }
                         if (!(j >= Count_Column || (i - startIdx) >= Count_Row))
                         {
-                            Dies_result[j, i - startIdx] = new DieDraw();
-                            Dies_result[j, i - startIdx].DieData = mapline[j];
-                            Dies_result[j, i - startIdx].IndexX = j;
-                            Dies_result[j, i - startIdx].IndexY = i - startIdx;
+                            dies_result[j, i - startIdx] = new DieDraw();
+                            dies_result[j, i - startIdx].DieData = mapline[j];
+                            dies_result[j, i - startIdx].IndexX = j;
+                            dies_result[j, i - startIdx].IndexY = i - startIdx;
 
-                            Dies_result[j, i - startIdx].DieSizeX = DieSize_X;
-                            Dies_result[j, i - startIdx].DieSizeY = DieSize_Y;
-                            Dies_result[j, i - startIdx].PositionX = j * DieSize_X;//DieSize_X / 2 +
-                            Dies_result[j, i - startIdx].PositionY = (i - startIdx) * DieSize_Y;//DieSize_Y / 2 + 
+                            dies_result[j, i - startIdx].DieSizeX = DieSize_X;
+                            dies_result[j, i - startIdx].DieSizeY = DieSize_Y;
+                            dies_result[j, i - startIdx].PositionX = j * DieSize_X;//DieSize_X / 2 +
+                            dies_result[j, i - startIdx].PositionY = (i - startIdx) * DieSize_Y;//DieSize_Y / 2 + 
                         }
                     }
                 }
@@ -434,7 +523,7 @@ namespace WLS3200Gen2.Model.Recipe
         {
             try
             {
-                Dies_result = newDieDraw;
+                dies_result = newDieDraw;
             }
             catch (Exception ex)
             {
@@ -537,18 +626,18 @@ namespace WLS3200Gen2.Model.Recipe
                 throw ex;
             }
         }
-        public void SaveAS(string pathFile, int star_X, int end_X, int star_Y, int end_Y)
+        public void MappingGenerateSaveAS(string pathFile, int star_X, int end_X, int star_Y, int end_Y)
         {
             try
             {
-                DieDraw[] flattenedArray = Dies_result.Cast<DieDraw>().ToArray();
+                DieDraw[] flattenedArray = dies_result.Cast<DieDraw>().ToArray();
 
                 foreach (var item in Dies)
                 {
                     flattenedArray.FirstOrDefault(die => die.TransIndexX == item.IndexX && die.TransIndexY == item.IndexY).DieData = item.BinCode;
                 }
-                int cols = Dies_result.GetLength(0);
-                int rows = Dies_result.GetLength(1);
+                int cols = dies_result.GetLength(0);
+                int rows = dies_result.GetLength(1);
 
                 List<string> lines = new List<string>();
                 lines.Add("DEVICE:" + Device_Name);
@@ -582,15 +671,15 @@ namespace WLS3200Gen2.Model.Recipe
                 }
                 for (int j = star_Y; j <= end_Y; j++)
                 {
-                    int indexX = Dies_result[star_X, j].IndexX;
-                    int indexY = Dies_result[star_X, j].IndexY;
+                    int indexX = dies_result[star_X, j].IndexX;
+                    int indexY = dies_result[star_X, j].IndexY;
 
                     string rowString = flattenedArray.FirstOrDefault(die => die.IndexX == indexX && die.IndexY == indexY).DieData;
 
                     for (int i = star_X + 1; i <= end_X; i++)
                     {
-                        indexX = Dies_result[i, j].IndexX;
-                        indexY = Dies_result[i, j].IndexY;
+                        indexX = dies_result[i, j].IndexX;
+                        indexY = dies_result[i, j].IndexY;
                         rowString += " " + flattenedArray.FirstOrDefault(die => die.IndexX == indexX && die.IndexY == indexY).DieData;
                     }
                     lines.Add("RowData:" + rowString);

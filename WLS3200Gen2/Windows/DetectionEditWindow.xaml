@@ -1,0 +1,41 @@
+﻿<Window x:Class="WLS3200Gen2.DetectionEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WLS3200Gen2"
+        mc:Ignorable="d"
+         x:Name="DetectionEdit"
+        WindowStyle="None"  
+        Title="DetectionEditWindow" Height="150" Width="800">
+    <Grid DataContext="{Binding ElementName=DetectionEdit}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.6*"/>
+            <RowDefinition Height="0.4*"/>
+        </Grid.RowDefinitions>
+        <DataGrid Margin="0" ItemsSource="{Binding DetectionPointList}"  CanUserSortColumns="False" AutoGenerateColumns="False" SelectionUnit="FullRow" CanUserAddRows="False"  >
+            <DataGrid.Columns >
+                <DataGridTextColumn  Width="100"  Header="Lens"  Binding="{Binding LensIndex}" IsReadOnly="False" />
+                <DataGridTextColumn  Width="100"  Header="Cube"  Binding="{Binding CubeIndex}" IsReadOnly="False"/>
+                <DataGridTextColumn  Width="100"  Header="Filter1"  Binding="{Binding Filter1Index}" IsReadOnly="False"/>
+                <DataGridTextColumn  Width="100"  Header="Filter2"  Binding="{Binding Filter2Index}" IsReadOnly="False"/>
+                <DataGridTextColumn  Width="100"  Header="Filter3"  Binding="{Binding Filter3Index}" IsReadOnly="False"/>
+                <DataGridTextColumn  Width="100"  Header="LightValue"  Binding="{Binding MicroscopeLightValue}" IsReadOnly="False"/>
+                <DataGridTextColumn  Width="125"  Header="ApertureValue"  Binding="{Binding MicroscopeApertureValue}" IsReadOnly="False"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Margin="5" Grid.Row="0" Grid.Column="0" Content="GetNowParam" Grid.ColumnSpan="2" FontSize="15" Height="40" Width="150"  Command="{Binding GetNowParamCommand}" Cursor="Hand" />
+            <Button Margin="5" Grid.Row="0" Grid.Column="4" Content="Confirm" FontSize="15" Height="40" Width="100" Background="Green"   Command="{Binding ConfirmCommand}" Cursor="Hand" />
+            <Button Margin="5" Grid.Row="0" Grid.Column="5" Content="Cancel" FontSize="15" Height="40" Width="100" Background="Red"   Command="{Binding CancelCommand}" Cursor="Hand" />
+        </Grid>
+    </Grid>
+</Window>

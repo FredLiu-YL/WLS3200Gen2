@@ -508,7 +508,7 @@ namespace WLS3200Gen2
                     Sinf.Lot_ID = Wafer_ID;
                     Sinf.Wafer_Idx = Convert.ToInt32(Wafer_Slot);
                     BinCodeDrawStartEnd binCodeDrawStartEnd = UpdateXYStartEndDraw();
-                    Sinf.SaveAS(saveFileDialog.FileName, binCodeDrawStartEnd.startDraw_X, binCodeDrawStartEnd.endDraw_X, binCodeDrawStartEnd.startDraw_Y, binCodeDrawStartEnd.endDraw_Y);//"D:\\晶圓檢測_AOI結果_sinf\\Test_1.txt"
+                    Sinf.MappingGenerateSaveAS(saveFileDialog.FileName, binCodeDrawStartEnd.startDraw_X, binCodeDrawStartEnd.endDraw_X, binCodeDrawStartEnd.startDraw_Y, binCodeDrawStartEnd.endDraw_Y);//"D:\\晶圓檢測_AOI結果_sinf\\Test_1.txt"
                     if (Recipe_Name != "" && Recipe_Name != null)
                     {
                         await SaveINI(saveFileDialog.FileName);
