@@ -249,7 +249,7 @@ namespace WLS3200Gen2.Model.Module
                     //創建存檔各片存檔的路徑
                     GrabSaveFolder = savePath;
                     GrabTitleIdx = 0;
-                    if (processSetting.IsAutoSave)
+                    if (processSetting.IsAutoSave || processSetting.IsTestRun)
                     {
                         //每一個座標需要檢查的座標
                         foreach (DetectionPoint point in recipe.DetectionPoints)
@@ -318,7 +318,7 @@ namespace WLS3200Gen2.Model.Module
                 SinfWaferMapping sinfWaferMapping = (SinfWaferMapping)orgWaferMapping;
                 SinfWaferMapping sinfWaferMapping2 = sinfWaferMapping.Copy();
                 sinfWaferMapping2.Dies = dies;
-                sinfWaferMapping.SaveWaferFile(GrabSaveFolder + "\\Result.txt", false, false);
+                sinfWaferMapping2.SaveWaferFile(GrabSaveFolder + "\\Result.txt", false, false);
             }
             catch (Exception ex)
             {

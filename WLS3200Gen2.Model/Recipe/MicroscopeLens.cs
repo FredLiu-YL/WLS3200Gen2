@@ -10,7 +10,7 @@ namespace WLS3200Gen2.Model.Recipe
 {
     public class MicroscopeLens : INotifyPropertyChanged
     {
-        private string lensName;
+        private string lensName = "";
         private double ratioX, ratioY, offsetPixelX, offsetPixelY, autoFocusPosition, aberationPosition;
         /// <summary>
         /// 鏡頭名稱

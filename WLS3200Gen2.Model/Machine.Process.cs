@@ -27,7 +27,7 @@ namespace WLS3200Gen2.Model
         /// </summary>
         public event Func<MainRecipe> ChangeRecipe;
 
-        public event Func<PauseTokenSource, CancellationTokenSource, Task<WaferProcessStatus>> MacroReady;
+        public event Func<PauseTokenSource, CancellationTokenSource, bool, Task<WaferProcessStatus>> MacroReady;
 
         public event Func<PauseTokenSource, CancellationTokenSource, Task<ProcessStation>> MacroDoneReady;
 
@@ -217,7 +217,7 @@ namespace WLS3200Gen2.Model
                                 {
                                     if (isAbort)
                                     {
-                                        testCount = 100;
+                                        testCount = 0;
                                     }
                                     break;
                                 }
@@ -319,7 +319,7 @@ namespace WLS3200Gen2.Model
                     //委派到ui 去執行macro人工檢
                     if (isTestRun == false)
                     {
-                        Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
+                        Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts, true);
                         currentWafer.ProcessStatus.MacroTop = await macro;
                     }
                     else
@@ -355,7 +355,7 @@ namespace WLS3200Gen2.Model
                     //委派到ui層 去執行macro人工檢
                     if (isTestRun == false)
                     {
-                        Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts);
+                        Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts, false);
                         currentWafer.ProcessStatus.MacroBack = await macro;
                     }
                     else

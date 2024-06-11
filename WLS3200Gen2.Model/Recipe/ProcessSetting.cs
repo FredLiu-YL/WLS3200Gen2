@@ -37,15 +37,32 @@ namespace WLS3200Gen2.Model.Recipe
         /// 是否要測試模式
         /// </summary>
         public bool IsTestRun { get; set; } = false;
+        /// <summary>
+        /// 是否要角度退片
+        /// </summary>
+        public bool IsDegreeUnLoad { get; set; } = false;
+        /// <summary>
+        /// 是否要二次翻背
+        /// </summary>
+        public bool IsSecondFlip { get; set; } = false;
+    
         public bool RemoteDefectPoint { get; set; }
         /// <summary>
         /// 晶圓檢查站點 //陣列0  是第25片 放在cassette最上面
         /// </summary>
         public ProcessStation[] ProcessStation { get; set; }
         /// <summary>
-        ///  讀取WAFER ID
+        /// 二次翻背位置
         /// </summary>
-        public bool IsReadWaferID { get; set; }
+        public int SecondFlipPos { get; set; }
+        /// <summary>
+        /// 出貨角度
+        /// </summary>
+        public Degree DegreeUnLoad { get; set; }
+        /// <summary>
+        /// 金面不旋轉、一直正轉、一直反轉
+        /// </summary>
+        public TopContinueRotate TopContinueRotate { get; set; }
 
         public ProcessSetting Copy()
         {
@@ -72,49 +89,22 @@ namespace WLS3200Gen2.Model.Recipe
                 IsTestRun = this.IsTestRun,
                 RemoteDefectPoint = this.RemoteDefectPoint,
                 ProcessStation = copiedProcessStation,
-                IsReadWaferID = this.IsReadWaferID
             };
         }
 
     }
+    public enum Degree
+    {
+        Degree0,
+        Degree90,
+        Degree180,
+        Degree270,
+    }
+    public enum TopContinueRotate
+    {
+        No,
+        Forward,
+        Backward,
+    }
 
-
-    /* public class ProcessStationAssign : INotifyPropertyChanged
-     {
-
-         private bool isMacroBack;
-         private bool isMacroTop;
-         private bool isMicro;
-
-         /// <summary>
-         /// 晶背檢查
-         /// </summary>
-         public bool IsMacroBack { get => isMacroBack; set => SetValue(ref isMacroBack, value); }
-         /// <summary>
-         /// 晶面檢查
-         /// </summary>
-         public bool IsMacroTop { get => isMacroTop; set => SetValue(ref isMacroTop, value); }
-         /// <summary>
-         /// 顯微鏡檢查
-         /// </summary>
-         public bool IsMicro { get => isMicro; set => SetValue(ref isMicro, value); }
-
-
-         public event PropertyChangedEventHandler PropertyChanged;
-         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-         {
-             if (EqualityComparer<T>.Default.Equals(field, value)) return;
-             T oldValue = field;
-             field = value;
-             OnPropertyChanged(propertyName, oldValue, value);
-         }
-
-         protected virtual void OnPropertyChanged<T>(string name, T oldValue, T newValue)
-         {
-             // oldValue 和 newValue 目前沒有用到，代爾後需要再實作。
-             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-         }
-
-
-     }*/
 }

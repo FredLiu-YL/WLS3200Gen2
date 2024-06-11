@@ -51,7 +51,7 @@ namespace WLS3200Gen2
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
 
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
-        private WriteableBitmap mainImage, mapImage, homeMapImage;
+        private WriteableBitmap mainImage, mapImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
         private IDisposable camlive;
@@ -97,7 +97,6 @@ namespace WLS3200Gen2
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
 
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
-        public WriteableBitmap HomeMapImage { get => homeMapImage; set => SetValue(ref homeMapImage, value); }
 
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
@@ -127,24 +126,14 @@ namespace WLS3200Gen2
         /// Fit 縮放到最適合的大小
         /// </summary>
         public ICommand ZoomRcipeFitManualAction { get; set; }
-        /// <summary>
-        /// 新增 Shape
-        /// </summary>
-        public ICommand AddHomeMapShapeAction { get; set; }
-        /// <summary>
-        /// 新增 Shape
-        /// </summary>
-        public ICommand RemoveHomeMapShapeAction { get; set; }
-        /// <summary>
-        /// 清除 Shape
-        /// </summary>
-        public ICommand ClearHomeMapShapeAction { get; set; }
 
         public ICommand WindowLoadedCommand => new RelayCommand(async () =>
         {
             try
             {
+                ProcessVisibility = Visibility.Hidden;
                 InformationUCVisibility = Visibility.Hidden;
+                StopVisibility = Visibility.Hidden;
                 WorkholderUCVisibility = Visibility.Collapsed;
                 Assembly thisAssem = typeof(MainViewModel).Assembly;
                 AssemblyName thisAssemName = thisAssem.GetName();
@@ -167,6 +156,7 @@ namespace WLS3200Gen2
                 await Task.Delay(10);//顯示UI 
                 //先將相機開啟
                 machine.MicroDetection.Camera.Open();
+                await Task.Delay(50);
 
                 //isWaferInSystem = true;
                 //isWaferInSystem = await machine.BeforeHomeCheck();
@@ -210,16 +200,33 @@ namespace WLS3200Gen2
                 {
                     BincodeListUpdate(machineSetting.BincodeListDefault);
                 }
-
-                if (machineSetting.MicroscopeLensDefault != null)
+                bool isInitialMicroscopeLensDefaultOK = false;
+                try
                 {
-                    MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
-                    for (int i = 0; i < MicroscopeLensDefault.Count; i++)
+                    if (machineSetting.MicroscopeLensDefault != null)
                     {
-                        if (MicroscopeLensDefault[i] == null)
+                        MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
+                        for (int i = 0; i < MicroscopeLensDefault.Count; i++)
                         {
-                            MicroscopeLensDefault[i] = new MicroscopeLens();
+                            if (MicroscopeLensDefault[i] == null)
+                            {
+                                MicroscopeLensDefault[i] = new MicroscopeLens();
+                            }
                         }
+                        if (MicroscopeLensDefault.Count >= 6)
+                        {
+                            isInitialMicroscopeLensDefaultOK = true;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+                if (isInitialMicroscopeLensDefaultOK == false)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        MicroscopeLensDefault.Add(new MicroscopeLens());
                     }
                 }
                 MicroscopeParam.LensName.Clear();
@@ -254,6 +261,7 @@ namespace WLS3200Gen2
                 TableXMaxVel = TableXConfig.MoveVel.MaxVel;
                 TableYMaxVel = TableYConfig.MoveVel.MaxVel;
                 IsAutoSave = ProcessSetting.IsAutoSave;
+                IsAutoFocus = true;
                 IsAutoFocus = ProcessSetting.IsAutoFocus;
 
                 InformationUCVisibility = Visibility.Hidden;
@@ -269,6 +277,7 @@ namespace WLS3200Gen2
                 AlignMarkMove = SampleMoveAction;
 
                 CameraLive();
+                await Task.Delay(50);
                 machine.MicroDetection.FiducialRecord += FiducialRecord;
                 machine.MicroDetection.AlignManual += AlignmentOperate;
                 machine.MicroDetection.AlignmentManualAdd();
@@ -283,7 +292,7 @@ namespace WLS3200Gen2
                 }
 
                 //這裡的Await是要重新刷新UI才可以讓ZoomFitManualAction有效果
-                await Task.Delay(50);
+                await Task.Delay(1000);
                 ZoomFitManualAction.Execute(Drawings);
 
                 isInitialComplete = true;
@@ -295,9 +304,6 @@ namespace WLS3200Gen2
                 if (!File.Exists("MAP1.bmp")) throw new Exception("模擬情境下需要放一張圖片到執行檔資料夾 取名MAP1.bmp");
                 // 讀取BMP檔案
                 BitmapImage bitmap = new BitmapImage(new Uri("MAP1.bmp", UriKind.RelativeOrAbsolute));
-
-                HomeMapImage = new WriteableBitmap(bitmap);
-                //MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
 
                 Customers = new ObservableCollection<RobotAddress>()
             {
@@ -318,7 +324,6 @@ namespace WLS3200Gen2
 
                 Customers.Add(new RobotAddress() { Name = "LoadPort1 Step1", Address = "110" });
                 SwitchStates(MachineStates.IDLE);
-                IsCanChangeRecipe = true;
                 IsOperateUI = true;
             }
             catch (Exception ex)
@@ -772,6 +777,7 @@ namespace WLS3200Gen2
                                 MicroscopeParam.Position = Convert.ToInt32(machine.MicroDetection.Microscope.Position);
                                 MicroscopeParam.ApertureValue = machine.MicroDetection.Microscope.ApertureValue;
                                 MicroscopeParam.LightValue = machine.MicroDetection.Microscope.LightValue;
+                                AFAberation.AberationValue = Convert.ToInt32(machine.MicroDetection.Microscope.AberationPosition);
                             }
                             if (machine.Feeder.LampControl1 != null)
                             {

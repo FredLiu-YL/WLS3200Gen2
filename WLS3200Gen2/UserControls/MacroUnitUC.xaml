@@ -30,91 +30,107 @@
             <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Visibility="{Binding ShowChangeMacro}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="Home" Width="130" Height="30" HorizontalAlignment="Left" Command="{Binding AllHome}"/>
 
             <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Visibility="{Binding ShowChangeMacro}" Grid.Column="0" Grid.Row="1" Content="內環檢測" FontSize="9" Width="80" Height="30" HorizontalAlignment="Left" Command="{Binding GoInnerRingCheckPos}"/>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="1" Content="前" Width="80" Height="30" HorizontalAlignment="Left">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y+"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="Y+"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="1" Content="後" Width="80" Height="30" HorizontalAlignment="Left" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y-"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="Y-"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
+            <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="3" IsEnabled="{Binding IsInnerRing}" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions >
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="0" Content="前" Width="80" Height="30" HorizontalAlignment="Left">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="Y+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="0" Content="後" Width="80" Height="30" HorizontalAlignment="Left" >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="Y-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="Y-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="1" Content="左" Width="80" Height="30" HorizontalAlignment="Left">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="X-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="1" Content="右" Width="80" Height="30" HorizontalAlignment="Left" >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="X+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="2" Content="正轉" Width="80" Height="30" HorizontalAlignment="Left" >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="T+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="2" Content="反轉" Width="80" Height="30" HorizontalAlignment="Left" >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="T-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+            </Grid>
             <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Visibility="{Binding ShowChangeMacro}" Grid.Column="3" Grid.Row="1" FontSize="9" Content="結束內環" Width="80" Height="30" HorizontalAlignment="Left" Command="{Binding InnerRingHome}"/>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="2" Content="左" Width="80" Height="30" HorizontalAlignment="Left">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X-"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="X-"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="2" Content="右" Width="80" Height="30" HorizontalAlignment="Left" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="X+"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="X+"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="3" Content="正轉" Width="80" Height="30" HorizontalAlignment="Left" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T+"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="T+"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="3" Content="反轉" Width="80" Height="30" HorizontalAlignment="Left" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerContinueMoveCommand}"  CommandParameter="T-"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroInnerMoveCommand}"  CommandParameter="T-"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-
+           
             <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Visibility="{Binding ShowChangeMacro}" Grid.Column="0" Grid.Row="5" FontSize="9" Content="外環檢測" Width="80" Height="30" HorizontalAlignment="Left" Command="{Binding GoOuterRingCheckPos}"/>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="5" Content="正翻" Width="80" Height="30" HorizontalAlignment="Left">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y+"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroOuterMoveCommand}"  CommandParameter="Y+"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
-            <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="2" Grid.Row="5" Content="反翻" Width="80" Height="30" HorizontalAlignment="Left">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="PreviewMouseDown">
-                        <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y-"/>
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="PreviewMouseUp">
-                        <i:InvokeCommandAction  Command="{Binding MacroOuterMoveCommand}"  CommandParameter="Y-"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </Button>
+            <Grid Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" IsEnabled="{Binding IsOuterRing}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="0" Grid.Row="5" Content="正翻" Width="80" Height="30" HorizontalAlignment="Left">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y+"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroOuterMoveCommand}"  CommandParameter="Y+"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Grid.Column="1" Grid.Row="5" Content="反翻" Width="80" Height="30" HorizontalAlignment="Left">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseDown">
+                            <i:InvokeCommandAction  Command="{Binding MacroOuterContinueMoveCommand}"  CommandParameter="Y-"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <i:InvokeCommandAction  Command="{Binding MacroOuterMoveCommand}"  CommandParameter="Y-"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+            </Grid>
             <Button IsEnabled="{Binding MacroStatus.IsProcessStop}" Visibility="{Binding ShowChangeMacro}" Grid.Column="3" Grid.Row="5" FontSize="9" Content="結束外環" Width="80" Height="30" HorizontalAlignment="Left" Command="{Binding OuterRingHome}"/>
-
         </Grid>
     </Grid>
 </UserControl>

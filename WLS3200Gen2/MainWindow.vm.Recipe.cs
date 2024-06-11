@@ -54,7 +54,6 @@ namespace WLS3200Gen2
         private ObservableCollection<ROIShape> manualdrawings = new ObservableCollection<ROIShape>();
 
         private ObservableCollection<ROIShape> mapDrawings = new ObservableCollection<ROIShape>();
-        private ObservableCollection<ROIShape> homeMapDrawings = new ObservableCollection<ROIShape>();
         private Action<CogMatcher> sampleFind;
         private Action<Point> alignMarkMove;
         private LocateMode selectMode;
@@ -73,7 +72,7 @@ namespace WLS3200Gen2
         private string mapAdd = "MAP ADD";
         private System.Windows.Point mousePixcel;
         private ROIShape selectShape;
-        private bool isLoadwaferComplete, isMacroComplete, isAlignerComplete, isLocateComplete, isDetectionComplete;
+        private bool isStepLoadwafer = true, isStepMacro, isStepAligner, isStepLocate, isStepDetection;
 
         private double alignerMicroAngle, alignerWaferIDAngle;
         private double macroTopStartPitchX, macroTopStartRollY, macroTopStartYawT, macroBackStartPos;
@@ -204,7 +203,7 @@ namespace WLS3200Gen2
             get
             {
                 if (!isInitialComplete) return isMacroPageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
-                if (!IsLoadwaferComplete) isMacroPageSelect = false;
+                if (!IsStepMacro) isMacroPageSelect = false;
                 return isMacroPageSelect;
             }
             set => SetValue(ref isMacroPageSelect, value);
@@ -214,7 +213,7 @@ namespace WLS3200Gen2
             get
             {
                 if (!isInitialComplete) return isAlignerPageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
-                if (!IsMacroComplete) isAlignerPageSelect = false;
+                if (!IsStepAligner) isAlignerPageSelect = false;
                 return isAlignerPageSelect;
             }
             set => SetValue(ref isAlignerPageSelect, value);
@@ -228,7 +227,7 @@ namespace WLS3200Gen2
             get
             {
                 if (!isInitialComplete) return isLocatePageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
-                if (!IsAlignerComplete) isLocatePageSelect = false;
+                if (!IsStepLocate) isLocatePageSelect = false;
                 if (isLocatePageSelect)
                     LoadLoactePage();
                 return isLocatePageSelect;
@@ -243,7 +242,7 @@ namespace WLS3200Gen2
             get
             {
                 if (!isInitialComplete) return isDetectionPageSelect;//ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
-                if (!IsLocateComplete) isDetectionPageSelect = false;
+                if (!IsStepDetection) isDetectionPageSelect = false;
 
                 if (isDetectionPageSelect)
                     SetLocateParamToRecipe();
@@ -280,20 +279,23 @@ namespace WLS3200Gen2
         /// <summary>
         /// Load wafer已完成 (locate頁面功能需要判斷)
         /// </summary>
-        public bool IsLoadwaferComplete { get => isLoadwaferComplete; set => SetValue(ref isLoadwaferComplete, value); }
+        public bool IsStepLoadwafer { get => isStepLoadwafer; set => SetValue(ref isStepLoadwafer, value); }
         /// <summary>
         /// Macro 設定完成
         /// </summary>
-        public bool IsMacroComplete { get => isMacroComplete; set => SetValue(ref isMacroComplete, value); }
+        public bool IsStepMacro { get => isStepMacro; set => SetValue(ref isStepMacro, value); }
         /// <summary>
         /// Aligner 設定完成，且Notch已經轉到Micro位置
         /// </summary>
-        public bool IsAlignerComplete { get => isAlignerComplete; set => SetValue(ref isAlignerComplete, value); }
+        public bool IsStepAligner { get => isStepAligner; set => SetValue(ref isStepAligner, value); }
         /// <summary>
         /// locate已完成 (Detection頁面功能需要判斷)
         /// </summary>
-        public bool IsLocateComplete { get => isLocateComplete; set => SetValue(ref isLocateComplete, value); }
-        public bool IsDetectionComplete { get => isDetectionComplete; set => SetValue(ref isDetectionComplete, value); }
+        public bool IsStepLocate { get => isStepLocate; set => SetValue(ref isStepLocate, value); }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsStepDetection { get => isStepDetection; set => SetValue(ref isStepDetection, value); }
 
 
         public BitmapSource LocateSampleImage1 { get => locateSampleImage1; set => SetValue(ref locateSampleImage1, value); }
@@ -367,7 +369,6 @@ namespace WLS3200Gen2
         /// 手動量測工具
         /// </summary>
         public ObservableCollection<ROIShape> ManualDrawings { get => manualdrawings; set => SetValue(ref manualdrawings, value); }
-        public ObservableCollection<ROIShape> HomeMapDrawings { get => homeMapDrawings; set => SetValue(ref homeMapDrawings, value); }
 
         public bool IsDie { get => isDie; set => SetValue(ref isDie, value); }
         public bool IsDieSub { get => isDieSub; set => SetValue(ref isDieSub, value); }
@@ -666,6 +667,7 @@ namespace WLS3200Gen2
                 processSetting.IsAutoFocus = true;
                 processSetting.IsAutoSave = true;
                 Wafer currentWafer = new Wafer(1);
+                var cc = machine.MicroDetection.Microscope.AberationPosition;
                 //await machine.MicroDetection.Run(currentWafer, recipe, processSetting, ptsTest, ctsTest);
             }
             catch (Exception ex)
@@ -899,11 +901,10 @@ namespace WLS3200Gen2
                                     throw new Exception("EFEMTransCommand Error!");
                                 }
                             }
-                            IsLoadwaferComplete = false;
-                            IsMacroComplete = false;
-                            IsAlignerComplete = false;
-                            IsLocateComplete = false;
-                            IsDetectionComplete = false;
+                            IsStepMacro = true;
+                            IsStepAligner = false;
+                            IsStepLocate = false;
+                            IsStepDetection = false;
                             IsCanWorkEFEMTrans = true;
                         }
                     }
@@ -966,11 +967,10 @@ namespace WLS3200Gen2
                             {
                                 throw new FlowException("EFEMTransCommand 異常!WaferToAligner Aligner真空異常!!");
                             }
-                            IsLoadwaferComplete = true;
-                            IsMacroComplete = true;
-                            IsAlignerComplete = true;
-                            IsLocateComplete = false;
-                            IsDetectionComplete = false;
+                            IsStepMacro = true;
+                            IsStepAligner = true;
+                            IsStepLocate = false;
+                            IsStepDetection = false;
                         }
                         IsCanWorkEFEMTrans = true;
                     }
@@ -1020,11 +1020,10 @@ namespace WLS3200Gen2
                                 {
                                     throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
                                 }
-                                IsLoadwaferComplete = true;
-                                IsMacroComplete = true;
-                                IsAlignerComplete = false;
-                                IsLocateComplete = false;
-                                IsDetectionComplete = false;
+                                IsStepMacro = true;
+                                IsStepAligner = false;
+                                IsStepLocate = false;
+                                IsStepDetection = false;
                             }
                             IsCanWorkEFEMTrans = true;
                         }
@@ -1235,7 +1234,11 @@ namespace WLS3200Gen2
                                 {
                                     throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
                                 }
-                                IsAlignerComplete = true;
+                                IsStepAligner = true;
+                                IsStepMacro = true;
+                                IsStepAligner = true;
+                                IsStepLocate = true;
+                                IsStepDetection = false;
                             }
                             IsCanWorkEFEMTrans = true;
                         }
@@ -1427,7 +1430,7 @@ namespace WLS3200Gen2
                 if (IsCanWorkEFEMTrans)
                 {
                     IsCanWorkEFEMTrans = false;
-                    IsLocateComplete = false;
+                    IsStepDetection = false;
                     //經過這個方法後，會將map中所有的Die  Index座標轉換成當下樣本建立時的實際機台座標(pattern中心)
                     SetLocateParamToRecipe();
                     //將die的map座標都轉換成 實際機台座標(解決片子更換後位置不對的問題 )
@@ -1446,7 +1449,7 @@ namespace WLS3200Gen2
                         die.PosX = pos.X;
                         die.PosY = pos.Y;
                     }
-                    IsLocateComplete = true;
+                    IsStepDetection = true;
                     IsCanWorkEFEMTrans = true;
                 }
             }

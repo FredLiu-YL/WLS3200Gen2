@@ -625,10 +625,21 @@ namespace WLS3200Gen2.Model.Component
                        stopwatchPitchX.Restart();
                        while (true)
                        {
-                           if (Math.Abs(postion - InnerPitchXPosition) <= 1 || isInnerRingPitchXStop)//if (stopwatchPitchX.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingPitchXStop)
+                           if (movePos > 0)
                            {
-                               InnerRingPitchX_Stop();
-                               break;
+                               if (postion - InnerPitchXPosition <= 1 || isInnerRingPitchXStop)//if (stopwatchPitchX.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingPitchXStop)
+                               {
+                                   InnerRingPitchX_Stop();
+                                   break;
+                               }
+                           }
+                           else
+                           {
+                               if (postion - InnerPitchXPosition >= 1 || isInnerRingPitchXStop)//if (stopwatchPitchX.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingPitchXStop)
+                               {
+                                   InnerRingPitchX_Stop();
+                                   break;
+                               }
                            }
                        }
                        await Task.Delay(1);
@@ -730,11 +741,23 @@ namespace WLS3200Gen2.Model.Component
                        stopwatchRollY.Restart();
                        while (true)
                        {
-                           if (Math.Abs(postion - InnerRollYPosition) <= 1 || isInnerRingRollYStop)//if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingRollYStop)
+                           if (movePos > 0)
                            {
-                               InnerRingRollY_Stop();
-                               break;
+                               if (postion - InnerRollYPosition <= 1 || isInnerRingRollYStop)//if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingRollYStop)
+                               {
+                                   InnerRingRollY_Stop();
+                                   break;
+                               }
                            }
+                           else
+                           {
+                               if (postion - InnerRollYPosition >= 1 || isInnerRingRollYStop)//if (stopwatchRollY.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingRollYStop)
+                               {
+                                   InnerRingRollY_Stop();
+                                   break;
+                               }
+                           }
+
                        }
                        await Task.Delay(1);
                        InnerRollYPosition = postion;
@@ -841,10 +864,21 @@ namespace WLS3200Gen2.Model.Component
                        stopwatchYawT.Restart();
                        while (true)
                        {
-                           if (Math.Abs(pos - InnerYawTPosition) <= 1 || isInnerRingYawTStop)//if (stopwatchYawT.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingYawTStop)
+                           if (movePos > 0)
                            {
-                               InnerRingYawT_Stop();
-                               break;
+                               if (pos - InnerYawTPosition <= 1 || isInnerRingYawTStop)//if (stopwatchYawT.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingYawTStop)
+                               {
+                                   InnerRingYawT_Stop();
+                                   break;
+                               }
+                           }
+                           else
+                           {
+                               if (pos - InnerYawTPosition >= 1 || isInnerRingYawTStop)//if (stopwatchYawT.ElapsedMilliseconds >= Math.Abs(movePos) || isInnerRingYawTStop)
+                               {
+                                   InnerRingYawT_Stop();
+                                   break;
+                               }
                            }
                        }
                        await Task.Delay(1);

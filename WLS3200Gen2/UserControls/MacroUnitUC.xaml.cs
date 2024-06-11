@@ -29,9 +29,12 @@ namespace WLS3200Gen2.UserControls
                                                                                          new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty MacroStatusProperty = DependencyProperty.Register(nameof(MacroStatus), typeof(MacroStatus), typeof(MacroUnitUC),
                                                                                  new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
         public static readonly DependencyProperty ShowChangeMacroProperty = DependencyProperty.Register(nameof(ShowChangeMacro), typeof(Visibility), typeof(MacroUnitUC),
                                                                                          new FrameworkPropertyMetadata(Visibility.Collapsed, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsInnerRingProperty = DependencyProperty.Register(nameof(IsInnerRing), typeof(bool), typeof(MacroUnitUC),
+                                                                                    new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsOuterRingProperty = DependencyProperty.Register(nameof(IsOuterRing), typeof(bool), typeof(MacroUnitUC),
+                                                                                      new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public MacroUnitUC()
         {
             InitializeComponent();
@@ -51,6 +54,16 @@ namespace WLS3200Gen2.UserControls
             get => (MacroStatus)GetValue(MacroStatusProperty);
             set => SetValue(MacroStatusProperty, value);
         }
+        public bool IsInnerRing
+        {
+            get => (bool)GetValue(IsInnerRingProperty);
+            set => SetValue(IsInnerRingProperty, value);
+        }
+        public bool IsOuterRing
+        {
+            get => (bool)GetValue(IsOuterRingProperty);
+            set => SetValue(IsOuterRingProperty, value);
+        }
 
         public ICommand AllHome => new RelayCommand(async () =>
         {
@@ -60,6 +73,8 @@ namespace WLS3200Gen2.UserControls
                 {
                     MacroStatus.IsProcessStop = false;
                     await Macro.Home();
+                    IsInnerRing = false;
+                    IsOuterRing = false;
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -80,6 +95,8 @@ namespace WLS3200Gen2.UserControls
                 {
                     MacroStatus.IsProcessStop = false;
                     await Macro.GoInnerRingCheckPos();
+                    IsInnerRing = true;
+                    IsOuterRing = false;
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -186,6 +203,8 @@ namespace WLS3200Gen2.UserControls
                 {
                     MacroStatus.IsProcessStop = false;
                     await Macro.HomeInnerRing();
+                    IsInnerRing = false;
+                    IsOuterRing = false;
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -207,6 +226,8 @@ namespace WLS3200Gen2.UserControls
                 {
                     MacroStatus.IsProcessStop = false;
                     await Macro.GoOuterRingCheckPos();
+                    IsInnerRing = false;
+                    IsOuterRing = true;
                     MacroStatus.IsProcessStop = true;
                 }
             }
@@ -281,6 +302,8 @@ namespace WLS3200Gen2.UserControls
                 {
                     MacroStatus.IsProcessStop = false;
                     await Macro.HomeOuterRing();
+                    IsInnerRing = false;
+                    IsOuterRing = false;
                     MacroStatus.IsProcessStop = true;
                 }
             }

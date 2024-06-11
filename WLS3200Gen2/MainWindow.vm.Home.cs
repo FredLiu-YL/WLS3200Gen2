@@ -34,7 +34,7 @@ namespace WLS3200Gen2
         private ObservableCollection<ProcessStation> processStations = new ObservableCollection<ProcessStation>();
         private string logMessage;
         private string loadPortContent = "Load";
-        private Visibility processVisibility = Visibility.Visible, stopVisibility = Visibility.Hidden;
+        private Visibility processVisibility = Visibility.Visible, stopVisibility = Visibility.Visible;
         private bool isHome = false;
         private bool isRunning = false;
         private bool isRunCommand = false;
@@ -68,13 +68,14 @@ namespace WLS3200Gen2
         private bool isLoadport1, isLoadport2;
         private IMicroscope microscope;
         private YuanliCore.Model.MicroscopeParam microscopeParam = new YuanliCore.Model.MicroscopeParam();
+        private AFAberationUI aFAberation = new AFAberationUI();
         private IMacro macro;
         private IAligner aligner;
         private ILoadPort loadPort1;
         private IRobot robot;
         private ILampControl lampControl1, lampControl2;
         private MacroStatus macroStatus = new MacroStatus();
-        private bool isAutoSave, isTestRun, isAutoFocus;
+        private bool isAutoSave, isTestRun, isAutoFocus, isInnerRing, isOuterRing;
         private string recipeName;
         private double manualdistance, manualarea;
 
@@ -108,8 +109,11 @@ namespace WLS3200Gen2
         public bool IsLoadport2 { get => isLoadport2; set => SetValue(ref isLoadport2, value); }
         public IMicroscope Microscope { get => microscope; set => SetValue(ref microscope, value); }
         public YuanliCore.Model.MicroscopeParam MicroscopeParam { get => microscopeParam; set => SetValue(ref microscopeParam, value); }
+        public AFAberationUI AFAberation { get => aFAberation; set => SetValue(ref aFAberation, value); }
         public IMacro Macro { get => macro; set => SetValue(ref macro, value); }
         public MacroStatus MacroStatus { get => macroStatus; set => SetValue(ref macroStatus, value); }
+        public bool IsInnerRing { get => isInnerRing; set => SetValue(ref isInnerRing, value); }
+        public bool IsOuterRing { get => isOuterRing; set => SetValue(ref isOuterRing, value); }
         public IAligner Aligner { get => aligner; set => SetValue(ref aligner, value); }
         public ILoadPort LoadPort1 { get => loadPort1; set => SetValue(ref loadPort1, value); }
         public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
@@ -224,25 +228,38 @@ namespace WLS3200Gen2
                 }
                 else
                 {
-                    WriteLog(YuanliCore.Logger.LogType.TRIG, "Home");
-                    isWaferInSystem = await machine.BeforeHomeCheck();
-                    MessageBoxResult result = MessageBoxResult.Yes;
-
-                    if (isWaferInSystem)
+                    try
                     {
-                        result = MessageBox.Show("Wafer In System!! StartHome??", "StartHome", MessageBoxButton.YesNo);
+                        WriteLog(YuanliCore.Logger.LogType.TRIG, "Home");
+                        IsOperateUI = false;
+                        IsCanChangeRecipe = false;
+                        isWaferInSystem = await machine.BeforeHomeCheck();
+                        MessageBoxResult result = MessageBoxResult.Yes;
+                        if (isWaferInSystem)
+                        {
+                            result = MessageBox.Show("Wafer In System!! StartHome??", "StartHome", MessageBoxButton.YesNo);
+                        }
+
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            WriteLog(YuanliCore.Logger.LogType.TRIG, "Home Start");
+
+                            await machine.Home();
+                            PausePackIcon = PackIconKind.Pause;
+                            ProcessVisibility = Visibility.Visible;
+                            StopVisibility = Visibility.Visible;
+                            isHome = true;
+                            IsOperateUI = true;
+                            IsCanChangeRecipe = true;
+                            WriteLog(YuanliCore.Logger.LogType.TRIG, "Home End");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        IsOperateUI = true;
+                        throw ex;
                     }
 
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        WriteLog(YuanliCore.Logger.LogType.TRIG, "Home Start");
-                        await machine.Home();
-                        PausePackIcon = PackIconKind.Pause;
-                        ProcessVisibility = Visibility.Visible;
-                        StopVisibility = Visibility.Visible;
-                        isHome = true;
-                        WriteLog(YuanliCore.Logger.LogType.TRIG, "Home End");
-                    }
                 }
             }
             catch (Exception ex)
@@ -858,150 +875,130 @@ namespace WLS3200Gen2
             }
         }
 
-        public void ShowDetectionHomeMapImgae(DetectionRecipe detectionRecipe)
-        {
-            try
-            {
-                if (detectionRecipe.DetectionPoints == null) return;
-                foreach (var item in detectionRecipe.DetectionPoints)
-                {
-                    Die die = detectionRecipe.WaferMap.Dies.Where(d => d.IndexX == item.IndexX && d.IndexY == item.IndexY).FirstOrDefault();
-                    if (die != null)
-                    {
-                        HomeMapDieColorChange(detectionRecipe.WaferMap, die, Brushes.Yellow);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-        }
         public void HomeMapDieColorChange(WaferMapping waferMapping, Die die, Brush brush)
         {
-            try
-            {
-                if (showSize_X <= 0 || showSize_Y <= 0)
-                {
-                    return;
-                }
-                var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
-                ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
-                {
-                    var rectBegin = shape.LeftTop;
-                    var rectEnd = shape.RightBottom;
-                    var rect = new Rect(rectBegin, rectEnd);
-                    if (rect.Contains(clearPoint))
-                        return shape;
-                    else
-                        return null;
-                }).Where(s => s != null).FirstOrDefault();
+            //try
+            //{
+            //    if (showSize_X <= 0 || showSize_Y <= 0)
+            //    {
+            //        return;
+            //    }
+            //    var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
+            //    ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
+            //    {
+            //        var rectBegin = shape.LeftTop;
+            //        var rectEnd = shape.RightBottom;
+            //        var rect = new Rect(rectBegin, rectEnd);
+            //        if (rect.Contains(clearPoint))
+            //            return shape;
+            //        else
+            //            return null;
+            //    }).Where(s => s != null).FirstOrDefault();
 
-                if (tempselectShape != null)
-                {
-                    //RemoveHomeMapShapeAction.Execute(tempselectShape);
-                    tempselectShape.Fill = brush;
-                    tempselectShape.CenterCrossBrush = brush;
-                }
-                else
-                {
-                    AddHomeMapShapeAction.Execute(new ROIRotatedRect
-                    {
-                        Stroke = Brushes.Black,
-                        StrokeThickness = strokeThickness,
-                        Fill = brush,
-                        X = die.OperationPixalX / showSize_X + offsetDraw,
-                        Y = die.OperationPixalY / showSize_Y + offsetDraw,
-                        LengthX = die.DieSize.Width / 2.5 / showSize_X,
-                        LengthY = die.DieSize.Height / 2.5 / showSize_Y,
-                        IsInteractived = true,
-                        IsMoveEnabled = false,
-                        IsResizeEnabled = false,
-                        IsRotateEnabled = false,
-                        CenterCrossLength = crossThickness,
-                        CenterCrossBrush = brush,
-                        ToolTip = "X:" + (die.IndexX) + " Y:" + (die.IndexY) + " X:" + die.MapTransX + " Y:" + die.MapTransY
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
+            //    if (tempselectShape != null)
+            //    {
+            //        //RemoveHomeMapShapeAction.Execute(tempselectShape);
+            //        tempselectShape.Fill = brush;
+            //        tempselectShape.CenterCrossBrush = brush;
+            //    }
+            //    else
+            //    {
+            //        AddHomeMapShapeAction.Execute(new ROIRotatedRect
+            //        {
+            //            Stroke = Brushes.Black,
+            //            StrokeThickness = strokeThickness,
+            //            Fill = brush,
+            //            X = die.OperationPixalX / showSize_X + offsetDraw,
+            //            Y = die.OperationPixalY / showSize_Y + offsetDraw,
+            //            LengthX = die.DieSize.Width / 2.5 / showSize_X,
+            //            LengthY = die.DieSize.Height / 2.5 / showSize_Y,
+            //            IsInteractived = true,
+            //            IsMoveEnabled = false,
+            //            IsResizeEnabled = false,
+            //            IsRotateEnabled = false,
+            //            CenterCrossLength = crossThickness,
+            //            CenterCrossBrush = brush,
+            //            ToolTip = "X:" + (die.IndexX) + " Y:" + (die.IndexY) + " X:" + die.MapTransX + " Y:" + die.MapTransY
+            //        });
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
 
-                throw ex;
-            }
+            //    throw ex;
+            //}
         }
         public void HomeMapDieColorReturn(WaferMapping waferMapping, Die die, IEnumerable<BincodeInfo> bincodeListDefault)
         {
-            try
-            {
-                var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
-                ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
-                {
-                    var rectBegin = shape.LeftTop;
-                    var rectEnd = shape.RightBottom;
-                    var rect = new Rect(rectBegin, rectEnd);
-                    if (rect.Contains(clearPoint))
-                        return shape;
-                    else
-                        return null;
-                }).Where(s => s != null).FirstOrDefault();
+            //try
+            //{
+            //    var clearPoint = new Point(die.OperationPixalX / showSize_X + offsetDraw, die.OperationPixalY / showSize_Y + offsetDraw);
+            //    ROIShape tempselectShape = HomeMapDrawings.Select(shape =>
+            //    {
+            //        var rectBegin = shape.LeftTop;
+            //        var rectEnd = shape.RightBottom;
+            //        var rect = new Rect(rectBegin, rectEnd);
+            //        if (rect.Contains(clearPoint))
+            //            return shape;
+            //        else
+            //            return null;
+            //    }).Where(s => s != null).FirstOrDefault();
 
-                if (bincodeListDefault == null)
-                {
-                    BincodeInfo[] pBinCodes = new BincodeInfo[2];
-                    pBinCodes[0] = new BincodeInfo();
-                    pBinCodes[1] = new BincodeInfo();
-                    pBinCodes[0].Code = "000";
-                    pBinCodes[0].Describe = "OK";
-                    pBinCodes[0].Color = Brushes.Green;
-                    pBinCodes[1].Code = "099";
-                    pBinCodes[1].Describe = "NG";
-                    pBinCodes[1].Color = Brushes.Red;
-                    bincodeListDefault = pBinCodes;
-                }
-                Brush drawFill = Brushes.Gray;
-                //判斷要用什麼顏色
-                foreach (var item2 in bincodeListDefault)
-                {
-                    if (die.BinCode == item2.Code)
-                    {
-                        drawFill = item2.Color;
-                    }
-                }
+            //    if (bincodeListDefault == null)
+            //    {
+            //        BincodeInfo[] pBinCodes = new BincodeInfo[2];
+            //        pBinCodes[0] = new BincodeInfo();
+            //        pBinCodes[1] = new BincodeInfo();
+            //        pBinCodes[0].Code = "000";
+            //        pBinCodes[0].Describe = "OK";
+            //        pBinCodes[0].Color = Brushes.Green;
+            //        pBinCodes[1].Code = "099";
+            //        pBinCodes[1].Describe = "NG";
+            //        pBinCodes[1].Color = Brushes.Red;
+            //        bincodeListDefault = pBinCodes;
+            //    }
+            //    Brush drawFill = Brushes.Gray;
+            //    //判斷要用什麼顏色
+            //    foreach (var item2 in bincodeListDefault)
+            //    {
+            //        if (die.BinCode == item2.Code)
+            //        {
+            //            drawFill = item2.Color;
+            //        }
+            //    }
 
-                if (tempselectShape != null)
-                {
-                    //RemoveHomeMapShapeAction.Execute(tempselectShape);
-                    tempselectShape.Fill = drawFill;
-                    tempselectShape.CenterCrossBrush = drawFill;
-                }
-                else
-                {
-                    AddHomeMapShapeAction.Execute(new ROIRotatedRect
-                    {
-                        Stroke = Brushes.Black,
-                        StrokeThickness = strokeThickness,
-                        Fill = drawFill,
-                        X = die.OperationPixalX / showSize_X + offsetDraw,
-                        Y = die.OperationPixalY / showSize_Y + offsetDraw,
-                        LengthX = die.DieSize.Width / 2.5 / showSize_X,
-                        LengthY = die.DieSize.Height / 2.5 / showSize_Y,
-                        IsInteractived = true,
-                        IsMoveEnabled = false,
-                        IsResizeEnabled = false,
-                        IsRotateEnabled = false,
-                        CenterCrossLength = crossThickness,
-                        CenterCrossBrush = drawFill,
-                        ToolTip = "X:" + (die.IndexX) + " Y:" + (die.IndexY) + " X:" + die.MapTransX + " Y:" + die.MapTransY
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
+            //    if (tempselectShape != null)
+            //    {
+            //        //RemoveHomeMapShapeAction.Execute(tempselectShape);
+            //        tempselectShape.Fill = drawFill;
+            //        tempselectShape.CenterCrossBrush = drawFill;
+            //    }
+            //    else
+            //    {
+            //        AddHomeMapShapeAction.Execute(new ROIRotatedRect
+            //        {
+            //            Stroke = Brushes.Black,
+            //            StrokeThickness = strokeThickness,
+            //            Fill = drawFill,
+            //            X = die.OperationPixalX / showSize_X + offsetDraw,
+            //            Y = die.OperationPixalY / showSize_Y + offsetDraw,
+            //            LengthX = die.DieSize.Width / 2.5 / showSize_X,
+            //            LengthY = die.DieSize.Height / 2.5 / showSize_Y,
+            //            IsInteractived = true,
+            //            IsMoveEnabled = false,
+            //            IsResizeEnabled = false,
+            //            IsRotateEnabled = false,
+            //            CenterCrossLength = crossThickness,
+            //            CenterCrossBrush = drawFill,
+            //            ToolTip = "X:" + (die.IndexX) + " Y:" + (die.IndexY) + " X:" + die.MapTransX + " Y:" + die.MapTransY
+            //        });
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
 
-                throw ex;
-            }
+            //    throw ex;
+            //}
         }
         private string CreateProcessFolder()
         {
@@ -1018,9 +1015,20 @@ namespace WLS3200Gen2
             return path;
         }
         //WaferIDConfirmOperateCommand
-        private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts)
+        private async Task<WaferProcessStatus> MacroOperate(PauseTokenSource pts, CancellationTokenSource cts, bool isTopCheck)
         {
             machine.ProcessPause();//暫停
+
+            if (isTopCheck)
+            {
+                IsInnerRing = true;
+                IsOuterRing = false;
+            }
+            else
+            {
+                IsInnerRing = false;
+                IsOuterRing = true;
+            }
             IsMacroDone = false;
             IsMacroJudge = true;
             //切到Macro 頁面
@@ -1031,6 +1039,8 @@ namespace WLS3200Gen2
             //切到Infomation頁面
             TabControlSelectedIndex = 0;
             IsOperateUI = true;
+            IsInnerRing = false;
+            IsOuterRing = false;
             return macroJudgeOperation;
         }
         private async Task<ProcessStation> MacroDoneOperate(PauseTokenSource pts, CancellationTokenSource cts)

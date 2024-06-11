@@ -359,8 +359,8 @@ namespace Test
                                 axisXConfig.AxisName = "AxisX";
                                 axisXConfig.AxisID = 0;
                                 axisXConfig.Ratio = 10;
-                                axisXConfig.MoveVel = new VelocityParams(100000, 0.5);
-                                axisXConfig.HomeVel = new VelocityParams(10000, 0.8);
+                                axisXConfig.MoveVel = new VelocityParams(50000, 0.5);
+                                axisXConfig.HomeVel = new VelocityParams(30000, 0.8);
                                 axisXConfig.HomeMode = HomeModes.ORGAndIndex;
                                 axisConfig.Add(axisXConfig);
                                 break;
@@ -369,8 +369,8 @@ namespace Test
                                 axisYConfig.AxisName = "AxisY";
                                 axisYConfig.AxisID = 1;
                                 axisYConfig.Ratio = 10;
-                                axisYConfig.MoveVel = new VelocityParams(100000, 0.5);
-                                axisYConfig.HomeVel = new VelocityParams(10000, 0.5);
+                                axisYConfig.MoveVel = new VelocityParams(50000, 0.5);
+                                axisYConfig.HomeVel = new VelocityParams(30000, 0.5);
                                 axisYConfig.HomeMode = HomeModes.ORGAndIndex;
                                 axisConfig.Add(axisYConfig);
                                 break;
@@ -390,7 +390,7 @@ namespace Test
                                 axisRInfo.AxisName = "AxisR";
                                 axisRInfo.AxisID = 3;
                                 axisRInfo.MoveVel = new VelocityParams(45000, 0.2);
-                                axisRInfo.HomeVel = new VelocityParams(4500, 0.2);
+                                axisRInfo.HomeVel = new VelocityParams(10000, 0.2);
                                 axisRInfo.HomeMode = HomeModes.ORG;
                                 axisConfig.Add(axisRInfo);
 
@@ -401,7 +401,7 @@ namespace Test
                                 axisRobotInfo.AxisID = 4;
                                 axisRobotInfo.Ratio = 10;
                                 axisRobotInfo.MoveVel = new VelocityParams(300000, 0.2);
-                                axisRobotInfo.HomeVel = new VelocityParams(30000, 0.2);
+                                axisRobotInfo.HomeVel = new VelocityParams(50000, 0.2);
                                 axisRobotInfo.HomeMode = HomeModes.ORGAndIndex;
                                 axisConfig.Add(axisRobotInfo);
                                 break;

@@ -71,11 +71,10 @@ namespace WLS3200Gen2
             isSimulate = machineSetting.IsSimulate;
             if (isSimulate)
             {
-                IsLoadwaferComplete = true;
-                IsMacroComplete = true;
-                IsAlignerComplete = true;
-                IsLocateComplete = true;
-                IsDetectionComplete = true;
+                IsStepMacro = true;
+                IsStepAligner = true;
+                IsStepLocate = true;
+                IsStepDetection = true;
             }
 
             processSettingPath = $"{systemPath}\\ProcessSettingPath.json";

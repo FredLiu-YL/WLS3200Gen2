@@ -82,8 +82,11 @@ namespace WLS3200Gen2.Model.Module
                                 image = camera.GrabAsync();
                                 actualPos = await FindFiducial(image, movePos.X, movePos.Y, number);
                                 //移動到取像位子
-                                movePos = actualPos;
-                                await TableMoveToAsync(movePos.X, movePos.Y);
+                                if (count == 1)
+                                {
+                                    movePos = actualPos;
+                                    await TableMoveToAsync(movePos.X, movePos.Y);
+                                }
                                 await Task.Delay(100);
                                 break;
                             }
@@ -91,7 +94,7 @@ namespace WLS3200Gen2.Model.Module
                             {
                                 if (errorReTryCount >= 2)
                                 {
-                                    if (AlignmentManual != null)// 如果有接實作 就手動對位
+                                    if (AlignmentManual != null && CancelToken != null && PauseToken != null)// 如果有接實作 就手動對位
                                     {
                                         CancelToken.Token.ThrowIfCancellationRequested();
                                         await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
@@ -112,11 +115,15 @@ namespace WLS3200Gen2.Model.Module
                     //actualPos = new Point(actualPos.X - lensSetting.RatioX * lensSetting.OffsetPixelX, actualPos.Y - lensSetting.RatioY * lensSetting.OffsetPixelY);
                     targetPos.Add(actualPos);
 
-                    if (CancelToken != null && PauseToken != null)
+                    if (CancelToken.IsCancellationRequested)
                     {
-                        CancelToken.Token.ThrowIfCancellationRequested();
-                        await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                        if (CancelToken != null && CancelToken.Token != null && PauseToken != null)
+                        {
+                            CancelToken.Token.ThrowIfCancellationRequested();
+                            await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                        }
                     }
+
                 }
                 //獲得設計座標
                 Point[] designPos = ConvertDesignPos(fiducialDatas);
@@ -151,18 +158,7 @@ namespace WLS3200Gen2.Model.Module
                 FiducialRecord?.Invoke(image, null, number);
                 WriteLog(YuanliCore.Logger.LogType.ALARM, $"Search failed ");
                 //沒搜尋到  要做些處置(目前沒做事)  改到外層去做事
-
-                if (CancelToken != null && PauseToken != null)
-                {
-                    //  CancelToken.Token.ThrowIfCancellationRequested();
-                    //  await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-                    //  Task<Point> alignmentManual = AlignmentManual?.Invoke(PauseToken, CancelToken, currentPosX, currentPosY);
-                    //  actualPos = await alignmentManual;
-                }
-                else
-                {
-                    throw new FlowException("搜尋失敗");
-                }
+                throw new FlowException("搜尋失敗");
             }
             else
             {

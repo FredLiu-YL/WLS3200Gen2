@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WLS3200Gen2.Model.Recipe;
 
 namespace WLS3200Gen2.UserControls
 {
@@ -28,8 +29,18 @@ namespace WLS3200Gen2.UserControls
                                                                                          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty IsDieAllPhotoProperty = DependencyProperty.Register(nameof(IsDieAllPhoto), typeof(bool), typeof(ProcessMenuUC),
                                                                                          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsDegreeUnLoadProperty = DependencyProperty.Register(nameof(IsDegreeUnLoad), typeof(bool), typeof(ProcessMenuUC),
+                                                                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty IsSecondFlipProperty = DependencyProperty.Register(nameof(IsSecondFlip), typeof(bool), typeof(ProcessMenuUC),
+                                                                                         new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty IsTestRunProperty = DependencyProperty.Register(nameof(IsTestRun), typeof(bool), typeof(ProcessMenuUC),
                                                                                          new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty SecondFlipPosProperty = DependencyProperty.Register(nameof(SecondFlipPos), typeof(int), typeof(ProcessMenuUC),
+                                                                                 new FrameworkPropertyMetadata(1, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty DegreeUnLoadProperty = DependencyProperty.Register(nameof(DegreeUnLoad), typeof(Degree), typeof(ProcessMenuUC),
+                                                                                 new FrameworkPropertyMetadata(Degree.Degree0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty TopContinueRotateProperty = DependencyProperty.Register(nameof(TopContinueRotate), typeof(TopContinueRotate), typeof(ProcessMenuUC),
+                                                                                 new FrameworkPropertyMetadata(TopContinueRotate.No, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public ProcessMenuUC()
         {
             InitializeComponent();
@@ -49,10 +60,44 @@ namespace WLS3200Gen2.UserControls
             get => (bool)GetValue(IsDieAllPhotoProperty);
             set => SetValue(IsDieAllPhotoProperty, value);
         }
+        public bool IsDegreeUnLoad
+        {
+            get => (bool)GetValue(IsDegreeUnLoadProperty);
+            set => SetValue(IsDegreeUnLoadProperty, value);
+        }
+        public bool IsSecondFlip
+        {
+            get => (bool)GetValue(IsSecondFlipProperty);
+            set => SetValue(IsSecondFlipProperty, value);
+        }
         public bool IsTestRun
         {
             get => (bool)GetValue(IsTestRunProperty);
             set => SetValue(IsTestRunProperty, value);
+        }
+        /// <summary>
+        /// 二次翻背位置
+        /// </summary>
+        public int SecondFlipPos
+        {
+            get => (int)GetValue(SecondFlipPosProperty);
+            set => SetValue(SecondFlipPosProperty, value);
+        }
+        /// <summary>
+        /// 出貨角度
+        /// </summary>
+        public Degree DegreeUnLoad
+        {
+            get => (Degree)GetValue(DegreeUnLoadProperty);
+            set => SetValue(DegreeUnLoadProperty, value);
+        }
+        /// <summary>
+        /// 金面不旋轉、一直正轉、一直反轉
+        /// </summary>
+        public TopContinueRotate TopContinueRotate
+        {
+            get => (TopContinueRotate)GetValue(TopContinueRotateProperty);
+            set => SetValue(TopContinueRotateProperty, value);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
