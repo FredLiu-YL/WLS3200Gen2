@@ -248,6 +248,9 @@
     <Compile Include="Windows\MappingCanvas.xaml.cs">
       <DependentUpon>MappingCanvas.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\MeasureWindow.xaml.cs">
+      <DependentUpon>MeasureWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SINFMapGenerateWindow.xaml.cs">
       <DependentUpon>SINFMapGenerateWindow.xaml</DependentUpon>
     </Compile>
@@ -354,6 +357,10 @@
     <Page Include="Windows\MappingCanvas.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MeasureWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SINFMapGenerateWindow.xaml">
       <SubType>Designer</SubType>

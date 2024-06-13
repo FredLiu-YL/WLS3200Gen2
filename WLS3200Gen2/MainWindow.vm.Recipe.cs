@@ -517,6 +517,7 @@ namespace WLS3200Gen2
             RobotAxisAligner1TakePosition = machineSetting.RobotAxisAlignTakePosition;
             RobotAxisMacroTakePosition = machineSetting.RobotAxisMacroTakePosition;
             RobotAxisMicroTakePosition = machineSetting.RobotAxisMicroTakePosition;
+            AlignerNotchOffset = machineSetting.AlignerNotchOffset;
             if (machineSetting.MicroscopeLensDefault != null)
             {
                 MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
@@ -543,6 +544,7 @@ namespace WLS3200Gen2
                 machineSetting.RobotAxisAlignTakePosition = RobotAxisAligner1TakePosition;
                 machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
                 machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
+                machineSetting.AlignerNotchOffset = AlignerNotchOffset;
 
                 machineSetting.LogPath = LogPath;
                 machineSetting.ResultPath = ResultPath;
@@ -742,6 +744,28 @@ namespace WLS3200Gen2
                 //    mainRecipe.DetectRecipe.WaferMap.RowCount = sINFMapGenerateWindow.Sinf.RowCount;
                 //    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 //}
+
+                MeasureWindow measureWindow = new MeasureWindow(machine.MicroDetection.Camera.GrabAsync());
+                measureWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        });
+        public ICommand GrabSaveAsCommand => new RelayCommand(() =>
+        {
+            try
+            {
+                System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog
+                {
+                    Filter = "Bmp Files (*.bmp)|*.bmp|All Files (*.*)|*.*"
+                };
+                if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    BitmapSource bmp = machine.MicroDetection.Camera.GrabAsync();
+                    bmp.ToBitmap().Save(saveFileDialog.FileName);
+                }
             }
             catch (Exception ex)
             {
@@ -1704,7 +1728,7 @@ namespace WLS3200Gen2
         {
             try
             {
-                if (IsRecipeMapCanEdit ==false )
+                if (IsRecipeMapCanEdit == false)
                 {
                     return;
                 }

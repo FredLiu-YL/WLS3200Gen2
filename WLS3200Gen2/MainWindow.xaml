@@ -1702,6 +1702,10 @@
                                     <TextBox Grid.Row="6" Text="{Binding RobotAxisMicroTakePosition}"  Grid.Column="1" />
                                     <Button Grid.Row="6"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding RobotMoveCommand}"  CommandParameter="Micro"/>
 
+                                    <TextBlock  Text="Notch Offset" Grid.Row="9" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
+                                    <Border Grid.Row="10" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" />
+                                    <Label Grid.Row="11"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Degree:"/>
+                                    <TextBox Grid.Row="11" Text="{Binding AlignerNotchOffset}"  Grid.Column="1" />
                                 </Grid>
 
                                 <Grid Grid.Column="1">
