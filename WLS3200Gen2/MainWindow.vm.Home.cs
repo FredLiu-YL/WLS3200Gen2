@@ -75,7 +75,10 @@ namespace WLS3200Gen2
         private IRobot robot;
         private ILampControl lampControl1, lampControl2;
         private MacroStatus macroStatus = new MacroStatus();
-        private bool isAutoSave, isTestRun, isAutoFocus, isInnerRing, isOuterRing;
+        private bool isAutoSave, isTestRun, isAutoFocus, isInnerRing, isOuterRing, isDegreeUnLoad, isSecondFlip;
+        private int secondFlipPos;
+        private Degree degreeUnLoad = Degree.Degree0;
+        private TopContinueRotate topContinueRotate = TopContinueRotate.No;
         private string recipeName;
         private double manualdistance, manualarea;
 
@@ -122,6 +125,15 @@ namespace WLS3200Gen2
         public bool IsAutoSave { get => isAutoSave; set => SetValue(ref isAutoSave, value); }
         public bool IsTestRun { get => isTestRun; set => SetValue(ref isTestRun, value); }
         public bool IsAutoFocus { get => isAutoFocus; set => SetValue(ref isAutoFocus, value); }
+
+
+        public bool IsDegreeUnLoad { get => isDegreeUnLoad; set => SetValue(ref isDegreeUnLoad, value); }
+        public bool IsSecondFlip { get => isSecondFlip; set => SetValue(ref isSecondFlip, value); }
+        public int SecondFlipPos { get => secondFlipPos; set => SetValue(ref secondFlipPos, value); }
+        public Degree DegreeUnLoad { get => degreeUnLoad; set => SetValue(ref degreeUnLoad, value); }
+        public TopContinueRotate TopContinueRotate { get => topContinueRotate; set => SetValue(ref topContinueRotate, value); }
+
+
         public String RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }
         public double ManualDistance { get => manualdistance; set => SetValue(ref manualdistance, value); }
         public double ManualArea { get => manualarea; set => SetValue(ref manualarea, value); }
@@ -141,6 +153,12 @@ namespace WLS3200Gen2
                 if (Machinestatus == MachineStates.Emergency)
                 {
                     MessageBox.Show("Not available in emergencies", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (isHaveError)
+                {
+                    MessageBox.Show("Error is notr clear!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -165,8 +183,13 @@ namespace WLS3200Gen2
                     ProcessSetting.IsAutoFocus = IsAutoFocus;
                     ProcessSetting.IsTestRun = IsTestRun;
                     ProcessSetting.Inch = Model.Module.InchType.Inch12;
+                    ProcessSetting.IsAutoFocus = IsAutoFocus;
+                    ProcessSetting.IsDegreeUnLoad = IsDegreeUnLoad;
+                    ProcessSetting.IsSecondFlip = IsSecondFlip;
+                    ProcessSetting.SecondFlipPos = SecondFlipPos;
+                    ProcessSetting.DegreeUnLoad = DegreeUnLoad;
+                    ProcessSetting.TopContinueRotate = TopContinueRotate;
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
-
                     isWaferInSystem = await machine.BeforeHomeCheck();
                     if (isWaferInSystem)
                     {
@@ -194,17 +217,31 @@ namespace WLS3200Gen2
                 }
 
             }
+            catch (FlowException ex)
+            {
+                isHaveError = true;
+                WriteLog(YuanliCore.Logger.LogType.ALARM, ex.Message);
+                MessageBox.Show(ex.Message);
+                isRunCommand = false;
+                IsRunning = false;
+                IsCanChangeRecipe = true;
+                ProcessVisibility = Visibility.Visible;
+                SwitchStates(MachineStates.Alarm);
+            }
             catch (Exception ex)
             {
+                isHaveError = true;
                 WriteLog(YuanliCore.Logger.LogType.ERROR, ex.Message);
                 MessageBox.Show(ex.Message);
                 isRunCommand = false;
+                IsRunning = false;
+                IsCanChangeRecipe = true;
+                ProcessVisibility = Visibility.Visible;
                 SwitchStates(MachineStates.Emergency);
             }
             finally
             {
                 WriteLog(YuanliCore.Logger.LogType.PROCESS, "Process Finish");
-
             }
         });
 
@@ -752,6 +789,29 @@ namespace WLS3200Gen2
             {
                 macroDoneOperation.MacroBack = WaferProcessStatus.Select;
                 await machine.ProcessResume();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
+        public ICommand ResetErrorCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                MessageBoxResult result = MessageBoxResult.Yes;
+                if (isHaveError)
+                {
+                    result = MessageBox.Show("Is Error Clear", "Error Clear", MessageBoxButton.YesNo);
+                }
+                if (result == MessageBoxResult.Yes)
+                {
+                    isHaveError = false;
+                }
             }
             catch (Exception ex)
             {

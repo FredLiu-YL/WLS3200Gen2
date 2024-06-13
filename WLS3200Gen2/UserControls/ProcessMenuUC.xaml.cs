@@ -23,6 +23,8 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class ProcessMenuUC : UserControl, INotifyPropertyChanged
     {
+        private bool isDegree0, isDegree90, isDegree180, isDegree270;
+        private bool isNoRotate, isForwardRotate, isBackwardRotate;
         public static readonly DependencyProperty IsAutoSaveProperty = DependencyProperty.Register(nameof(IsAutoSave), typeof(bool), typeof(ProcessMenuUC),
                                                                                          new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty IsWaferCirclePhotoProperty = DependencyProperty.Register(nameof(IsWaferCirclePhoto), typeof(bool), typeof(ProcessMenuUC),
@@ -89,7 +91,26 @@ namespace WLS3200Gen2.UserControls
         public Degree DegreeUnLoad
         {
             get => (Degree)GetValue(DegreeUnLoadProperty);
-            set => SetValue(DegreeUnLoadProperty, value);
+            set
+            {
+                if (value == Degree.Degree0)
+                {
+                    IsDegree0 = true;
+                }
+                else if (value == Degree.Degree90)
+                {
+                    IsDegree90 = true;
+                }
+                else if (value == Degree.Degree180)
+                {
+                    IsDegree180 = true;
+                }
+                else if (value == Degree.Degree270)
+                {
+                    IsDegree270 = true;
+                }
+                SetValue(DegreeUnLoadProperty, value);
+            }
         }
         /// <summary>
         /// 金面不旋轉、一直正轉、一直反轉
@@ -97,9 +118,114 @@ namespace WLS3200Gen2.UserControls
         public TopContinueRotate TopContinueRotate
         {
             get => (TopContinueRotate)GetValue(TopContinueRotateProperty);
-            set => SetValue(TopContinueRotateProperty, value);
+            set
+            {
+                if (value == TopContinueRotate.No)
+                {
+                    IsNoRotate = true;
+                }
+                else if (value == TopContinueRotate.Forward)
+                {
+                    IsForwardRotate = true;
+                }
+                else if (value == TopContinueRotate.Backward)
+                {
+                    IsBackwardRotate = true;
+                }
+                SetValue(TopContinueRotateProperty, value);
+            }
         }
-
+        public bool IsDegree0
+        {
+            get => isDegree0;
+            set
+            {
+                if (value && isDegree0 != value)
+                {
+                    SetValue(ref isDegree0, value);
+                    DegreeUnLoad = Degree.Degree0;
+                }
+                SetValue(ref isDegree0, value);
+            }
+        }
+        public bool IsDegree90
+        {
+            get => isDegree90;
+            set
+            {
+                if (value && isDegree90 != value)
+                {
+                    SetValue(ref isDegree90, value);
+                    DegreeUnLoad = Degree.Degree90;
+                }
+                SetValue(ref isDegree90, value);
+            }
+        }
+        public bool IsDegree180
+        {
+            get => isDegree180;
+            set
+            {
+                if (value && isDegree180 != value)
+                {
+                    SetValue(ref isDegree180, value);
+                    DegreeUnLoad = Degree.Degree180;
+                }
+                SetValue(ref isDegree180, value);
+            }
+        }
+        public bool IsDegree270
+        {
+            get => isDegree270;
+            set
+            {
+                if (value && isDegree270 != value)
+                {
+                    SetValue(ref isDegree270, value);
+                    DegreeUnLoad = Degree.Degree90;
+                }
+                SetValue(ref isDegree270, value);
+            }
+        }
+        public bool IsNoRotate
+        {
+            get => isNoRotate;
+            set
+            {
+                if (value && isNoRotate != value)
+                {
+                    SetValue(ref isNoRotate, value);
+                    TopContinueRotate = TopContinueRotate.No;
+                }
+                SetValue(ref isNoRotate, value);
+            }
+        }
+        public bool IsForwardRotate
+        {
+            get => isForwardRotate;
+            set
+            {
+                if (value && isForwardRotate != value)
+                {
+                    SetValue(ref isForwardRotate, value);
+                    TopContinueRotate = TopContinueRotate.Forward;
+                }
+                SetValue(ref isForwardRotate, value);
+            }
+        }
+        public bool IsBackwardRotate
+        {
+            get => isBackwardRotate;
+            set
+            {
+                if (value && isBackwardRotate != value)
+                {
+                    SetValue(ref isBackwardRotate, value);
+                    TopContinueRotate = TopContinueRotate.Backward;
+                }
+                SetValue(ref isBackwardRotate, value);
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

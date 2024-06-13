@@ -274,6 +274,10 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (IsRecipeMapCanEdit == false)
+                {
+                    return;
+                }
                 Rectangle nowSelectRange = new Rectangle
                 {
                     Stroke = Brushes.Red,
@@ -679,7 +683,7 @@ namespace WLS3200Gen2
                                              tempRecipeRectangles[result2.idx].Fill, tempRecipeRectangles[result2.idx].Fill);
                     }
                 }
-
+                selectRecipeRectangle = null;
             }
             catch (Exception ex)
             {

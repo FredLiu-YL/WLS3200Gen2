@@ -310,7 +310,7 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task AlignerAsync(Wafer currentWafer, EFEMtionRecipe eFEMtionRecipe)
+        public async Task AlignerAsync(Wafer currentWafer, EFEMtionRecipe eFEMtionRecipe, ProcessSetting processSetting, double alignerNotchOffset)
         {
             try
             {
@@ -322,11 +322,42 @@ namespace WLS3200Gen2.Model.Module
                     {
                         throw new FlowException("LoadToAlignerAsync:AlignerFixWafer Error!!");
                     }
+                    double secondAngle = 0;
+                    if (currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)
+                    {
+                        //進去Micro的角度
+                        secondAngle = eFEMtionRecipe.AlignerMicroAngle;
+                    }
+                    else
+                    {
+                        //如果不需要Micro檢查就是退片角度
+                        if (processSetting.DegreeUnLoad == Degree.Degree0)
+                        {
+                            secondAngle = alignerNotchOffset;
+                        }
+                        else if (processSetting.DegreeUnLoad == Degree.Degree90)
+                        {
+                            secondAngle = alignerNotchOffset + 90;
+                        }
+                        else if (processSetting.DegreeUnLoad == Degree.Degree180)
+                        {
+                            secondAngle = alignerNotchOffset + 180;
+                        }
+                        else if (processSetting.DegreeUnLoad == Degree.Degree270)
+                        {
+                            secondAngle = alignerNotchOffset + 270;
+                        }
+                        if (secondAngle > 360)
+                        {
+                            secondAngle = secondAngle - 360;
+                        }
+                    }
+
                     if (currentWafer.ProcessStatus.WaferID == WaferProcessStatus.Select)
                     {
                         WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "WaferID  Start");
 
-                        await tempAligner.WaferIDRun1(eFEMtionRecipe.AlignerWaferIDAngle, eFEMtionRecipe.AlignerMicroAngle);
+                        await tempAligner.WaferIDRun1(eFEMtionRecipe.AlignerWaferIDAngle, secondAngle);
                         //WaferID讀取   
                         string result = await Reader.ReadAsync();
                         //如果讀取失敗自己KeyIn
@@ -341,7 +372,7 @@ namespace WLS3200Gen2.Model.Module
                     }
                     else
                     {
-                        await tempAligner.Run(eFEMtionRecipe.AlignerMicroAngle);
+                        await tempAligner.Run(secondAngle);
                         WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Aligner  End");
                     }
                 });
@@ -356,7 +387,7 @@ namespace WLS3200Gen2.Model.Module
         /// 從Macro->Aligner位置
         /// </summary>
         /// <returns></returns>
-        public async Task LoadMacroToAlignerAsync(Wafer currentWafer, EFEMtionRecipe eFEMtionRecipe)
+        public async Task LoadStandByToAlignerAsync(Wafer currentWafer, EFEMtionRecipe eFEMtionRecipe)
         {
             try
             {
@@ -365,11 +396,11 @@ namespace WLS3200Gen2.Model.Module
                 {
                     if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                     {
-                        await LoadMacroToAlignerOnPortAsync(currentWafer.ProcessStatus.WaferID, eFEMtionRecipe);
+                        await LoadStandByToAlignerAsyncOnPortAsync(currentWafer.ProcessStatus.WaferID, eFEMtionRecipe);
                     }
                     else
                     {
-                        await LoadMacroToAlignerTwoPortAsync(currentWafer.ProcessStatus.WaferID, eFEMtionRecipe);
+                        await LoadStandByToAlignerAsyncTwoPortAsync(currentWafer.ProcessStatus.WaferID, eFEMtionRecipe);
                     }
                 });
             }
@@ -379,13 +410,13 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        private async Task LoadMacroToAlignerOnPortAsync(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
+        private async Task LoadStandByToAlignerAsyncOnPortAsync(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
             try
             {
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Aligner Start");
                 Task alignerHome = tempAligner.Home();
-                await WaferMacroToStandBy();
+                //await WaferMacroToStandBy();
                 await alignerHome;
                 await WaferStandByToAligner();
                 await tempAligner.FixWafer();
@@ -400,14 +431,14 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        private async Task LoadMacroToAlignerTwoPortAsync(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
+        private async Task LoadStandByToAlignerAsyncTwoPortAsync(WaferProcessStatus station, EFEMtionRecipe eFEMtionRecipe)
         {
             try
             {
                 WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Load To Aligner Start");
                 Task alignerHome = tempAligner.Home();
-                await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
-                await WaferMacroToStandBy();
+                //await RobotAxis.MoveToAsync(machineSetting.RobotAxisMacroTakePosition);
+                //await WaferMacroToStandBy();
                 await RobotAxis.MoveToAsync(machineSetting.RobotAxisAlignTakePosition);
                 await alignerHome;
                 await WaferStandByToAligner();
@@ -466,6 +497,21 @@ namespace WLS3200Gen2.Model.Module
             await tempAligner.ReleaseWafer();
             await WaferAlignerToStandBy();
             WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Un Load From Aligner End");
+        }
+        public async Task AlignerHome(Wafer currentWafer)
+        {
+            try
+            {
+                if (IsInitial == false) throw new FlowException("Feeder:Is Not Initial!!");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Aligner HomeStart");
+                await tempAligner.Home();
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Aligner Home End");
+            }
+            catch (Exception ex)
+            {
+                currentWafer.ProcessStatus.WaferID = WaferProcessStatus.Reject;
+                throw ex;
+            }
         }
         /// <summary>
         /// wafer放進主設備

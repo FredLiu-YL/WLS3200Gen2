@@ -31,6 +31,10 @@ namespace WLS3200Gen2.Model
         public double OuterRingRollYPositionPEL { get; set; }
         public double OuterRingRollYPositionNEL { get; set; }
         /// <summary>
+        /// Notch放置平台正面角度差
+        /// </summary>
+        public double AlignerNotchOffset { get; set; }
+        /// <summary>
         /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
         /// </summary>
         public IEnumerable<BincodeInfo> BincodeListDefault { get; set; }

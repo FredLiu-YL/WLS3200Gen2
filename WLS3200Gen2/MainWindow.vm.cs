@@ -60,7 +60,7 @@ namespace WLS3200Gen2
         //WLS3200 生產相關資訊會存到這
         private string processDataPath;
 
-        private bool isRefresh, isInitialComplete, isWaferInSystem;
+        private bool isRefresh, isInitialComplete, isWaferInSystem, isHaveError = false;
         private LoadPortQuantity loadportQuantity = LoadPortQuantity.Pair;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
@@ -263,6 +263,11 @@ namespace WLS3200Gen2
                 IsAutoSave = ProcessSetting.IsAutoSave;
                 IsAutoFocus = true;
                 IsAutoFocus = ProcessSetting.IsAutoFocus;
+                IsDegreeUnLoad = ProcessSetting.IsDegreeUnLoad;
+                IsSecondFlip = ProcessSetting.IsSecondFlip;
+                SecondFlipPos = ProcessSetting.SecondFlipPos;
+                DegreeUnLoad = ProcessSetting.DegreeUnLoad;
+                TopContinueRotate = ProcessSetting.TopContinueRotate;
 
                 InformationUCVisibility = Visibility.Hidden;
                 WorkholderUCVisibility = Visibility.Collapsed;

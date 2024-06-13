@@ -45,7 +45,9 @@ namespace WLS3200Gen2.Model.Recipe
         /// 是否要二次翻背
         /// </summary>
         public bool IsSecondFlip { get; set; } = false;
-    
+        /// <summary>
+        /// 
+        /// </summary>
         public bool RemoteDefectPoint { get; set; }
         /// <summary>
         /// 晶圓檢查站點 //陣列0  是第25片 放在cassette最上面

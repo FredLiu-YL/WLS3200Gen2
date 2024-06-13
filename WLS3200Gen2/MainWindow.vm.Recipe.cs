@@ -93,7 +93,11 @@ namespace WLS3200Gen2
         /// <summary>
         /// MapAdd防彈跳
         /// </summary>
-        private bool isRecipeMapEnd = true;
+        private bool isMapEnd = true;
+        /// <summary>
+        /// RecipeMap可以做事情
+        /// </summary>
+        private bool isRecipeMapCanEdit = true;
         /// <summary>
         /// 畫圖的參數
         /// </summary>
@@ -254,7 +258,8 @@ namespace WLS3200Gen2
         /// 是否可運作EFEM
         /// </summary>
         public bool IsCanWorkEFEMTrans { get => isCanWorkEFEMTrans; set => SetValue(ref isCanWorkEFEMTrans, value); }
-        public bool IsMapEnd { get => isRecipeMapEnd; set => SetValue(ref isRecipeMapEnd, value); }
+        public bool IsMapEnd { get => isMapEnd; set => SetValue(ref isMapEnd, value); }
+        public bool IsRecipeMapCanEdit { get => isRecipeMapCanEdit; set => SetValue(ref isRecipeMapCanEdit, value); }
         public double AlignerMicroAngle { get => alignerMicroAngle; set => SetValue(ref alignerMicroAngle, value); }
         public double AlignerWaferIDAngle { get => alignerWaferIDAngle; set => SetValue(ref alignerWaferIDAngle, value); }
         public double MacroTopStartPitchX { get => macroTopStartPitchX; set => SetValue(ref macroTopStartPitchX, value); }
@@ -1518,13 +1523,8 @@ namespace WLS3200Gen2
         {
             try
             {
-                //從點選的ShapeROI  找出對應的die
-                //int listIndex = MapDrawings.IndexOf(selectShape);
-                //YuanliCore.Data.Die die = mainRecipe.DetectRecipe.WaferMap.Dies[listIndex];
-                string tip = selectShape.ToolTip.ToString();
-                string[] line = tip.Split(' ');
-                int idxX = Convert.ToInt32(line[0].Split(':')[1]);
-                int idxY = Convert.ToInt32(line[1].Split(':')[1]);
+                int idxX = MicroCheckNowIndexX;
+                int idxY = MicroCheckNowIndexY;
 
 
                 DetectionPoint point = new DetectionPoint();
@@ -1562,6 +1562,7 @@ namespace WLS3200Gen2
             {
                 if (MapAdd == "MAP ADD")
                 {
+                    IsRecipeMapCanEdit = false;
                     IsMapEnd = false;
                     isMapAdding = true;
                     MappingRecipeOp?.Invoke(MappingOperate.Clear);
@@ -1620,6 +1621,7 @@ namespace WLS3200Gen2
                     ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
                     IsMapEnd = true;
                     isMapAdding = false;
+                    IsRecipeMapCanEdit = true;
                 }
             }
             catch (Exception ex)
@@ -1702,6 +1704,10 @@ namespace WLS3200Gen2
         {
             try
             {
+                if (IsRecipeMapCanEdit ==false )
+                {
+                    return;
+                }
                 int selectRecipeIndex = -1;
                 //顯示
                 if (SelectRecipeDetectionPointList.Count >= 1)

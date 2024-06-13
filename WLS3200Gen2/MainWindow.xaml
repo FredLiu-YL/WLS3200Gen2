@@ -206,7 +206,12 @@
                                 <materialDesign:PackIcon  Width="60" Height="60" Kind="Stop" />
                             </Button>
 
-                            <UserControlUC:ProcessMenuUC Grid.Column="4" IsEnabled="{Binding IsCanChangeRecipe}" IsAutoSave="{Binding IsAutoSave}" IsDieAllPhoto="{Binding IsDieAllPhoto}" IsWaferCirclePhoto="{Binding IsWaferCirclePhoto}" IsTestRun="{Binding IsTestRun}"/>
+                            <UserControlUC:ProcessMenuUC Grid.Column="4" IsEnabled="{Binding IsCanChangeRecipe}" IsAutoSave="{Binding IsAutoSave}" IsDieAllPhoto="{Binding IsDieAllPhoto}"
+                                                         IsWaferCirclePhoto="{Binding IsWaferCirclePhoto}" IsTestRun="{Binding IsTestRun}"
+                                                         IsDegreeUnLoad ="{Binding IsDegreeUnLoad}" IsSecondFlip ="{Binding IsSecondFlip}"
+                                                         SecondFlipPos ="{Binding SecondFlipPos}" DegreeUnLoad="{Binding DegreeUnLoad}"
+                                                         TopContinueRotate ="{Binding TopContinueRotate}"
+                                                         />
                             <Border Grid.Column="5"    BorderBrush="DeepSkyBlue"  BorderThickness="2">
                                 <UserControlUC:MachineStateUC Status="{Binding Machinestatus}"/>
                             </Border>
@@ -1242,9 +1247,9 @@
                                                 <TextBlock  Text="Detection Setting" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"  />
                                             </Border>
                                             <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2"   >
-                                                <Button Margin="5" Content="ADD"  FontSize="24" Height="50" Width="100" Command="{Binding AddDetectionCommand}"  />
-                                                <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130" Command="{Binding RemoveDetectionCommand}"  />
-                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="85" Command="{Binding EditDetectionCommand}"  />
+                                                <Button Margin="5" Content="ADD"  FontSize="24" Height="50" Width="100" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding AddDetectionCommand}"  />
+                                                <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding RemoveDetectionCommand}"  />
+                                                <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="85" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding EditDetectionCommand}"  />
                                                 <Button Margin="5" Content="{Binding MapAdd}" IsEnabled="{Binding IsMapEnd}" FontSize="24" Height="50" Width="150" Command="{Binding MapAddDetectionCommand}"  />
                                             </StackPanel>
                                             <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
@@ -1253,7 +1258,7 @@
                                                     <DataGrid  Margin="0" ItemsSource="{Binding DetectionPointList}" CanUserSortColumns="False" 
                                                                SelectionMode ="Extended" SelectionUnit="FullRow" DataGrid.CanUserAddRows ="False" 
                                                                wls3200gen2:DataGridSelectedIndexBehavior.SelectedItems="{Binding SelectRecipeDetectionPointList}"
-                                                               AutoGenerateColumns="False" Height="795"  >
+                                                               AutoGenerateColumns="False" Height="750"  >
                                                         <i:Interaction.Triggers>
                                                             <i:EventTrigger EventName="PreviewMouseDoubleClick">
                                                                 <i:InvokeCommandAction Command="{Binding DetectionPointListDoubleClickCommand}"/>
@@ -2242,7 +2247,14 @@
             </TabItem>
 
         </TabControl>
+        <Grid HorizontalAlignment="Left" Margin="0,0,0,10">
 
+            <Button Width="80" Height="80" Background="{DynamicResource MaterialDesignTextFieldBoxBackground}"
+                    IsEnabled="{Binding IsCanChangeRecipe}"
+                    Style="{StaticResource MaterialDesignIconButton}"  Command="{Binding ResetErrorCommand}"  ToolTip="Mute" Foreground="#FF010910">
+                <materialDesign:PackIcon Width="70" Height="70" Kind="Autorenew"  />
+            </Button>
+        </Grid>
         <Grid HorizontalAlignment="Left" Margin="0,590,0,10">
             <Grid.RowDefinitions>
                 <RowDefinition/>
