@@ -217,17 +217,6 @@ namespace WLS3200Gen2.UserControls
                 MessageBox.Show(ex.Message);
             }
         });
-
-
-
-
-
-
-
-
-
-
-
         public enum TableMoveType
         {
             High = 0,

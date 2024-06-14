@@ -200,6 +200,7 @@ namespace WLS3200Gen2
                     {
                         TableX.AxisVelocity.MaxVel = TableXMaxVel;
                         TableY.AxisVelocity.MaxVel = TableYMaxVel;
+                        TableZ.AxisVelocity.MaxVel = TableZMaxVel;
                         await machine.ProcessRunAsync(ProcessSetting);
                     }
 
@@ -1169,6 +1170,7 @@ namespace WLS3200Gen2
             {
                 TableX.AxisVelocity.MaxVel = TableXMaxVel;
                 TableY.AxisVelocity.MaxVel = TableYMaxVel;
+                TableZ.AxisVelocity.MaxVel = TableZMaxVel;
                 foreach (var item in dies)
                 {
                     RectangleInfo rectangleInfo = tempHomeLogAssignRectangles.FirstOrDefault(n => n.Col == item.IndexX && n.Row == item.IndexY);

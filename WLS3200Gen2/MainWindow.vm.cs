@@ -45,7 +45,7 @@ namespace WLS3200Gen2
         private Axis tableX, tableY, tableR, tableZ;
         private Axis robotAxis;
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
-        private double tableXMaxVel, tableYMaxVel;
+        private double tableXMaxVel, tableYMaxVel, tableZMaxVel;
         private double tablePosX, tablePosY, tablePosZ, tablePosR;
         private int microCheckNowIndexX, microCheckNowIndexY;
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
@@ -71,6 +71,7 @@ namespace WLS3200Gen2
         public ICommand AddButtonAction { get; set; }
         public double TableXMaxVel { get => tableXMaxVel; set => SetValue(ref tableXMaxVel, value); }
         public double TableYMaxVel { get => tableYMaxVel; set => SetValue(ref tableYMaxVel, value); }
+        public double TableZMaxVel { get => tableZMaxVel; set => SetValue(ref tableZMaxVel, value); }
         public int MicroCheckNowIndexX { get => microCheckNowIndexX; set => SetValue(ref microCheckNowIndexX, value); }
         public int MicroCheckNowIndexY { get => microCheckNowIndexY; set => SetValue(ref microCheckNowIndexY, value); }
         public Axis TableX { get => tableX; set => SetValue(ref tableX, value); }
@@ -260,6 +261,7 @@ namespace WLS3200Gen2
 
                 TableXMaxVel = TableXConfig.MoveVel.MaxVel;
                 TableYMaxVel = TableYConfig.MoveVel.MaxVel;
+                TableZMaxVel = TableZConfig.MoveVel.MaxVel;
                 IsAutoSave = ProcessSetting.IsAutoSave;
                 IsAutoFocus = true;
                 IsAutoFocus = ProcessSetting.IsAutoFocus;

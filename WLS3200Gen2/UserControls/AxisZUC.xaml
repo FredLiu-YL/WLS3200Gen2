@@ -1,0 +1,85 @@
+﻿<UserControl  x:Class="WLS3200Gen2.UserControls.AxisZUC"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+      xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
+      mc:Ignorable="d" 
+      x:Name="AxisZ"
+      d:DesignHeight="200" d:DesignWidth="180">
+    <UserControl.Resources>
+        <ResourceDictionary >
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.cyan.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.blue.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding ElementName=AxisZ}" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.35*"/>
+            <ColumnDefinition Width="0.65*"/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Grid.Column="1" Grid.Row="0"  Width="60"  Height="60"   >
+                <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowUpBold" />
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Z-"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Z-"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <TextBox Grid.Row="1"  Grid.Column="1" Text="{Binding TableDistance}" FontSize="20" VerticalAlignment="Center" />
+            <Button Grid.Column="1" Grid.Row="2"  Width="60"  Height="60"   >
+                <materialDesign:PackIcon Margin="-10,0,-10,0" Width="50"  Height="50"  Kind="ArrowDownBold" />
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDown">
+                        <i:InvokeCommandAction  Command="{Binding TableContinueMoveCommand}"  CommandParameter="Z+"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="PreviewMouseUp">
+                        <i:InvokeCommandAction Command="{Binding TableMoveCommand}"  CommandParameter="Z+"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+        </Grid>
+        <StackPanel Grid.Column="3" Grid.Row="0" Grid.RowSpan="2">
+            <RadioButton
+                Content="High"
+                GroupName="GroupChoiceChipOutline"
+                IsChecked="{Binding HighIsChecked}"
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
+            <RadioButton
+                Content="Low"
+                GroupName="GroupChoiceChipOutline"
+                IsChecked="{Binding LowIsChecked}"
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
+            <RadioButton
+                Content="Relative"
+                GroupName="GroupChoiceChipOutline"
+                IsChecked="{Binding RelativeIsChecked}"
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.43*"/>
+                    <ColumnDefinition Width="0.57*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Grid.Row="0" Content="NowZ:" VerticalContentAlignment="Center" FontSize="14"/>
+                <TextBox  Grid.Column="1" Grid.Row="0" IsReadOnly="True" Text="{Binding TablePosZ}" Width="65" VerticalAlignment="Center" HorizontalAlignment="Left"  FontSize="15"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

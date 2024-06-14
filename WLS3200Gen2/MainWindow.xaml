@@ -1340,7 +1340,8 @@
                                         <ColumnDefinition Width="0.35*"/>
                                         <ColumnDefinition Width="0.65*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid>
+                                    <UserControlUC:AxisZUC TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ }" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                    <Grid Visibility="Hidden" >
                                         <Grid.RowDefinitions >
                                             <RowDefinition />
                                             <RowDefinition />
