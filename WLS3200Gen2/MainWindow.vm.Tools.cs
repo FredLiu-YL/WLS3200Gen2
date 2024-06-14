@@ -214,7 +214,7 @@ namespace WLS3200Gen2
                     {
                         //確認LoadPort沒有片子
                         RecipeLastArmStation = Model.ArmStation.Cassette1;
-                        Wafer currentWafer = new Wafer(ProcessStations[LoadPort1WaferSelect].CassetteIndex);
+                        Wafer currentWafer = new Wafer(ToolLoadPort1Index + 1);
                         await machine.Feeder.UnLoadWaferToCassette(currentWafer, true);
                     }
                     IsCanWorkEFEMTrans = true;

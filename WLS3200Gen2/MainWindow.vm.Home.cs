@@ -79,7 +79,7 @@ namespace WLS3200Gen2
         private int secondFlipPos;
         private Degree degreeUnLoad = Degree.Degree0;
         private TopContinueRotate topContinueRotate = TopContinueRotate.No;
-        private string recipeName;
+        private string recipeName, processInfoWaferID, processInfoProgress1;
         private double manualdistance, manualarea;
 
         public PackIconKind PausePackIcon { get => pausePackIcon; set => SetValue(ref pausePackIcon, value); }
@@ -135,8 +135,10 @@ namespace WLS3200Gen2
 
 
         public String RecipeName { get => recipeName; set => SetValue(ref recipeName, value); }
-        public double ManualDistance { get => manualdistance; set => SetValue(ref manualdistance, value); }
-        public double ManualArea { get => manualarea; set => SetValue(ref manualarea, value); }
+
+
+        public string ProcessInfoWaferID { get => processInfoWaferID; set => SetValue(ref processInfoWaferID, value); }
+        public string ProcessInfoProgress1 { get => processInfoProgress1; set => SetValue(ref processInfoProgress1, value); }
 
         public ICommand RunCommand => new RelayCommand(async () =>
         {
@@ -357,6 +359,7 @@ namespace WLS3200Gen2
             try
             {
                 IsCanChangeRecipe = false;
+                IsOperateUI = false;
                 string path = $"{systemPath}\\Recipe\\";
 
                 if (!Directory.Exists(path))
@@ -386,17 +389,20 @@ namespace WLS3200Gen2
 
                         BincodeListUpdate(mainRecipe.DetectRecipe.BincodeList);
                         isRecipeMapShow = false;
+                        transForm = OrgTransform(mainRecipe.DetectRecipe.WaferMap.MapCenterPoint, machineSetting.TableCenterPosition);
                     }
                     ResetDetectionRunningPointList();
                     WriteLog(YuanliCore.Logger.LogType.TRIG, "Load Recipe :" + recipename);
                 }
                 IsCanChangeRecipe = true;
+                IsOperateUI = true;
                 //SinfWaferMapping sinfWaferMapping = new SinfWaferMapping(true, true);
                 //sinfWaferMapping = (SinfWaferMapping)mainRecipe.DetectRecipe.WaferMap;
                 //sinfWaferMapping.SaveWaferFile("C://Users//USER//Documents//0603.txt", false, false);
             }
             catch (Exception ex)
             {
+                IsOperateUI = true;
                 IsCanChangeRecipe = true;
                 MessageBox.Show(ex.Message);
             }
@@ -618,58 +624,55 @@ namespace WLS3200Gen2
         {
             try
             {
-                var w = MainImage.Width;
-                var h = MainImage.Height;
-                ROIShape shape = null;
-                ClearShapeManualAction.Execute(ManualDrawings);
+                MeasureWindow measureWindow = new MeasureWindow(machine.MicroDetection.Camera.GrabAsync());
+                measureWindow.ShowDialog();
+                //var w = MainImage.Width;
+                //var h = MainImage.Height;
+                //ROIShape shape = null;
+                //ClearShapeManualAction.Execute(ManualDrawings);
+                //switch (param)
+                //{
+                //    case "Ruler": //劃出直線
 
-                switch (param)
-                {
-                    case "Ruler": //劃出直線
+                //        shape = new ROILine
+                //        {
+                //            X1 = w / 2 - 200,
+                //            Y1 = h / 2,
+                //            X2 = w / 2 + 200,
+                //            Y2 = h / 2,
+                //            StrokeThickness = 5,
+                //            Stroke = System.Windows.Media.Brushes.Red,
+                //            IsInteractived = true
+                //        };
+                //        break;
 
-                        shape = new ROILine
-                        {
-                            X1 = w / 2 - 200,
-                            Y1 = h / 2,
-                            X2 = w / 2 + 200,
-                            Y2 = h / 2,
-                            StrokeThickness = 5,
-                            Stroke = System.Windows.Media.Brushes.Red,
-                            IsInteractived = true
-                        };
-                        break;
+                //    case "Rect"://劃出可旋轉的矩形
+                //        shape = new ROIRotatedRect
+                //        {
+                //            X = w / 2,
+                //            Y = h / 2,
+                //            LengthX = 100,
+                //            LengthY = 100,
+                //            StrokeThickness = 5,
+                //            Stroke = System.Windows.Media.Brushes.Red,
+                //            IsInteractived = true
+                //        };
+                //        break;
 
-                    case "Rect"://劃出可旋轉的矩形
-                        shape = new ROIRotatedRect
-                        {
-                            X = w / 2,
-                            Y = h / 2,
-                            LengthX = 100,
-                            LengthY = 100,
-                            StrokeThickness = 5,
-                            Stroke = System.Windows.Media.Brushes.Red,
-                            IsInteractived = true
-                        };
-                        break;
+                //    case "Circle"://劃出可旋轉的矩形
+                //        shape = new ROICircle
+                //        {
+                //            X = w / 2,
+                //            Y = h / 2,
+                //            Radius = 100,
+                //            StrokeThickness = 5,
+                //            Stroke = System.Windows.Media.Brushes.Red,
+                //            IsInteractived = true
+                //        };
+                //        break;
 
-                    case "Circle"://劃出可旋轉的矩形
-                        shape = new ROICircle
-                        {
-                            X = w / 2,
-                            Y = h / 2,
-                            Radius = 100,
-                            StrokeThickness = 5,
-                            Stroke = System.Windows.Media.Brushes.Red,
-                            IsInteractived = true
-                        };
-                        break;
-
-                }
-
-
-
-                AddShapeManualAction.Execute(shape);
-
+                //}
+                //AddShapeManualAction.Execute(shape);
             }
             catch (Exception ex)
             {
@@ -678,47 +681,6 @@ namespace WLS3200Gen2
             }
         });
 
-        public ICommand ManualCaliperCalculateCommand => new RelayCommand(() =>
-        {
-            //需要 Binding 到UI 顯示的數值
-            double distance = 0;
-            double area = 0;
-            double width = 0;
-            double height = 0;
-            var shape = ManualDrawings.FirstOrDefault();
-            if (shape != null)
-            {
-                if (shape is ROILine)
-                {
-                    ROILine line = shape as ROILine;
-
-                    width = Math.Abs(line.X2 - line.X1); //最大外接矩形的寬
-                    height = Math.Abs(line.Y2 - line.Y1);
-                    ManualDistance = Math.Round(Math.Sqrt(width * width + height * height), 3);
-
-
-                }
-                else if (shape is ROIRotatedRect)
-                {
-                    ROIRotatedRect rect = shape as ROIRotatedRect;
-                    width = rect.LengthX * 2;
-                    height = rect.LengthY * 2;
-                    ManualArea = Math.Round(width * height, 3);
-
-
-                }
-                else if (shape is ROICircle)
-                {
-                    ROICircle circle = shape as ROICircle;
-                    width = circle.Radius * 2;
-                    height = circle.Radius * 2;
-                    ManualArea = Math.Round(Math.PI * Math.Pow(circle.Radius, 2), 3);
-
-
-                }
-
-            }
-        });
 
         public ICommand MacroPASSOperateCommand => new RelayCommand(async () =>
         {

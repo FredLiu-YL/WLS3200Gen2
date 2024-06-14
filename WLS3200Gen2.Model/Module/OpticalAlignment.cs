@@ -115,13 +115,10 @@ namespace WLS3200Gen2.Model.Module
                     //actualPos = new Point(actualPos.X - lensSetting.RatioX * lensSetting.OffsetPixelX, actualPos.Y - lensSetting.RatioY * lensSetting.OffsetPixelY);
                     targetPos.Add(actualPos);
 
-                    if (CancelToken.IsCancellationRequested)
+                    if (CancelToken != null && CancelToken.Token != null && PauseToken != null && CancelToken.IsCancellationRequested)
                     {
-                        if (CancelToken != null && CancelToken.Token != null && PauseToken != null)
-                        {
-                            CancelToken.Token.ThrowIfCancellationRequested();
-                            await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
-                        }
+                        CancelToken.Token.ThrowIfCancellationRequested();
+                        await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
                     }
 
                 }

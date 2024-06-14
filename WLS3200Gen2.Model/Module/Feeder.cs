@@ -310,7 +310,7 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task AlignerAsync(Wafer currentWafer, EFEMtionRecipe eFEMtionRecipe, ProcessSetting processSetting, double alignerNotchOffset)
+        public async Task AlignerAsync(Wafer currentWafer, EFEMtionRecipe eFEMtionRecipe, ProcessSetting processSetting, MachineSetting machineSetting, string path)
         {
             try
             {
@@ -326,30 +326,30 @@ namespace WLS3200Gen2.Model.Module
                     if (currentWafer.ProcessStatus.Micro == WaferProcessStatus.Select)
                     {
                         //進去Micro的角度
-                        secondAngle = eFEMtionRecipe.AlignerMicroAngle;
+                        secondAngle = machineSetting.AlignerMicroOffset + eFEMtionRecipe.AlignerMicroAngle;
                     }
                     else
                     {
                         //如果不需要Micro檢查就是退片角度
                         if (processSetting.DegreeUnLoad == Degree.Degree0)
                         {
-                            secondAngle = alignerNotchOffset;
+                            secondAngle = machineSetting.AlignerUnLoadOffset;
                         }
                         else if (processSetting.DegreeUnLoad == Degree.Degree90)
                         {
-                            secondAngle = alignerNotchOffset + 90;
+                            secondAngle = machineSetting.AlignerUnLoadOffset + 90;
                         }
                         else if (processSetting.DegreeUnLoad == Degree.Degree180)
                         {
-                            secondAngle = alignerNotchOffset + 180;
+                            secondAngle = machineSetting.AlignerUnLoadOffset + 180;
                         }
                         else if (processSetting.DegreeUnLoad == Degree.Degree270)
                         {
-                            secondAngle = alignerNotchOffset + 270;
+                            secondAngle = machineSetting.AlignerUnLoadOffset + 270;
                         }
                         if (secondAngle > 360)
                         {
-                            secondAngle = secondAngle - 360;
+                            secondAngle = secondAngle % 360;
                         }
                     }
 
@@ -364,9 +364,10 @@ namespace WLS3200Gen2.Model.Module
                         if (result == "")
                         {
                             Task<String> waferID = WaferIDReady?.Invoke(pauseToken, cancelToken);
-                            var cc = await waferID;
+                            result = await waferID;
                         }
-                        await tempAligner.WaferIDRun2();
+                        SaveWaferID(result, path);
+                        await tempAligner.WaferIDRun2();//.WaferIDRun2();
                         WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "WaferID  End");
                         currentWafer.ProcessStatus.WaferID = WaferProcessStatus.Pass;
                     }
@@ -380,6 +381,19 @@ namespace WLS3200Gen2.Model.Module
             catch (Exception ex)
             {
                 currentWafer.ProcessStatus.WaferID = WaferProcessStatus.Reject;
+                throw ex;
+            }
+        }
+        private void SaveWaferID(string result, string path)
+        {
+            try
+            {
+                List<string> lines = new List<string>();
+                lines.Add("WaferID:" + result);
+                System.IO.File.WriteAllLines(path + "\\WaferID.txt", lines);
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }

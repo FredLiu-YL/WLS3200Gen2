@@ -55,7 +55,7 @@
                 <Label Width="60" Content="Area" FontSize="16" />
                 <TextBlock Width="60" Text="{Binding ManualArea}" />
             </StackPanel>
-            <Button Margin="5" Grid.Row="9" Grid.Column="5" Content="Cancel" FontSize="15" Height="40" Width="100" Background="Red"   Command="{Binding CancelCommand}" Cursor="Hand" />
+            <!--<Button Margin="5" Grid.Row="9" Grid.Column="5" Content="Cancel" FontSize="15" Height="40" Width="100" Background="Red"   Command="{Binding CancelCommand}" Cursor="Hand" />-->
         </Grid>
     </Grid>
 </Window>

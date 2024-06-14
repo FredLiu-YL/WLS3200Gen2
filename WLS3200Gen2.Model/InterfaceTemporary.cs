@@ -677,8 +677,11 @@ namespace WLS3200Gen2.Model
         void InnerRingPitchX_Stop();
         void InnerRingRollY_Stop();
         void InnerRingYawT_Stop();
-
         void OuterRingRollY_Stop();
+        /// <summary>
+        /// 重置YawT數值
+        /// </summary>
+        void InnerYawTReset();
     }
 
 

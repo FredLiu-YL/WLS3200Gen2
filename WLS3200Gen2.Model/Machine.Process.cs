@@ -107,6 +107,8 @@ namespace WLS3200Gen2.Model
                                 //需不需要在Macro檢查
                                 if (currentWafer.ProcessStatus.MacroTop == WaferProcessStatus.Select || currentWafer.ProcessStatus.MacroBack == WaferProcessStatus.Select)
                                 {
+                                    //等待預載完成
+                                    await taskLoad;
                                     //晶面檢查
                                     await MacroTopInspection(currentWafer, recipe.EFEMRecipe, processSetting);
                                     SetWaferStatusToUI(currentWafer);
@@ -124,11 +126,8 @@ namespace WLS3200Gen2.Model
                                     await MacroDone(currentWafer, recipe.EFEMRecipe, processSetting);
                                     //關閉光源
                                     await CloseLampControl();
-
                                     //等待退片完成
                                     await taskUnLoad;
-                                    //等待預載完成
-                                    await taskLoad;
                                     //取片從Macro到等待位置
                                     await Feeder.WaferMacroToStandBy();
                                     SetWaferStatusToUI(currentWafer);
@@ -145,8 +144,11 @@ namespace WLS3200Gen2.Model
                                     await taskUnLoad;
                                     //等待預載完成
                                     await taskLoad;
+                                    // ProcessPause();
+                                    cts.Token.ThrowIfCancellationRequested();
+                                    await pts.Token.WaitWhilePausedAsync(cts.Token);
                                     //WaferID確認+角度轉到平台角度
-                                    await Feeder.AlignerAsync(currentWafer, recipe.EFEMRecipe, processSetting, machineSetting.AlignerNotchOffset);
+                                    await Feeder.AlignerAsync(currentWafer, recipe.EFEMRecipe, processSetting, machineSetting, currentSavePath);
                                     SetWaferStatusToUI(currentWafer);
                                     // ProcessPause();
                                     cts.Token.ThrowIfCancellationRequested();
@@ -182,10 +184,18 @@ namespace WLS3200Gen2.Model
                                     }
                                     //執行主設備動作 
                                     await focusZWafertask;
+                                    if (pts.IsPaused)
+                                    {
+                                        await taskUnLoad;
+                                        await taskLoad;
+                                        cts.Token.ThrowIfCancellationRequested();
+                                        await pts.Token.WaitWhilePausedAsync(cts.Token);
+                                    }
                                     await MicroDetection.Run(currentWafer, report, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, currentSavePath, pts, cts);
                                     SetWaferStatusToUI(currentWafer);
                                     if (pts.IsPaused)
                                     {
+                                        await taskUnLoad;
                                         await taskLoad;
                                         cts.Token.ThrowIfCancellationRequested();
                                         await pts.Token.WaitWhilePausedAsync(cts.Token);
@@ -240,7 +250,6 @@ namespace WLS3200Gen2.Model
                                     break;
                                 }
                                 currentWafer = nextWafer; //將下一片的資料轉成當前WAFER資料
-
                             }
                         }
                     });
@@ -333,19 +342,23 @@ namespace WLS3200Gen2.Model
                     await Feeder.Macro.GoInnerRingCheckPos();
                     await Feeder.TurnWafer(eFEMtionRecipe);
                     await Task.WhenAll(taskLampControl1, taskLampControl2);
-                    if (processSetting.TopContinueRotate == TopContinueRotate.Forward)
-                    {
-                        Feeder.Macro.InnerRingYawT_Move(true);
-                    }
-                    else if (processSetting.TopContinueRotate == TopContinueRotate.Forward)
-                    {
-                        Feeder.Macro.InnerRingYawT_Move(false);
-                    }
                     //委派到ui 去執行macro人工檢
                     if (processSetting.IsTestRun == false)
                     {
+                        //是否連續旋轉
+                        if (processSetting.TopContinueRotate == TopContinueRotate.Forward)
+                        {
+                            Feeder.Macro.InnerRingYawT_Move(true);
+                        }
+                        else if (processSetting.TopContinueRotate == TopContinueRotate.Backward)
+                        {
+                            Feeder.Macro.InnerRingYawT_Move(false);
+                        }
                         Task<WaferProcessStatus> macro = MacroReady?.Invoke(pts, cts, true);
                         currentWafer.ProcessStatus.MacroTop = await macro;
+                        await Task.Delay(50);
+                        Feeder.Macro.InnerRingYawT_Stop();
+                        await Task.Delay(50);
                     }
                     else
                     {
@@ -410,8 +423,9 @@ namespace WLS3200Gen2.Model
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Macro Second Back Inspection Start");
                     Task taskLampControl1 = Feeder.LampControl1.ChangeLightAsync(eFEMtionRecipe.MacroBackLeftLightValue);
                     Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(eFEMtionRecipe.MacroBackRightLightValue);
-
+                    Feeder.Macro.InnerYawTReset();
                     await Feeder.Macro.InnerRingYawTMoveToAsync(processSetting.SecondFlipPos);
+                    await Task.Delay(50);
                     await Feeder.Macro.GoOuterRingCheckPos();
                     //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
                     var startPos = eFEMtionRecipe.MacroBackStartPos;
@@ -490,9 +504,10 @@ namespace WLS3200Gen2.Model
                 //如果要有退片角度
                 await Feeder.MicroUnLoadToStandByAsync();
                 await Feeder.LoadStandByToAlignerAsync(unLoadWafer, eFEMtionRecipe);
-                await Feeder.AlignerAsync(unLoadWafer, eFEMtionRecipe, processSetting, machineSetting.AlignerNotchOffset);
+                await Feeder.AlignerAsync(unLoadWafer, eFEMtionRecipe, processSetting, machineSetting, "");
                 //退片
                 await Feeder.AlignerToStandByAsync(unLoadWafer);
+                taskAlignerHome = Feeder.AlignerHome(unLoadWafer);
             }
             else
             {

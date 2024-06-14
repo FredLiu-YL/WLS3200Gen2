@@ -285,22 +285,15 @@
                                                 <ColumnDefinition Width="0.6*"/>
                                                 <ColumnDefinition />
                                             </Grid.ColumnDefinitions>
-                                            <Label Grid.Row="0" Grid.Column="0" Content="Recipe:" BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="1" Grid.Column="0" Content="Cassette ID:"  BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="2" Grid.Column="0" Content="Wafer ID:"  BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="3" Grid.Column="0" Content="Wafer Size:"  BorderBrush="Black"  BorderThickness="1" />
-
-
-                                            <Label Grid.Row="0" Grid.Column="1" BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="1" Grid.Column="1" BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="2" Grid.Column="1" BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="3" Grid.Column="1" BorderBrush="Black"  BorderThickness="1" />
+                                            
+                                            <Label Grid.Row="0" Grid.Column="0" Content="Wafer ID:"  BorderBrush="Black"  BorderThickness="1" />
+                                            
+                                            <Label Grid.Row="0" Grid.Column="1" Content="{Binding ProcessInfoWaferID}" BorderBrush="Black"  BorderThickness="1" />
 
                                             <Label Grid.Row="0" Grid.Column="2" Content="Progress :"  BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="1" Grid.Column="2" Content="Progress :"  BorderBrush="Black"  BorderThickness="1" />
 
-                                            <Label Grid.Row="0" Grid.Column="3" BorderBrush="Black"  BorderThickness="1" />
-                                            <Label Grid.Row="1" Grid.Column="3" BorderBrush="Black"  BorderThickness="1" />
+                                            <Label Grid.Row="0" Grid.Column="3" Content="{Binding ProcessInfoProgress1}" BorderBrush="Black"  BorderThickness="1" />
+                                            
                                         </Grid>
                                     </Grid>
                                 </GroupBox>
@@ -393,6 +386,11 @@
                                                     </StackPanel>
                                                 </TabItem.Header>
                                                 <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.3*"/>
+                                                        <ColumnDefinition Width="0.7*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <UserControlUC:AxisZUC TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ }" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                                                     <UserControlUC:WorkholderUC Grid.Column="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
                                                                                 TableXMaxVel ="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="Top"  />
                                                 </Grid>
@@ -548,21 +546,8 @@
                                                     </Grid.RowDefinitions>
 
                                                     <Button Grid.Row="0"  Height="40" Content="{materialDesign:PackIcon Kind=Ruler}" Command="{Binding ManualCaliperCommand}" CommandParameter="Ruler" />
-                                                    <Button  Grid.Row="1"  Height="40" Command="{Binding ManualCaliperCommand}" CommandParameter="Rect" >
-                                                        <materialDesign:PackIcon  Width="30" Height="30" Kind="VectorRectangle" />
-                                                    </Button>
-                                                    <Button  Grid.Row="2"  Height="40"  Command="{Binding ManualCaliperCommand}" CommandParameter="Circle" >
-                                                        <materialDesign:PackIcon  Width="30" Height="30" Kind="VectorCircle" />
-                                                    </Button>
-                                                    <Button  Grid.Row="3"  Height="40" Content="{materialDesign:PackIcon Kind=Calculator}" Command="{Binding ManualCaliperCalculateCommand}"   />
-                                                    <StackPanel Grid.Row="4" Orientation="Horizontal">
-                                                        <Label Width="60" Content="Length" FontSize="16" />
-                                                        <TextBlock Width="60" Text="{Binding ManualDistance}" />
-                                                    </StackPanel>
-                                                    <StackPanel Grid.Row="5" Orientation="Horizontal">
-                                                        <Label Width="60" Content="Area" FontSize="16" />
-                                                        <TextBlock Width="60" Text="{Binding ManualArea}" />
-                                                    </StackPanel>
+                                                    
+
                                                 </Grid>
                                             </Grid>
                                         </TabItem>
@@ -600,9 +585,9 @@
                                             </TabItem.Header>
                                             <Grid >
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="213*"/>
-                                                    <ColumnDefinition Width="16*"/>
-                                                    <ColumnDefinition Width="335*"/>
+                                                    <ColumnDefinition Width="30*"/>
+                                                    
+                                                    <ColumnDefinition Width="70*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
                                                     <RowDefinition Height="0.12*"/>
@@ -612,7 +597,8 @@
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
-                                                <UserControlUC:WorkholderUC Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
+                                                <UserControlUC:AxisZUC Grid.Column  ="0" Grid.Row ="1" TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ }" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                                <UserControlUC:WorkholderUC Grid.Column  ="1" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
                                                                             TableXMaxVel="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,10,0,0" Height="190" Width="320" Grid.ColumnSpan="3"/>
                                             </Grid>
                                         </TabItem>
@@ -1209,6 +1195,7 @@
 
                                                         <!--<Button Grid.Row="1" Grid.Column="2" Content="TEST" FontSize="20" Width="150" Height="40"  Command="{Binding TableTestCommand}" Cursor="Hand" />-->
                                                         <Button Grid.Row="1" Grid.Column="0" Content="Move To PickZ" FontSize="20" Width="200" Height="40" HorizontalAlignment="Left"  Command="{Binding MoveToPickZCommand}" Cursor="Hand" />
+                                                        <Button Grid.Row="1" Grid.Column="1" Content="Move To Center" FontSize="20" Width="200" Height="40" HorizontalAlignment="Left"  Command="{Binding MoveToPickZCommand}" Cursor="Hand" />
                                                     </Grid>
                                                 </StackPanel>
 
@@ -1313,7 +1300,7 @@
                             <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" MicroscopeParam="{Binding MicroscopeParam}" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1" Grid.Row="0" Header="Aberation" FontSize="16" >
-                            <UserControlUC:AFAberationUnitUC Grid.Column="2"  HorizontalAlignment="Left" VerticalAlignment="Center"  Microscope="{Binding Microscope}" AFAberationUIShow ="{Binding AFAberation}" />
+                            <UserControlUC:AFAberationUnitUC Grid.Column="2"  HorizontalAlignment="Left" VerticalAlignment="Center"  Microscope="{Binding Microscope}" AFAberationUIShow ="{Binding AFAberation}" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="2"  FontSize="16"  Header="Axis Move"  >
                             <Grid  Grid.Column="1" Grid.Row="1" Margin="-5" IsEnabled="{Binding IsCanWorkEFEMTrans}">
@@ -1705,8 +1692,12 @@
 
                                     <TextBlock  Text="Notch Offset" Grid.Row="9" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
                                     <Border Grid.Row="10" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" />
-                                    <Label Grid.Row="11"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Degree:"/>
-                                    <TextBox Grid.Row="11" Text="{Binding AlignerNotchOffset}"  Grid.Column="1" />
+                                    <Label Grid.Row="10"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="MicroOffset:"/>
+                                    <TextBox Grid.Row="10" Text="{Binding AlignerMicroOffset}"  Grid.Column="1" />
+                                    <Label Grid.Row="11"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="UnLoadOffset:"/>
+                                    <TextBox Grid.Row="11" Text="{Binding AlignerUnLoadOffset}"  Grid.Column="1" />
+                                    
+                                    
                                 </Grid>
 
                                 <Grid Grid.Column="1">
@@ -1749,6 +1740,13 @@
                                     <Label Grid.Row="4"  Grid.Column="0" Content="Axis R:" FontSize="15" VerticalAlignment="Center"/>
                                     <TextBox Grid.Row="4" Text="{Binding TableWaferCatchPositionR}"  Grid.Column="1" />
                                     <Button Grid.Row="4"  Grid.Column="2"  Margin="2" Background="Tan" BorderBrush="Tan" Content="Move" Command="{Binding MicroMoveCommand}"  CommandParameter="R"/>
+
+                                    <TextBlock  Text="Table Center" Grid.Row="9" Grid.ColumnSpan="3" FontWeight="Bold" Foreground="Teal" />
+                                    <Border Grid.Row="10" Grid.ColumnSpan="3" Grid.RowSpan="7"  BorderBrush="Teal" BorderThickness="1" />
+                                    <Label Grid.Row="10"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Axis X:"/>
+                                    <TextBox Grid.Row="10" Text="{Binding TableCenterX}"  Grid.Column="1" />
+                                    <Label Grid.Row="11"  Grid.Column="0" FontSize="12" VerticalAlignment="Center" Content="Axis Y:"/>
+                                    <TextBox Grid.Row="11" Text="{Binding TableCenterY}"  Grid.Column="1" />
                                 </Grid>
                             </Grid>
                         </Grid>

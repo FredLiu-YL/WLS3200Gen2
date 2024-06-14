@@ -33,7 +33,11 @@ namespace WLS3200Gen2.Model
         /// <summary>
         /// Notch放置平台正面角度差
         /// </summary>
-        public double AlignerNotchOffset { get; set; }
+        public double AlignerMicroOffset { get; set; }
+        /// <summary>
+        /// Notch放置LoadPort正面角度差
+        /// </summary>
+        public double AlignerUnLoadOffset { get; set; }
         /// <summary>
         /// 給人設定Bincode 的參數 ，MachineSetting是放預設值  ，如果會跟著Recipe 再自行+入
         /// </summary>
@@ -42,6 +46,10 @@ namespace WLS3200Gen2.Model
         /// 平台Robot取放料位置
         /// </summary>
         public Point TableWaferCatchPosition { get; set; }
+        /// <summary>
+        /// 平台中心位置
+        /// </summary>
+        public Point TableCenterPosition { get; set; }
         /// <summary>
         /// 平台Robot取放料Z軸位置
         /// </summary>

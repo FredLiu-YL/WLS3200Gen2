@@ -24,8 +24,9 @@ namespace WLS3200Gen2
         private LampUI lampControl2Param = new LampUI();
         private Point tableWaferCatchPosition;
         private double tableWaferCatchPositionX, tableWaferCatchPositionY, tableWaferCatchPositionZ, tableWaferCatchPositionR;
+        private double tableCenterX, tableCenterY;
         private double robotAxisStandbyPosition, robotAxisLoadPort1TakePosition, robotAxisLoadPort2TakePosition;
-        private double robotAxisAligner1TakePosition, robotAxisAligner2TakePosition, robotAxisMacroTakePosition, robotAxisMicroTakePosition, alignerNotchOffset;
+        private double robotAxisAligner1TakePosition, robotAxisAligner2TakePosition, robotAxisMacroTakePosition, robotAxisMicroTakePosition, alignerMicroOffset, alignerUnLoadOffset;
         private string logPath, resultPath;
         private ObservableCollection<MicroscopeLens> microscopeLensDefault = new ObservableCollection<MicroscopeLens>();
         //public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
@@ -39,13 +40,16 @@ namespace WLS3200Gen2
         public double TableWaferCatchPositionY { get => tableWaferCatchPositionY; set => SetValue(ref tableWaferCatchPositionY, value); }
         public double TableWaferCatchPositionZ { get => tableWaferCatchPositionZ; set => SetValue(ref tableWaferCatchPositionZ, value); }
         public double TableWaferCatchPositionR { get => tableWaferCatchPositionR; set => SetValue(ref tableWaferCatchPositionR, value); }
+        public double TableCenterX { get => tableCenterX; set => SetValue(ref tableCenterX, value); }
+        public double TableCenterY { get => tableCenterY; set => SetValue(ref tableCenterY, value); }
         public double RobotAxisLoadPort1TakePosition { get => robotAxisLoadPort1TakePosition; set => SetValue(ref robotAxisLoadPort1TakePosition, value); }
         public double RobotAxisLoadPort2TakePosition { get => robotAxisLoadPort2TakePosition; set => SetValue(ref robotAxisLoadPort2TakePosition, value); }
         public double RobotAxisAligner1TakePosition { get => robotAxisAligner1TakePosition; set => SetValue(ref robotAxisAligner1TakePosition, value); }
         public double RobotAxisAligner2TakePosition { get => robotAxisAligner2TakePosition; set => SetValue(ref robotAxisAligner2TakePosition, value); }
         public double RobotAxisMacroTakePosition { get => robotAxisMacroTakePosition; set => SetValue(ref robotAxisMacroTakePosition, value); }
         public double RobotAxisMicroTakePosition { get => robotAxisMicroTakePosition; set => SetValue(ref robotAxisMicroTakePosition, value); }
-        public double AlignerNotchOffset { get => alignerNotchOffset; set => SetValue(ref alignerNotchOffset, value); }
+        public double AlignerMicroOffset { get => alignerMicroOffset; set => SetValue(ref alignerMicroOffset, value); }
+        public double AlignerUnLoadOffset { get => alignerUnLoadOffset; set => SetValue(ref alignerUnLoadOffset, value); }
         public string LogPath { get => logPath; set => SetValue(ref logPath, value); }
         public string ResultPath { get => resultPath; set => SetValue(ref resultPath, value); }
         public ObservableCollection<MicroscopeLens> MicroscopeLensDefault { get => microscopeLensDefault; set => SetValue(ref microscopeLensDefault, value); }
@@ -97,12 +101,14 @@ namespace WLS3200Gen2
                 machineSetting.TableWaferCatchPosition = new Point(TableWaferCatchPositionX, TableWaferCatchPositionY);
                 machineSetting.TableWaferCatchPositionZ = TableWaferCatchPositionZ;
                 machineSetting.TableWaferCatchPositionR = TableWaferCatchPositionR;
+                machineSetting.TableCenterPosition = new Point(TableCenterX, TableCenterY);
                 machineSetting.RobotAxisLoadPort1TakePosition = RobotAxisLoadPort1TakePosition;
                 machineSetting.RobotAxisLoadPort2TakePosition = RobotAxisLoadPort2TakePosition;
                 machineSetting.RobotAxisAlignTakePosition = RobotAxisAligner1TakePosition;
                 machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
                 machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
-                machineSetting.AlignerNotchOffset = AlignerNotchOffset;
+                machineSetting.AlignerMicroOffset = AlignerMicroOffset;
+                machineSetting.AlignerUnLoadOffset = AlignerUnLoadOffset;
 
                 machineSetting.TableXConfig = TableXConfig.Copy();
                 machineSetting.TableYConfig = TableYConfig.Copy();

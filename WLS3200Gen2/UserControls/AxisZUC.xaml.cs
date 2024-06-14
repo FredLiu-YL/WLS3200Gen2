@@ -24,18 +24,18 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class AxisZUC : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty TableZProperty = DependencyProperty.Register(nameof(TableZ), typeof(Axis), typeof(WorkholderUC),
+        public static readonly DependencyProperty TableZProperty = DependencyProperty.Register(nameof(TableZ), typeof(Axis), typeof(AxisZUC),
                                                                                        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty TableZMaxVelProperty = DependencyProperty.Register(nameof(TableZMaxVel), typeof(double), typeof(WorkholderUC),
+        public static readonly DependencyProperty TableZMaxVelProperty = DependencyProperty.Register(nameof(TableZMaxVel), typeof(double), typeof(AxisZUC),
                                                                                       new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public static readonly DependencyProperty ZHighIsCheckedProperty = DependencyProperty.Register(nameof(ZHighIsChecked), typeof(bool), typeof(WorkholderUC),
+        public static readonly DependencyProperty HighIsCheckedProperty = DependencyProperty.Register(nameof(HighIsChecked), typeof(bool), typeof(AxisZUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty ZLowIsCheckedProperty = DependencyProperty.Register(nameof(ZLowIsChecked), typeof(bool), typeof(WorkholderUC),
+        public static readonly DependencyProperty LowIsCheckedProperty = DependencyProperty.Register(nameof(LowIsChecked), typeof(bool), typeof(AxisZUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty ZRelativeIsCheckedProperty = DependencyProperty.Register(nameof(ZRelativeIsChecked), typeof(bool), typeof(WorkholderUC),
+        public static readonly DependencyProperty RelativeIsCheckedProperty = DependencyProperty.Register(nameof(RelativeIsChecked), typeof(bool), typeof(AxisZUC),
                                                                                        new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        public static readonly DependencyProperty TablePosZProperty = DependencyProperty.Register(nameof(TablePosZ), typeof(double), typeof(WorkholderUC),
+        public static readonly DependencyProperty TablePosZProperty = DependencyProperty.Register(nameof(TablePosZ), typeof(double), typeof(AxisZUC),
                                                                                        new FrameworkPropertyMetadata(0.00, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         private string tableDistance;
 
@@ -47,20 +47,20 @@ namespace WLS3200Gen2.UserControls
             set => SetValue(TablePosZProperty, value);
         }
         public string TableDistance { get => tableDistance; set => SetValue(ref tableDistance, value); }
-        public bool ZHighIsChecked
+        public bool HighIsChecked
         {
-            get => (bool)GetValue(ZHighIsCheckedProperty);
-            set => SetValue(ZHighIsCheckedProperty, value);
+            get => (bool)GetValue(HighIsCheckedProperty);
+            set => SetValue(HighIsCheckedProperty, value);
         }
-        public bool ZLowIsChecked
+        public bool LowIsChecked
         {
-            get => (bool)GetValue(ZLowIsCheckedProperty);
-            set => SetValue(ZLowIsCheckedProperty, value);
+            get => (bool)GetValue(LowIsCheckedProperty);
+            set => SetValue(LowIsCheckedProperty, value);
         }
-        public bool ZRelativeIsChecked
+        public bool RelativeIsChecked
         {
-            get => (bool)GetValue(ZRelativeIsCheckedProperty);
-            set => SetValue(ZRelativeIsCheckedProperty, value);
+            get => (bool)GetValue(RelativeIsCheckedProperty);
+            set => SetValue(RelativeIsCheckedProperty, value);
         }
         public AxisZUC()
         {
@@ -80,15 +80,15 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-                if (ZHighIsChecked == true)
+                if (HighIsChecked == true)
                 {
                     tableMoveType = TableMoveType.High;
                 }
-                else if (ZLowIsChecked == true)
+                else if (LowIsChecked == true)
                 {
                     tableMoveType = TableMoveType.Low;
                 }
-                else if (ZRelativeIsChecked == true)
+                else if (RelativeIsChecked == true)
                 {
                     tableMoveType = TableMoveType.RelaTive;
                 }

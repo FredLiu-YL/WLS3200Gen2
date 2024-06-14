@@ -365,6 +365,17 @@ namespace WLS3200Gen2.Model.Component
                 throw new Exception("Macro HomeInnerRing:" + ex);
             }
         }
+        public void InnerYawTReset()
+        {
+            try
+            {
+                InnerYawTPosition = 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Macro InnerYawTReset:" + ex);
+            }
+        }
 
         public Task HomeOuterRing()
         {
@@ -802,27 +813,19 @@ namespace WLS3200Gen2.Model.Component
         {
             try
             {
-                if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OK && IsInnerUsing == true)
+                if (isForward == true)
                 {
-                    if (isForward == true)
-                    {
-                        InnerRingYawTBackward.Off();
-                        InnerRingYawTForward.On();
-                        isInnerYawTForward = true;
-                        isInnerYawTBackward = false;
-                    }
-                    else
-                    {
-                        InnerRingYawTForward.Off();
-                        InnerRingYawTBackward.On();
-                        isInnerYawTForward = false;
-                        isInnerYawTBackward = true;
-                    }
-
+                    InnerRingYawTBackward.Off();
+                    InnerRingYawTForward.On();
+                    isInnerYawTForward = true;
+                    isInnerYawTBackward = false;
                 }
                 else
                 {
-                    throw new Exception("內環 不能移動!");
+                    InnerRingYawTForward.Off();
+                    InnerRingYawTBackward.On();
+                    isInnerYawTForward = false;
+                    isInnerYawTBackward = true;
                 }
             }
             catch (Exception ex)

@@ -512,12 +512,15 @@ namespace WLS3200Gen2
             TableWaferCatchPositionY = machineSetting.TableWaferCatchPosition.Y;
             TableWaferCatchPositionZ = machineSetting.TableWaferCatchPositionZ;
             TableWaferCatchPositionR = machineSetting.TableWaferCatchPositionR;
+            TableCenterX = machineSetting.TableCenterPosition.X;
+            TableCenterY = machineSetting.TableCenterPosition.Y;
             RobotAxisLoadPort1TakePosition = machineSetting.RobotAxisLoadPort1TakePosition;
             RobotAxisLoadPort2TakePosition = machineSetting.RobotAxisLoadPort2TakePosition;
             RobotAxisAligner1TakePosition = machineSetting.RobotAxisAlignTakePosition;
             RobotAxisMacroTakePosition = machineSetting.RobotAxisMacroTakePosition;
             RobotAxisMicroTakePosition = machineSetting.RobotAxisMicroTakePosition;
-            AlignerNotchOffset = machineSetting.AlignerNotchOffset;
+            AlignerMicroOffset = machineSetting.AlignerMicroOffset;
+            AlignerUnLoadOffset = machineSetting.AlignerUnLoadOffset;
             if (machineSetting.MicroscopeLensDefault != null)
             {
                 MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
@@ -539,13 +542,14 @@ namespace WLS3200Gen2
                 machineSetting.TableWaferCatchPosition = new Point(TableWaferCatchPositionX, TableWaferCatchPositionY);
                 machineSetting.TableWaferCatchPositionZ = TableWaferCatchPositionZ;
                 machineSetting.TableWaferCatchPositionR = TableWaferCatchPositionR;
+                machineSetting.TableCenterPosition = new Point(TableCenterX, TableCenterY);
                 machineSetting.RobotAxisLoadPort1TakePosition = RobotAxisLoadPort1TakePosition;
                 machineSetting.RobotAxisLoadPort2TakePosition = RobotAxisLoadPort2TakePosition;
                 machineSetting.RobotAxisAlignTakePosition = RobotAxisAligner1TakePosition;
                 machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
                 machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
-                machineSetting.AlignerNotchOffset = AlignerNotchOffset;
-
+                machineSetting.AlignerMicroOffset = AlignerMicroOffset;
+                machineSetting.AlignerUnLoadOffset = AlignerUnLoadOffset;
                 machineSetting.LogPath = LogPath;
                 machineSetting.ResultPath = ResultPath;
             }
@@ -641,6 +645,19 @@ namespace WLS3200Gen2
                 throw ex;
             }
         });
+        public ICommand MoveToCenterCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                Point pos = transForm.TransPoint(mainRecipe.DetectRecipe.WaferMap.MapCenterPoint);
+                await machine.MicroDetection.TableMoveToAsync(pos);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        });
         public ICommand TableTestCommand => new RelayCommand(async () =>
         {
             try
@@ -718,6 +735,8 @@ namespace WLS3200Gen2
 
                     ShowRecipeNewMapImage(mainRecipe.DetectRecipe);
                     ShowDetectionRecipeNewMapImgae(mainRecipe.DetectRecipe);
+
+                    transForm = OrgTransform(mainRecipe.DetectRecipe.WaferMap.MapCenterPoint, machineSetting.TableCenterPosition);
                 }
             }
             else
@@ -745,8 +764,6 @@ namespace WLS3200Gen2
                 //    MapImage = new WriteableBitmap(3000, 3000, 96, 96, System.Windows.Media.PixelFormats.Gray8, null);
                 //}
 
-                MeasureWindow measureWindow = new MeasureWindow(machine.MicroDetection.Camera.GrabAsync());
-                measureWindow.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -1451,7 +1468,32 @@ namespace WLS3200Gen2
                 MessageBox.Show(ex.Message);
             }
         });
+        private CogAffineTransform OrgTransform(Point waferMapCenter, Point workHolderCenter)
+        {
+            try
+            {
+                isRecipeAlignment = false;
+                List<Point> designPos = new List<Point>();
+                List<Point> targetPos = new List<Point>();
+                designPos.Add(new Point(waferMapCenter.X, waferMapCenter.Y));
+                targetPos.Add(new Point(workHolderCenter.X, workHolderCenter.Y));
 
+                designPos.Add(new Point(waferMapCenter.X + 1000, waferMapCenter.Y));
+                targetPos.Add(new Point(workHolderCenter.X + 1000, workHolderCenter.Y));
+
+                designPos.Add(new Point(waferMapCenter.X, waferMapCenter.Y + 1000));
+                targetPos.Add(new Point(workHolderCenter.X, workHolderCenter.Y + 1000));
+
+                var transform = new CogAffineTransform(designPos, targetPos);
+
+                isRecipeAlignment = true;
+                return transform;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         public ICommand LocateRunCommand => new RelayCommand(async () =>
         {
             try

@@ -183,6 +183,7 @@ namespace WLS3200Gen2.Model.Module
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
                 await TableMoveToAsync(tableWaferCatchPosition);
                 TableVacuum.Off();
+                await Task.Delay(100);//真空解除要一段時間
                 //如果有lift 或夾持機構 需要做處理
             }
             catch (Exception ex)
