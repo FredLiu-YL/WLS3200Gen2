@@ -128,7 +128,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                IsInitial = false;
                 throw ex;
             }
 
@@ -150,7 +150,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                IsInitial = false;
                 throw ex;
             }
             //如果有lift 或夾持機構 需要做處理
@@ -164,7 +164,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
-
+                IsInitial = false;
                 throw ex;
             }
             //如果有lift 或夾持機構 需要做處理
@@ -188,6 +188,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+                IsInitial = false;
                 throw ex;
             }
         }
@@ -303,6 +304,7 @@ namespace WLS3200Gen2.Model.Module
             catch (Exception ex)
             {
                 currentWafer.ProcessStatus.Micro = WaferProcessStatus.Reject;
+                IsInitial = false;
                 throw ex;
             }
         }
@@ -323,6 +325,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+                throw ex;
             }
         }
         private string CreateMicroFolder(string nowTime, string recipeName, Wafer currentWafer)
@@ -350,6 +353,22 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+                IsInitial = false;
+                throw ex;
+            }
+
+        }
+        public async Task TableMoveToAndOnceAsync(Point pos)
+        {
+            try
+            {
+                if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
+                await Task.WhenAll(AxisX.MoveToAsync(pos.X), AxisY.MoveToAsync(pos.Y));
+                await Microscope.AFOneShotAsync();
+            }
+            catch (Exception ex)
+            {
+                IsInitial = false;
                 throw ex;
             }
 
@@ -363,6 +382,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+                IsInitial = false;
                 throw ex;
             }
 
@@ -404,6 +424,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+                IsInitial = false;
                 throw ex;
             }
         }
@@ -415,17 +436,25 @@ namespace WLS3200Gen2.Model.Module
 
         private async Task SetMicroscope(DetectionPoint detectionPoint)
         {
-            await Microscope.ChangeLightAsync(detectionPoint.MicroscopeLightValue);
-            await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
-            await Microscope.ChangeLensAsync(detectionPoint.LensIndex);
-            await Microscope.ChangeCubeAsync(detectionPoint.CubeIndex);
-            await Microscope.ChangeFilter1Async(detectionPoint.Filter1Index);
-            await Microscope.ChangeFilter2Async(detectionPoint.Filter2Index);
-            await Microscope.ChangeFilter3Async(detectionPoint.Filter3Index);
-            if (Microscope.IsAutoFocusTrace == false)//if (Microscope.IsAutoFocusTrace == false)
+            try
             {
-                await Microscope.MoveToAsync(577952);
-                await Microscope.AberrationMoveToAsync(480);
+                await Microscope.ChangeLightAsync(detectionPoint.MicroscopeLightValue);
+                await Microscope.ChangeApertureAsync(detectionPoint.MicroscopeApertureValue);
+                await Microscope.ChangeLensAsync(detectionPoint.LensIndex);
+                await Microscope.ChangeCubeAsync(detectionPoint.CubeIndex);
+                await Microscope.ChangeFilter1Async(detectionPoint.Filter1Index);
+                await Microscope.ChangeFilter2Async(detectionPoint.Filter2Index);
+                await Microscope.ChangeFilter3Async(detectionPoint.Filter3Index);
+                if (Microscope.IsAutoFocusTrace == false)//if (Microscope.IsAutoFocusTrace == false)
+                {
+                    await Microscope.MoveToAsync(577952);
+                    await Microscope.AberrationMoveToAsync(480);
+                }
+            }
+            catch (Exception ex)
+            {
+                IsInitial = false;
+                throw ex;
             }
         }
         //預留拿到對位結果後 可以做其他事
@@ -491,6 +520,7 @@ namespace WLS3200Gen2.Model.Module
             }
             catch (Exception ex)
             {
+
             }
         }
         public class DetectionSaveParam

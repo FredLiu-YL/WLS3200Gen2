@@ -241,6 +241,8 @@ namespace WLS3200Gen2
                 IsCanChangeRecipe = true;
                 ProcessVisibility = Visibility.Visible;
                 SwitchStates(MachineStates.Emergency);
+                isHome = false;
+                isInitialComplete = false;
             }
             finally
             {
@@ -270,6 +272,12 @@ namespace WLS3200Gen2
                 {
                     try
                     {
+                        if (isHaveError)
+                        {
+                            MessageBox.Show("Error is notr clear!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        SwitchStates(MachineStates.RUNNING);
                         WriteLog(YuanliCore.Logger.LogType.TRIG, "Home");
                         IsOperateUI = false;
                         IsCanChangeRecipe = false;
@@ -293,9 +301,12 @@ namespace WLS3200Gen2
                             IsCanChangeRecipe = true;
                             WriteLog(YuanliCore.Logger.LogType.TRIG, "Home End");
                         }
+                        SwitchStates(MachineStates.IDLE);
                     }
                     catch (Exception ex)
                     {
+                        SwitchStates(MachineStates.Alarm);
+                        isHaveError = true;
                         IsOperateUI = true;
                         throw ex;
                     }
@@ -304,7 +315,6 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
             finally
@@ -774,6 +784,7 @@ namespace WLS3200Gen2
                 if (result == MessageBoxResult.Yes)
                 {
                     isHaveError = false;
+                    SwitchStates(MachineStates.IDLE);
                 }
             }
             catch (Exception ex)

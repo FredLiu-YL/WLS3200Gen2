@@ -146,6 +146,7 @@ namespace WLS3200Gen2
                 //machineSetting 的讀取放在MainViewModel.cs
                 //
                 LogMessage = "Initial ．．．";
+                await Task.Delay(10);//顯示UI 
                 machine.Initial();
                 SwitchStates(MachineStates.RUNNING);
                 IsCanChangeRecipe = false;
@@ -264,7 +265,7 @@ namespace WLS3200Gen2
                 TableZMaxVel = TableZConfig.MoveVel.MaxVel;
                 IsAutoSave = ProcessSetting.IsAutoSave;
                 IsAutoFocus = true;
-                IsAutoFocus = ProcessSetting.IsAutoFocus;
+                ProcessSetting.IsAutoFocus = IsAutoFocus;
                 IsDegreeUnLoad = ProcessSetting.IsDegreeUnLoad;
                 IsSecondFlip = ProcessSetting.IsSecondFlip;
                 SecondFlipPos = ProcessSetting.SecondFlipPos;

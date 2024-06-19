@@ -115,12 +115,17 @@ namespace WLS3200Gen2.Model.Module
                     //actualPos = new Point(actualPos.X - lensSetting.RatioX * lensSetting.OffsetPixelX, actualPos.Y - lensSetting.RatioY * lensSetting.OffsetPixelY);
                     targetPos.Add(actualPos);
 
-                    if (CancelToken != null && CancelToken.Token != null && PauseToken != null && CancelToken.IsCancellationRequested)
+                    try
                     {
-                        CancelToken.Token.ThrowIfCancellationRequested();
-                        await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                        if (CancelToken != null && CancelToken.IsCancellationRequested && CancelToken.Token != null && PauseToken != null)
+                        {
+                            CancelToken.Token.ThrowIfCancellationRequested();
+                            await PauseToken.Token.WaitWhilePausedAsync(CancelToken.Token);
+                        }
                     }
-
+                    catch (Exception)
+                    {
+                    }
                 }
                 //獲得設計座標
                 Point[] designPos = ConvertDesignPos(fiducialDatas);

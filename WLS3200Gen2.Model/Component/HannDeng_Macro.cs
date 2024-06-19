@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using YuanliCore.Data;
 using YuanliCore.Interface;
 
 namespace WLS3200Gen2.Model.Component
@@ -355,7 +356,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("內環 不能下降!");
+                    throw new FlowException("內環 不能下降!");
                 }
                 return task;
             }
@@ -388,7 +389,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("外環 不能復歸!");
+                    throw new FlowException("外環 不能復歸!");
                 }
                 return task;
             }
@@ -410,7 +411,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("內環 不能上升!");
+                    throw new FlowException("內環 不能上升!");
                 }
                 return task;
             }
@@ -431,7 +432,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("外環 不能上升!");
+                    throw new FlowException("外環 不能上升!");
                 }
                 return task;
             }
@@ -470,7 +471,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("內環 不能移動!");
+                    throw new FlowException("內環 不能移動!");
                 }
             }
             catch (Exception ex)
@@ -480,7 +481,7 @@ namespace WLS3200Gen2.Model.Component
         }
         public async Task OuterRingRollYMoveToAsync(double postion)
         {
-            if (isOuterRingRollYBusy) throw new Exception("InnerRingRollY is Busy");
+            if (isOuterRingRollYBusy) throw new FlowException("InnerRingRollY is Busy");
             if (postion >= OuterRingRollYPositionPEL) postion = OuterRingRollYPositionPEL;
             if (postion <= OuterRingRollYPositionNEL) postion = OuterRingRollYPositionNEL;
             try
@@ -594,7 +595,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("內環 不能移動!");
+                    throw new FlowException("內環 不能移動!");
                 }
             }
             catch (Exception ex)
@@ -609,7 +610,7 @@ namespace WLS3200Gen2.Model.Component
         /// <returns></returns>
         public Task InnerRingPitchXMoveToAsync(double postion)
         {
-            if (isInnerRingPitchXBusy) throw new Exception("InnerRingRollY is Busy");
+            if (isInnerRingPitchXBusy) throw new FlowException("InnerRingRollY is Busy");
             if (postion >= InnerRingPitchXPositionPEL) postion = InnerRingPitchXPositionPEL;
             if (postion <= InnerRingPitchXPositionNEL) postion = InnerRingPitchXPositionNEL;
             try
@@ -714,7 +715,7 @@ namespace WLS3200Gen2.Model.Component
                 }
                 else
                 {
-                    throw new Exception("內環 不能移動!");
+                    throw new FlowException("內環 不能移動!");
                 }
             }
             catch (Exception ex)
@@ -725,7 +726,7 @@ namespace WLS3200Gen2.Model.Component
         }
         public Task InnerRingRollYMoveToAsync(double postion)
         {
-            if (isInnerRingRollYBusy) throw new Exception("InnerRingRollY is Busy");
+            if (isInnerRingRollYBusy) throw new FlowException("InnerRingRollY is Busy");
             if (postion >= InnerRingRollYPositionPEL) postion = InnerRingRollYPositionPEL;
             if (postion <= InnerRingRollYPositionNEL) postion = InnerRingRollYPositionNEL;
             try
@@ -840,7 +841,7 @@ namespace WLS3200Gen2.Model.Component
         /// <returns></returns>
         public Task InnerRingYawTMoveToAsync(double pos)
         {
-            if (isInnerRingYawTBusy) throw new Exception("InnerRingYawT is Busy");
+            if (isInnerRingYawTBusy) throw new FlowException("InnerRingYawT is Busy");
             if (pos >= InnerRingYawTPositionPEL) pos = InnerRingYawTPositionPEL;
             if (pos <= InnerRingYawTPositionNEL) pos = InnerRingYawTPositionNEL;
             try

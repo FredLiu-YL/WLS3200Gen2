@@ -445,8 +445,8 @@ namespace WLS3200Gen2.Model
                 machineSetting.InnerRingRollYPositionNEL = -850;
                 machineSetting.InnerRingYawTPositionPEL = 4000;
                 machineSetting.InnerRingYawTPositionNEL = -4000;
-                machineSetting.OuterRingRollYPositionPEL = 3200;
-                machineSetting.OuterRingRollYPositionNEL = -3200;
+                machineSetting.OuterRingRollYPositionPEL = 9600;//3200
+                machineSetting.OuterRingRollYPositionNEL = -9600;//-3200
                 macro.InnerRingPitchXPositionPEL = machineSetting.InnerRingPitchXPositionPEL;
                 macro.InnerRingPitchXPositionNEL = machineSetting.InnerRingPitchXPositionNEL;
                 macro.InnerRingRollYPositionPEL = machineSetting.InnerRingRollYPositionPEL;
@@ -487,7 +487,7 @@ namespace WLS3200Gen2.Model
                 {
                     if (machineSetting.LoadPortCount == LoadPortQuantity.Single)
                     {
-                        robot = new HirataRobot_RS232(machineSetting.RobotsCOM, 10, 2, false);
+                        robot = new HirataRobot_RS232(machineSetting.RobotsCOM, 50, 2, false);
                     }
                     else
                     {

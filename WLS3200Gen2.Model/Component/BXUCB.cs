@@ -216,7 +216,7 @@ namespace WLS3200Gen2.Model.Component
                     double distance = 0;
                     string str = "";
                     int nowCount = 0;
-                  
+
                     while (true)
                     {
                         nowPos = GetAberationPosition();
@@ -424,6 +424,29 @@ namespace WLS3200Gen2.Model.Component
                         cubeIdx = idx;
                         string str = "";
                         int nowCount = 0;
+                        if (LensIndex == 2)
+                        {
+                            //100X
+                            if (idx == 1)
+                            {
+                                SetAFTBL(47);
+                            }
+                            else
+                            {
+                                SetAFTBL(57);
+                            }
+                        }
+                        else
+                        {
+                            if (idx == 1)
+                            {
+                                SetAFTBL(22);
+                            }
+                            else
+                            {
+                                SetAFTBL(32);
+                            }
+                        }
                         while (true)
                         {
                             str = SendGetMessage("1CUBE " + idx, 3);
@@ -687,6 +710,28 @@ namespace WLS3200Gen2.Model.Component
                         lens = idx;
                         string str = "";
                         int nowCount = 0;
+                        if (idx == 2)
+                        {
+                            if (cubeIdx == 1)
+                            {
+                                SetAFTBL(47);
+                            }
+                            else
+                            {
+                                SetAFTBL(57);
+                            }
+                        }
+                        else
+                        {
+                            if (cubeIdx == 1)
+                            {
+                                SetAFTBL(22);
+                            }
+                            else
+                            {
+                                SetAFTBL(32);
+                            }
+                        }
 
                         AFOff();
                         while (true)
@@ -1402,6 +1447,7 @@ namespace WLS3200Gen2.Model.Component
             {
                 string str = "";
                 int nowCount = 0;
+                AFOff();
                 while (true)
                 {
                     str = SendGetMessage("2AFTBL " + tableNumber, 3);

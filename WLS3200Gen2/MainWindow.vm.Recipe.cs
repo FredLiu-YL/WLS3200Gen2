@@ -478,7 +478,7 @@ namespace WLS3200Gen2
         }
         private void LoadToolsPage()
         {
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right ||
+            if (RightsModel.AdvancedOperator == Account.CurrentAccount.Right || RightsModel.Administrator == Account.CurrentAccount.Right ||
                 isHome == false)
             {
                 IsMainToolsPageSelect = false;
@@ -1578,6 +1578,27 @@ namespace WLS3200Gen2
                 Point transPos = transForm.TransPoint(new Point(die.MapTransX + mainRecipe.DetectRecipe.AlignRecipe.OffsetX, die.MapTransY + mainRecipe.DetectRecipe.AlignRecipe.OffsetY));
 
                 await machine.MicroDetection.TableMoveToAsync(new Point(transPos.X, transPos.Y));
+
+
+                //
+                var mapPoint = updateRecipeMapTransform.TransInvertPoint(new Point(transPos.X, transPos.Y));
+                var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
+                Rectangle nowSelectRange = new Rectangle
+                {
+                    Stroke = Brushes.Red,
+                    StrokeThickness = 5,
+                    Width = 0,
+                    Height = 0
+                };
+                Canvas.SetLeft(nowSelectRange, transMapMousePixcel.X);
+                Canvas.SetTop(nowSelectRange, transMapMousePixcel.Y);
+                ChangeRecipeMappingSelect(nowSelectRange);
+
+                Rect rect = new Rect(Canvas.GetLeft(nowSelectRange), Canvas.GetTop(nowSelectRange), nowSelectRange.Width, nowSelectRange.Height);
+                RectangleInfo tempselectRects = RectanglesHome.FirstOrDefault(r => r.Rectangle.Contains(rect.TopLeft) || r.Rectangle.Contains(rect.BottomLeft)
+                                  || r.Rectangle.Contains(rect.BottomRight) || r.Rectangle.Contains(rect.TopRight));
+
+                SetFocusCenter?.Invoke(tempselectRects.Col, tempselectRects.Row);
             }
             catch (Exception ex)
             {
