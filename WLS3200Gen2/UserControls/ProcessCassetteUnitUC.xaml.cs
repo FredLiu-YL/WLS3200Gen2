@@ -39,9 +39,6 @@ namespace WLS3200Gen2.UserControls
         }
         public static readonly DependencyProperty CassetteIndexProperty = DependencyProperty.Register(nameof(CassetteIndex), typeof(int), typeof(CassetteUnitUC),
                                                                           new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
-
-
         public static readonly DependencyProperty MacroTopProperty = DependencyProperty.Register(nameof(MacroTop), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
                                                                                  new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public static readonly DependencyProperty MacroBackProperty = DependencyProperty.Register(nameof(MacroBack), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
@@ -52,15 +49,13 @@ namespace WLS3200Gen2.UserControls
 
         public static readonly DependencyProperty MicroProperty = DependencyProperty.Register(nameof(Micro), typeof(WaferProcessStatus), typeof(CassetteUnitUC),
                                                                            new FrameworkPropertyMetadata(WaferProcessStatus.None, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
+        public static readonly DependencyProperty IsCanChangeSelectProperty = DependencyProperty.Register(nameof(IsCanChangeSelect), typeof(bool), typeof(CassetteUnitUC),
+                                                                          new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         public int CassetteIndex
         {
             get => (int)GetValue(CassetteIndexProperty);
             set => SetValue(CassetteIndexProperty, value);
         }
-
-
-
         /// <summary>
         /// 巨觀檢查站晶面 狀態
         /// </summary>
@@ -94,7 +89,11 @@ namespace WLS3200Gen2.UserControls
             get => (WaferProcessStatus)GetValue(MicroProperty);
             set => SetValue(MicroProperty, value);
         }
-
+        public bool IsCanChangeSelect
+        {
+            get => (bool)GetValue(IsCanChangeSelectProperty);
+            set => SetValue(IsCanChangeSelectProperty, value);
+        }
 
 
 
@@ -102,7 +101,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-
+                if (IsCanChangeSelect == false) return;
                 if (MacroTop == WaferProcessStatus.Select)
                     MacroTop = WaferProcessStatus.NotSelect;
                 else if (MacroTop == WaferProcessStatus.NotSelect || MacroTop == WaferProcessStatus.Pass)
@@ -118,7 +117,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
-
+                if (IsCanChangeSelect == false) return;
                 if (MacroBack == WaferProcessStatus.Select)
                     MacroBack = WaferProcessStatus.NotSelect;
                 else if (MacroBack == WaferProcessStatus.NotSelect || MacroBack == WaferProcessStatus.Pass)
@@ -134,6 +133,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
+                if (IsCanChangeSelect == false) return;
                 if (WaferID == WaferProcessStatus.Select)
                     WaferID = WaferProcessStatus.NotSelect;
                 else if (WaferID == WaferProcessStatus.NotSelect || WaferID == WaferProcessStatus.Pass)
@@ -149,6 +149,7 @@ namespace WLS3200Gen2.UserControls
         {
             try
             {
+                if (IsCanChangeSelect == false) return;
                 if (Micro == WaferProcessStatus.Select)
                     Micro = WaferProcessStatus.NotSelect;
                 else if (Micro == WaferProcessStatus.NotSelect || Micro == WaferProcessStatus.Pass)

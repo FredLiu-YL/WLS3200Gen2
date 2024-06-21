@@ -29,6 +29,8 @@ namespace WLS3200Gen2
         private double robotAxisAligner1TakePosition, robotAxisAligner2TakePosition, robotAxisMacroTakePosition, robotAxisMicroTakePosition, alignerMicroOffset, alignerUnLoadOffset;
         private string logPath, resultPath;
         private ObservableCollection<MicroscopeLens> microscopeLensDefault = new ObservableCollection<MicroscopeLens>();
+        private double innerRingPitchXPositionPEL, innerRingPitchXPositionNEL, innerRingRollYPositionPEL, innerRingRollYPositionNEL, innerRingYawTPositionPEL, innerRingYawTPositionNEL,
+            outerRingRollYPositionPEL, outerRingRollYPositionNEL;
         //public IRobot Robot { get => robot; set => SetValue(ref robot, value); }
         public RobotUI RobotStaus { get => robotStaus; set => SetValue(ref robotStaus, value); }
         public LoadPortUI LoadPortUIShow { get => loadPortUIShow; set => SetValue(ref loadPortUIShow, value); }
@@ -53,6 +55,20 @@ namespace WLS3200Gen2
         public string LogPath { get => logPath; set => SetValue(ref logPath, value); }
         public string ResultPath { get => resultPath; set => SetValue(ref resultPath, value); }
         public ObservableCollection<MicroscopeLens> MicroscopeLensDefault { get => microscopeLensDefault; set => SetValue(ref microscopeLensDefault, value); }
+
+        public double InnerRingPitchXPositionPEL { get => innerRingPitchXPositionPEL; set => SetValue(ref innerRingPitchXPositionPEL, value); }
+        public double InnerRingPitchXPositionNEL { get => innerRingPitchXPositionNEL; set => SetValue(ref innerRingPitchXPositionNEL, value); }
+        public double InnerRingRollYPositionPEL { get => innerRingRollYPositionPEL; set => SetValue(ref innerRingRollYPositionPEL, value); }
+        public double InnerRingRollYPositionNEL { get => innerRingRollYPositionNEL; set => SetValue(ref innerRingRollYPositionNEL, value); }
+        public double InnerRingYawTPositionPEL { get => innerRingYawTPositionPEL; set => SetValue(ref innerRingYawTPositionPEL, value); }
+        public double InnerRingYawTPositionNEL { get => innerRingYawTPositionNEL; set => SetValue(ref innerRingYawTPositionNEL, value); }
+        public double OuterRingRollYPositionPEL { get => outerRingRollYPositionPEL; set => SetValue(ref outerRingRollYPositionPEL, value); }
+        public double OuterRingRollYPositionNEL { get => outerRingRollYPositionNEL; set => SetValue(ref outerRingRollYPositionNEL, value); }
+
+
+
+
+
 
         public ICommand SaveSettingCommand => new RelayCommand(() =>
         {
@@ -116,6 +132,16 @@ namespace WLS3200Gen2
                 machineSetting.TableRConfig = TableRConfig.Copy();
                 machineSetting.RobotAxisConfig = RobotAxisConfig.Copy();
                 machineSetting.MicroscopeLensDefault = MicroscopeLensDefault;
+
+                machineSetting.InnerRingPitchXPositionPEL = InnerRingPitchXPositionPEL;
+                machineSetting.InnerRingPitchXPositionNEL = InnerRingPitchXPositionNEL;
+                machineSetting.InnerRingRollYPositionPEL = InnerRingRollYPositionPEL;
+                machineSetting.InnerRingRollYPositionNEL = InnerRingRollYPositionNEL;
+                machineSetting.InnerRingYawTPositionPEL = InnerRingYawTPositionPEL;
+                machineSetting.InnerRingYawTPositionNEL = InnerRingYawTPositionNEL;
+                machineSetting.OuterRingRollYPositionPEL = OuterRingRollYPositionPEL;
+                machineSetting.OuterRingRollYPositionNEL = OuterRingRollYPositionNEL;
+
                 machineSetting.Save(machineSettingPath);
                 Customers.Clear();
                 MicroscopeParam.LensName.Clear();

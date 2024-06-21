@@ -14,20 +14,354 @@ namespace WLS3200Gen2
 {
     public partial class MainViewModel
     {
-        private int toolLoadPort1Index;
+        private int toolLoadPort1Index, toolAutoUnLoadAlignerIndex, toolAutoUnLoadMacroIndex, toolAutoUnLoadMicroIndex;
+        private int alignerSuggestSlot, microSuggestSlot, macroSuggestSlot;
         private bool isMicroVaccum8, isMicroVaccum12, isMacroVaccum8, isMacroVaccum12, isAlignerVaccum12;
         private ObservableCollection<string> toolLoadPort1ComboBox = new ObservableCollection<string>();
         //public ObservableCollection<BincodeInfo> BincodeList { get => bincodeList; set => SetValue(ref bincodeList, value); }
         public ObservableCollection<string> ToolLoadPort1ComboBox { get => toolLoadPort1ComboBox; set => SetValue(ref toolLoadPort1ComboBox, value); }
         public int ToolLoadPort1Index { get => toolLoadPort1Index; set => SetValue(ref toolLoadPort1Index, value); }
+        public int ToolAutoUnLoadAlignerIndex { get => toolAutoUnLoadAlignerIndex; set => SetValue(ref toolAutoUnLoadAlignerIndex, value); }
+        public int ToolAutoUnLoadMacroIndex { get => toolAutoUnLoadMacroIndex; set => SetValue(ref toolAutoUnLoadMacroIndex, value); }
+        public int ToolAutoUnLoadMicroIndex { get => toolAutoUnLoadMicroIndex; set => SetValue(ref toolAutoUnLoadMicroIndex, value); }
         public bool IsMicroVaccum8 { get => isMicroVaccum8; set => SetValue(ref isMicroVaccum8, value); }
         public bool IsMicroVaccum12 { get => isMicroVaccum12; set => SetValue(ref isMicroVaccum12, value); }
         public bool IsMacroVaccum8 { get => isMacroVaccum8; set => SetValue(ref isMacroVaccum8, value); }
         public bool IsMacroVaccum12 { get => isMacroVaccum12; set => SetValue(ref isMacroVaccum12, value); }
         public bool IsAlignerVaccum12 { get => isAlignerVaccum12; set => SetValue(ref isAlignerVaccum12, value); }
 
+        public int AlignerSuggestSlot { get => alignerSuggestSlot; set => SetValue(ref alignerSuggestSlot, value); }
+        public int MicroSuggestSlot { get => microSuggestSlot; set => SetValue(ref microSuggestSlot, value); }
+        public int MacroSuggestSlot { get => macroSuggestSlot; set => SetValue(ref macroSuggestSlot, value); }
 
-        public ICommand Home => new RelayCommand(async () =>
+        public ICommand AlignerWaferToLoadPortCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //是否執行移動片子訊息
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Tools AlignerWaferToLoadPort Start");
+                var result = MessageBox.Show("AlignerWaferToLoadPort?", "Info", MessageBoxButton.YesNo);
+                await Task.Run(async () =>
+              {
+                  if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
+                  {
+                      IsCanWorkEFEMTrans = false;
+                      bool isSelectLoadport1 = false;
+                      if (result == MessageBoxResult.Yes)
+                      {
+                          //isSelectLoadport1
+
+                          bool?[] wafers;
+                          if (IsLoadport1)
+                          {
+                              isSelectLoadport1 = true;
+                          }
+                          else if (IsLoadport2)
+                          {
+                          }
+                          else
+                          {
+                              throw new FlowException("LoadPort Select Error!");
+                          }
+
+                          var processStation = ProcessStations.Where(p => p.CassetteIndex == ToolAutoUnLoadAlignerIndex).FirstOrDefault();
+                          if (processStation == null ||
+                          processStation.MacroTop != WaferProcessStatus.None ||
+                          processStation.MacroBack != WaferProcessStatus.None ||
+                          processStation.WaferID != WaferProcessStatus.None ||
+                          processStation.Micro != WaferProcessStatus.None)
+                          {
+                              throw new FlowException("LoadPort Select Slot Have Wafer!!Please Select Another!");
+                          }
+
+
+                          //確認手臂有無片
+                          if (EFEMTransWaferBeforeCheckRobotHaveWafer())
+                          {
+                              throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                          }
+                          WriteLog(YuanliCore.Logger.LogType.PROCESS, "Tools AlignerWaferToLoadPort Start");
+                          await ToolAutoUnloadAlignerWaferToLoadPort(ToolAutoUnLoadAlignerIndex, isSelectLoadport1);
+                          //更改狀態變成有片
+                          processStation.MacroTop = WaferProcessStatus.NotSelect;
+                          processStation.MacroBack = WaferProcessStatus.NotSelect;
+                          processStation.WaferID = WaferProcessStatus.NotSelect;
+                          processStation.Micro = WaferProcessStatus.NotSelect;
+                          processStation.IsCanChangeSelect = true;
+                          LoadPort1Wafers.Clear();
+                          foreach (var item in ProcessStations)
+                          {
+                              var w = new WaferUIData();
+                              w.SN = item.CassetteIndex.ToString();
+                              //只要不是空的 就是有片
+                              if (item.MacroBack != WaferProcessStatus.None || item.MacroTop != WaferProcessStatus.None || item.Micro != WaferProcessStatus.None)
+                                  w.WaferStates = WaferProcessStatus.NotSelect;
+                              LoadPort1Wafers.Add(w);
+                          }
+
+                          WriteLog(YuanliCore.Logger.LogType.PROCESS, "Tools AlignerWaferToLoadPort End");
+                      }
+                      IsCanWorkEFEMTrans = true;
+                  }
+              });
+            }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+            catch (Exception ex)
+            {
+                isInitialComplete = false;
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+        });
+        /// <summary>
+        /// Aligner端先吸真空->FindNotch->退到LoadPort
+        /// </summary>
+        /// <param name="CassetteIndex"></param>
+        /// <param name="isSelectLoadport1"></param>
+        public async Task ToolAutoUnloadAlignerWaferToLoadPort(int CassetteIndex, bool isSelectLoadport1)
+        {
+            try
+            {
+                //固定住Wafer在Aligner上
+                await machine.Feeder.AlignerL.FixWafer();
+                if (machine.Feeder.AlignerL.IsLockOK == false)
+                {
+                    throw new FlowException("Aligner真空異常!!");
+                }
+                //AlignerHome
+                await machine.Feeder.AlignerL.Home();
+                //轉到出貨角度
+                double secondAngle = 0.0;
+                if (DegreeUnLoad == Model.Recipe.Degree.Degree0)
+                {
+                    secondAngle = machineSetting.AlignerUnLoadOffset;
+                }
+                else if (DegreeUnLoad == Model.Recipe.Degree.Degree90)
+                {
+                    secondAngle = machineSetting.AlignerUnLoadOffset + 90;
+                }
+                else if (DegreeUnLoad == Model.Recipe.Degree.Degree180)
+                {
+                    secondAngle = machineSetting.AlignerUnLoadOffset + 180;
+                }
+                else if (DegreeUnLoad == Model.Recipe.Degree.Degree270)
+                {
+                    secondAngle = machineSetting.AlignerUnLoadOffset + 270;
+                }
+                if (secondAngle > 360)
+                {
+                    secondAngle = secondAngle % 360;
+                }
+                await machine.Feeder.AlignerL.Run(secondAngle);
+                await machine.Feeder.AlignerL.ReleaseWafer();
+                await machine.Feeder.WaferAlignerToStandBy();
+                if (isSelectLoadport1)
+                {
+                    RecipeLastArmStation = Model.ArmStation.Cassette1;
+                    var currentWafer = new Wafer(CassetteIndex);
+                    await machine.Feeder.UnLoadWaferToCassette(currentWafer, true);
+                }
+                else
+                {
+                    RecipeLastArmStation = Model.ArmStation.Cassette2;
+                    var currentWafer = new Wafer(CassetteIndex);
+                    await machine.Feeder.UnLoadWaferToCassette(currentWafer, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public ICommand MicroWaferToLoadPortCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //是否執行移動片子訊息
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Tools MicroWaferToLoadPort");
+                var result = MessageBox.Show("MicroWaferToLoadPort?", "Info", MessageBoxButton.YesNo);
+                await Task.Run(async () =>
+                {
+                    if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
+                    {
+                        IsCanWorkEFEMTrans = false;
+                        bool isSelectLoadport1 = false;
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            //isSelectLoadport1
+
+                            bool?[] wafers;
+                            if (IsLoadport1)
+                            {
+                                isSelectLoadport1 = true;
+                            }
+                            else if (IsLoadport2)
+                            {
+                            }
+                            else
+                            {
+                                throw new FlowException("LoadPort Select Error!");
+                            }
+
+                            var processStation = ProcessStations.Where(p => p.CassetteIndex == ToolAutoUnLoadMacroIndex).FirstOrDefault();
+                            if (processStation == null ||
+                            processStation.MacroTop != WaferProcessStatus.None ||
+                            processStation.MacroBack != WaferProcessStatus.None ||
+                            processStation.WaferID != WaferProcessStatus.None ||
+                            processStation.Micro != WaferProcessStatus.None)
+                            {
+                                throw new FlowException("LoadPort Select Slot Have Wafer!!Please Select Another!");
+                            }
+                            //確認Aligner有無片
+                            if (await EFEMTransWaferBeforeCheckAlignerHaveWafer())
+                            {
+                                throw new FlowException("EFEMTransCommand Error!Aligner Have Wafer!");
+                            }
+                            //確認手臂有無片
+                            if (EFEMTransWaferBeforeCheckRobotHaveWafer())
+                            {
+                                throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                            }
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "Tools AlignerWaferToLoadPort Start");
+
+                            await machine.MicroDetection.TableMoveToAsync(machineSetting.TableWaferCatchPosition);
+                            machine.MicroDetection.TableVacuum.Off();
+                            await machine.Feeder.WaferMicroToStandBy();
+                            machine.Feeder.AlignerL.Home().Wait();
+                            await machine.Feeder.WaferStandByToAligner();
+
+                            await ToolAutoUnloadAlignerWaferToLoadPort(ToolAutoUnLoadMacroIndex, isSelectLoadport1);
+                            //更改狀態變成有片
+                            processStation.MacroTop = WaferProcessStatus.NotSelect;
+                            processStation.MacroBack = WaferProcessStatus.NotSelect;
+                            processStation.WaferID = WaferProcessStatus.NotSelect;
+                            processStation.Micro = WaferProcessStatus.NotSelect;
+                            processStation.IsCanChangeSelect = true;
+                            LoadPort1Wafers.Clear();
+                            foreach (var item in ProcessStations)
+                            {
+                                var w = new WaferUIData();
+                                w.SN = item.CassetteIndex.ToString();
+                                //只要不是空的 就是有片
+                                if (item.MacroBack != WaferProcessStatus.None || item.MacroTop != WaferProcessStatus.None || item.Micro != WaferProcessStatus.None)
+                                    w.WaferStates = WaferProcessStatus.NotSelect;
+                                LoadPort1Wafers.Add(w);
+                            }
+
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "Tools AlignerWaferToLoadPort End");
+                        }
+                        IsCanWorkEFEMTrans = true;
+                    }
+                });
+            }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+            catch (Exception ex)
+            {
+                isInitialComplete = false;
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+        });
+        public ICommand MacroWaferToLoadPortCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //是否執行移動片子訊息
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Tools MicroWaferToLoadPort");
+                var result = MessageBox.Show("MicroWaferToLoadPort?", "Info", MessageBoxButton.YesNo);
+                await Task.Run(async () =>
+                {
+                    if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
+                    {
+                        IsCanWorkEFEMTrans = false;
+                        bool isSelectLoadport1 = false;
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            //isSelectLoadport1
+
+                            bool?[] wafers;
+                            if (IsLoadport1)
+                            {
+                                isSelectLoadport1 = true;
+                            }
+                            else if (IsLoadport2)
+                            {
+                            }
+                            else
+                            {
+                                throw new FlowException("LoadPort Select Error!");
+                            }
+
+                            var processStation = ProcessStations.Where(p => p.CassetteIndex == ToolAutoUnLoadMacroIndex).FirstOrDefault();
+                            if (processStation == null ||
+                            processStation.MacroTop != WaferProcessStatus.None ||
+                            processStation.MacroBack != WaferProcessStatus.None ||
+                            processStation.WaferID != WaferProcessStatus.None ||
+                            processStation.Micro != WaferProcessStatus.None)
+                            {
+                                throw new FlowException("LoadPort Select Slot Have Wafer!!Please Select Another!");
+                            }
+                            //確認Aligner有無片
+                            if (await EFEMTransWaferBeforeCheckAlignerHaveWafer())
+                            {
+                                throw new FlowException("EFEMTransCommand Error!Aligner Have Wafer!");
+                            }
+                            //確認手臂有無片
+                            if (EFEMTransWaferBeforeCheckRobotHaveWafer())
+                            {
+                                throw new FlowException("EFEMTransCommand Error!Robot Have Wafer!");
+                            }
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "Tools AlignerWaferToLoadPort Start");
+
+                            await machine.Feeder.WaferMacroToStandBy();
+                            machine.Feeder.AlignerL.Home().Wait();
+                            await machine.Feeder.WaferStandByToAligner();
+
+                            await ToolAutoUnloadAlignerWaferToLoadPort(ToolAutoUnLoadMacroIndex, isSelectLoadport1);
+                            //更改狀態變成有片
+                            processStation.MacroTop = WaferProcessStatus.NotSelect;
+                            processStation.MacroBack = WaferProcessStatus.NotSelect;
+                            processStation.WaferID = WaferProcessStatus.NotSelect;
+                            processStation.Micro = WaferProcessStatus.NotSelect;
+                            processStation.IsCanChangeSelect = true;
+                            LoadPort1Wafers.Clear();
+                            foreach (var item in ProcessStations)
+                            {
+                                var w = new WaferUIData();
+                                w.SN = item.CassetteIndex.ToString();
+                                //只要不是空的 就是有片
+                                if (item.MacroBack != WaferProcessStatus.None || item.MacroTop != WaferProcessStatus.None || item.Micro != WaferProcessStatus.None)
+                                    w.WaferStates = WaferProcessStatus.NotSelect;
+                                LoadPort1Wafers.Add(w);
+                            }
+
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "Tools AlignerWaferToLoadPort End");
+                        }
+                        IsCanWorkEFEMTrans = true;
+                    }
+                });
+            }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+            catch (Exception ex)
+            {
+                isInitialComplete = false;
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
+        });
+        public ICommand HomeCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -46,7 +380,7 @@ namespace WLS3200Gen2
             }
         });
 
-        public ICommand PickWaferFromLoadPort => new RelayCommand(async () =>
+        public ICommand PickWaferFromLoadPortCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -83,7 +417,7 @@ namespace WLS3200Gen2
             {
             }
         });
-        public ICommand PickWaferFromAligner => new RelayCommand(async () =>
+        public ICommand PickWaferFromAlignerCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -122,7 +456,7 @@ namespace WLS3200Gen2
             {
             }
         });
-        public ICommand PickWaferFromMicro => new RelayCommand(async () =>
+        public ICommand PickWaferFromMicroCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -161,7 +495,7 @@ namespace WLS3200Gen2
             {
             }
         });
-        public ICommand PickWaferFromMacro => new RelayCommand(async () =>
+        public ICommand PickWaferFromMacroCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -199,7 +533,7 @@ namespace WLS3200Gen2
         });
 
 
-        public ICommand PutWaferToLoadPort => new RelayCommand(async () =>
+        public ICommand PutWaferToLoadPortCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -229,7 +563,7 @@ namespace WLS3200Gen2
             {
             }
         });
-        public ICommand PutWaferToAligner => new RelayCommand(async () =>
+        public ICommand PutWaferToAlignerCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -300,7 +634,7 @@ namespace WLS3200Gen2
             }
         }
 
-        public ICommand PutWaferToMicro => new RelayCommand(async () =>
+        public ICommand PutWaferToMicroCommand => new RelayCommand(async () =>
         {
             try
             {
@@ -362,7 +696,7 @@ namespace WLS3200Gen2
                 throw ex;
             }
         }
-        public ICommand PutWaferToMacro => new RelayCommand(async () =>
+        public ICommand PutWaferToMacroCommand => new RelayCommand(async () =>
         {
             try
             {

@@ -138,50 +138,72 @@ namespace WLS3200Gen2.Model
             StackLight = new StackLight(dos);
 
         }
-        public async Task<bool> BeforeHomeCheck()
+        public async Task<bool> HaveWaferCheck()
         {
             try
             {
                 bool isWaferInSystem = false;
-                Task robotLock = Feeder.Robot.FixWafer();
-                Task alignerLock = Feeder.AlignerL.FixWafer();
-                Feeder.Macro.FixWafer();
-                MicroDetection.TableVacuum.On();
-                await Task.WhenAll(robotLock, alignerLock);
-                await Task.Delay(1000); //暫停1000ms 等待真空建立完成
+
+                await Feeder.Robot.FixWafer();
+                await Task.Delay(500); //等待真空建立完成
                 if (Feeder.Robot.IsLockOK)
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Robot Have Wafer!!");
                     isWaferInSystem = true;
                 }
                 else
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Robot No Wafer.");
                     await Feeder.Robot.ReleaseWafer();
+                    await Task.Delay(100); //等待解真空
                 }
+
+                Feeder.Macro.FixWafer();
+                await Task.Delay(500); //等待真空建立完成
                 if (Feeder.Macro.IsLockOK)
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Macro Have Wafer!!");
                     isWaferInSystem = true;
                 }
                 else
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Macro No Wafer.");
                     Feeder.Macro.ReleaseWafer();
+                    await Task.Delay(100); //等待解真空
                 }
+
+                await Feeder.AlignerL.FixWafer();
+                await Task.Delay(500); //等待真空建立完成
                 if (Feeder.AlignerL.IsLockOK)
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Micro Have Wafer!!");
                     isWaferInSystem = true;
                 }
                 else
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Aligner No Wafer.");
                     await Feeder.AlignerL.ReleaseWafer();
+                    await Task.Delay(100); //等待解真空
                 }
+
+                MicroDetection.TableVacuum.On();
+                await Task.Delay(500); //等待真空建立完成
                 if (MicroDetection.IsTableVacuum.IsSignal)
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Micro Have Wafer!!");
                     isWaferInSystem = true;
                 }
                 else
                 {
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Micro No Wafer.");
                     MicroDetection.TableVacuum.Off();
+                    await Task.Delay(100); //等待解真空
                 }
-                await Task.Delay(500); //暫停500ms 等待解真空
+
+
+
+
+
                 return isWaferInSystem;
             }
             catch (Exception)
@@ -433,8 +455,15 @@ namespace WLS3200Gen2.Model
             IMacro macro = null;
             if (isSimulate)
             {
-
                 macro = new DummyMacro();
+                machineSetting.InnerRingPitchXPositionPEL = 850;
+                machineSetting.InnerRingPitchXPositionNEL = -850;
+                machineSetting.InnerRingRollYPositionPEL = 850;
+                machineSetting.InnerRingRollYPositionNEL = -850;
+                machineSetting.InnerRingYawTPositionPEL = 4000;
+                machineSetting.InnerRingYawTPositionNEL = -4000;
+                machineSetting.OuterRingRollYPositionPEL = 9600;//3200
+                machineSetting.OuterRingRollYPositionNEL = -9600;//-3200
             }
             else
             {

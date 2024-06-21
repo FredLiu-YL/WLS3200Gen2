@@ -12,6 +12,7 @@ namespace WLS3200Gen2.Model.Recipe
     {
         private string lensName = "";
         private double ratioX, ratioY, offsetPixelX, offsetPixelY, autoFocusPosition, aberationPosition;
+        private int bFIntensity, bFApeture, bFAftbl, dFIntensity, dFApeture, dFAftbl;
         /// <summary>
         /// 鏡頭名稱
         /// </summary>
@@ -41,7 +42,30 @@ namespace WLS3200Gen2.Model.Recipe
         /// 自動對焦數值
         /// </summary>
         public double AberationPosition { get => aberationPosition; set => SetValue(ref aberationPosition, value); }
-
+        /// <summary>
+        /// 明視野光亮度
+        /// </summary>
+        public int BFIntensity { get => bFIntensity; set => SetValue(ref bFIntensity, value); }
+        /// <summary>
+        /// 明視野光圈
+        /// </summary>
+        public int BFApeture { get => bFApeture; set => SetValue(ref bFApeture, value); }
+        /// <summary>
+        /// 明視野自動對焦參數組
+        /// </summary>
+        public int BFAftbl { get => bFAftbl; set => SetValue(ref bFAftbl, value); }
+        /// <summary>
+        /// 暗視野光亮度
+        /// </summary>
+        public int DFIntensity { get => dFIntensity; set => SetValue(ref dFIntensity, value); }
+        /// <summary>
+        /// 暗視野光圈
+        /// </summary>
+        public int DFApeture { get => dFApeture; set => SetValue(ref dFApeture, value); }
+        /// <summary>
+        /// 暗視野自動對焦參數組
+        /// </summary>
+        public int DFAftbl { get => dFAftbl; set => SetValue(ref dFAftbl, value); }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

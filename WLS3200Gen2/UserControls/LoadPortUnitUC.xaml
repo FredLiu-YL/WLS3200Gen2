@@ -63,11 +63,7 @@
             </StackPanel>
             <Button Grid.Row="10" Margin="2" Background="Tan" BorderBrush="Tan" Content="Param Set" Command="{Binding ParamSet}" IsEnabled="{Binding IsLoadPortEnabled}" />
         </Grid>
-
-
         <wls3200controls:CassetteStateUC   Margin="0,0,-5,0"   Grid.Column="0"   LoadPortWafers="{Binding LoadPortWafers}"/>
-
-
         <Grid  Grid.Column="2 " >
             <Grid.RowDefinitions>
                 <RowDefinition/>

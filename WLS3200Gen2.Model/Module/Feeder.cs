@@ -394,6 +394,7 @@ namespace WLS3200Gen2.Model.Module
                             result = await waferID;
                         }
                         SaveWaferID(result, path);
+                        currentWafer.WaferID = result;
                         await tempAligner.WaferIDRun2();//.WaferIDRun2();
                         WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "WaferID  End");
                         currentWafer.ProcessStatus.WaferID = WaferProcessStatus.Pass;

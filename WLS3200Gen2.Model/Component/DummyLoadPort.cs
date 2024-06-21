@@ -39,6 +39,7 @@ namespace WLS3200Gen2.Model.Component
         public Task Home()
         {
             IsDoorOpen = false;
+            slot = null;
             return Task.CompletedTask;
         }
 

@@ -51,8 +51,10 @@ namespace YuanliCore.Data
             MacroBack = WaferProcessStatus.NotSelect;
             WaferID = WaferProcessStatus.NotSelect;
             Micro = WaferProcessStatus.NotSelect;
+            IsCanChangeSelect = true;
         }
         private int cassetteIndex;
+        private bool isCanChangeSelect = true;
 
         private WaferProcessStatus macroTop, macroBack, waferID, micro, totally;
 
@@ -81,6 +83,10 @@ namespace YuanliCore.Data
         /// 在卡匣內第幾格 必填!  從1開始
         /// </summary>
         public int CassetteIndex { get => cassetteIndex; set => SetValue(ref cassetteIndex, value); }
+        /// <summary>
+        /// 是否可以選擇要做不做
+        /// </summary>
+        public bool IsCanChangeSelect { get => isCanChangeSelect; set => SetValue(ref isCanChangeSelect, value); }
 
         public ProcessStation Copy()
         {
@@ -91,7 +97,8 @@ namespace YuanliCore.Data
                 WaferID = this.WaferID,
                 Micro = this.Micro,
                 Totally = this.Totally,
-                CassetteIndex = this.CassetteIndex
+                CassetteIndex = this.CassetteIndex,
+                IsCanChangeSelect = this.IsCanChangeSelect
             };
         }
 

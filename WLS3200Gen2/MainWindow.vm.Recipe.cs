@@ -70,7 +70,7 @@ namespace WLS3200Gen2
         private bool isLoadwaferPageSelect, isMacroPageSelect, isAlignerPageSelect, isLocatePageSelect, isDetectionPageSelect;
         private bool isLoadwaferOK, isLocateOK, isDetectionOK; //判斷各設定頁面是否滿足條件 ，  才能切換到下一頁
         private string mapAdd = "MAP ADD";
-        private System.Windows.Point mousePixcel;
+        private System.Windows.Point recipeMousePixcel;
         private ROIShape selectShape;
         private bool isStepLoadwafer = true, isStepMacro, isStepAligner, isStepLocate, isStepDetection;
 
@@ -361,7 +361,7 @@ namespace WLS3200Gen2
         /// <summary>
         /// 滑鼠在影像內 Pixcel 座標
         /// </summary>
-        public System.Windows.Point MousePixcel { get => mousePixcel; set => SetValue(ref mousePixcel, value); }
+        public System.Windows.Point RecipeMousePixcel { get => recipeMousePixcel; set => SetValue(ref recipeMousePixcel, value); }
         /// <summary>
         /// MapAdd標題名稱
         /// </summary>
@@ -384,7 +384,7 @@ namespace WLS3200Gen2
         private void LoadRecipePage()
         {
             if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right ||
-                Machinestatus == YuanliCore.Machine.Base.MachineStates.RUNNING || isHome == false)
+                Machinestatus == YuanliCore.Machine.Base.MachineStates.RUNNING || isHome == false || Machinestatus != YuanliCore.Machine.Base.MachineStates.IDLE)
             {
                 IsMainRecipePageSelect = false;
                 IsMainHomePageSelect = true;
@@ -478,8 +478,8 @@ namespace WLS3200Gen2
         }
         private void LoadToolsPage()
         {
-            if (RightsModel.AdvancedOperator == Account.CurrentAccount.Right || RightsModel.Administrator == Account.CurrentAccount.Right ||
-                isHome == false)
+            if (RightsModel.AdvancedOperator == Account.CurrentAccount.Right ||
+                isHome == false || Machinestatus != YuanliCore.Machine.Base.MachineStates.IDLE)
             {
                 IsMainToolsPageSelect = false;
                 IsMainHomePageSelect = true;
@@ -496,10 +496,8 @@ namespace WLS3200Gen2
         //Recipe進入會執行
         private void LoadSettingPage()
         {
-
-
-
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right ||
+                Machinestatus != YuanliCore.Machine.Base.MachineStates.IDLE)
             {
                 IsMainSettingPageSelect = false;
                 IsMainHomePageSelect = true;
@@ -521,6 +519,16 @@ namespace WLS3200Gen2
             RobotAxisMicroTakePosition = machineSetting.RobotAxisMicroTakePosition;
             AlignerMicroOffset = machineSetting.AlignerMicroOffset;
             AlignerUnLoadOffset = machineSetting.AlignerUnLoadOffset;
+
+            InnerRingPitchXPositionPEL = machineSetting.InnerRingPitchXPositionPEL;
+            InnerRingPitchXPositionNEL = machineSetting.InnerRingPitchXPositionNEL;
+            InnerRingRollYPositionPEL = machineSetting.InnerRingRollYPositionPEL;
+            InnerRingRollYPositionNEL = machineSetting.InnerRingRollYPositionNEL;
+            InnerRingYawTPositionPEL = machineSetting.InnerRingYawTPositionPEL;
+            InnerRingYawTPositionNEL = machineSetting.InnerRingYawTPositionNEL;
+            OuterRingRollYPositionPEL = machineSetting.OuterRingRollYPositionPEL;
+            OuterRingRollYPositionNEL = machineSetting.OuterRingRollYPositionNEL;
+
             if (machineSetting.MicroscopeLensDefault != null)
             {
                 MicroscopeLensDefault = (ObservableCollection<MicroscopeLens>)machineSetting.MicroscopeLensDefault;
@@ -552,6 +560,15 @@ namespace WLS3200Gen2
                 machineSetting.AlignerUnLoadOffset = AlignerUnLoadOffset;
                 machineSetting.LogPath = LogPath;
                 machineSetting.ResultPath = ResultPath;
+                machineSetting.InnerRingPitchXPositionPEL = InnerRingPitchXPositionPEL;
+                machineSetting.InnerRingPitchXPositionNEL = InnerRingPitchXPositionNEL;
+                machineSetting.InnerRingRollYPositionPEL = InnerRingRollYPositionPEL;
+                machineSetting.InnerRingRollYPositionNEL = InnerRingRollYPositionNEL;
+                machineSetting.InnerRingYawTPositionPEL = InnerRingYawTPositionPEL;
+                machineSetting.InnerRingYawTPositionNEL = InnerRingYawTPositionNEL;
+                machineSetting.OuterRingRollYPositionPEL = OuterRingRollYPositionPEL;
+                machineSetting.OuterRingRollYPositionNEL = OuterRingRollYPositionNEL;
+
             }
             catch (Exception ex)
             {
@@ -744,7 +761,26 @@ namespace WLS3200Gen2
                 SINF_Path = "";
             }
         });
-
+        public ICommand RecipeCanvasDoubleClickCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //在特定情況下才可以動作
+                if (IsCanWorkEFEMTrans && isRecipeCanvasCanMove)
+                {
+                    var relativeX = (RecipeMousePixcel.X - MainImage.PixelHeight / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioX;
+                    var relativeY = (RecipeMousePixcel.Y - MainImage.PixelWidth / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioY;
+                    await machine.MicroDetection.TableMoveToAndOnceAsync(new Point(relativeX, relativeY));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
         public ICommand EditMappingCommand => new RelayCommand<string>(async key =>
         {
             try
@@ -944,7 +980,7 @@ namespace WLS3200Gen2
                                 }
                                 else
                                 {
-                                    throw new Exception("EFEMTransCommand Error!");
+                                    throw new FlowException("EFEMTransCommand Error!");
                                 }
                             }
                             IsStepMacro = true;
@@ -968,6 +1004,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                isInitialComplete = false;
                 MessageBox.Show(ex.Message);
                 IsCanWorkEFEMTrans = true;
             }
@@ -1029,6 +1066,7 @@ namespace WLS3200Gen2
             }
             catch (Exception ex)
             {
+                isInitialComplete = false;
                 MessageBox.Show(ex.Message);
                 IsCanWorkEFEMTrans = true;
             }
@@ -1064,7 +1102,7 @@ namespace WLS3200Gen2
                                 machine.Feeder.WaferStandByToMacroAsync().Wait();
                                 if (machine.Feeder.Macro.IsLockOK == false)
                                 {
-                                    throw new Exception("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
+                                    throw new FlowException("EFEMTransCommand 異常!WaferToMacro Macro真空異常!!");
                                 }
                                 IsStepMacro = true;
                                 IsStepAligner = false;
@@ -1081,8 +1119,14 @@ namespace WLS3200Gen2
                     }
                 });
             }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
             catch (Exception ex)
             {
+                isInitialComplete = false;
                 MessageBox.Show(ex.Message);
                 IsCanWorkEFEMTrans = true;
             }
@@ -1278,7 +1322,7 @@ namespace WLS3200Gen2
                                 await machine.Feeder.LoadToMicroAsync(station);
                                 if (machine.MicroDetection.IsTableVacuum.IsSignal == false)
                                 {
-                                    throw new Exception("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
+                                    throw new FlowException("EFEMTransCommand 異常!WaferToMicro Micro真空異常!!");
                                 }
                                 IsStepAligner = true;
                                 IsStepMacro = true;
@@ -1295,8 +1339,14 @@ namespace WLS3200Gen2
                     }
                 });
             }
+            catch (FlowException ex)
+            {
+                MessageBox.Show(ex.Message);
+                IsCanWorkEFEMTrans = true;
+            }
             catch (Exception ex)
             {
+                isInitialComplete = false;
                 MessageBox.Show(ex.Message);
                 IsCanWorkEFEMTrans = true;
             }

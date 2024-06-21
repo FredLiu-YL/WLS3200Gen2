@@ -49,8 +49,8 @@ namespace WLS3200Gen2
         private double tablePosX, tablePosY, tablePosZ, tablePosR;
         private int microCheckNowIndexX, microCheckNowIndexY;
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
-
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
+        private System.Windows.Point homeMousePixcel;
         private WriteableBitmap mainImage, mapImage;
         private DigitalInput[] digitalInputs;
         private DigitalOutput[] digitalOutputs;
@@ -96,9 +96,11 @@ namespace WLS3200Gen2
 
         public string Version { get => version; set => SetValue(ref version, value); }
         public UserAccount Account { get => account; set => SetValue(ref account, value); }
-
         public WriteableBitmap MainImage { get => mainImage; set => SetValue(ref mainImage, value); }
-
+        /// <summary>
+        /// 滑鼠在影像內 Pixcel 座標
+        /// </summary>
+        public System.Windows.Point HomeMousePixcel { get => homeMousePixcel; set => SetValue(ref homeMousePixcel, value); }
         public LoadPortQuantity LoadportQuantity { get => loadportQuantity; set => SetValue(ref loadportQuantity, value); }
 
         private ObservableCollection<RobotAddress> customers = new ObservableCollection<RobotAddress>();
@@ -634,7 +636,8 @@ namespace WLS3200Gen2
         //Security進入會執行
         private void LoadSecurityPage()
         {
-            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right)
+            if (RightsModel.Operator == Account.CurrentAccount.Right || RightsModel.Visitor == Account.CurrentAccount.Right ||
+                Machinestatus != YuanliCore.Machine.Base.MachineStates.IDLE)
             {
                 IsMainSecurityPageSelect = false;
                 IsMainHomePageSelect = true;

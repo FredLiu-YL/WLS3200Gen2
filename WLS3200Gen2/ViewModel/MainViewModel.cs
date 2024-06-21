@@ -116,6 +116,7 @@ namespace WLS3200Gen2
         {
             var processStation = ProcessStations.Where(p => p.CassetteIndex == wafer.CassetteIndex).FirstOrDefault();
             processStation = wafer.ProcessStatus;
+            ProcessInfoWaferID = wafer.WaferID;
         }
 
 
@@ -130,7 +131,7 @@ namespace WLS3200Gen2
             }
         }
 
-        private void WriteLog(YuanliCore.Logger.LogType logType,string message)
+        private void WriteLog(YuanliCore.Logger.LogType logType, string message)
         {
             switch (logType)
             {
@@ -149,7 +150,7 @@ namespace WLS3200Gen2
                 default:
                     break;
             }
-            
+
         }
 
 

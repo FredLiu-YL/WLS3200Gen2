@@ -38,6 +38,8 @@ namespace WLS3200Gen2
         private bool isHome = false;
         private bool isRunning = false;
         private bool isRunCommand = false;
+        private bool isHomeCanvasCanMove = false;
+        private bool isRecipeCanvasCanMove = false;
         private readonly object lockAssignObj = new object();
         private readonly object lockHomeMapObj = new object();
         private readonly object lockRecipeMapObj = new object();
@@ -145,11 +147,16 @@ namespace WLS3200Gen2
             try
             {
                 WriteLog(YuanliCore.Logger.LogType.TRIG, "Run");
+
+                if (isInitialComplete == false)
+                {
+                    MessageBox.Show("Initial is not Complete!!");
+                    return;
+                }
                 if (IsLoadport1 == IsLoadport2)
                 {
                     MessageBox.Show("Loadport Wrong choice");
                     return;
-
                 }
 
                 if (Machinestatus == MachineStates.Emergency)
@@ -160,7 +167,7 @@ namespace WLS3200Gen2
 
                 if (isHaveError)
                 {
-                    MessageBox.Show("Error is notr clear!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Error is not clear!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -178,6 +185,11 @@ namespace WLS3200Gen2
                     //判斷是使用loadport1 還是 2
                     ProcessSetting.IsLoadport1 = IsLoadport1;
                     ProcessSetting.IsLoadport2 = IsLoadport2;//暫時沒用到 都用IsLoadport1 判斷
+
+                    foreach (var item in ProcessStations)
+                    {
+                        item.IsCanChangeSelect = false;
+                    }
                     //寫入每片Wafer的作業流程
                     ProcessSetting.ProcessStation = ProcessStations.ToArray();
                     //運作模式
@@ -192,7 +204,7 @@ namespace WLS3200Gen2
                     ProcessSetting.DegreeUnLoad = DegreeUnLoad;
                     ProcessSetting.TopContinueRotate = TopContinueRotate;
                     ProcessSetting.Save(processSettingPath);//ProcessSetting存檔 
-                    isWaferInSystem = await machine.BeforeHomeCheck();
+                    isWaferInSystem = await machine.HaveWaferCheck();
                     if (isWaferInSystem)
                     {
                         //WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, $"Remaining number of wafers : {waferusableCount} ");
@@ -246,6 +258,12 @@ namespace WLS3200Gen2
             }
             finally
             {
+                foreach (var item in ProcessStations)
+                {
+                    item.IsCanChangeSelect = true;
+                }
+                isHomeCanvasCanMove = false;
+                isRecipeCanvasCanMove = false;
                 WriteLog(YuanliCore.Logger.LogType.PROCESS, "Process Finish");
             }
         });
@@ -281,7 +299,7 @@ namespace WLS3200Gen2
                         WriteLog(YuanliCore.Logger.LogType.TRIG, "Home");
                         IsOperateUI = false;
                         IsCanChangeRecipe = false;
-                        isWaferInSystem = await machine.BeforeHomeCheck();
+                        isWaferInSystem = await machine.HaveWaferCheck();
                         MessageBoxResult result = MessageBoxResult.Yes;
                         if (isWaferInSystem)
                         {
@@ -451,10 +469,43 @@ namespace WLS3200Gen2
             }
 
         });
+        public ICommand HomeCanvasDoubleClickCommand => new RelayCommand(async () =>
+        {
+            try
+            {
+                //在特定情況下才可以動作
+                if (IsCanWorkEFEMTrans && isHomeCanvasCanMove)
+                {
+                    var relativeX = (HomeMousePixcel.X - MainImage.PixelHeight / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioX;
+                    var relativeY = (HomeMousePixcel.Y - MainImage.PixelWidth / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioY;
+                    await machine.MicroDetection.TableMoveToAndOnceAsync(new Point(relativeX, relativeY));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+            }
+        });
         public ICommand SlotMappingCommand => new RelayCommand(async () =>
         {
             try
             {
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "Load/UnLoad");
+
+                if (isInitialComplete == false)
+                {
+                    MessageBox.Show("Initial is not Complete!!");
+                    return;
+                }
+                if (isHaveError)
+                {
+                    MessageBox.Show("Error is not clear!!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 bool?[] wafers = null;
                 if (IsLoadport1 == IsLoadport2)
                 {
@@ -495,17 +546,21 @@ namespace WLS3200Gen2
 
                 ProcessStations.Clear();
                 //陣列第一個位置是第25片 ， cassette最上面是第25片 ， 所以要從上往下排
-                for (int i = 0; i < wafers.Length; i++)//陣列位置由第0個開始
+                if (wafers != null)
                 {
-                    var temp = new ProcessStation(wafers.Length - i); //但陣列第一個位置 是 cassette第25片  所以 index反過來給
-                    if (!wafers[i].HasValue)
+                    for (int i = 0; i < wafers.Length; i++)//陣列位置由第0個開始
                     {
-                        temp.MacroTop = WaferProcessStatus.None;
-                        temp.MacroBack = WaferProcessStatus.None;
-                        temp.WaferID = WaferProcessStatus.None;
-                        temp.Micro = WaferProcessStatus.None;
+                        var temp = new ProcessStation(wafers.Length - i); //但陣列第一個位置 是 cassette第25片  所以 index反過來給
+                        if (!wafers[i].HasValue)
+                        {
+                            temp.MacroTop = WaferProcessStatus.None;
+                            temp.MacroBack = WaferProcessStatus.None;
+                            temp.WaferID = WaferProcessStatus.None;
+                            temp.Micro = WaferProcessStatus.None;
+                            temp.IsCanChangeSelect = false;
+                        }
+                        ProcessStations.Add(temp);
                     }
-                    ProcessStations.Add(temp);
                 }
                 SwitchStates(MachineStates.IDLE);
                 IsCanChangeRecipe = true;
@@ -1133,11 +1188,13 @@ namespace WLS3200Gen2
             //切到Micro 頁面
             TabControlSelectedIndex = 3;
             IsOperateUI = false;
+            isHomeCanvasCanMove = true;
             cts.Token.ThrowIfCancellationRequested();
             await pts.Token.WaitWhilePausedAsync(cts.Token);
             isRunningMicroDetection = false;
             //切到Infomation頁面
             TabControlSelectedIndex = 0;
+            isHomeCanvasCanMove = false;
             IsOperateUI = true;
             try
             {
