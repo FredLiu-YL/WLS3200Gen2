@@ -47,6 +47,7 @@ namespace WLS3200Gen2
         private AxisConfig tableXConfig, tableYConfig, tableZConfig, tableRConfig, robotAxisConfig;
         private double tableXMaxVel, tableYMaxVel, tableZMaxVel;
         private double tablePosX, tablePosY, tablePosZ, tablePosR;
+        private Point alignmentCenterOffset = new Point(0, 0);
         private int microCheckNowIndexX, microCheckNowIndexY;
         private ObservableCollection<BincodeInfo> bincodeList = new ObservableCollection<BincodeInfo>();
         private ObservableCollection<CassetteUnitUC> cassetteUC = new ObservableCollection<CassetteUnitUC>();
@@ -60,7 +61,7 @@ namespace WLS3200Gen2
         //WLS3200 生產相關資訊會存到這
         private string processDataPath;
 
-        private bool isRefresh, isInitialComplete, isWaferInSystem, isHaveError = false;
+        private bool isRefresh, isInitialComplete = false, isWaferInSystem, isHaveError = false;
         private LoadPortQuantity loadportQuantity = LoadPortQuantity.Pair;
 
         public ObservableCollection<CassetteUnitUC> CassetteUC
@@ -237,6 +238,12 @@ namespace WLS3200Gen2
                 for (int i = 1; i < MicroscopeLensDefault.Count; i++)
                 {
                     MicroscopeParam.LensName.Add(MicroscopeLensDefault[i].LensName);
+                    MicroscopeParam.BFIntensity.Add(MicroscopeLensDefault[i].BFIntensity);
+                    MicroscopeParam.BFApeture.Add(MicroscopeLensDefault[i].BFApeture);
+                    MicroscopeParam.BFAFParamTable.Add(MicroscopeLensDefault[i].BFAftbl);
+                    MicroscopeParam.DFIntensity.Add(MicroscopeLensDefault[i].DFIntensity);
+                    MicroscopeParam.DFApeture.Add(MicroscopeLensDefault[i].DFApeture);
+                    MicroscopeParam.DFAFParamTable.Add(MicroscopeLensDefault[i].DFAftbl);
                 }
 
                 TableX = machine.MicroDetection.AxisX;
@@ -305,8 +312,6 @@ namespace WLS3200Gen2
                 await Task.Delay(1000);
                 ZoomFitManualAction.Execute(Drawings);
 
-                isInitialComplete = true;
-
                 //載入機台設定LoadPort 數量  給UI作卡控
                 LoadportQuantity = machineSetting.LoadPortCount;
 
@@ -343,7 +348,7 @@ namespace WLS3200Gen2
             }
             finally
             {
-
+                isInitialComplete = true;
             }
         });
 
@@ -663,7 +668,12 @@ namespace WLS3200Gen2
             }
 
         }
-        private void RefreshHomeMap(double tablePosX, double tablePosY)
+        /// <summary>
+        /// 更新目前HomeMap點位
+        /// </summary>
+        /// <param name="tablePosX"></param>
+        /// <param name="tablePosY"></param>
+        private void RefreshHomeMap(double tablePosX, double tablePosY, Point alignmentCenterOffset)
         {
             try
             {
@@ -674,7 +684,7 @@ namespace WLS3200Gen2
                         isUpdateHomeMap = true;
                         App.Current.Dispatcher.Invoke((Action)(() =>
                         {
-                            var mapPoint = updateHomeMapTransform.TransInvertPoint(new Point(tablePosX, tablePosY));
+                            var mapPoint = updateHomeMapTransform.TransInvertPoint(new Point(tablePosX - alignmentCenterOffset.X, tablePosY - alignmentCenterOffset.Y));
                             var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
                             Rectangle nowSelectRange = new Rectangle
                             {
@@ -708,7 +718,12 @@ namespace WLS3200Gen2
             {
             }
         }
-        private void RefreshRecipeMap(double tablePosX, double tablePosY)
+        /// <summary>
+        /// 更新目前RecipeMap點位
+        /// </summary>
+        /// <param name="tablePosX"></param>
+        /// <param name="tablePosY"></param>
+        private void RefreshRecipeMap(double tablePosX, double tablePosY, Point alignmentCenterOffset)
         {
             try
             {
@@ -719,7 +734,7 @@ namespace WLS3200Gen2
                         isUpdateRecipeMap = true;
                         App.Current.Dispatcher.Invoke((Action)(() =>
                         {
-                            var mapPoint = updateRecipeMapTransform.TransInvertPoint(new Point(tablePosX, tablePosY));
+                            var mapPoint = updateRecipeMapTransform.TransInvertPoint(new Point(tablePosX - alignmentCenterOffset.X, tablePosY - alignmentCenterOffset.Y));
                             var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
                             Rectangle nowSelectRange = new Rectangle
                             {
@@ -758,7 +773,6 @@ namespace WLS3200Gen2
         {
             try
             {
-
                 while (isRefresh)
                 {
                     if (isInitialComplete)
@@ -768,14 +782,15 @@ namespace WLS3200Gen2
                         TablePosY = machine.MicroDetection.AxisY.Position;
                         TablePosZ = machine.MicroDetection.AxisZ.Position;
                         TablePosR = machine.MicroDetection.AxisR.Position;
+
+                        alignmentCenterOffset = new Point(mainRecipe.DetectRecipe.AlignRecipe.OffsetX, mainRecipe.DetectRecipe.AlignRecipe.OffsetY);
                         if (isRunningMicroDetection)
                         {
-                            RefreshHomeMap(TablePosX, TablePosY);
-
+                            RefreshHomeMap(TablePosX, TablePosY, alignmentCenterOffset);
                         }
-                        if (isRecipeAlignment && isMapAdding == false)
+                        if (isRecipeShowNowDie && isRecipeAlignment && isMapAdding == false)
                         {
-                            RefreshRecipeMap(TablePosX, TablePosY);
+                            RefreshRecipeMap(TablePosX, TablePosY, alignmentCenterOffset);
                         }
                         //if (atfMachine.AFModule.AFSystem != null)
                         //    PositionZ = (int)atfMachine.AFModule.AFSystem.AxisZPosition;

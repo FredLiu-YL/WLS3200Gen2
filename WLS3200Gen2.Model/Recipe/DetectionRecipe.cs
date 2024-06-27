@@ -40,7 +40,10 @@ namespace WLS3200Gen2.Model.Recipe
     {
         private int indexHeader = 0, indexX, indexY;
         private Point position;
-        private String code;
+        private String code, subProgramName;
+        private int lensIndex, cubeIndex, filter1Index, filter2Index, filter3Index,
+                    microscopeLightValue, microscopeApertureValue;
+        private double microscopePosition, microscopeAberationPosition;
         /// <summary>
         /// 標題的Index
         /// </summary>
@@ -64,39 +67,43 @@ namespace WLS3200Gen2.Model.Recipe
         /// <summary>
         /// 鏡頭倍率
         /// </summary>
-        public int LensIndex { get; set; }
+        public int LensIndex { get => lensIndex; set => SetValue(ref lensIndex, value); }
         /// <summary>
         /// Cube在哪一槽
         /// </summary>
-        public int CubeIndex { get; set; }
+        public int CubeIndex { get => cubeIndex; set => SetValue(ref cubeIndex, value); }
         /// <summary>
         /// 第一道濾片
         /// </summary>
-        public int Filter1Index { get; set; }
+        public int Filter1Index { get => filter1Index; set => SetValue(ref filter1Index, value); }
         /// <summary>
         /// 第二道濾片
         /// </summary>
-        public int Filter2Index { get; set; }
+        public int Filter2Index { get => filter2Index; set => SetValue(ref filter2Index, value); }
         /// <summary>
         /// 第三道濾片
         /// </summary>
-        public int Filter3Index { get; set; }
+        public int Filter3Index { get => filter3Index; set => SetValue(ref filter3Index, value); }
         /// <summary>
         /// 光強度
         /// </summary>
-        public int MicroscopeLightValue { get; set; }
+        public int MicroscopeLightValue { get => microscopeLightValue; set => SetValue(ref microscopeLightValue, value); }
         /// <summary>
         /// 光圈
         /// </summary>
-        public int MicroscopeApertureValue { get; set; }
+        public int MicroscopeApertureValue { get => microscopeApertureValue; set => SetValue(ref microscopeApertureValue, value); }
         /// <summary>
         /// 目前Z軸位置
         /// </summary>
-        public double MicroscopePosition { get; set; }
+        public double MicroscopePosition { get => microscopePosition; set => SetValue(ref microscopePosition, value); }
         /// <summary>
         /// 準焦位置
         /// </summary>
-        public double MicroscopeAberationPosition { get; set; }
+        public double MicroscopeAberationPosition { get => microscopeAberationPosition; set => SetValue(ref microscopeAberationPosition, value); }
+        /// <summary>
+        /// SubDie模式名稱
+        /// </summary>
+        public string SubProgramName { get => subProgramName; set => SetValue(ref subProgramName, value); }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

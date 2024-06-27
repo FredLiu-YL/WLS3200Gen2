@@ -63,7 +63,8 @@
         <TabControl  VerticalContentAlignment="Top"
                      materialDesign:ColorZoneAssist.Mode="Standard" materialDesign:ElevationAssist.Elevation="Dp4"  
                      TabStripPlacement="Left"   
-                     Grid.ColumnSpan="7" >
+                     Grid.ColumnSpan="7"
+                     >
             <!--Style="{StaticResource MaterialDesignNavigationRailTabControl}"-->
 
             <TabControl.Resources>
@@ -584,9 +585,10 @@
                                             </TabItem.Header>
                                             <Grid >
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="30*"/>
+                                                    <ColumnDefinition Width="0.25*"/>
 
-                                                    <ColumnDefinition Width="70*"/>
+                                                    <ColumnDefinition Width="0.2*"/>
+                                                    <ColumnDefinition Width="0.55*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions >
                                                     <RowDefinition Height="0.12*"/>
@@ -596,9 +598,10 @@
                                                     <Button Content="Grab" Width="150" Height="30" Margin=" 0,0,0,0" Command="{Binding GrabCommand}"/>
                                                     <Button Content="Next Wafer" Width="150" Height="30" Margin="110,0,0,0" Command="{Binding NextWaferCommand}" />
                                                 </StackPanel>
-                                                <UserControlUC:AxisZUC Grid.Column  ="0" Grid.Row ="1" TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ }" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
-                                                <UserControlUC:WorkholderUC Grid.Column  ="1" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
-                                                                            TableXMaxVel="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,10,0,0" Height="190" Width="320" Grid.ColumnSpan="3"/>
+                                                <UserControlUC:CalculateZUC Grid.Column="0" Grid.Row ="1" TableZPos="{Binding TablePosZ}"/>
+                                                <UserControlUC:AxisZUC Grid.Column  ="1" Grid.Row ="1" TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ }" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                                <UserControlUC:WorkholderUC Grid.Column  ="2" Grid.Row ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
+                                                                            TableXMaxVel="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="top" Margin="0,10,0,0" Height="190" Width="320" Grid.ColumnSpan="2"/>
                                             </Grid>
                                         </TabItem>
                                     </TabControl>
@@ -1239,7 +1242,7 @@
                                                 <TextBlock  Text="Detection Setting" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"  />
                                             </Border>
                                             <StackPanel Grid.Row="1" Orientation="Horizontal" Grid.ColumnSpan="2"   >
-                                                <Button Margin="5" Content="ADD"  FontSize="24" Height="50" Width="100" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding AddDetectionCommand}"  />
+                                                <!--<Button Margin="5" Content="ADD"  FontSize="24" Height="50" Width="100" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding AddDetectionCommand}"  />-->
                                                 <Button Margin="5" Content="Remove" FontSize="24" Height="50" Width="130" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding RemoveDetectionCommand}"  />
                                                 <Button Margin="5" Content="Edit" FontSize="24" Height="50" Width="85" IsEnabled="{Binding IsRecipeMapCanEdit}" Command="{Binding EditDetectionCommand}"  />
                                                 <Button Margin="5" Content="{Binding MapAdd}" IsEnabled="{Binding IsMapEnd}" FontSize="24" Height="50" Width="150" Command="{Binding MapAddDetectionCommand}"  />
@@ -1273,16 +1276,20 @@
                                                 </StackPanel>
                                                 <Border   Style="{StaticResource HorizontalDividerBorder}" />
                                             </StackPanel>
-                                            <GroupBox Grid.Row="3" Header="Die Trans" FontSize="20" Grid.ColumnSpan="2" Visibility="Visible"   >
+                                            <!--<GroupBox Grid.Row="3" Header="Die Trans" FontSize="20" Grid.ColumnSpan="2" Visibility="Visible"   >
                                                 <StackPanel Margin="-5" Orientation="Horizontal">
-                                                    <!--<Button Margin="5" FontSize="20" Height ="40" Content="TransOnlyDie" Command="{Binding TransOnlyDieCommand}"  />-->
+                                                    -->
+                                            <!--<Button Margin="5" FontSize="20" Height ="40" Content="TransOnlyDie" Command="{Binding TransOnlyDieCommand}"  />-->
+                                            <!--
                                                     <Button Margin="5" FontSize="20" Height ="40" Content="TransDieInSideAll" Command="{Binding TransDieInSideAllCommand}"  />
-                                                    <!--<Button Margin="5" FontSize="20" Height ="40" Content="TransDieSub" Command="{Binding TransDieSubCommand}"  />-->
-                                                    <!--<Button Margin="5" Grid.Row="3" Grid.Column="2" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding DetectionTestCommand}" Cursor="Hand" />-->
-                                                    <!--<Button Margin="5" Grid.Row="3" Grid.Column="2" Content="Pause" FontSize="20" Height="50" Width="200"  Command="{Binding DetectionPauseTestCommand}" Cursor="Hand" />-->
-                                                    <!--<Button Margin="5" Content="TEST" FontSize="24" Height="50" Width="80"   Command="{Binding TestLoadRecipePageCommand}"  />-->
+                                                    -->
+                                            <!--<Button Margin="5" FontSize="20" Height ="40" Content="TransDieSub" Command="{Binding TransDieSubCommand}"  />-->
+                                            <!--<Button Margin="5" Grid.Row="3" Grid.Column="2" Content="TEST" FontSize="20" Height="50" Width="200"  Command="{Binding DetectionTestCommand}" Cursor="Hand" />-->
+                                            <!--<Button Margin="5" Grid.Row="3" Grid.Column="2" Content="Pause" FontSize="20" Height="50" Width="200"  Command="{Binding DetectionPauseTestCommand}" Cursor="Hand" />-->
+                                            <!--<Button Margin="5" Content="TEST" FontSize="24" Height="50" Width="80"   Command="{Binding TestLoadRecipePageCommand}"  />-->
+                                            <!--
                                                 </StackPanel>
-                                            </GroupBox>
+                                            </GroupBox>-->
                                         </Grid>
                                     </TabItem>
 
@@ -1297,15 +1304,15 @@
                     </Grid>
                     <Grid Grid.Row="1" Grid.Column="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.5*"/>
-                            <ColumnDefinition Width="0.1*"/>
-                            <ColumnDefinition Width="0.4*"/>
+                            <ColumnDefinition Width="0.44*"/>
+                            <ColumnDefinition Width="0.08*"/>
+                            <ColumnDefinition Width="0.48*"/>
                         </Grid.ColumnDefinitions>
                         <GroupBox  FontSize="16"  Header="Microscope"  >
                             <microscope:BXFMUC  Margin="-5" Microscope="{Binding Microscope}" MicroscopeParam="{Binding MicroscopeParam}" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="1" Grid.Row="0" Header="Aberation" FontSize="16" >
-                            <UserControlUC:AFAberationUnitUC Grid.Column="2"  HorizontalAlignment="Left" VerticalAlignment="Center"  Microscope="{Binding Microscope}" AFAberationUIShow ="{Binding AFAberation}" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                            <UserControlUC:AFAberationUnitUC Margin="-10" Grid.Column="2"  HorizontalAlignment="Left" VerticalAlignment="Center"  Microscope="{Binding Microscope}" AFAberationUIShow ="{Binding AFAberation}" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                         </GroupBox>
                         <GroupBox Grid.Column="2"  FontSize="16"  Header="Axis Move"  >
                             <Grid  Grid.Column="1" Grid.Row="1" Margin="-5" IsEnabled="{Binding IsCanWorkEFEMTrans}">
@@ -1329,10 +1336,12 @@
                                 </Border>
                                 <Grid Grid.Row="1" Grid.ColumnSpan="2">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="0.35*"/>
-                                        <ColumnDefinition Width="0.65*"/>
+                                        <ColumnDefinition Width="0.25*"/>
+                                        <ColumnDefinition Width="0.2*"/>
+                                        <ColumnDefinition Width="0.55*"/>
                                     </Grid.ColumnDefinitions>
-                                    <UserControlUC:AxisZUC TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ }" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
+                                    <UserControlUC:CalculateZUC Grid.Column="0" TableZPos="{Binding TablePosZ}"/>
+                                    <UserControlUC:AxisZUC Grid.Column="1" TableZ="{Binding TableZ}" TablePosZ="{Binding TablePosZ}" TableZMaxVel="{Binding TableZMaxVel }" IsEnabled="{Binding IsCanWorkEFEMTrans}"/>
                                     <Grid Visibility="Hidden" >
                                         <Grid.RowDefinitions >
                                             <RowDefinition />
@@ -1364,14 +1373,14 @@
                                         <Grid Grid.Row="2" Grid.ColumnSpan="2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="0.25*"/>
-                                                <ColumnDefinition Width="0.5*"/>
                                                 <ColumnDefinition Width="0.25*"/>
+                                                <ColumnDefinition Width="0.5*"/>
                                             </Grid.ColumnDefinitions>
                                             <Label Grid.Column="0" Grid.Row="1" Content="平台Z:" VerticalContentAlignment="Center" FontSize="14"/>
                                             <TextBox  Grid.Column="1" Grid.Row="1" IsReadOnly="True" Text="{Binding TablePosZ}"  Width="65" VerticalAlignment="Center" HorizontalAlignment="Left"  FontSize="15"/>
                                         </Grid>
                                     </Grid>
-                                    <UserControlUC:WorkholderUC Margin="-5,0,0,0 " Grid.Column ="1" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
+                                    <UserControlUC:WorkholderUC Margin="-5,0,0,0 " Grid.Column ="2" TableX="{Binding TableX }" TableY="{Binding TableY }" TablePosX="{Binding TablePosX}" TablePosY="{Binding TablePosY}"
                                                                 TableXMaxVel ="{Binding TableXMaxVel}" TableYMaxVel="{Binding TableYMaxVel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="350" Height="200" IsEnabled="{Binding IsCanWorkEFEMTrans}" />
                                 </Grid>
                             </Grid>
@@ -1465,8 +1474,6 @@
                                                 <ColumnDefinition Width="0.25*"/>
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition />
                                                 <RowDefinition />
                                                 <RowDefinition />
                                                 <RowDefinition />
@@ -1608,8 +1615,6 @@
                                                 <ColumnDefinition Width="0.25*"/>
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition />
                                                 <RowDefinition />
                                                 <RowDefinition />
                                                 <RowDefinition />

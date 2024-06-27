@@ -145,9 +145,21 @@ namespace WLS3200Gen2
                 machineSetting.Save(machineSettingPath);
                 Customers.Clear();
                 MicroscopeParam.LensName.Clear();
+                MicroscopeParam.BFIntensity.Clear();
+                MicroscopeParam.BFApeture.Clear();
+                MicroscopeParam.BFAFParamTable.Clear();
+                MicroscopeParam.DFIntensity.Clear();
+                MicroscopeParam.DFApeture.Clear();
+                MicroscopeParam.DFAFParamTable.Clear();
                 for (int i = 1; i < MicroscopeLensDefault.Count; i++)
                 {
                     MicroscopeParam.LensName.Add(MicroscopeLensDefault[i].LensName);
+                    MicroscopeParam.BFIntensity.Add(MicroscopeLensDefault[i].BFIntensity);
+                    MicroscopeParam.BFApeture.Add(MicroscopeLensDefault[i].BFApeture);
+                    MicroscopeParam.BFAFParamTable.Add(MicroscopeLensDefault[i].BFAftbl);
+                    MicroscopeParam.DFIntensity.Add(MicroscopeLensDefault[i].DFIntensity);
+                    MicroscopeParam.DFApeture.Add(MicroscopeLensDefault[i].DFApeture);
+                    MicroscopeParam.DFAFParamTable.Add(MicroscopeLensDefault[i].DFAftbl);
                 }
             }
             catch (Exception ex)

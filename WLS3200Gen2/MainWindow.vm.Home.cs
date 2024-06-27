@@ -311,6 +311,7 @@ namespace WLS3200Gen2
                             WriteLog(YuanliCore.Logger.LogType.TRIG, "Home Start");
 
                             await machine.Home();
+                           
                             PausePackIcon = PackIconKind.Pause;
                             ProcessVisibility = Visibility.Visible;
                             StopVisibility = Visibility.Visible;
@@ -418,6 +419,7 @@ namespace WLS3200Gen2
                         BincodeListUpdate(mainRecipe.DetectRecipe.BincodeList);
                         isRecipeMapShow = false;
                         transForm = OrgTransform(mainRecipe.DetectRecipe.WaferMap.MapCenterPoint, machineSetting.TableCenterPosition);
+                        updateRecipeMapTransform = transForm;
                     }
                     ResetDetectionRunningPointList();
                     WriteLog(YuanliCore.Logger.LogType.TRIG, "Load Recipe :" + recipename);

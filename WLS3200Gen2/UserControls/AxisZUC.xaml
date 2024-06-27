@@ -8,7 +8,7 @@
       xmlns:local="clr-namespace:WLS3200Gen2.UserControls"
       mc:Ignorable="d" 
       x:Name="AxisZ"
-      d:DesignHeight="200" d:DesignWidth="180">
+      d:DesignHeight="200" d:DesignWidth="135">
     <UserControl.Resources>
         <ResourceDictionary >
             <ResourceDictionary.MergedDictionaries>
@@ -23,8 +23,8 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding ElementName=AxisZ}" Background="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.35*"/>
-            <ColumnDefinition Width="0.65*"/>
+            <ColumnDefinition Width="0.45*"/>
+            <ColumnDefinition Width="0.55*"/>
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
@@ -73,12 +73,13 @@
                 IsChecked="{Binding RelativeIsChecked}"
                 Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineRadioButton}" />
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.43*"/>
-                    <ColumnDefinition Width="0.57*"/>
-                </Grid.ColumnDefinitions>
+               
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
                 <Label Grid.Column="0" Grid.Row="0" Content="NowZ:" VerticalContentAlignment="Center" FontSize="14"/>
-                <TextBox  Grid.Column="1" Grid.Row="0" IsReadOnly="True" Text="{Binding TablePosZ}" Width="65" VerticalAlignment="Center" HorizontalAlignment="Left"  FontSize="15"/>
+                <TextBox  Grid.Column="0" Grid.Row="1" IsReadOnly="True" Text="{Binding TablePosZ}" Width="65" VerticalAlignment="Center" HorizontalAlignment="Center"    FontSize="15"/>
             </Grid>
         </StackPanel>
     </Grid>

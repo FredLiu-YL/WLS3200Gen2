@@ -57,7 +57,6 @@ namespace WLS3200Gen2.Model.Module
             this.machineSetting = machineSetting;
         }
         public bool IsInitial { get; set; } = false;
-
         public IEFEMRobot Robot { get; }
         public IMacro Macro { get; }
         public Axis RobotAxis { get; }

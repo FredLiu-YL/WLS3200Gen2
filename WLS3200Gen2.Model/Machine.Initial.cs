@@ -225,6 +225,7 @@ namespace WLS3200Gen2.Model
                 await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
                 Task microHome = MicroDetection.Home();
                 await Task.WhenAll(feedHome, microHome);
+                await MicroscopeDefaultParam();
             }
             catch (Exception ex)
             {
@@ -233,6 +234,44 @@ namespace WLS3200Gen2.Model
             }
 
         }
+        private async Task MicroscopeDefaultParam()
+        {
+            try
+            {
+                bool isDF = false;
+                int paramIdx = MicroDetection.Microscope.LensIndex;
+                if (paramIdx <= 1) paramIdx = 1;
+                if (MicroDetection.Microscope.CubeIndex == 2)
+                {
+                    isDF = true;
+                }
+                int intensity = 0;
+                int apeture = 0;
+                int aFParamTable = 0;
+
+                Recipe.MicroscopeLens[] microscopeLensDefault = machineSetting.MicroscopeLensDefault.ToArray();
+                if (isDF)
+                {
+                    intensity = microscopeLensDefault[paramIdx].DFIntensity;
+                    apeture = microscopeLensDefault[paramIdx].DFApeture;
+                    aFParamTable = microscopeLensDefault[paramIdx].DFAftbl;
+                }
+                else
+                {
+                    intensity = microscopeLensDefault[paramIdx].BFIntensity;
+                    apeture = microscopeLensDefault[paramIdx].BFApeture;
+                    aFParamTable = microscopeLensDefault[paramIdx].BFAftbl;
+                }
+                await MicroDetection.Microscope.ChangeLightAsync(intensity);
+                await MicroDetection.Microscope.ChangeApertureAsync(apeture);
+                await MicroDetection.Microscope.ChangeAFParameterTable(aFParamTable);
+            }
+            catch (Exception ex)
+            {
+            }
+
+        }
+
 
         private ILoadPort LoadPortEntity()
         {
@@ -456,26 +495,18 @@ namespace WLS3200Gen2.Model
             if (isSimulate)
             {
                 macro = new DummyMacro();
-                machineSetting.InnerRingPitchXPositionPEL = 850;
-                machineSetting.InnerRingPitchXPositionNEL = -850;
-                machineSetting.InnerRingRollYPositionPEL = 850;
-                machineSetting.InnerRingRollYPositionNEL = -850;
-                machineSetting.InnerRingYawTPositionPEL = 4000;
-                machineSetting.InnerRingYawTPositionNEL = -4000;
-                machineSetting.OuterRingRollYPositionPEL = 9600;//3200
-                machineSetting.OuterRingRollYPositionNEL = -9600;//-3200
             }
             else
             {
                 macro = new HannDeng_Macro(motionController.OutputSignals.ToArray(), motionController.InputSignals.ToArray());
-                machineSetting.InnerRingPitchXPositionPEL = 850;
-                machineSetting.InnerRingPitchXPositionNEL = -850;
-                machineSetting.InnerRingRollYPositionPEL = 850;
-                machineSetting.InnerRingRollYPositionNEL = -850;
-                machineSetting.InnerRingYawTPositionPEL = 4000;
-                machineSetting.InnerRingYawTPositionNEL = -4000;
-                machineSetting.OuterRingRollYPositionPEL = 9600;//3200
-                machineSetting.OuterRingRollYPositionNEL = -9600;//-3200
+                //machineSetting.InnerRingPitchXPositionPEL = 850;
+                //machineSetting.InnerRingPitchXPositionNEL = -850;
+                //machineSetting.InnerRingRollYPositionPEL = 850;
+                //machineSetting.InnerRingRollYPositionNEL = -850;
+                //machineSetting.InnerRingYawTPositionPEL = 4000;
+                //machineSetting.InnerRingYawTPositionNEL = -4000;
+                //machineSetting.OuterRingRollYPositionPEL = 3200;
+                //machineSetting.OuterRingRollYPositionNEL = -3200;
                 macro.InnerRingPitchXPositionPEL = machineSetting.InnerRingPitchXPositionPEL;
                 macro.InnerRingPitchXPositionNEL = machineSetting.InnerRingPitchXPositionNEL;
                 macro.InnerRingRollYPositionPEL = machineSetting.InnerRingRollYPositionPEL;

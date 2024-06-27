@@ -698,6 +698,21 @@ namespace WLS3200Gen2.Model.Component
                 throw ex;
             }
         }
+        public Task ChangeAFParameterTable(int idx)
+        {
+            try
+            {
+                return Task.Run(() =>
+                {
+                    SetAFTBL(idx);
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
         public Task ChangeLensAsync(int idx)
         {

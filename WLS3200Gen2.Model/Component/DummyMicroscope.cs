@@ -97,7 +97,10 @@ namespace WLS3200Gen2.Model.Component
         {
             return Task.CompletedTask;
         }
-
+        public Task ChangeAFParameterTable(int idx)
+        {
+            return Task.CompletedTask;
+        }
         public Task<double> GetAberationPosition()
         {
             throw new NotImplementedException();

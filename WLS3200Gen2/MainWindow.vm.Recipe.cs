@@ -83,6 +83,10 @@ namespace WLS3200Gen2
         private bool isCanWorkEFEMTrans = true;
         private bool isDie, isDieSub, isDieInSideAll, isPosition;
         /// <summary>
+        /// recipe頁面是否變更Die
+        /// </summary>
+        private bool isRecipeShowNowDie = false;
+        /// <summary>
         /// 在Recipe頁面是否已經對完位
         /// </summary>
         private bool isRecipeAlignment = false;
@@ -131,7 +135,12 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComplete) return isMainRecipePageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!isInitialComplete)
+                {
+                    isMainRecipePageSelect = false;
+                    IsMainHomePageSelect = true;
+                    return isMainRecipePageSelect;
+                }  //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
 
                 if (isMainRecipePageSelect)
                     LoadRecipePage();
@@ -145,8 +154,12 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComplete) return isMainToolsPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
-
+                if (!isInitialComplete)
+                {
+                    isMainToolsPageSelect = false;
+                    IsMainHomePageSelect = true;
+                    return isMainToolsPageSelect;
+                }  //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
                 if (isMainToolsPageSelect)
                     LoadToolsPage();
                 else if (!isMainToolsPageSelect)
@@ -162,7 +175,12 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComplete) return isMainSettingPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!isInitialComplete)
+                {
+                    isMainSettingPageSelect = false;
+                    IsMainHomePageSelect = true;
+                    return isMainSettingPageSelect;
+                }  //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
 
                 if (isMainSettingPageSelect)
                     LoadSettingPage();
@@ -180,7 +198,12 @@ namespace WLS3200Gen2
         {
             get
             {
-                if (!isInitialComplete) return isMainSecurityPageSelect; //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
+                if (!isInitialComplete)
+                {
+                    isMainSecurityPageSelect = false;
+                    IsMainHomePageSelect = true;
+                    return isMainSecurityPageSelect;
+                }  //ui初始化會進來一次  所以在沒有完成初始化之前不做下面邏輯
                 if (isMainSecurityPageSelect)
                     LoadSecurityPage();
                 else if (!isMainSecurityPageSelect)
@@ -460,7 +483,7 @@ namespace WLS3200Gen2
                     RecipeLastArmStation = Model.ArmStation.Cassette2;
                 }
             }
-
+            isRecipeShowNowDie = true;
             //始終會切回到第一頁 LoadWafer 頁
             IsLoadwaferPageSelect = true;
             WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the RecipePage");
@@ -475,6 +498,7 @@ namespace WLS3200Gen2
             SetLocateParamToRecipe();
             SetLoadWaferToRecipe();
             SetDetectionToRecipe();
+            isRecipeShowNowDie = false;
         }
         private void LoadToolsPage()
         {
@@ -485,7 +509,16 @@ namespace WLS3200Gen2
                 IsMainHomePageSelect = true;
                 return;
             }
-
+            LoadPort1Wafers.Clear();
+            foreach (var item in ProcessStations)
+            {
+                var w = new WaferUIData();
+                w.SN = item.CassetteIndex.ToString();
+                //只要不是空的 就是有片
+                if (item.MacroBack != WaferProcessStatus.None || item.MacroTop != WaferProcessStatus.None || item.Micro != WaferProcessStatus.None)
+                    w.WaferStates = WaferProcessStatus.NotSelect;
+                LoadPort1Wafers.Add(w);
+            }
             IsLoadwaferPageSelect = true;
             WriteLog(YuanliCore.Logger.LogType.TRIG, "Enter the ToolsPage");
         }
@@ -547,27 +580,27 @@ namespace WLS3200Gen2
         {
             try
             {
-                machineSetting.TableWaferCatchPosition = new Point(TableWaferCatchPositionX, TableWaferCatchPositionY);
-                machineSetting.TableWaferCatchPositionZ = TableWaferCatchPositionZ;
-                machineSetting.TableWaferCatchPositionR = TableWaferCatchPositionR;
-                machineSetting.TableCenterPosition = new Point(TableCenterX, TableCenterY);
-                machineSetting.RobotAxisLoadPort1TakePosition = RobotAxisLoadPort1TakePosition;
-                machineSetting.RobotAxisLoadPort2TakePosition = RobotAxisLoadPort2TakePosition;
-                machineSetting.RobotAxisAlignTakePosition = RobotAxisAligner1TakePosition;
-                machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
-                machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
-                machineSetting.AlignerMicroOffset = AlignerMicroOffset;
-                machineSetting.AlignerUnLoadOffset = AlignerUnLoadOffset;
-                machineSetting.LogPath = LogPath;
-                machineSetting.ResultPath = ResultPath;
-                machineSetting.InnerRingPitchXPositionPEL = InnerRingPitchXPositionPEL;
-                machineSetting.InnerRingPitchXPositionNEL = InnerRingPitchXPositionNEL;
-                machineSetting.InnerRingRollYPositionPEL = InnerRingRollYPositionPEL;
-                machineSetting.InnerRingRollYPositionNEL = InnerRingRollYPositionNEL;
-                machineSetting.InnerRingYawTPositionPEL = InnerRingYawTPositionPEL;
-                machineSetting.InnerRingYawTPositionNEL = InnerRingYawTPositionNEL;
-                machineSetting.OuterRingRollYPositionPEL = OuterRingRollYPositionPEL;
-                machineSetting.OuterRingRollYPositionNEL = OuterRingRollYPositionNEL;
+                //machineSetting.TableWaferCatchPosition = new Point(TableWaferCatchPositionX, TableWaferCatchPositionY);
+                //machineSetting.TableWaferCatchPositionZ = TableWaferCatchPositionZ;
+                //machineSetting.TableWaferCatchPositionR = TableWaferCatchPositionR;
+                //machineSetting.TableCenterPosition = new Point(TableCenterX, TableCenterY);
+                //machineSetting.RobotAxisLoadPort1TakePosition = RobotAxisLoadPort1TakePosition;
+                //machineSetting.RobotAxisLoadPort2TakePosition = RobotAxisLoadPort2TakePosition;
+                //machineSetting.RobotAxisAlignTakePosition = RobotAxisAligner1TakePosition;
+                //machineSetting.RobotAxisMacroTakePosition = RobotAxisMacroTakePosition;
+                //machineSetting.RobotAxisMicroTakePosition = RobotAxisMicroTakePosition;
+                //machineSetting.AlignerMicroOffset = AlignerMicroOffset;
+                //machineSetting.AlignerUnLoadOffset = AlignerUnLoadOffset;
+                //machineSetting.LogPath = LogPath;
+                //machineSetting.ResultPath = ResultPath;
+                //machineSetting.InnerRingPitchXPositionPEL = InnerRingPitchXPositionPEL;
+                //machineSetting.InnerRingPitchXPositionNEL = InnerRingPitchXPositionNEL;
+                //machineSetting.InnerRingRollYPositionPEL = InnerRingRollYPositionPEL;
+                //machineSetting.InnerRingRollYPositionNEL = InnerRingRollYPositionNEL;
+                //machineSetting.InnerRingYawTPositionPEL = InnerRingYawTPositionPEL;
+                //machineSetting.InnerRingYawTPositionNEL = InnerRingYawTPositionNEL;
+                //machineSetting.OuterRingRollYPositionPEL = OuterRingRollYPositionPEL;
+                //machineSetting.OuterRingRollYPositionNEL = OuterRingRollYPositionNEL;
 
             }
             catch (Exception ex)
@@ -929,6 +962,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "RecipePage Wafer To LoadPort");
                 string mesage = "";
                 if (IsLoadport1)
                 {
@@ -955,6 +989,7 @@ namespace WLS3200Gen2
 
                             if (result == MessageBoxResult.Yes)
                             {
+                                WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To LoadPort Start");
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
@@ -988,6 +1023,7 @@ namespace WLS3200Gen2
                             IsStepLocate = false;
                             IsStepDetection = false;
                             IsCanWorkEFEMTrans = true;
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To LoadPort End");
                         }
                     }
                     catch (Exception ex)
@@ -1012,7 +1048,9 @@ namespace WLS3200Gen2
         public ICommand EFEMTransToAlignerCommand => new RelayCommand<string>(async key =>
         {
             try
-            {  //是否執行移動片子訊息
+            {
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "RecipePage Wafer To Aligner");
+                //是否執行移動片子訊息
                 string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Align);
                 var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
 
@@ -1023,6 +1061,7 @@ namespace WLS3200Gen2
                         IsCanWorkEFEMTrans = false;
                         if (result == MessageBoxResult.Yes)
                         {
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To Aligner Start");
                             //片子上一個狀態先記錄起來
                             Model.ArmStation oldArmStation = RecipeLastArmStation;
                             //確認手臂有無片
@@ -1054,6 +1093,7 @@ namespace WLS3200Gen2
                             IsStepAligner = true;
                             IsStepLocate = false;
                             IsStepDetection = false;
+                            WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To Aligner End");
                         }
                         IsCanWorkEFEMTrans = true;
                     }
@@ -1075,6 +1115,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "RecipePage Wafer To Macro");
                 string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Macro);
                 var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
                 await Task.Run(() =>
@@ -1087,6 +1128,7 @@ namespace WLS3200Gen2
                             //是否執行移動片子訊息
                             if (result == MessageBoxResult.Yes)
                             {
+                                WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To Macro Start");
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
@@ -1108,6 +1150,7 @@ namespace WLS3200Gen2
                                 IsStepAligner = false;
                                 IsStepLocate = false;
                                 IsStepDetection = false;
+                                WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To Macro End");
                             }
                             IsCanWorkEFEMTrans = true;
                         }
@@ -1283,6 +1326,7 @@ namespace WLS3200Gen2
         {
             try
             {
+                WriteLog(YuanliCore.Logger.LogType.TRIG, "RecipePage Wafer To Micro");
                 string mesage = EFEMTransWaferMessage(RecipeLastArmStation, Model.ArmStation.Micro);
                 var result = MessageBox.Show(mesage, "Info", MessageBoxButton.YesNo);
                 await Task.Run(async () =>
@@ -1295,6 +1339,7 @@ namespace WLS3200Gen2
                             //是否執行移動片子訊息
                             if (result == MessageBoxResult.Yes)
                             {
+                                WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To Micro Start");
                                 //片子上一個狀態先記錄起來
                                 Model.ArmStation oldArmStation = RecipeLastArmStation;
                                 //確認手臂有無片
@@ -1329,6 +1374,7 @@ namespace WLS3200Gen2
                                 IsStepAligner = true;
                                 IsStepLocate = true;
                                 IsStepDetection = false;
+                                WriteLog(YuanliCore.Logger.LogType.PROCESS, "RecipePage Wafer To Micro End");
                             }
                             IsCanWorkEFEMTrans = true;
                         }
@@ -1631,7 +1677,7 @@ namespace WLS3200Gen2
 
 
                 //
-                var mapPoint = updateRecipeMapTransform.TransInvertPoint(new Point(transPos.X, transPos.Y));
+                var mapPoint = new Point(die.MapTransX, die.MapTransY);
                 var transMapMousePixcel = NowTablePosTransToHomeMapPixel(mapPoint);
                 Rectangle nowSelectRange = new Rectangle
                 {
@@ -1812,21 +1858,15 @@ namespace WLS3200Gen2
                 if (selectRecipeIndex >= 0)
                 {
                     ObservableCollection<int> nowSelectRecipeDetectionPointList = SelectRecipeDetectionPointList;
-                    DetectionEditWindow detectionEditWindow = new DetectionEditWindow(DetectionPointList[selectRecipeIndex], Microscope);
+                    //設定初始值=-1
+
+                    DetectionPoint editInitDetectionPoint = InitialDetectionPoint(nowSelectRecipeDetectionPointList);
+                    DetectionEditWindow detectionEditWindow = new DetectionEditWindow(editInitDetectionPoint, Microscope);
                     detectionEditWindow.ShowDialog();
+
                     if (detectionEditWindow.DetectionPointList != null && detectionEditWindow.DetectionPointList.Count > 0)
                     {
-                        for (int i = 0; i < nowSelectRecipeDetectionPointList.Count; i++)
-                        {
-                            int index = nowSelectRecipeDetectionPointList[i];
-                            DetectionPointList[index].LensIndex = detectionEditWindow.DetectionPointList[0].LensIndex;
-                            DetectionPointList[index].CubeIndex = detectionEditWindow.DetectionPointList[0].CubeIndex;
-                            DetectionPointList[index].Filter1Index = detectionEditWindow.DetectionPointList[0].Filter1Index;
-                            DetectionPointList[index].Filter2Index = detectionEditWindow.DetectionPointList[0].Filter2Index;
-                            DetectionPointList[index].Filter3Index = detectionEditWindow.DetectionPointList[0].Filter3Index;
-                            DetectionPointList[index].MicroscopeLightValue = detectionEditWindow.DetectionPointList[0].MicroscopeLightValue;
-                            DetectionPointList[index].MicroscopeApertureValue = detectionEditWindow.DetectionPointList[0].MicroscopeApertureValue;
-                        }
+                        UpdateDetectionPointList(nowSelectRecipeDetectionPointList, detectionEditWindow.DetectionPointList);
                     }
                     detectionEditWindow = null;
                 }
@@ -1837,6 +1877,170 @@ namespace WLS3200Gen2
                 MessageBox.Show(ex.Message);
             }
         });
+        private void UpdateDetectionPointList(ObservableCollection<int> nowSelectRecipeDetectionPointList, ObservableCollection<DetectionPoint> updateDetectionPoint)
+        {
+            try
+            {
+                if (updateDetectionPoint[0].LensIndex != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].LensIndex = updateDetectionPoint[0].LensIndex;
+                    }
+                }
+                if (updateDetectionPoint[0].CubeIndex != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].CubeIndex = updateDetectionPoint[0].CubeIndex;
+                    }
+                }
+                if (updateDetectionPoint[0].Filter1Index != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].Filter1Index = updateDetectionPoint[0].Filter1Index;
+                    }
+                }
+                if (updateDetectionPoint[0].Filter2Index != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].Filter2Index = updateDetectionPoint[0].Filter2Index;
+                    }
+                }
+                if (updateDetectionPoint[0].Filter3Index != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].Filter3Index = updateDetectionPoint[0].Filter3Index;
+                    }
+                }
+                if (updateDetectionPoint[0].MicroscopeLightValue != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].MicroscopeLightValue = updateDetectionPoint[0].MicroscopeLightValue;
+                    }
+                }
+                if (updateDetectionPoint[0].MicroscopeApertureValue != -1)
+                {
+                    foreach (var item in nowSelectRecipeDetectionPointList)
+                    {
+                        DetectionPointList[item].MicroscopeApertureValue = updateDetectionPoint[0].MicroscopeApertureValue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        private DetectionPoint InitialDetectionPoint(ObservableCollection<int> nowSelectRecipeDetectionPointList)
+        {
+            try
+            {
+                int selectRecipeIndex = SelectRecipeDetectionPointList[0];
+                DetectionPoint editInitDetectionPoint = new DetectionPoint();
+                editInitDetectionPoint.LensIndex = DetectionPointList[selectRecipeIndex].LensIndex;
+                editInitDetectionPoint.CubeIndex = DetectionPointList[selectRecipeIndex].CubeIndex;
+                editInitDetectionPoint.Filter1Index = DetectionPointList[selectRecipeIndex].Filter1Index;
+                editInitDetectionPoint.Filter2Index = DetectionPointList[selectRecipeIndex].Filter2Index;
+                editInitDetectionPoint.Filter3Index = DetectionPointList[selectRecipeIndex].Filter3Index;
+                editInitDetectionPoint.MicroscopeLightValue = DetectionPointList[selectRecipeIndex].MicroscopeLightValue;
+                editInitDetectionPoint.MicroscopeApertureValue = DetectionPointList[selectRecipeIndex].MicroscopeApertureValue;
+                editInitDetectionPoint.MicroscopePosition = DetectionPointList[selectRecipeIndex].MicroscopePosition;
+                editInitDetectionPoint.MicroscopeAberationPosition = DetectionPointList[selectRecipeIndex].MicroscopeAberationPosition;
+                editInitDetectionPoint.SubProgramName = DetectionPointList[selectRecipeIndex].SubProgramName;
+
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].LensIndex != DetectionPointList[item].LensIndex)
+                    {
+                        editInitDetectionPoint.LensIndex = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].CubeIndex != DetectionPointList[item].CubeIndex)
+                    {
+                        editInitDetectionPoint.CubeIndex = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].Filter1Index != DetectionPointList[item].Filter1Index)
+                    {
+                        editInitDetectionPoint.Filter1Index = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].Filter2Index != DetectionPointList[item].Filter2Index)
+                    {
+                        editInitDetectionPoint.Filter2Index = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].Filter3Index != DetectionPointList[item].Filter3Index)
+                    {
+                        editInitDetectionPoint.Filter3Index = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].MicroscopeLightValue != DetectionPointList[item].MicroscopeLightValue)
+                    {
+                        editInitDetectionPoint.MicroscopeLightValue = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].MicroscopeApertureValue != DetectionPointList[item].MicroscopeApertureValue)
+                    {
+                        editInitDetectionPoint.MicroscopeApertureValue = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].MicroscopePosition != DetectionPointList[item].MicroscopePosition)
+                    {
+                        editInitDetectionPoint.MicroscopePosition = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].MicroscopeAberationPosition != DetectionPointList[item].MicroscopeAberationPosition)
+                    {
+                        editInitDetectionPoint.MicroscopeAberationPosition = -1;
+                        break;
+                    }
+                }
+                foreach (int item in nowSelectRecipeDetectionPointList)
+                {
+                    if (DetectionPointList[selectRecipeIndex].SubProgramName != DetectionPointList[item].SubProgramName)
+                    {
+                        editInitDetectionPoint.SubProgramName = "-1";
+                        break;
+                    }
+                }
+
+                return editInitDetectionPoint;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         public ICommand DetectionPointListDoubleClickCommand => new RelayCommand(async () =>
         {
             try
