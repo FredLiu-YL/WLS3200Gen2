@@ -55,7 +55,7 @@ namespace WLS3200Gen2.Model
                 var copiedProcessSetting = processSetting.Copy();
                 if (processSetting.IsTestRun)
                 {
-                    testCount = 20;
+                    testCount = 200;
                 }
                 for (int i = 0; i < testCount; i++)
                 {

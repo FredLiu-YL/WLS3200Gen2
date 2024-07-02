@@ -208,7 +208,7 @@ namespace WLS3200Gen2.Model.Component
         public double OuterRingRollYPositionPEL { get; set; }
         public double OuterRingRollYPositionNEL { get; set; }
 
-        public Task Home()
+        public Task Home(bool isMacroHaveWafer)
         {
             try
             {
@@ -237,7 +237,7 @@ namespace WLS3200Gen2.Model.Component
                     IsInnerCanMoveStartPos = false;
                     IsOuterCanMoveStartPos = false;
                     await HomeInnerRing(isFirstHome);
-                    await HomeOuterRing(isFirstHome);
+                    await HomeOuterRing(isFirstHome, isMacroHaveWafer);
                     IsCanMoveAllHome = true;
                     IsInnerCanMoveStartPos = true;
                     IsOuterCanMoveStartPos = true;
@@ -385,7 +385,7 @@ namespace WLS3200Gen2.Model.Component
                 Task task = Task.CompletedTask;
                 if (CheckMacroCanMoveInnerRing() == CheckMacroCanMove.OuterInTop)
                 {
-                    task = HomeOuterRing(false);
+                    task = HomeOuterRing(false, true);
                 }
                 else
                 {
@@ -926,7 +926,7 @@ namespace WLS3200Gen2.Model.Component
         /// </summary>
         /// <param name="isFirstHome"></param>
         /// <returns></returns>
-        private Task HomeOuterRing(bool isFirstHome)
+        private Task HomeOuterRing(bool isFirstHome, bool isHaveWafer)
         {
             try
             {
@@ -1032,7 +1032,7 @@ namespace WLS3200Gen2.Model.Component
                         System.Threading.Thread.Sleep(50);
                         if (i >= 200) throw new Exception($"外環 升降馬達復歸異常Time out");
                     }
-                    if (isFirstHome != true)
+                    if (isFirstHome != true || isHaveWafer)
                     {
                         InnerRingVacuum.On();
                     }

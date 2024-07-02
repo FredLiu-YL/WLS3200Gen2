@@ -89,7 +89,7 @@ namespace WLS3200Gen2.Model.Module
         public event Func<PauseTokenSource, CancellationTokenSource, Task<String>> WaferIDReady;
 
         public event Action<BitmapSource> WaferIDRecord;
-        public async Task Home()
+        public async Task Home(bool isMacroHaveWafer)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace WLS3200Gen2.Model.Module
                     loadPort12Home = LoadPortR.Home();
                 }
 
-                Task macroHome = Macro.Home();
+                Task macroHome = Macro.Home(isMacroHaveWafer);
 
                 Task lamp1Home = LampControl1.ChangeLightAsync(0);
 

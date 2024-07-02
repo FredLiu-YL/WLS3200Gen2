@@ -49,7 +49,7 @@ namespace WLS3200Gen2.Model.Component
             return Task.CompletedTask;
         }
 
-        public Task Home()
+        public Task Home(bool isHaveWafer)
         {
             return Task.CompletedTask;
         }

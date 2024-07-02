@@ -18,6 +18,10 @@ namespace WLS3200Gen2.Model
 {
     public partial class Machine
     {
+        /// <summary>
+        /// Macro是否有片
+        /// </summary>
+        private bool isMacroHaveWafer = false;
         public void Initial()
         {
 
@@ -162,11 +166,13 @@ namespace WLS3200Gen2.Model
                 await Task.Delay(1000); //等待真空建立完成
                 if (Feeder.Macro.IsLockOK)
                 {
+                    isMacroHaveWafer = true;
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Macro Have Wafer!!");
                     isWaferInSystem = true;
                 }
                 else
                 {
+                    isMacroHaveWafer = false;
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Macro No Wafer.");
                     Feeder.Macro.ReleaseWafer();
                     await Task.Delay(100); //等待解真空
@@ -218,9 +224,7 @@ namespace WLS3200Gen2.Model
             try
             {
                 //顯示是否要復歸
-
-
-                Task feedHome = Feeder.Home();
+                Task feedHome = Feeder.Home(isMacroHaveWafer);
                 await Task.Delay(500); //先暫停500ms 避免判定還沒出現就過了 WaitEFEMonSafe
                 await Feeder.WaitEFEMonSafe;//等待EFEM 在安全位置上 就可以先回顯微鏡
                 Task microHome = MicroDetection.Home();
