@@ -260,6 +260,9 @@
     <Compile Include="Windows\SINFMapGenerateWindow.xaml.cs">
       <DependentUpon>SINFMapGenerateWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SubDieEditWindow.xaml.cs">
+      <DependentUpon>SubDieEditWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="InfomationWidow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -377,6 +380,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\SINFMapGenerateWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SubDieEditWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

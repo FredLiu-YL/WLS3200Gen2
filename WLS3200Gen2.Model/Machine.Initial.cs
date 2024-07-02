@@ -145,7 +145,7 @@ namespace WLS3200Gen2.Model
                 bool isWaferInSystem = false;
 
                 await Feeder.Robot.FixWafer();
-                await Task.Delay(500); //等待真空建立完成
+                await Task.Delay(1000); //等待真空建立完成
                 if (Feeder.Robot.IsLockOK)
                 {
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Robot Have Wafer!!");
@@ -159,7 +159,7 @@ namespace WLS3200Gen2.Model
                 }
 
                 Feeder.Macro.FixWafer();
-                await Task.Delay(500); //等待真空建立完成
+                await Task.Delay(1000); //等待真空建立完成
                 if (Feeder.Macro.IsLockOK)
                 {
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Macro Have Wafer!!");
@@ -173,7 +173,7 @@ namespace WLS3200Gen2.Model
                 }
 
                 await Feeder.AlignerL.FixWafer();
-                await Task.Delay(500); //等待真空建立完成
+                await Task.Delay(100); //等待真空建立完成
                 if (Feeder.AlignerL.IsLockOK)
                 {
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Micro Have Wafer!!");
@@ -187,7 +187,7 @@ namespace WLS3200Gen2.Model
                 }
 
                 MicroDetection.TableVacuum.On();
-                await Task.Delay(500); //等待真空建立完成
+                await Task.Delay(1000); //等待真空建立完成
                 if (MicroDetection.IsTableVacuum.IsSignal)
                 {
                     WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "HaveWaferCheck Micro Have Wafer!!");

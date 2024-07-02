@@ -736,13 +736,15 @@ namespace WLS3200Gen2
         {
             try
             {
-                MainRecipe recipe = mainRecipe;
-                ProcessSetting processSetting = new ProcessSetting();
-                processSetting.IsAutoFocus = true;
-                processSetting.IsAutoSave = true;
-                Wafer currentWafer = new Wafer(1);
-                var cc = machine.MicroDetection.Microscope.AberationPosition;
+                //MainRecipe recipe = mainRecipe;
+                //ProcessSetting processSetting = new ProcessSetting();
+                //processSetting.IsAutoFocus = true;
+                //processSetting.IsAutoSave = true;
+                //Wafer currentWafer = new Wafer(1);
+                //var cc = machine.MicroDetection.Microscope.AberationPosition;
                 //await machine.MicroDetection.Run(currentWafer, recipe, processSetting, ptsTest, ctsTest);
+                SubDieEditWindow subDieEditWindow = new SubDieEditWindow(MainImage);
+                subDieEditWindow.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -801,8 +803,8 @@ namespace WLS3200Gen2
                 //在特定情況下才可以動作
                 if (IsCanWorkEFEMTrans && isRecipeCanvasCanMove)
                 {
-                    var relativeX = (RecipeMousePixcel.X - MainImage.PixelHeight / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioX;
-                    var relativeY = (RecipeMousePixcel.Y - MainImage.PixelWidth / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioY;
+                    var relativeX = (RecipeMousePixcel.X - MainImage.PixelWidth / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioX;
+                    var relativeY = (RecipeMousePixcel.Y - MainImage.PixelHeight / 2) * MicroscopeLensDefault[machine.MicroDetection.Microscope.LensIndex].RatioY;
                     await machine.MicroDetection.TableMoveToAndOnceAsync(new Point(relativeX, relativeY));
                 }
             }

@@ -363,7 +363,10 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
-                await Task.WhenAll(AxisX.MoveToAsync(pos.X), AxisY.MoveToAsync(pos.Y));
+
+
+                await Task.WhenAll(AxisX.MoveToAsync(AxisX.Position + pos.X), AxisY.MoveToAsync(AxisY.Position + pos.Y));
+                Microscope.AFOff();
                 await Microscope.AFOneShotAsync();
             }
             catch (Exception ex)

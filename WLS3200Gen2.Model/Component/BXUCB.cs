@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using YuanliCore.Data;
 using YuanliCore.Model.Interface;
 
 namespace WLS3200Gen2.Model.Component
@@ -274,7 +275,7 @@ namespace WLS3200Gen2.Model.Component
                     else if (str.Contains("AF !"))
                     {
                         string errorStr = str.Replace("2AF !,", "");
-                        throw new Exception("BXUCB AF_Off Error:" + errorStr);
+                        throw new FlowException("BXUCB AF_Off Error:" + errorStr);
                     }
                     else
                     {
@@ -312,7 +313,7 @@ namespace WLS3200Gen2.Model.Component
                         else if (str.Contains("AF !"))
                         {
                             string errorStr = str.Replace("2AF !,", "");
-                            throw new Exception("BXUCB AFOneShotAsync Error:" + errorStr);
+                            throw new FlowException("BXUCB AFOneShotAsync Error:" + errorStr);
                         }
                         else
                         {
@@ -351,7 +352,7 @@ namespace WLS3200Gen2.Model.Component
                         else if (str.Contains("AF !"))
                         {
                             string errorStr = str.Replace("2AF !,", "");
-                            throw new Exception("BXUCB AF_Trace Error:" + errorStr);
+                            throw new FlowException("BXUCB AF_Trace Error:" + errorStr);
                         }
                         else
                         {
