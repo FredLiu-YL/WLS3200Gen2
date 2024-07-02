@@ -152,39 +152,46 @@ namespace WLS3200Gen2.Model
                 bool isFindSubProgram = false;
                 if (orgDetectionPoint.SubProgramName == "DieAll")
                 {
-                    isFindSubProgram = true;
-                    List<Point> offsetPoint = TransLensDieAllPoint(orgDetectionPoint.LensIndex, dieSize, cameraPixal);
-                    foreach (Point item in offsetPoint)
+                    if (MicroscopeLensDefault.Count() - 1 < orgDetectionPoint.LensIndex)
                     {
-                        DetectionPoint addDetectionPoint = orgDetectionPoint.Copy();
-                        addDetectionPoint.IndexHeader = indexHeader;
-                        addDetectionPoint.IndexX = orgDetectionPoint.IndexX;
-                        addDetectionPoint.IndexY = orgDetectionPoint.IndexY;
-                        addDetectionPoint.Position = new Point(orgDetectionPoint.Position.X + item.X,
-                                                               orgDetectionPoint.Position.Y + item.Y);
-                        indexHeader += 1;
+                        isFindSubProgram = true;
+                        List<Point> offsetPoint = TransLensDieAllPoint(orgDetectionPoint.LensIndex, dieSize, cameraPixal);
+                        foreach (Point item in offsetPoint)
+                        {
+                            DetectionPoint addDetectionPoint = orgDetectionPoint.Copy();
+                            addDetectionPoint.IndexHeader = indexHeader;
+                            addDetectionPoint.IndexX = orgDetectionPoint.IndexX;
+                            addDetectionPoint.IndexY = orgDetectionPoint.IndexY;
+                            addDetectionPoint.Position = new Point(orgDetectionPoint.Position.X + item.X,
+                                                                   orgDetectionPoint.Position.Y + item.Y);
+                            indexHeader += 1;
+                        }
                     }
                     break;
                 }
                 else
                 {
-                    foreach (SubDiePoint item2 in SubDiePoint)
+                    if (SubDiePoint != null)
                     {
-                        if (orgDetectionPoint.SubProgramName == item2.SubProgramName)
+                        foreach (SubDiePoint item2 in SubDiePoint)
                         {
-                            isFindSubProgram = true;
-                            foreach (DetectionPoint subDetectionPoint in item2.DetectionPoints)
+                            if (orgDetectionPoint.SubProgramName == item2.SubProgramName)
                             {
-                                DetectionPoint addDetectionPoint = subDetectionPoint.Copy();
-                                addDetectionPoint.IndexHeader = indexHeader;
-                                addDetectionPoint.IndexX = orgDetectionPoint.IndexX;
-                                addDetectionPoint.IndexY = orgDetectionPoint.IndexY;
-                                addDetectionPoint.Position = new Point(orgDetectionPoint.Position.X + subDetectionPoint.Position.X,
-                                                                       orgDetectionPoint.Position.Y + subDetectionPoint.Position.Y);
-                                indexHeader += 1;
+                                isFindSubProgram = true;
+                                foreach (DetectionPoint subDetectionPoint in item2.DetectionPoints)
+                                {
+                                    DetectionPoint addDetectionPoint = subDetectionPoint.Copy();
+                                    addDetectionPoint.IndexHeader = indexHeader;
+                                    addDetectionPoint.IndexX = orgDetectionPoint.IndexX;
+                                    addDetectionPoint.IndexY = orgDetectionPoint.IndexY;
+                                    addDetectionPoint.Position = new Point(orgDetectionPoint.Position.X + subDetectionPoint.Position.X,
+                                                                           orgDetectionPoint.Position.Y + subDetectionPoint.Position.Y);
+                                    indexHeader += 1;
+                                }
+                                break;
                             }
-                            break;
                         }
+
                     }
                 }
                 if (isFindSubProgram == false)
