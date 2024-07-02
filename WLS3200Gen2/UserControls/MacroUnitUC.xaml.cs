@@ -72,7 +72,7 @@ namespace WLS3200Gen2.UserControls
                 if (MacroStatus.IsProcessStop == true)
                 {
                     MacroStatus.IsProcessStop = false;
-                    await Macro.Home();
+                    await Macro.Home(true);
                     IsInnerRing = false;
                     IsOuterRing = false;
                     MacroStatus.IsProcessStop = true;

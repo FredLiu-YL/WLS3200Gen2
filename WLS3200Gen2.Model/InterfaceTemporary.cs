@@ -613,7 +613,7 @@ namespace WLS3200Gen2.Model
         /// 全部復歸
         /// </summary>
         /// <returns></returns>
-        Task Home();
+        Task Home(bool isHaveWafer);
         /// <summary>
         /// 內圈復歸
         /// </summary>

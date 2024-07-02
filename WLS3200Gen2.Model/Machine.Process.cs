@@ -55,7 +55,7 @@ namespace WLS3200Gen2.Model
                 var copiedProcessSetting = processSetting.Copy();
                 if (processSetting.IsTestRun)
                 {
-                    testCount = 20;
+                    testCount = 200;
                 }
                 for (int i = 0; i < testCount; i++)
                 {
@@ -425,7 +425,7 @@ namespace WLS3200Gen2.Model
                     Task taskLampControl2 = Feeder.LampControl2.ChangeLightAsync(eFEMtionRecipe.MacroBackRightLightValue);
                     Feeder.Macro.InnerYawTReset();
                     await Feeder.Macro.InnerRingYawTMoveToAsync(processSetting.SecondFlipPos);
-                    await Task.Delay(50);
+                    await Task.Delay(500);
                     await Feeder.Macro.GoOuterRingCheckPos();
                     //做翻面動作  可能Robot 取走翻轉完再放回 ，或Macro 機構本身能翻
                     var startPos = eFEMtionRecipe.MacroBackStartPos;

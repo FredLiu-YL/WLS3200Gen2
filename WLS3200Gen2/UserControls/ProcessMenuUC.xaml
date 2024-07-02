@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:WLS3200Gen2.UserControls" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              x:Name="ProcessMenu"
+             Loaded="ProcessMenu_Loaded"
+             Unloaded="ProcessMenu_Unloaded"
              d:DesignHeight="40" d:DesignWidth="40">
     <UserControl.Resources>
         <ResourceDictionary>

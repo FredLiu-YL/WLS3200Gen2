@@ -1,0 +1,38 @@
+﻿<Window x:Class="WLS3200Gen2.SubDieEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WLS3200Gen2"
+        xmlns:views="clr-namespace:YuanliCore.Views;assembly=YuanliCore.Model"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:command="http://www.galasoft.ch/mvvmlight"
+        mc:Ignorable="d"
+        x:Name="SubDieEdit"
+        WindowStyle="ToolWindow"    
+        Title="SubDieEditWindow" Height="800" Width="950">
+    <Grid DataContext="{Binding ElementName=SubDieEdit}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.2*"/>
+            <ColumnDefinition Width="0.8*"/>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Orientation="Vertical" Grid.Column="1" >
+            <views:VirtualCanvas Grid.Column="1" Grid.Row="1" Width="350" Height="350"
+                                 ImageSource="{Binding MainImage}"  ItemsSource="{Binding ManualDrawings}" MousePixcel="{Binding HomeMousePixcel}"
+                                        AddShapeAction="{Binding AddShapeManualAction}" ClearShapeAction="{Binding ClearShapeManualAction}" ZoomFitAction="{Binding ZoomFitManualAction}" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewMouseDoubleClick">
+                        <command:EventToCommand Command="{Binding HomeCanvasDoubleClickCommand}"   />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </views:VirtualCanvas>
+            <StackPanel Orientation="Horizontal" >
+                <Button Margin="5" Grid.Row="0" Grid.Column="0" Content="Save" Grid.ColumnSpan="2" FontSize="15" Height="40" Width="150"  Command="{Binding GetNowParamCommand}" Cursor="Hand" />
+                <Label Content="Name" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Width="200"/>
+                <Button Margin="5" Grid.Row="0" Grid.Column="0" Content="SaveAs" Grid.ColumnSpan="2" FontSize="15" Height="40" Width="150"  Command="{Binding GetNowParamCommand}" Cursor="Hand" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -283,7 +283,7 @@ namespace WLS3200Gen2
             {
                 //是否執行移動片子訊息
                 WriteLog(YuanliCore.Logger.LogType.TRIG, "Tools MacroWaferToLoadPort");
-                var result = MessageBox.Show("MicroWaferToLoadPort?", "Info", MessageBoxButton.YesNo);
+                var result = MessageBox.Show("MacroWaferToLoadPort?", "Info", MessageBoxButton.YesNo);
 
                 if (IsCanWorkEFEMTrans && Machinestatus == YuanliCore.Machine.Base.MachineStates.IDLE)
                 {

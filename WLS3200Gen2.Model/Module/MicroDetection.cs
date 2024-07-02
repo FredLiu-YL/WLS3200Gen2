@@ -196,7 +196,7 @@ namespace WLS3200Gen2.Model.Module
         {
             try
             {
-                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro Start");
+                WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro Run Start");
                 DetectionRecipe recipe = mainRecipe.DetectRecipe;
                 if (IsTableVacuum.IsSignal)
                 {
@@ -289,7 +289,7 @@ namespace WLS3200Gen2.Model.Module
                         report.WaferMapping.Dies = micro.Result.Item2;
                         SaveSinfResult(GrabSaveFolder + "\\Result.txt", report.WaferMapping.Dies, mainRecipe.DetectRecipe.WaferMap);
                     }
-                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro End");
+                    WriteLog?.Invoke(YuanliCore.Logger.LogType.PROCESS, "Micro Run End");
                 }
                 else
                 {
@@ -363,7 +363,10 @@ namespace WLS3200Gen2.Model.Module
             try
             {
                 if (IsInitial == false) throw new FlowException("MicroDetection:Is Not Initial!!");
-                await Task.WhenAll(AxisX.MoveToAsync(pos.X), AxisY.MoveToAsync(pos.Y));
+
+
+                await Task.WhenAll(AxisX.MoveToAsync(AxisX.Position + pos.X), AxisY.MoveToAsync(AxisY.Position + pos.Y));
+                Microscope.AFOff();
                 await Microscope.AFOneShotAsync();
             }
             catch (Exception ex)

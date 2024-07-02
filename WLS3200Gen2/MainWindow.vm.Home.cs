@@ -215,6 +215,8 @@ namespace WLS3200Gen2
                         TableX.AxisVelocity.MaxVel = TableXMaxVel;
                         TableY.AxisVelocity.MaxVel = TableYMaxVel;
                         TableZ.AxisVelocity.MaxVel = TableZMaxVel;
+                        isHomeCanvasCanMove = false;
+                        isRecipeCanvasCanMove = false;
                         await machine.ProcessRunAsync(ProcessSetting);
                     }
 
@@ -262,8 +264,8 @@ namespace WLS3200Gen2
                 {
                     item.IsCanChangeSelect = true;
                 }
-                isHomeCanvasCanMove = false;
-                isRecipeCanvasCanMove = false;
+                isHomeCanvasCanMove = true;
+                isRecipeCanvasCanMove = true;
                 WriteLog(YuanliCore.Logger.LogType.PROCESS, "Process Finish");
             }
         });
@@ -297,6 +299,8 @@ namespace WLS3200Gen2
                         }
                         SwitchStates(MachineStates.RUNNING);
                         WriteLog(YuanliCore.Logger.LogType.TRIG, "Home");
+
+
                         IsOperateUI = false;
                         IsCanChangeRecipe = false;
                         isWaferInSystem = await machine.HaveWaferCheck();
@@ -311,13 +315,15 @@ namespace WLS3200Gen2
                             WriteLog(YuanliCore.Logger.LogType.TRIG, "Home Start");
 
                             await machine.Home();
-                           
+
                             PausePackIcon = PackIconKind.Pause;
                             ProcessVisibility = Visibility.Visible;
                             StopVisibility = Visibility.Visible;
                             isHome = true;
                             IsOperateUI = true;
                             IsCanChangeRecipe = true;
+                            isHomeCanvasCanMove = true;
+                            isRecipeCanvasCanMove = true;
                             WriteLog(YuanliCore.Logger.LogType.TRIG, "Home End");
                         }
                         SwitchStates(MachineStates.IDLE);

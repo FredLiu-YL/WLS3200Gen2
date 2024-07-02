@@ -23,6 +23,7 @@ namespace WLS3200Gen2.UserControls
     /// </summary>
     public partial class ProcessMenuUC : UserControl, INotifyPropertyChanged
     {
+        private System.Windows.Threading.DispatcherTimer dispatcherTimerFeedback;
         private bool isDegree0, isDegree90, isDegree180, isDegree270;
         private bool isNoRotate, isForwardRotate, isBackwardRotate;
         public static readonly DependencyProperty IsAutoSaveProperty = DependencyProperty.Register(nameof(IsAutoSave), typeof(bool), typeof(ProcessMenuUC),
@@ -93,22 +94,6 @@ namespace WLS3200Gen2.UserControls
             get => (Degree)GetValue(DegreeUnLoadProperty);
             set
             {
-                if (value == Degree.Degree0)
-                {
-                    IsDegree0 = true;
-                }
-                else if (value == Degree.Degree90)
-                {
-                    IsDegree90 = true;
-                }
-                else if (value == Degree.Degree180)
-                {
-                    IsDegree180 = true;
-                }
-                else if (value == Degree.Degree270)
-                {
-                    IsDegree270 = true;
-                }
                 SetValue(DegreeUnLoadProperty, value);
             }
         }
@@ -120,18 +105,6 @@ namespace WLS3200Gen2.UserControls
             get => (TopContinueRotate)GetValue(TopContinueRotateProperty);
             set
             {
-                if (value == TopContinueRotate.No)
-                {
-                    IsNoRotate = true;
-                }
-                else if (value == TopContinueRotate.Forward)
-                {
-                    IsForwardRotate = true;
-                }
-                else if (value == TopContinueRotate.Backward)
-                {
-                    IsBackwardRotate = true;
-                }
                 SetValue(TopContinueRotateProperty, value);
             }
         }
@@ -182,7 +155,7 @@ namespace WLS3200Gen2.UserControls
                 if (value && isDegree270 != value)
                 {
                     SetValue(ref isDegree270, value);
-                    DegreeUnLoad = Degree.Degree90;
+                    DegreeUnLoad = Degree.Degree270 ;
                 }
                 SetValue(ref isDegree270, value);
             }
@@ -198,6 +171,72 @@ namespace WLS3200Gen2.UserControls
                     TopContinueRotate = TopContinueRotate.No;
                 }
                 SetValue(ref isNoRotate, value);
+            }
+        }
+
+        private void ProcessMenu_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                dispatcherTimerFeedback = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimerFeedback.Tick += new EventHandler(dispatcherTimerFeedback_Tick);
+                dispatcherTimerFeedback.Interval = TimeSpan.FromMilliseconds(200);
+                dispatcherTimerFeedback.Start();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void ProcessMenu_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (dispatcherTimerFeedback != null)
+            {
+                dispatcherTimerFeedback.Stop();
+                dispatcherTimerFeedback.Tick -= new EventHandler(dispatcherTimerFeedback_Tick);
+            }
+        }
+        private void dispatcherTimerFeedback_Tick(object sender, EventArgs e)
+        {
+            GetAxisStatusTest();
+        }
+        private void GetAxisStatusTest()
+        {
+            try
+            {
+                if (DegreeUnLoad == Degree.Degree0)
+                {
+                    IsDegree0 = true;
+                }
+                else if (DegreeUnLoad == Degree.Degree90)
+                {
+                    IsDegree90 = true;
+                }
+                else if (DegreeUnLoad == Degree.Degree180)
+                {
+                    IsDegree180 = true;
+                }
+                else if (DegreeUnLoad == Degree.Degree270)
+                {
+                    IsDegree270 = true;
+                }
+
+                if (TopContinueRotate == TopContinueRotate.No)
+                {
+                    IsNoRotate = true;
+                }
+                else if (TopContinueRotate == TopContinueRotate.Forward)
+                {
+                    IsForwardRotate = true;
+                }
+                else if (TopContinueRotate == TopContinueRotate.Backward)
+                {
+                    IsBackwardRotate = true;
+                }
+            }
+            catch (Exception ex)
+            {
             }
         }
         public bool IsForwardRotate
