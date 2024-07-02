@@ -192,7 +192,11 @@ namespace WLS3200Gen2.Model.Module
                 throw ex;
             }
         }
-        public async Task Run(Wafer currentWafer, InspectionReport report, MainRecipe mainRecipe, MicroscopeLens[] lensSetting, ProcessSetting processSetting, string savePath, PauseTokenSource pst, CancellationTokenSource ctk)
+        public async Task Run(Wafer currentWafer, InspectionReport report,
+                              MainRecipe mainRecipe, MicroscopeLens[] lensSetting,
+                              ProcessSetting processSetting, string savePath,
+                              IEnumerable<DetectionPoint> subDetectionPoint,
+                              PauseTokenSource pst, CancellationTokenSource ctk)
         {
             try
             {

@@ -12,7 +12,6 @@ namespace WLS3200Gen2.Model.Recipe
 {
     public class MainRecipe : AbstractRecipe
     {
-
         public DetectionRecipe DetectRecipe { get; set; } = new DetectionRecipe();
 
         public EFEMtionRecipe EFEMRecipe { get; set; } = new EFEMtionRecipe();

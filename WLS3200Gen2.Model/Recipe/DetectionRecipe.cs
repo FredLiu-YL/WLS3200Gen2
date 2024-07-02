@@ -34,6 +34,15 @@ namespace WLS3200Gen2.Model.Recipe
         /// 暫放  等待WaferMapping  修正後應該存入WaferMapping  目前測試350*350可以 ，400*400檔案太大讀取會有問題
         /// </summary>
         public Frame<byte[]> MapImage { get; set; }
+
+        public IEnumerable<DetectionPoint> CopyDetectionPoints()
+        {
+            //MainRecipe newRecipe = new MainRecipe();
+            // 複製 AlignmentRecipe 部分
+            //newRecipe.DetectRecipe.DetectionPoints = 
+
+            return this.DetectionPoints.Select(dp => dp.Copy()).ToList();
+        }
     }
 
     public class DetectionPoint : INotifyPropertyChanged
@@ -104,6 +113,27 @@ namespace WLS3200Gen2.Model.Recipe
         /// SubDie模式名稱
         /// </summary>
         public string SubProgramName { get => subProgramName; set => SetValue(ref subProgramName, value); }
+        public DetectionPoint Copy()
+        {
+            return new DetectionPoint
+            {
+                IndexHeader = this.IndexHeader,
+                IndexX = this.IndexX,
+                IndexY = this.IndexY,
+                Position = this.Position,
+                Code = this.Code,
+                LensIndex = this.LensIndex,
+                CubeIndex = this.CubeIndex,
+                Filter1Index = this.Filter1Index,
+                Filter2Index = this.Filter2Index,
+                Filter3Index = this.Filter3Index,
+                MicroscopeLightValue = this.MicroscopeLightValue,
+                MicroscopeApertureValue = this.MicroscopeApertureValue,
+                MicroscopePosition = this.MicroscopePosition,
+                MicroscopeAberationPosition = this.MicroscopeAberationPosition,
+                SubProgramName = this.SubProgramName,
+            };
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void SetValue<T>(ref T field, T value, [CallerMemberName] string propertyName = null)

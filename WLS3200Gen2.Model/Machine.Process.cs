@@ -99,6 +99,12 @@ namespace WLS3200Gen2.Model
                                 //避免未來會先讀MES的資訊 才決定要用哪個Recipe  ，預留擴充的機會
                                 if (ChangeRecipe == null) throw new NotImplementedException("ChangeRecipe  Not Implemented");
                                 MainRecipe recipe = ChangeRecipe.Invoke();
+                                //把原本的DetectionPoint擴展成sub點
+                                IEnumerable<DetectionPoint> subDetectionPoint = recipe.DetectRecipe.CopyDetectionPoints();
+                                Point dieSize = new Point(recipe.DetectRecipe.WaferMap.DieSize_X, recipe.DetectRecipe.WaferMap.DieSize_Y);
+                                Point cameraPixel = new Point(MicroDetection.Camera.Width, MicroDetection.Camera.Height);
+                                subDetectionPoint = machineSetting.TransSubDetectionPoints(recipe.DetectRecipe.DetectionPoints, dieSize, cameraPixel);
+
                                 InspectionReport report = new InspectionReport();
                                 report.WaferMapping = recipe.DetectRecipe.WaferMap.Copy();
 
@@ -191,7 +197,7 @@ namespace WLS3200Gen2.Model
                                         cts.Token.ThrowIfCancellationRequested();
                                         await pts.Token.WaitWhilePausedAsync(cts.Token);
                                     }
-                                    await MicroDetection.Run(currentWafer, report, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, currentSavePath, pts, cts);
+                                    await MicroDetection.Run(currentWafer, report, recipe, machineSetting.MicroscopeLensDefault.ToArray(), processSetting, currentSavePath, subDetectionPoint, pts, cts);
                                     SetWaferStatusToUI(currentWafer);
                                     if (pts.IsPaused)
                                     {

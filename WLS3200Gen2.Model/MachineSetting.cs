@@ -134,6 +134,127 @@ namespace WLS3200Gen2.Model
         /// 鏡頭參數
         /// </summary>
         public IEnumerable<MicroscopeLens> MicroscopeLensDefault { get; set; }
+        /// <summary>
+        /// SubDie參數
+        /// </summary>
+        public IEnumerable<SubDiePoint> SubDiePoint { get; set; }
+        /// <summary>
+        /// 原本的detectionPoint轉換Sub成新的Die
+        /// </summary>
+        /// <param name="detectionPoint"></param>
+        /// <returns></returns>
+        public IEnumerable<DetectionPoint> TransSubDetectionPoints(IEnumerable<DetectionPoint> detectionPoint, Point dieSize, Point cameraPixal)
+        {
+            List<DetectionPoint> DetectionPointList = new List<DetectionPoint>();
+            int indexHeader = 1;
+            foreach (DetectionPoint orgDetectionPoint in detectionPoint)
+            {
+                bool isFindSubProgram = false;
+                if (orgDetectionPoint.SubProgramName == "DieAll")
+                {
+                    isFindSubProgram = true;
+                    List<Point> offsetPoint = TransLensDieAllPoint(orgDetectionPoint.LensIndex, dieSize, cameraPixal);
+                    foreach (Point item in offsetPoint)
+                    {
+                        DetectionPoint addDetectionPoint = orgDetectionPoint.Copy();
+                        addDetectionPoint.IndexHeader = indexHeader;
+                        addDetectionPoint.IndexX = orgDetectionPoint.IndexX;
+                        addDetectionPoint.IndexY = orgDetectionPoint.IndexY;
+                        addDetectionPoint.Position = new Point(orgDetectionPoint.Position.X + item.X,
+                                                               orgDetectionPoint.Position.Y + item.Y);
+                        indexHeader += 1;
+                    }
+                    break;
+                }
+                else
+                {
+                    foreach (SubDiePoint item2 in SubDiePoint)
+                    {
+                        if (orgDetectionPoint.SubProgramName == item2.SubProgramName)
+                        {
+                            isFindSubProgram = true;
+                            foreach (DetectionPoint subDetectionPoint in item2.DetectionPoints)
+                            {
+                                DetectionPoint addDetectionPoint = subDetectionPoint.Copy();
+                                addDetectionPoint.IndexHeader = indexHeader;
+                                addDetectionPoint.IndexX = orgDetectionPoint.IndexX;
+                                addDetectionPoint.IndexY = orgDetectionPoint.IndexY;
+                                addDetectionPoint.Position = new Point(orgDetectionPoint.Position.X + subDetectionPoint.Position.X,
+                                                                       orgDetectionPoint.Position.Y + subDetectionPoint.Position.Y);
+                                indexHeader += 1;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (isFindSubProgram == false)
+                {
+                    DetectionPoint addDetectionPoint = orgDetectionPoint.Copy();
+                    addDetectionPoint.IndexHeader = indexHeader;
+                    DetectionPointList.Add(addDetectionPoint);
+                    indexHeader += 1;
+                }
+
+            }
+            //return this.DetectionPoints.Select(dp => dp.DeepCopy()).ToList();
+            return DetectionPointList;
+        }
+        /// <summary>
+        /// 轉換Lens參數DieAll點位
+        /// </summary>
+        /// <returns></returns>
+        public List<Point> TransLensDieAllPoint(int lensIdx, Point dieSize, Point cameraPixal)
+        {
+            try
+            {
+                List<Point> offsetPoint = new List<Point>();
+                var lensParam = MicroscopeLensDefault.ElementAt(lensIdx);
+                //視野範圍減掉10讓照片可以重疊
+                Point fov = new Point(lensParam.RatioX * cameraPixal.X - 10, lensParam.RatioY * cameraPixal.Y - 10);
+                //全部範圍增加5是怕邊緣沒拍到
+                Point newDieSize = new Point(dieSize.X + lensParam.RatioX + 5, dieSize.Y + +lensParam.RatioY + 5);
+                Point newDieCenter = new Point(newDieSize.X / 2, newDieSize.Y / 2);
+                //中心到邊緣要拍幾張照片
+                int countX = Convert.ToInt32((newDieCenter.X - fov.X / 2) / fov.X);
+                if ((newDieCenter.X - fov.X / 2) % fov.X != 0)//要多拍一張
+                {
+                    countX++;
+                }
+                int countY = Convert.ToInt32((newDieCenter.Y - fov.Y / 2) / fov.Y);
+                if ((newDieCenter.Y - fov.Y / 2) % fov.Y != 0)//要多拍一張
+                {
+                    countY++;
+                }
+                //左上角第一張照片位置
+                Point firstPicturePos = new Point(newDieCenter.X - fov.X * countX, newDieCenter.Y - fov.Y * countY);
+
+
+                for (int j = 0; j < countY * 2; j++)
+                {
+                    if (j % 2 == 0)
+                    {
+                        for (int i = 0; i < countX * 2; i++)
+                        {
+                            offsetPoint.Add(new Point(firstPicturePos.X + i * fov.X, firstPicturePos.Y + j * fov.Y));
+                        }
+                    }
+                    else
+                    {
+                        for (int i = countX * 2; i > 0; i--)
+                        {
+                            offsetPoint.Add(new Point(firstPicturePos.X + i * fov.X, firstPicturePos.Y + j * fov.Y));
+                        }
+                    }
+
+                }
+                return offsetPoint;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 
 
@@ -173,5 +294,15 @@ namespace WLS3200Gen2.Model
         public string Name { get; set; }
         public string Address { get; set; }
     }
-
+    public class SubDiePoint
+    {
+        /// <summary>
+        /// Sub的名稱
+        /// </summary>
+        public string SubProgramName { get; set; }
+        /// <summary>
+        /// 檢查點
+        /// </summary>
+        public IEnumerable<DetectionPoint> DetectionPoints { get; set; }
+    }
 }
